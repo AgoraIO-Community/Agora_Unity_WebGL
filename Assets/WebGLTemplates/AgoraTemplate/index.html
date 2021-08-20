@@ -1,0 +1,78 @@
+﻿<!DOCTYPE html>
+<html lang="en-us">
+   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>Unity WebGL Player | %UNITY_WEB_NAME%</title>
+      <link rel="stylesheet" href="AgoraWebSDK/style.css">
+      <script src="Build/UnityLoader.js"></script>
+	  <script src="AgoraWebSDK/libs/databuilder.js"></script>
+	  <script src="AgoraWebSDK/libs/clientmanager.js"></script>
+	  <script src="AgoraWebSDK/libs/wglwrapper.js"></script>	  
+	  <script src="AgoraWebSDK/libs/audioeffects.js"></script>
+	  <script src="AgoraWebSDK/libs/eventmanager.js"></script>
+	  <script src="AgoraWebSDK/libs/engineglobals.js"></script>	  
+	  <script src="AgoraWebSDK/libs/watermark.js"></script>	  
+	  <script src="AgoraWebSDK/libs/customvideo.js"></script>
+	  <script src="AgoraWebSDK/libs/agorachannel.js"></script>
+	  <script src="AgoraWebSDK/libs/multichannel.js"></script>
+	  <script src="AgoraWebSDK/libs/audiosystem.js"></script>
+	  <script src="AgoraWebSDK/libs/testing.js"></script>
+	  <script src="AgoraWebSDK/libs/agorautils.js"></script>
+	  <script src="AgoraWebSDK/libs/audiomixing.js"></script>
+	  <script src="AgoraWebSDK/agorartcenginev2.js"></script>
+	  <script src="AgoraWebSDK/vendor/materialize.min.js"></script>
+	  <script src="AgoraRTC_N.js"></script>
+	  <script src="AgoraWebSDK/vendor/jquery.min.js"></script>
+
+   </head>
+
+   <body>
+      <h2>Agora Unity WebGL</h2>
+
+	  <!-- <div id="info"></div> -->
+      <!-- Unity Container -->
+      <div class="webgl-content">
+         <div class="centered" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px">
+            <div id="unity-container" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px"></div>
+         </div>
+      </div>
+
+	<!-- Required, please do not delete -->
+	<canvas id="inMem_Canvas" height="450" width="450"  style="display: none;"></canvas>
+	<canvas id="myCanvas" height="450" width="450"  style="position: absolute; left: 1px; top: 500px;display: none; border: 2px solid red"></canvas>
+	<div>
+		<div id="client-stats" class="stats"></div>
+		<div class="row video-group">
+		  <div class="col">
+			<p id="local-player-name" class="player-name"></p>
+			<div class="player-with-stats">
+			  <div id="local-player" class="player"></div>
+			  <div id="local-stats" class="stream-stats stats"></div>
+			</div>
+		  </div>
+		  <div class="w-100"></div>
+		  <div class="col">
+			<div id="remote-playerlist"></div>
+		  </div>
+		</div>
+	  </div>
+
+	<script type="text/javascript">
+		// Unity Initialization
+		var unityInstance = UnityLoader.instantiate(
+		"unity-container",
+		"%UNITY_WEBGL_BUILD_URL%"
+		);
+
+		// REQUIRED - PLEASE DONT DELETE
+		var mainCanvas = document.getElementById("myCanvas");
+		var mainContext = mainCanvas.getContext("2d");
+		var inMemCanvas = document.getElementById("inMem_Canvas");
+		var inMemContext = inMemCanvas.getContext("2d");
+		var canvasWidth = mainCanvas.width;
+		var canvasHeight = mainCanvas.height;
+	</script>
+
+   </body>
+</html>

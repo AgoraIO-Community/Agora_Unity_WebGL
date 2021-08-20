@@ -1,0 +1,49 @@
+body {
+   text-align: center;
+}
+
+.webgl-content {
+   position: relative;
+}
+
+.webgl-content * {
+   border: 0;
+   margin: 0;
+   padding: 0;
+}
+
+.centered {
+   position: relative;
+   left: 50%;
+   transform: translateX(-50%);
+}
+
+#unity-container {
+   margin-left: auto;
+   margin-right: auto;
+   z-index: -1;
+}
+
+.loader {
+   background-color: aliceblue;
+}
+
+.loader .progressbar {
+   background-color: steelblue;
+   border: 2px black solid;
+   border-radius: 10px;
+
+   position: absolute;
+   width: 50%;
+   height: 75px;
+
+   left: 50%;
+   top: 50%;
+   transform: translate(-50%, -50%);
+}
+
+.loader .fill {
+   background-color: skyblue;
+   border-radius: 10px;
+   height: 100%;
+}
