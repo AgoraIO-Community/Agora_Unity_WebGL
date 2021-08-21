@@ -23,7 +23,9 @@ Thumbs.db
 /Assets/Scenes
 /Assets/Scenes.*
 /Packages/
-/ProjectSettings/
+/ProjectSettings/*
+!/ProjectSettings/EditorBuildSettings.asset
+!/ProjectSettings/ProjectSettings.asset
 
 
 *.app
