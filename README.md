@@ -74,4 +74,4 @@ Build and Run
 [https://docs.google.com/document/d/e/2PACX-1vSnaMq_oIhzxnoKCwEi6WKvfx7-Wy3ujg_IXOOWDp9SSWMbO7cD6nV0cR9hpH5Xmg/pub](https://docs.google.com/document/d/e/2PACX-1vSnaMq_oIhzxnoKCwEi6WKvfx7-Wy3ujg_IXOOWDp9SSWMbO7cD6nV0cR9hpH5Xmg/pub)
 
 ## License
-The MIT License (MIT).  [See doc.](../LICENSE.md)
+The MIT License (MIT).  [See doc.](LICENSE)
