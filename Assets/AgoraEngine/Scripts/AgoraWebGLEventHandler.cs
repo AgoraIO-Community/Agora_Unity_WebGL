@@ -4,7 +4,8 @@ using System;
 
 namespace agora_gaming_rtc
 {
-    
+
+#if UNITY_WEBGL || UNITY_EDITOR
     /*
      * Data item used by DataBuilder
      */
@@ -1185,5 +1186,5 @@ namespace agora_gaming_rtc
         }
 
     }
-
+#endif
 }

@@ -3,6 +3,7 @@
 namespace agora_gaming_rtc
 {
     /* Internal script used to render WebglVideo to a VideoSurface */
+#if UNITY_WEBGL || UNITY_EDITOR
     public sealed class InSurfaceRenderer : IRtcEngineNative
     {
         public InSurfaceRenderer() { }
@@ -61,5 +62,5 @@ namespace agora_gaming_rtc
             createLocalTexture();
         }
     }
-
+#endif
 }
