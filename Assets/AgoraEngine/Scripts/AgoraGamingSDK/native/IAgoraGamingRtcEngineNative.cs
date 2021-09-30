@@ -102,7 +102,7 @@ namespace agora_gaming_rtc
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR
         public const string MyLibName = "agoraSdkCWrapper";
 #else
-        #if UNITY_IPHONE || UNITY_WEBGL
+        #if UNITY_IOS || UNITY_WEBGL
 	        public const string MyLibName = "__Internal";
         #else
                 public const string MyLibName = "agoraSdkCWrapper";
