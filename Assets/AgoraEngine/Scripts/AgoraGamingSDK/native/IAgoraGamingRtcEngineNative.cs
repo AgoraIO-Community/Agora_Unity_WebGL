@@ -1241,6 +1241,12 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source);
-#endregion engine callbacks
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setCameraTorchOn(bool on);
+        
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern bool isCameraTorchSupported();
+        #endregion engine callbacks
     }
 }

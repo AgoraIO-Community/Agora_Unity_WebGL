@@ -1672,7 +1672,7 @@ namespace agora_gaming_rtc
          * 
          * @return The VideoRender object.
          */
-        public IVideoRender GetVideoRender()
+        internal IVideoRender GetVideoRender()
         {
             return videoRender;
         }
@@ -2303,6 +2303,7 @@ namespace agora_gaming_rtc
                 }
             }
 
+            // Debug.Log("transcodingUserInfo  " + transcodingUserInfo + "liveStreamAdvancedFeaturesStr" + liveStreamAdvancedFeaturesStr);
             return IRtcEngineNative.setLiveTranscoding(transcoding.width, transcoding.height, transcoding.videoBitrate, transcoding.videoFramerate, transcoding.lowLatency, transcoding.videoGop, (int)transcoding.videoCodecProfile, transcoding.backgroundColor, transcoding.userCount, transcodingUserInfo, transcoding.transcodingExtraInfo, transcoding.metadata, transcoding.watermark.url, transcoding.watermark.x, transcoding.watermark.y, transcoding.watermark.width, transcoding.watermark.height, transcoding.backgroundImage.url, transcoding.backgroundImage.x, transcoding.backgroundImage.y, transcoding.backgroundImage.width, transcoding.backgroundImage.height, (int)transcoding.audioSampleRate, transcoding.audioBitrate, transcoding.audioChannels, (int)transcoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)transcoding.liveStreamAdvancedFeatures.Length);
         }
 
@@ -4118,6 +4119,14 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source);
         }
 
+        public int SetCameraTorchOn(bool on) {
+            return IRtcEngineNative.setCameraTorchOn(on);
+        }
+
+        public bool IsCameraTorchSupported() {
+            return IRtcEngineNative.isCameraTorchSupported();
+        }
+
         /** Initializes an IRtcEngine instance.
          * 
          * Unless otherwise specified, all the methods provided by the IRtcEngine class are executed asynchronously. Agora recommends calling these methods in the same thread.
@@ -4503,6 +4512,10 @@ namespace agora_gaming_rtc
         [MonoPInvokeCallback(typeof(OnSDKWarningHandler))]
         private static void OnSDKWarningCallback(int warn, string msg)
         {
+#if UNITY_2017_4_OR_NEWER
+            if (warn == 8 || warn == 16)
+                return;
+#endif
             if (instance != null && instance.OnWarning != null && instance._AgoraCallbackObject != null)
             {
                 AgoraCallbackQueue queue = instance._AgoraCallbackObject._CallbackQueue;
