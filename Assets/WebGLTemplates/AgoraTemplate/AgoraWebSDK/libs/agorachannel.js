@@ -59,6 +59,12 @@ class AgoraChannel {
     await this.subscribe_remoteuser(user, mediaType);
   }
 
+  handleUserLeft(user) {
+    const id = user.uid;
+    event_manager.raiseChannelOnUserLeft_MC(id, this.options.channel);
+    event_manager.raiseCustomMsg("User Left: " + id);
+  }
+
   // subscribe
   async subscribe_remoteuser(user, mediaType) {
     const uid = user.uid;
@@ -135,6 +141,7 @@ class AgoraChannel {
     this.client.on("user-joined", this.handleUserJoined.bind(this));
     this.client.on("user-published", this.handleUserPublished.bind(this));
     this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
+    this.client.on("user-left", this.handleUserLeft.bind(this));
 
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
@@ -173,6 +180,7 @@ class AgoraChannel {
     this.client.on("user-joined", this.handleUserJoined.bind(this));
     this.client.on("user-published", this.handleUserPublished.bind(this));
     this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
+    this.client.on("user-left", this.handleUserLeft.bind(this));
 
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([

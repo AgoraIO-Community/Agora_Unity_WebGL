@@ -91,16 +91,18 @@ var LibraryAgoraWebGLSDK = {
 
     return true;
   },
-
+  
   createRemoteTexture: function (userId) {
     var ch_userId = Pointer_stringify(userId);
 
-    video = document.getElementById(
-      "video_" + remoteUsers[ch_userId].videoTrack._ID
-    );
-    remoteVideoInstances[ch_userId] = video;
+    if (remoteUsers[ch_userId] != undefined) {
+      video = document.getElementById(
+        "video_" + remoteUsers[ch_userId].videoTrack._ID
+      );
+      remoteVideoInstances[ch_userId] = video;
+    }
     return 1;
-  },
+  }, 
 
   updateRemoteTexture: function (userId, tex) {
     var ch_userId = Pointer_stringify(userId);

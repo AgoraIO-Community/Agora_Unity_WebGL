@@ -133,6 +133,14 @@ class EventManager {
     );
   }
 
+  raiseChannelOnUserLeft_MC(userId, channel) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onChannelOnUserLeft_MC",
+      channel + "|" + userId
+    );
+  }
+
   raiseChannelOnUserPublished_MC(channel, userId) {
     unityInstance.SendMessage(
       "AgoraEventHandler",

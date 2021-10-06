@@ -401,7 +401,7 @@ class ClientManager {
     }
   }
 
-  setClientRole(role) {
+  async setClientRole(role) {
     if (this.client) {
       if (role === 1) {
         this.client.setClientRole("host", function (e) {
@@ -410,6 +410,7 @@ class ClientManager {
           }
         });
       } else if (role === 2) {
+        await this.client.unpublish(localTracks.videoTrack);
         this.client.setClientRole("audience", function (e) {
           if (!e) {
             this.client_role = 2;

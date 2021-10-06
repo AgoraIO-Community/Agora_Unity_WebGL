@@ -67,10 +67,12 @@ public class AgoraMultiChannel : MonoBehaviour
 		channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
 		channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
 		channel1.ChannelOnError = Channel1OnErrorHandler;
+        channel1.ChannelOnUserOffLine = Channel1OnUserOfflineHandler;
 		channel2.ChannelOnJoinChannelSuccess = Channel2OnJoinChannelSuccessHandler;
 		channel2.ChannelOnLeaveChannel = Channel2OnLeaveChannelHandler;
 		channel2.ChannelOnUserJoined = Channel2OnUserJoinedHandler;
 		channel2.ChannelOnError = Channel2OnErrorHandler;
+        channel2.ChannelOnUserOffLine = Channel2OnUserOfflineHandler;
 	}
 
     void JoinChannel()
@@ -78,6 +80,7 @@ public class AgoraMultiChannel : MonoBehaviour
 		channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
 		channel2.JoinChannel(TOKEN_2, "", 0, new ChannelMediaOptions(true, true));
 
+		channel1.Publish();
 		channel2.Publish();
     }
 
@@ -98,14 +101,20 @@ public class AgoraMultiChannel : MonoBehaviour
 
 	void Channel1OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
 	{
-    	logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+    	logger.UpdateLog(string.Format("sdk version: {0}", IRtcEngine.GetSdkVersion()));
     	logger.UpdateLog(string.Format("onJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid, elapsed));
 		makeVideoView(channelId ,0);
 	}
 
-	void Channel2OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
+    void Channel1OnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
+    {
+        logger.UpdateLog(string.Format("OnUserOffLine uid: {0}, reason: {1}", uid, (int)reason));
+        DestroyVideoView(uid, channelId);
+    }
+
+    void Channel2OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
 	{
-    	logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+    	logger.UpdateLog(string.Format("sdk version: {0}", IRtcEngine.GetSdkVersion()));
     	logger.UpdateLog(string.Format("onJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid, elapsed));
 		makeVideoView(channelId, 0);
 	}
@@ -132,20 +141,20 @@ public class AgoraMultiChannel : MonoBehaviour
 
 	void Channel1OnUserJoinedHandler(string channelId, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId, uid, elapsed));
+        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: {1} elapsed: {2}", channelId, uid, elapsed));
         makeVideoView(channelId, uid);
     }
 
 	void Channel2OnUserJoinedHandler(string channelId, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("Channel2OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId, uid, elapsed));
+        logger.UpdateLog(string.Format("Channel2OnUserJoinedHandler channelId: {0} uid: {1} elapsed: {2}", channelId, uid, elapsed));
         makeVideoView(channelId, uid);
     }
 
     void Channel2OnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
     {
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
-        DestroyVideoView(uid);
+        logger.UpdateLog(string.Format("OnUserOffLine uid: {0}, reason: {1}", uid, (int)reason));
+        DestroyVideoView(uid, channelId);
     }
 
 
@@ -166,30 +175,7 @@ public class AgoraMultiChannel : MonoBehaviour
             videoSurface.SetForMultiChannelUser(channelId, uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-            videoSurface.SetGameFps(30);
         }
-    }
-
-    // VIDEO TYPE 1: 3D Object
-    public VideoSurface makePlaneSurface(string goName)
-    {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-
-        if (go == null)
-        {
-            return null;
-        }
-        go.name = goName;
-        // set up transform
-        go.transform.Rotate(-90.0f, 0.0f, 0.0f);
-        float yPos = Random.Range(3.0f, 5.0f);
-        float xPos = Random.Range(-2.0f, 2.0f);
-        go.transform.position = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(0.25f, 0.5f, .5f);
-
-        // configure videoSurface
-        VideoSurface videoSurface = go.AddComponent<VideoSurface>();
-        return videoSurface;
     }
 
     // Video TYPE 2: RawImage
@@ -204,14 +190,14 @@ public class AgoraMultiChannel : MonoBehaviour
 
         go.name = goName;
 		// make the object draggable
-        go.AddComponent<UIElementDrag>();
+        go.AddComponent<UIElementDragger>();
         // to be renderered onto
         go.AddComponent<RawImage>();
 
         GameObject canvas = GameObject.Find("VideoCanvas");
         if (canvas != null)
         {
-            go.transform.parent = canvas.transform;
+            go.transform.SetParent( canvas.transform );
             Debug.Log("add video view");
         }
         else
@@ -231,9 +217,10 @@ public class AgoraMultiChannel : MonoBehaviour
         return videoSurface;
     }
 
-    private void DestroyVideoView(uint uid)
+    private void DestroyVideoView(uint uid, string channelId = "")
     {
-        GameObject go = GameObject.Find(uid.ToString());
+        string objName = channelId == ""? uid.ToString() : channelId + "_" + uid.ToString();
+        GameObject go = GameObject.Find(objName);
         if (!ReferenceEquals(go, null))
         {
             Object.Destroy(go);
