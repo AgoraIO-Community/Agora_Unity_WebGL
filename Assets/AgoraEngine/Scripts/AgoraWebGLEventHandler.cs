@@ -469,7 +469,7 @@ namespace agora_gaming_rtc
 
         public void onRemoteUserJoined(string userId)
         {
-            _remoteUserListing.Add(uint.Parse(userId), uint.Parse(userId));
+            _remoteUserListing[uint.Parse(userId)] = uint.Parse(userId);
 
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnUserJoined != null)
@@ -728,9 +728,6 @@ namespace agora_gaming_rtc
         }
 
         #region Testing functions, remove later
-
-        int lastY = 10;
-        List<PopupGUI> _msgs = new List<PopupGUI>();
 
         public void CustomMsg(string msg)
         {

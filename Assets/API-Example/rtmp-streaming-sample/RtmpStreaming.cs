@@ -23,7 +23,6 @@ public class RtmpStreaming : MonoBehaviour
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
-    private static string channelName = "Agora_Channel";
     private uint remoteUid = 0;
     private bool isStreaming = false;
 
@@ -239,7 +238,6 @@ public class RtmpStreaming : MonoBehaviour
             videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-            videoSurface.SetGameFps(30);
         }
     }
 

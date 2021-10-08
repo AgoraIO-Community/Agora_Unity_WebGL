@@ -58,10 +58,10 @@ public class TestHelloUnityVideo
         if (enableVideoOrNot)
         {
             mRtcEngine.EnableVideo();
+            // allow camera output callback
+            mRtcEngine.EnableVideoObserver();
         }
-
-        // allow camera output callback
-        mRtcEngine.EnableVideoObserver();
+        // mRtcEngine.EnableAudio();
 
         // join channel
         mRtcEngine.JoinChannel(channel, null, 0);
@@ -234,7 +234,7 @@ public class TestHelloUnityVideo
         float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
         float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(3f, 4f, 1f);
+        go.transform.localScale = new Vector3(3*1.6666f, 3f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
