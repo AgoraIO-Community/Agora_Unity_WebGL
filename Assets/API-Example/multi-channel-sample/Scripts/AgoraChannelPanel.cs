@@ -45,7 +45,7 @@ public class AgoraChannelPanel : MonoBehaviour
        
         if (newChannel == null)
         {
-            newChannel = AgoraEngine.mRtcEngine.CreateChannel(channelName);
+            newChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
             
             newChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccessHandler;
             newChannel.ChannelOnUserJoined = OnUserJoinedHandler;
