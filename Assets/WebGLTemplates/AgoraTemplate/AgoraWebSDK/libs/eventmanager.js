@@ -52,11 +52,17 @@ class EventManager {
     );
   }
 
+  isNumber(n) { return /^-?[\d.]+(?:e-?\d+)?$/.test(n); } 
+
   raiseJoinChannelSuccess(userId, channel) {
+    var uid = 0;
+    if (this.isNumber(userId)) {
+	uid = userId.toString();
+    }
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "onJoinChannelSuccess",
-      channel + "|" + userId
+      channel + "|" + uid
     );
   }
 
