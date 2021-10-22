@@ -1017,12 +1017,29 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int ReleaseChannel(IntPtr channel);
 
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int joinChannel2(string channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int joinChannelWithUserAccount2(string channel, string token, string userAccount, bool autoSubscribeAudio, bool autoSubscribeVideo);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int leaveChannel2(string channel);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int publish(string channel);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int unpublish(string channel);
+#else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int joinChannel2(IntPtr channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int joinChannelWithUserAccount2(IntPtr channel, string token, string userAccount, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
-        
+
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int leaveChannel2(IntPtr channel);
         
@@ -1032,12 +1049,26 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int unpublish(IntPtr channel);
         
+#endif
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern IntPtr channelId(IntPtr channel);
         
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern IntPtr getCallId2(IntPtr channel);
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int renewToken2(string channel, string token);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setEncryptionSecret2(string channel, string secret);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setEncryptionMode2(string channel, string encryptionMode);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setClientRole2(string channel, int role);
+#else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int renewToken2(IntPtr channel, string token);
         
@@ -1046,14 +1077,15 @@ namespace agora_gaming_rtc
         
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setEncryptionMode2(IntPtr channel, string encryptionMode);
-        
+
         // virtual int registerPacketObserver(void *channel, IPacketObserver* observer);
-        
+
         // virtual int registerMediaMetadataObserver(void *channel, IMetadataObserver *observer, IMetadataObserver::METADATA_TYPE type);
-        
+
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setClientRole2(IntPtr channel, int role);
-        
+#endif
+
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserPriority2(IntPtr channel, uint uid, int userPriority);
 
@@ -1194,9 +1226,14 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setAudioEffectParameters(int preset, int param1, int param2);
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableEncryption2(string channel, bool enabled, string encryptionKey, int encryptionMode);
+#else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableEncryption2(IntPtr channel, bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
-        
+#endif
+
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableRemoteSuperResolution2(IntPtr channel, uint userId, bool enable);
 
@@ -1241,6 +1278,12 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setCameraTorchOn(bool on);
+        
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern bool isCameraTorchSupported();
 #endregion engine callbacks
     }
 }

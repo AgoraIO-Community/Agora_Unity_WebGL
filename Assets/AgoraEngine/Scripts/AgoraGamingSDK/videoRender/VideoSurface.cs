@@ -294,14 +294,16 @@ namespace agora_gaming_rtc
             mRenderer = null;
         }
 
-        /** Sets the video rendering frame rate.
+        /** (Future API) Sets the video rendering frame rate.
         * 
         * @note 
+        *   High-level logic only.  Non-effective until native code updated in the future.
         * - Ensure that you call this method in the main thread.
         * - Ensure that you call this method before binding VideoSurface.cs.
         * 
         * @param fps The real video refreshing frame rate of the program.
         */
+        [Obsolete("Invoking future API will have no effect")]
         public void SetGameFps(uint fps)
         {
             videoFps = fps; 

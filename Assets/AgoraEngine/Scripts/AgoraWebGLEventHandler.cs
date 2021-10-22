@@ -469,7 +469,7 @@ namespace agora_gaming_rtc
 
         public void onRemoteUserJoined(string userId)
         {
-            _remoteUserListing.Add(uint.Parse(userId), uint.Parse(userId));
+            _remoteUserListing[uint.Parse(userId)] = uint.Parse(userId);
 
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnUserJoined != null)
@@ -566,7 +566,7 @@ namespace agora_gaming_rtc
             }
             catch (Exception e)
             {
-                Debug.Log("exception " + e.Message);
+                Debug.LogError("exception " + e.Message);
             }
 
         }
@@ -579,6 +579,33 @@ namespace agora_gaming_rtc
 
             string channel = events[0];
             string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                uint uid = uint.Parse(userId);
+                ch.ChannelOnUserJoined(channel, uid, 0);
+            }
+        }
+
+
+        public void onChannelOnUserLeft_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                uint uid = uint.Parse(userId);
+                // TODO: consider more reasons parsed from the Web side
+                if (ch.ChannelOnUserOffLine != null)
+                {
+                    ch.ChannelOnUserOffLine(channel, uid, USER_OFFLINE_REASON.QUIT);
+                }
+            }
         }
 
         public void onChannelOnUserPublished_MC(string eventData)
@@ -594,7 +621,10 @@ namespace agora_gaming_rtc
                 RemoteVideoStats remoteStats = new RemoteVideoStats();
                 remoteStats.receivedBitrate = 1024; // to make it visible, put more than 0
                 remoteStats.uid = uint.Parse(userId);
-                ch.ChannelOnRemoteVideoStats(channel, remoteStats);
+                if (ch.ChannelOnRemoteVideoStats != null)
+                {
+                    ch.ChannelOnRemoteVideoStats(channel, remoteStats);
+                }
             }
         }
 
@@ -612,7 +642,9 @@ namespace agora_gaming_rtc
                 RemoteVideoStats remoteStats = new RemoteVideoStats();
                 remoteStats.receivedBitrate = 0; // to make it visible, put more than 0
                 remoteStats.uid = uint.Parse(userId);
-                ch.ChannelOnRemoteVideoStats(channel, remoteStats);
+                if (ch.ChannelOnRemoteVideoStats != null) {
+                    ch.ChannelOnRemoteVideoStats(channel, remoteStats);
+                }
             }
         }
 
@@ -639,7 +671,7 @@ namespace agora_gaming_rtc
         public void HandleFrameHandler(string audioData)
         {
             Debug.Log(audioData);
-            // this is where we need to encode data received to proper byte[] array
+            // TODO: this is where we need to encode data received to proper byte[] array
         }
 
 
@@ -696,9 +728,6 @@ namespace agora_gaming_rtc
         }
 
         #region Testing functions, remove later
-
-        int lastY = 10;
-        List<PopupGUI> _msgs = new List<PopupGUI>();
 
         public void CustomMsg(string msg)
         {

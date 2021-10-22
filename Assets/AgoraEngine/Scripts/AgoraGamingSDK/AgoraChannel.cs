@@ -241,8 +241,10 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif            
+            return IRtcEngineNative.joinChannel2(_channelId, token, info, uid, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo);
+#else
             return IRtcEngineNative.joinChannel2(_channelHandler, token, info, uid, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
+#endif
         }
 
          /** Joins the channel with a user account.
@@ -289,8 +291,10 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
+            return IRtcEngineNative.joinChannelWithUserAccount2(_channelId, token, userAccount, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo);
+#else
             return IRtcEngineNative.joinChannelWithUserAccount2(_channelHandler, token, userAccount, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
+#endif
         }
 
         /** Allows a user to leave a channel, such as hanging up or exiting a call.
@@ -323,9 +327,11 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            return IRtcEngineNative.leaveChannel2(_channelId);
+#else 
+            return IRtcEngineNative.leaveChannel2(_channelHandler);
 #endif
 
-            return IRtcEngineNative.leaveChannel2(_channelHandler);
         }
 
         /** Publishes the local stream to the channel.
@@ -346,8 +352,10 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
+            return IRtcEngineNative.publish(_channelId);
+#else
             return IRtcEngineNative.publish(_channelHandler);
+#endif
         }
 
         /** Stops publishing a stream to the channel.
@@ -365,18 +373,27 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
+            return IRtcEngineNative.unpublish(_channelId);
+#else
             return IRtcEngineNative.unpublish(_channelHandler);
+#endif
         }
 
-         /** Gets the channel ID of the current `AgoraChannel` object.
-         *
-         * @return
-         * - The channel ID of the current `AgoraChannel` object, if the method call succeeds.
-         * - The empty string "", if the method call fails.
-         */
+        /** Gets the channel ID of the current `AgoraChannel` object.
+        *
+        * @return
+        * - The channel ID of the current `AgoraChannel` object, if the method call succeeds.
+        * - The empty string "", if the method call fails.
+        */
+#if UNITY_WEBGL
+            [Obsolete("This API is not supported for WebGL")]
+#endif
         public string ChannelId()
         {
+            if(Application.platform == RuntimePlatform.WebGLPlayer) {
+                return ""; 
+	        }
+
             if (_rtcEngine == null)
                 return ERROR_CODE.ERROR_NOT_INIT_ENGINE + "";
 
@@ -394,6 +411,9 @@ namespace agora_gaming_rtc
          *  - &ge; 0: The current call ID, if this method call succeeds.
          *  - < 0: Failure.
          */
+#if UNITY_WEBGL
+            [Obsolete("This API is not supported for WebGL")]
+#endif
         public string GetCallId()
         {
             if (_rtcEngine == null)
@@ -432,8 +452,10 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
+            return IRtcEngineNative.renewToken2(_channelId, token);
+#else
             return IRtcEngineNative.renewToken2(_channelHandler, token);
+#endif
         }
 
         /** Enables built-in encryption with an encryption password before users join a channel.
@@ -454,14 +476,17 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
+        [Obsolete("deprecated Deprecated as of v3.2.0. Use EnableEncryption instead")]
         public int SetEncryptionSecret(string secret)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
+            // do nothing for WebGL since deprecation
+            return -1;
+#else 
             return IRtcEngineNative.setEncryptionSecret2(_channelHandler, secret);
+#endif
         }
 
         /** Sets the built-in encryption mode.
@@ -490,8 +515,12 @@ namespace agora_gaming_rtc
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
-
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            return IRtcEngineNative.setEncryptionMode2(_channelId, encryptionMode);
+#else
             return IRtcEngineNative.setEncryptionMode2(_channelHandler, encryptionMode);
+#endif
         }
 
         /** Sets the role of the user, such as a host or an audience (default), before joining a channel in an interactive live streaming.
@@ -515,9 +544,10 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
+            return IRtcEngineNative.setClientRole2(_channelId, (int)role);
+#else
             return IRtcEngineNative.setClientRole2(_channelHandler, (int)role);
+#endif
         }        
 
         /** Prioritizes a remote user's stream.
@@ -1246,7 +1276,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            return SetClientRole(role);
 #endif
             return IRtcEngineNative.setClientRole_2(_channelHandler, (int)role, (int)audienceLatencyLevel.audienceLatencyLevel);
         }
@@ -1281,9 +1311,10 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-#endif
-
+            return IRtcEngineNative.enableEncryption2(_channelId, enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode);
+#else
             return IRtcEngineNative.enableEncryption2(_channelHandler, enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode, encryptionConfig.encryptionKdfSalt);
+#endif
         }
 
         public int MuteLocalVideoStream(bool mute)

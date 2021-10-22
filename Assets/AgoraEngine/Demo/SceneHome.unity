@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.3731316, g: 0.38074902, b: 0.3587254, a: 1}
+  m_IndirectSpecularColor: {r: 0.3731193, g: 0.38073996, b: 0.35872698, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -885,7 +885,7 @@ MonoBehaviour:
       Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 25
+    m_FontSize: 20
     m_FontStyle: 0
     m_BestFit: 1
     m_MinSize: 1
@@ -896,12 +896,12 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'This example shows how to use the Agora Gaming SDK to incorporate video
-    content into the game''s scene.
-
-    This example supports video communication and  devices can communicate with each
-    other by selecting the same appid and channel. The local preview is rendered on
-    two 3D objects and external broadcasters are rendered on 2D Planes in the background.'
+  m_Text: "This example shows how to use the Agora Gaming SDK to incorporate video
+    content into the game's scene.\nThis example supports video communication and
+    \ devices can communicate with each other by selecting the same appid and channel.
+    The local preview is rendered on two 3D objects and external broadcasters are
+    rendered on 2D Planes in the background. \x03\n<color=red>Please make sure Camera
+    and Microphone permissions are given! </color>"
 --- !u!222 &929716329
 CanvasRenderer:
   m_ObjectHideFlags: 0

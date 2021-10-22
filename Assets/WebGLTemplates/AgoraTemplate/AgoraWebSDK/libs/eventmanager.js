@@ -52,11 +52,17 @@ class EventManager {
     );
   }
 
+  isNumber(n) { return /^-?[\d.]+(?:e-?\d+)?$/.test(n); } 
+
   raiseJoinChannelSuccess(userId, channel) {
+    var uid = 0;
+    if (this.isNumber(userId)) {
+	uid = userId.toString();
+    }
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "onJoinChannelSuccess",
-      channel + "|" + userId
+      channel + "|" + uid
     );
   }
 
@@ -129,6 +135,14 @@ class EventManager {
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "onChannelOnUserJoined_MC",
+      channel + "|" + userId
+    );
+  }
+
+  raiseChannelOnUserLeft_MC(userId, channel) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onChannelOnUserLeft_MC",
       channel + "|" + userId
     );
   }

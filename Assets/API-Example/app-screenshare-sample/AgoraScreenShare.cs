@@ -25,7 +25,6 @@ public class AgoraScreenShare : MonoBehaviour
 	private const float Offset = 100;
 	private Texture2D mTexture;
     private Rect mRect;	
-    private WebCamTexture webCameraTexture;
     public RawImage rawImage;
     public RawImage textureImage;
 	public Vector2 cameraSize = new Vector2(640, 480);
@@ -37,7 +36,6 @@ public class AgoraScreenShare : MonoBehaviour
     // Use this for initialization
     void Start () 
 	{
-        InitCameraDevice();
         bool appReady = CheckAppId();
         if (!appReady) return;
 
@@ -130,7 +128,8 @@ public class AgoraScreenShare : MonoBehaviour
             minBitrate = 1,
             orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE,
             degradationPreference = DEGRADATION_PREFERENCE.MAINTAIN_FRAMERATE,
-            mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_DISABLED
+            mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_DISABLED 
+                // note: mirrorMode is not effective for WebGL
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
 
@@ -185,7 +184,7 @@ public class AgoraScreenShare : MonoBehaviour
                 mRtcEngine.PushVideoFrame(externalVideoFrame);
                 if (timestamp % 100 == 0)
                 {
-                    Debug.LogWarning("Pushed frame = " + timestamp);
+                    Debug.Log("Pushed frame = " + timestamp);
                 }
 
             }
@@ -224,8 +223,8 @@ public class AgoraScreenShare : MonoBehaviour
 
 	void JoinChannel()
 	{
-        //int ret = mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
-        int ret = mRtcEngine.JoinChannel(CHANNEL_NAME, "", 0);
+        int ret = mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        // int ret = mRtcEngine.JoinChannel(CHANNEL_NAME, "", 0);
         Debug.Log(string.Format("JoinChannel ret: ${0}", ret));
 	}
 
@@ -239,14 +238,6 @@ public class AgoraScreenShare : MonoBehaviour
     {
         ScreenToggle.onValueChanged.AddListener(HandleToggleValueChange);
         textureImage = GameObject.Find("LogoImage").GetComponent<RawImage>();
-    }
-
-    void InitCameraDevice()
-    {
-        WebCamDevice[] devices = WebCamTexture.devices;
-        webCameraTexture = new WebCamTexture(devices[0].name, (int)cameraSize.x, (int)cameraSize.y, cameraFPS);
-        rawImage.texture = webCameraTexture;
-        webCameraTexture.Play();
     }
 
     #region -- event handlers --
@@ -290,11 +281,6 @@ public class AgoraScreenShare : MonoBehaviour
 
     void OnApplicationQuit()
     {
-        if (webCameraTexture)
-        {
-            webCameraTexture.Stop();
-        }
-
         if (mRtcEngine != null)
         {
 			mRtcEngine.LeaveChannel();
@@ -333,33 +319,9 @@ public class AgoraScreenShare : MonoBehaviour
             videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-            videoSurface.SetGameFps(30);
         }
     }
 
-    // VIDEO TYPE 1: 3D Object
-    public VideoSurface makePlaneSurface(string goName)
-    {
-        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Plane);
-
-        if (go == null)
-        {
-            return null;
-        }
-        go.name = goName;
-        // set up transform
-        go.transform.Rotate(-90.0f, 0.0f, 0.0f);
-        float yPos = Random.Range(3.0f, 5.0f);
-        float xPos = Random.Range(-2.0f, 2.0f);
-        go.transform.position = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(0.25f, 0.5f, .5f);
-
-        // configure videoSurface
-        VideoSurface videoSurface = go.AddComponent<VideoSurface>();
-        return videoSurface;
-    }
-
-    // Video TYPE 2: RawImage
     public VideoSurface makeImageSurface(string goName)
     {
         GameObject go = new GameObject();
@@ -391,7 +353,7 @@ public class AgoraScreenShare : MonoBehaviour
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         //go.transform.localPosition = new Vector3(10, 10, 0f);
-        go.transform.localScale = new Vector3(3f, 4f, 1f);
+        go.transform.localScale = new Vector3(3 * 1.6666f, 3f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
