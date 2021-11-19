@@ -1330,6 +1330,15 @@ var LibraryAgoraWebGLSDK = {
   enableDualStreamMode: function (enabled) {
     enableDualStream_WGL(enabled);
   },
+  enableLogUpload: function () {
+    enableLogUpload();
+    return 1;
+  },
+  disableLogUpload: function () {
+    disableLogUpload();
+    return 1;
+  },
+
   getAudioPlaybackDeviceVolume: function () {
     return wrapper.savedSettings.playbackVolume;
   },

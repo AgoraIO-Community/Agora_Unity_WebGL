@@ -287,6 +287,13 @@ namespace agora_gaming_rtc
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteRemoteVideoStream_WGLM(string uid, bool mute);
+
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableLogUpload();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int disableLogUpload();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

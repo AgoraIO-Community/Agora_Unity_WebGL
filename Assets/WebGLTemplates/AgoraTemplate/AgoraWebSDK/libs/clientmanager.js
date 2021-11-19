@@ -757,4 +757,14 @@ class ClientManager {
       this.client.setRemoteVideoStreamType(uid2, option);
     });
   }
+
+  enableLogUpload() {
+    AgoraRTC.enableLogUpload();
+    console.log("----------- log upload to server enabled -------- ");
+  }
+
+  disableLogUpload() {
+    AgoraRTC.disableLogUpload();
+    console.log("----------- log upload to server disabled -------- ");
+  }
 }

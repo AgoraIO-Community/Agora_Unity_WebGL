@@ -13,10 +13,15 @@ public class video_encoder_configuration : MonoBehaviour
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
+
+
     public Text logText;
+
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
+
+    bool _logEnabled { get; set; }
 
     // A list of dimensions for swithching
     VideoDimensions[] dimensions = new VideoDimensions[]{
@@ -99,6 +104,20 @@ public class video_encoder_configuration : MonoBehaviour
             mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_AUTO
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
+    }
+
+    // React to button [LogButton] tap 
+    public void OnLogButtonTapped(Text buttonText)
+    { 
+        if (_logEnabled)
+        {
+            mRtcEngine.DisableLogUpload();	
+	    }
+        else {
+            mRtcEngine.EnableLogUpload();
+	    }
+        _logEnabled = !_logEnabled;
+        buttonText.text = _logEnabled ? "Disable Log" : "Enable Log";
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
