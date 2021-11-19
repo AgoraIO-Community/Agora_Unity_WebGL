@@ -21,7 +21,8 @@ public class video_encoder_configuration : MonoBehaviour
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
 
-    bool _logEnabled { get; set; }
+    [SerializeField]
+    bool LogEnableUpload = false;
 
     // A list of dimensions for swithching
     VideoDimensions[] dimensions = new VideoDimensions[]{
@@ -74,6 +75,11 @@ public class video_encoder_configuration : MonoBehaviour
 
     void JoinChannel()
     {
+        if (LogEnableUpload)
+        {
+            mRtcEngine.EnableLogUpload();
+            logger.UpdateLog("Enabled Console log upload, before joining");
+        }
         mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
     }
 
@@ -106,23 +112,9 @@ public class video_encoder_configuration : MonoBehaviour
         mRtcEngine.SetVideoEncoderConfiguration(config);
     }
 
-    // React to button [LogButton] tap 
-    public void OnLogButtonTapped(Text buttonText)
-    { 
-        if (_logEnabled)
-        {
-            mRtcEngine.DisableLogUpload();	
-	    }
-        else {
-            mRtcEngine.EnableLogUpload();
-	    }
-        _logEnabled = !_logEnabled;
-        buttonText.text = _logEnabled ? "Disable Log" : "Enable Log";
-    }
-
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("sdk version: {0}", IRtcEngine.GetSdkVersion()));
         logger.UpdateLog(string.Format("onJoinChannelSuccess channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
         makeVideoView(0);
     }
@@ -135,13 +127,13 @@ public class video_encoder_configuration : MonoBehaviour
 
     void OnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoined uid: ${0} elapsed: ${1}", uid, elapsed));
+        logger.UpdateLog(string.Format("OnUserJoined uid: {0} elapsed: {1}", uid, elapsed));
         makeVideoView(uid);
     }
 
     void OnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
+        logger.UpdateLog(string.Format("OnUserOffLine uid: {0}, reason: {1}", uid, (int)reason));
         DestroyVideoView(uid);
     }
 

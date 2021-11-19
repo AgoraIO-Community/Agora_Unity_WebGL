@@ -404,8 +404,9 @@ namespace agora_gaming_rtc
         }
 
         /*
-        *   (WebGL Only) enable Log Upload to the server. 
+        *  (WebGL Only) enable Log Upload to the server. 
         *  https://docs.agora.io/en/Video/API%20Reference/web_ng/interfaces/iagorartc.html?platform=Web#enablelogupload
+        *  * Must be called before joining channel to be effective.
         */
         public int EnableLogUpload()
         {
