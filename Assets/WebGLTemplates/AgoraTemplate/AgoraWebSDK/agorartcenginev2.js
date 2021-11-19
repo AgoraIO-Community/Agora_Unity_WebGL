@@ -441,6 +441,13 @@ function setRemoteSubscribeFallbackOption_WGL(option) {
   client_manager.setRemoteSubscribeFallbackOption_WGL(option);
 }
 
+function enableLogUpload() {
+  client_manager.enableLogUpload();
+}
+
+function disableLogUpload() {
+  client_manager.disableLogUpload();
+}
 // Sets the video encoder configuration.
 async function SetVideoEncoderConfiguration(
   Width,

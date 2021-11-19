@@ -403,6 +403,31 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setLogFile(filePath);
         }
 
+        /*
+        *  (WebGL Only) enable Log Upload to the server. 
+        *  https://docs.agora.io/en/Video/API%20Reference/web_ng/interfaces/iagorartc.html?platform=Web#enablelogupload
+        *  * Must be called before joining channel to be effective.
+        */
+        public int EnableLogUpload()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.enableLogUpload();
+#endif
+            return -1;
+        }
+
+        /*
+         *   (WebGL Only) enable Log Upload to the server. 
+         *  https://docs.agora.io/en/Video/API%20Reference/web_ng/interfaces/iagorartc.html?platform=Web#disablelogupload
+         */
+        public int DisableLogUpload()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.disableLogUpload();
+#endif
+            return -1;
+        }
+
         public int SetDefaultEngineSettings()
         {
             return IRtcEngineNative.setDefaultEngineSettings();
@@ -2856,7 +2881,7 @@ namespace agora_gaming_rtc
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.startScreenCaptureForWeb();
-#else 
+#else
             Debug.LogWarning("StartScreenCaptureForWeb runs for WebGL only.");
 #endif
         }

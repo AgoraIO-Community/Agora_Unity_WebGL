@@ -1009,8 +1009,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   APP_ID: 
   TOKEN: 
-  CHANNEL_NAME: unity3d
+  CHANNEL_NAME: unity3dwgl
   logText: {fileID: 634102969}
+  LogEnableUpload: 0
 --- !u!114 &2114801516
 MonoBehaviour:
   m_ObjectHideFlags: 0
