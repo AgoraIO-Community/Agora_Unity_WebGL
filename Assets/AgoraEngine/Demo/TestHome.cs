@@ -27,19 +27,37 @@ public class TestHome : MonoBehaviour
     [SerializeField]
     private string AppID = "your_appid";
 
+    private string ChannelName { 
+        get {
+            string cached = PlayerPrefs.GetString("ChannelName");
+            if (string.IsNullOrEmpty(cached)) {
+                cached = inputField.text;
+	        }
+
+            return cached;
+	    }
+
+        set {
+            PlayerPrefs.SetString("ChannelName", value);
+	    }
+    }
+
+    [SerializeField]
+    private InputField inputField;
+
     void Awake()
     {
 #if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
 		permissionList.Add(Permission.Microphone);         
 		permissionList.Add(Permission.Camera);               
 #endif
-
         // keep this alive across scenes
         DontDestroyOnLoad(this.gameObject);
     }
 
     void Start()
     {
+        inputField.text = ChannelName;
         CheckAppId();
     }
 
@@ -85,12 +103,8 @@ public class TestHome : MonoBehaviour
 #endif
     }
 
-    public void onJoinButtonClicked()
+    public void onJoinButtonClicked(bool enableVideo, bool muted = false)
     {
-        // get parameters (channel name, channel profile, etc.)
-        GameObject go = GameObject.Find("ChannelName");
-        InputField field = go.GetComponent<InputField>();
-
         // create app if nonexistent
         if (ReferenceEquals(app, null))
         {
@@ -98,31 +112,14 @@ public class TestHome : MonoBehaviour
             app.loadEngine(AppID); // load engine
         }
 
+        ChannelName = inputField.text;
+
         // join channel and jump to next scene
-        app.join(field.text, true);
+        app.join(ChannelName, enableVideo, muted);
         SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
         SceneManager.LoadScene(PlaySceneName, LoadSceneMode.Single);
     }
     
-    public void onJoinButtonClicked2()
-    {
-        // get parameters (channel name, channel profile, etc.)
-        GameObject go = GameObject.Find("ChannelName");
-        InputField field = go.GetComponent<InputField>();
-
-        // create app if nonexistent
-        if (ReferenceEquals(app, null))
-        {
-            app = new TestHelloUnityVideo(); // create app
-            app.loadEngine(AppID); // load engine
-        }
-
-        // join channel and jump to next scene
-        app.join(field.text, false);
-        SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
-        SceneManager.LoadScene(PlaySceneName, LoadSceneMode.Single);
-    }
-
     public void onLeaveButtonClicked()
     {
         if (!ReferenceEquals(app, null))

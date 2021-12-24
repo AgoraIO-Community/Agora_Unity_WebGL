@@ -36,12 +36,14 @@ public class TestHelloUnityVideo
         mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
     }
 
-    public void join(string channel, bool enableVideoOrNot)
+    public void join(string channel, bool enableVideoOrNot, bool muted = false)
     {
         Debug.Log("calling join (channel = " + channel + ")");
 
         if (mRtcEngine == null)
             return;
+
+
 
         // set callbacks (optional)
         mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
@@ -61,10 +63,25 @@ public class TestHelloUnityVideo
             // allow camera output callback
             mRtcEngine.EnableVideoObserver();
         }
-        // mRtcEngine.EnableAudio();
 
+        var _orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE;
+        if (muted)
+        {
+            mRtcEngine.EnableLocalAudio(false);
+            mRtcEngine.MuteLocalAudioStream(true);
+        }
+
+        VideoEncoderConfiguration config = new VideoEncoderConfiguration
+        {
+            orientationMode = _orientationMode,
+            degradationPreference = DEGRADATION_PREFERENCE.MAINTAIN_FRAMERATE,
+            mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_DISABLED
+            // note: mirrorMode is not effective for WebGL
+        };
+        mRtcEngine.SetVideoEncoderConfiguration(config);
         // join channel
         mRtcEngine.JoinChannel(channel, null, 0);
+
     }
     
     void OnLeaveChannelHandler(RtcStats stats)

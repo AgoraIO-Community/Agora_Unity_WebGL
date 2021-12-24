@@ -22,11 +22,15 @@ public class ButtonHandler : MonoBehaviour
             }
             if (button.name == "JoinButton")
             {
-                gameController.onJoinButtonClicked();
+                gameController.onJoinButtonClicked(true);
             }
             else if (button.name == "JoinButton2")
             {
-                gameController.onJoinButtonClicked2();
+                gameController.onJoinButtonClicked(false);
+            }
+            else if (button.name == "JoinButton3")
+            {
+                gameController.onJoinButtonClicked(true, true);
             }
             else if (button.name == "LeaveButton")
             {
