@@ -1,4 +1,4 @@
-﻿ using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using agora_gaming_rtc;
 using UnityEngine.UI;
@@ -16,6 +16,7 @@ public class AgoraChannelPanel : MonoBehaviour
     private List<GameObject> userVideos;
     public Text txtLocaluserId;
     public Text txtInfo;
+    public Text ChannelLabel;
 
     private const float SPACE_BETWEEN_USER_VIDEOS = 150f;
 
@@ -24,13 +25,16 @@ public class AgoraChannelPanel : MonoBehaviour
     public GameObject publishButton;
     public GameObject unpublishButton;
 
+    private VideoSurface localVideoSurface;
+
     void Start()
     {
+        ChannelLabel.text = channelName;
         userVideos = new List<GameObject>();
         SetButtonsState(true, false, false, false);
     }
 
-    void SetButtonsState(bool joinButtonFlag, bool leaveButtonFlag, bool publishButtonFlag, bool unpublishButtonFlag )
+    void SetButtonsState(bool joinButtonFlag, bool leaveButtonFlag, bool publishButtonFlag, bool unpublishButtonFlag)
     {
         joinButton.SetActive(joinButtonFlag);
         publishButton.SetActive(publishButtonFlag);
@@ -42,11 +46,11 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void Button_JoinChannel()
     {
-       
+
         if (newChannel == null)
         {
             newChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
-            
+
             newChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccessHandler;
             newChannel.ChannelOnUserJoined = OnUserJoinedHandler;
             newChannel.ChannelOnLeaveChannel = OnLeaveHandler;
@@ -55,8 +59,8 @@ public class AgoraChannelPanel : MonoBehaviour
             newChannel.ChannelOnError += HandleChannelError;
             newChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
         }
-        
-        newChannel.JoinChannel(channelToken, null, 0, new ChannelMediaOptions(true, true));
+
+        newChannel.JoinChannel(channelToken, null, 2, new ChannelMediaOptions(true, true));
         Debug.Log("Joining channel: " + channelName);
 
         SetButtonsState(false, true, true, false);
@@ -69,7 +73,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void Button_LeaveChannel()
     {
-        if(newChannel != null)
+        if (newChannel != null)
         {
             isPublishing = false;
             newChannel.LeaveChannel();
@@ -79,21 +83,21 @@ public class AgoraChannelPanel : MonoBehaviour
         else
         {
             Debug.LogWarning("Channel: " + channelName + " hasn't been created yet.");
-        }   
+        }
     }
 
     public void Button_PublishToPartyChannel()
     {
-        if(newChannel == null)
+        if (newChannel == null)
         {
             Debug.LogError("New channel isn't created yet.");
             return;
         }
 
-        if(isPublishing == false)
+        if (isPublishing == false)
         {
             int publishResult = newChannel.Publish();
-            if(publishResult == 0)
+            if (publishResult == 0)
             {
                 isPublishing = true;
             }
@@ -108,16 +112,16 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void Button_CancelPublishFromChannel()
     {
-        if(newChannel == null)
+        if (newChannel == null)
         {
             Debug.Log("New channel isn't created yet.");
             return;
         }
 
-        if(isPublishing == true)
+        if (isPublishing == true)
         {
             int unpublishResult = newChannel.Unpublish();
-            if(unpublishResult == 0)
+            if (unpublishResult == 0)
             {
                 isPublishing = false;
             }
@@ -128,6 +132,23 @@ public class AgoraChannelPanel : MonoBehaviour
         {
             Debug.Log("Not published to any channel");
         }
+    }
+
+    bool isLocalAudioMuted = false;
+    bool isLocalVideoMuted = false;
+    public void Button_MuteLocalAudio(Text buttonText)
+    {
+        isLocalAudioMuted = !isLocalAudioMuted;
+        newChannel.MuteLocalAudioStream(isLocalAudioMuted);
+        buttonText.text = isLocalAudioMuted ? "Unmute LocalAudio" : "Mute LocalAudio";
+    }
+
+    public void Button_MuteLocalVideo(Text buttonText)
+    {
+        isLocalVideoMuted = !isLocalVideoMuted;
+        newChannel.MuteLocalVideoStream(isLocalVideoMuted);
+        buttonText.text = isLocalVideoMuted ? "Unmute LocalVideo" : "Mute LocalVideo";
+        localVideoSurface.SetEnable(!isLocalVideoMuted);
     }
 
     #endregion
@@ -159,14 +180,14 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void OnUserLeftHandler(string channelID, uint uid, USER_OFFLINE_REASON reason)
     {
-        Debug.Log("User: " + uid + " left party - channel: + " + uid + "for reason: " + reason);   
+        Debug.Log("User: " + uid + " left party - channel: + " + uid + "for reason: " + reason);
         RemoveUserVideoSurface(uid);
     }
-    
+
 
     private void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
     {
-        Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID 
+        Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID
             + ", remoteStats.receivedBitrate: " + remoteStats.receivedBitrate
             + ", remoteStats.uid: " + remoteStats.uid);
         // If user is publishing...
@@ -175,7 +196,7 @@ public class AgoraChannelPanel : MonoBehaviour
             bool needsToMakeNewImageSurface = true;
             foreach (GameObject user in userVideos)
             {
-                if(remoteStats.uid.ToString() == user.name)
+                if (remoteStats.uid.ToString() == user.name)
                 {
                     needsToMakeNewImageSurface = false;
                     break;
@@ -195,7 +216,7 @@ public class AgoraChannelPanel : MonoBehaviour
             foreach (GameObject user in userVideos)
             {
                 // ... but their video stream is currently displaying...
-                if(remoteStats.uid.ToString() == user.name)
+                if (remoteStats.uid.ToString() == user.name)
                 {
                     needsToRemoveUser = true;
                 }
@@ -250,6 +271,10 @@ public class AgoraChannelPanel : MonoBehaviour
             videoSurface.SetForMultiChannelUser(channelID, uid);
             Debug.Log("MakeImageSurface - SetForMultiChannelUser after");
         }
+        else
+        {
+            localVideoSurface = videoSurface;
+        }
     }
 
 
@@ -277,12 +302,12 @@ public class AgoraChannelPanel : MonoBehaviour
                 panelContentWindow.anchoredPosition = Vector2.zero;
                 break;
             }
-        }        
+        }
     }
 
     private void OnApplicationQuit()
     {
-        if(newChannel != null)
+        if (newChannel != null)
         {
             newChannel.LeaveChannel();
             newChannel.ReleaseChannel();
@@ -292,8 +317,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     void HandleChannelError(string channelId, int err, string message)
     {
-        Debug.Log("Channel Error: " + message);
-        //txtConState.text = "Channel Error: " + message;
+        Debug.LogWarning("Channel Error: " + IRtcEngine.GetErrorDescription(err));
     }
 
 }

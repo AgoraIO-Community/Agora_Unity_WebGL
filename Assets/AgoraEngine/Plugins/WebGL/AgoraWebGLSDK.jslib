@@ -1305,6 +1305,16 @@ var LibraryAgoraWebGLSDK = {
     var channelId_Str = Pointer_stringify(channelId);
     setCurrentChannel_WGL(channelId_Str);
   },
+
+muteLocalVideoStream_channel: function(channel, mute) {
+  var str_chan = Pointer_stringify(channel);
+  muteLocalVideoStream2_mc_WGL(str_chan, mute);
+},
+muteLocalAudioStream_channel: function(channel, mute) {
+  var str_chan = Pointer_stringify(channel);
+  muteLocalAudioStream2_mc_WGL(str_chan, mute);
+},
+
   joinChannel2: function (
     channel,
     token,

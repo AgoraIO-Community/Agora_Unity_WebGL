@@ -94,6 +94,7 @@ class AgoraChannel {
       }
       this.is_publishing = true;
       event_manager.raiseCustomMsg("Publish Success");
+      console.log("Publish successfully, channel:" + this.channelId);
     }
   }
 
@@ -488,6 +489,38 @@ class AgoraChannel {
     });
   }
 
+// Disables/Re-enables the local audio function.
+ enableDisableAudio(enabled) {
+  if (enabled == false) {
+    if (localTracks.audioTrack) {
+      localTracks.audioTrack.setVolume(0);
+    }
+  } else {
+    if (localTracks.audioTrack) {
+      localTracks.audioTrack.setVolume(100);
+    }
+  }
+}
+
+// Stops/Resumes sending the local video stream.
+async muteLocalVideoStream(enabled) {
+  if (enabled == true) {
+    await this.client.unpublish(localTracks.videoTrack);
+  }
+  else {
+    await this.client.publish(localTracks.videoTrack);
+  }
+}
+
+// Stops/Resumes sending the local video stream.
+async muteLocalAudioStream(enabled) {
+  if (enabled == true) {
+    await this.client.unpublish(localTracks.audioTrack);
+  }
+  else {
+    await this.client.publish(localTracks.audioTrack);
+  }
+}
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
       if (uid2 == uid) {

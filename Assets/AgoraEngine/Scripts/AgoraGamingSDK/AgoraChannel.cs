@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using AOT;
 
-namespace agora_gaming_rtc 
+namespace agora_gaming_rtc
 {
     /** The AgoraChannel class. */
     public sealed class AgoraChannel : IRtcEngineNative
@@ -34,15 +34,15 @@ namespace agora_gaming_rtc
         public ChannelOnRemoteAudioStateChangedHandler ChannelOnRemoteAudioStateChanged;
         public ChannelOnActiveSpeakerHandler ChannelOnActiveSpeaker;
         public ChannelOnVideoSizeChangedHandler ChannelOnVideoSizeChanged;
-        public ChannelOnRemoteVideoStateChangedHandler ChannelOnRemoteVideoStateChanged;		
-        public ChannelOnStreamMessageHandler ChannelOnStreamMessage;		
-        public ChannelOnStreamMessageErrorHandler ChannelOnStreamMessageError;		
-        public ChannelOnMediaRelayStateChangedHandler ChannelOnMediaRelayStateChanged;   
-        public ChannelOnMediaRelayEventHandler ChannelOnMediaRelayEvent;		
-        public ChannelOnRtmpStreamingStateChangedHandler ChannelOnRtmpStreamingStateChanged;    
-        public ChannelOnTranscodingUpdatedHandler ChannelOnTranscodingUpdated;		
-        public ChannelOnStreamInjectedStatusHandler ChannelOnStreamInjectedStatus;		
-        public ChannelOnRemoteSubscribeFallbackToAudioOnlyHandler ChannelOnRemoteSubscribeFallbackToAudioOnly;		
+        public ChannelOnRemoteVideoStateChangedHandler ChannelOnRemoteVideoStateChanged;
+        public ChannelOnStreamMessageHandler ChannelOnStreamMessage;
+        public ChannelOnStreamMessageErrorHandler ChannelOnStreamMessageError;
+        public ChannelOnMediaRelayStateChangedHandler ChannelOnMediaRelayStateChanged;
+        public ChannelOnMediaRelayEventHandler ChannelOnMediaRelayEvent;
+        public ChannelOnRtmpStreamingStateChangedHandler ChannelOnRtmpStreamingStateChanged;
+        public ChannelOnTranscodingUpdatedHandler ChannelOnTranscodingUpdated;
+        public ChannelOnStreamInjectedStatusHandler ChannelOnStreamInjectedStatus;
+        public ChannelOnRemoteSubscribeFallbackToAudioOnlyHandler ChannelOnRemoteSubscribeFallbackToAudioOnly;
         public ChannelOnConnectionStateChangedHandler ChannelOnConnectionStateChanged;
         public ChannelOnLocalPublishFallbackToAudioOnlyHandler ChannelOnLocalPublishFallbackToAudioOnly;
         public ChannelOnRtmpStreamingEventHandler ChannelOnRtmpStreamingEvent;
@@ -115,7 +115,7 @@ namespace agora_gaming_rtc
                 if (!ReferenceEquals(agoraCallbackObject, null))
                 {
                     agoraCallbackObject.Release();
-                    _AgoraCallbackObjectDictionary.Remove(channelId); 
+                    _AgoraCallbackObjectDictionary.Remove(channelId);
                     agoraCallbackObject = null;
                 }
             }
@@ -136,7 +136,7 @@ namespace agora_gaming_rtc
          * - < 0: Failure.
          *    - `ERR_NOT_INITIALIZED(7)`: The SDK is not initialized before calling this method.
          */
-        
+
         public int ReleaseChannel()
         {
             if (_rtcEngine == null)
@@ -177,13 +177,13 @@ namespace agora_gaming_rtc
             ChannelOnVideoSizeChanged = null;
             ChannelOnRemoteVideoStateChanged = null;
             ChannelOnStreamMessage = null;
-            ChannelOnStreamMessageError = null;		
+            ChannelOnStreamMessageError = null;
             ChannelOnMediaRelayStateChanged = null;
             ChannelOnMediaRelayEvent = null;
-            ChannelOnRtmpStreamingStateChanged = null;    
+            ChannelOnRtmpStreamingStateChanged = null;
             ChannelOnTranscodingUpdated = null;
             ChannelOnStreamInjectedStatus = null;
-            ChannelOnRemoteSubscribeFallbackToAudioOnly = null;		
+            ChannelOnRemoteSubscribeFallbackToAudioOnly = null;
             ChannelOnConnectionStateChanged = null;
             ChannelOnLocalPublishFallbackToAudioOnly = null;
             ChannelOnRtmpStreamingEvent = null;
@@ -200,41 +200,41 @@ namespace agora_gaming_rtc
             return 0;
         }
 
-         /** Joins the channel with a user ID.
-         *
-         * This method differs from the `JoinChannel` method in the `IRtcEngine` class in the following aspects:
-         *
-         * | AgoraChannel::JoinChannel                                                                                                                    | IRtcEngine::JoinChannel                                                                                      |
-         * |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-         * | Does not contain the `channelName` parameter, because the channel name is specified when creating the `AgoraChannel` object.                              | Contains the `channelName` parameter, which specifies the channel to join.                                       |
-         * | Contains the `channelMediaOptions` parameter, which decide whether to subscribe to audio or video streams before joining the channel.                            | Does not contain the `channelMediaOptions` parameter. By default, users subscribe to all streams when joining the channel. |
-         * | Users can join multiple channels simultaneously by creating multiple `AgoraChannel` objects and calling the `JoinChannel` method of each object. | Users can join only one channel.                                                                             |
-         * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the {@link agora_gaming_rtc.AgoraChannel.Publish Publish} method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
-         *
-         * Once the user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
-         *
-         * @note
-         * - If you are already in a channel, you cannot rejoin it with the same `uid`.
-         * - We recommend using different UIDs for different channels.
-         * - If you want to join the same channel from different devices, ensure that the UIDs in all devices are different.
-         * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
-         *
-         * @param token The token for authentication:
-         * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
-         * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
-         * @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
-         * @param uid The user ID. A 32-bit unsigned integer with a value ranging from 1 to (2<sup>32</sup>-1). This parameter must be unique. If `uid` is not assigned (or set as `0`), the SDK assigns a `uid` and reports it in the {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler} callback. The app must maintain this user ID.
-         * @param channelMediaOptions The channel media options: ChannelMediaOptions.
-         *
-         * @return
-         * - 0(ERR_OK): Success.
-         * - < 0: Failure.
-         *    - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
-         *    - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
-         *    - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
-         *       - You have created an `AgoraChannel` object with the same channel name.
-         *       - You have joined and published a stream in a channel created by the `AgoraChannel` object.
-         */
+        /** Joins the channel with a user ID.
+        *
+        * This method differs from the `JoinChannel` method in the `IRtcEngine` class in the following aspects:
+        *
+        * | AgoraChannel::JoinChannel                                                                                                                    | IRtcEngine::JoinChannel                                                                                      |
+        * |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+        * | Does not contain the `channelName` parameter, because the channel name is specified when creating the `AgoraChannel` object.                              | Contains the `channelName` parameter, which specifies the channel to join.                                       |
+        * | Contains the `channelMediaOptions` parameter, which decide whether to subscribe to audio or video streams before joining the channel.                            | Does not contain the `channelMediaOptions` parameter. By default, users subscribe to all streams when joining the channel. |
+        * | Users can join multiple channels simultaneously by creating multiple `AgoraChannel` objects and calling the `JoinChannel` method of each object. | Users can join only one channel.                                                                             |
+        * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the {@link agora_gaming_rtc.AgoraChannel.Publish Publish} method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
+        *
+        * Once the user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
+        *
+        * @note
+        * - If you are already in a channel, you cannot rejoin it with the same `uid`.
+        * - We recommend using different UIDs for different channels.
+        * - If you want to join the same channel from different devices, ensure that the UIDs in all devices are different.
+        * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
+        *
+        * @param token The token for authentication:
+        * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
+        * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
+        * @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
+        * @param uid The user ID. A 32-bit unsigned integer with a value ranging from 1 to (2<sup>32</sup>-1). This parameter must be unique. If `uid` is not assigned (or set as `0`), the SDK assigns a `uid` and reports it in the {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler} callback. The app must maintain this user ID.
+        * @param channelMediaOptions The channel media options: ChannelMediaOptions.
+        *
+        * @return
+        * - 0(ERR_OK): Success.
+        * - < 0: Failure.
+        *    - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+        *    - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
+        *    - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
+        *       - You have created an `AgoraChannel` object with the same channel name.
+        *       - You have joined and published a stream in a channel created by the `AgoraChannel` object.
+        */
         public int JoinChannel(string token, string info, uint uid, ChannelMediaOptions channelMediaOptions)
         {
             if (_rtcEngine == null)
@@ -247,43 +247,43 @@ namespace agora_gaming_rtc
 #endif
         }
 
-         /** Joins the channel with a user account.
-         *
-         * This method differs from the `JoinChannelWithUserAccount` method in the `IRtcEngine` class in the following aspects:
-         *
-         * | AgoraChannel::JoinChannelWithUserAccount                                                                                                                    | IRtcEngine::JoinChannelWithUserAccount                                                                                      |
-         * |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-         * | Does not contain the `channelId` parameter, because the channel name is specified when creating the `AgoraChannel` object.                              | Contains the `channelId` parameter, which specifies the channel to join.                                       |
-         * | Contains the `autoSubscribeAudio` and `autoSubscribeVideo` parameters, which decide whether to subscribe to audio or video streams before joining the channel.                            | Does not contain the `autoSubscribeAudio` or `autoSubscribeVideo` parameter. By default, users subscribe to all streams when joining the channel. |
-         * | Users can join multiple channels simultaneously by creating multiple `AgoraChannel` objects and calling the `JoinChannelWithUserAccount` method of each object. | Users can join only one channel.                                                                             |
-         * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the {@link agora_gaming_rtc.AgoraChannel.Publish Publish} method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
-         *
-         * Once the user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
-         *
-         * @note
-         * - If you are already in a channel, you cannot rejoin it with the same `uid`.
-         * - We recommend using different userAccount for different channels.
-         * - If you want to join the same channel from different devices, ensure that the userAccount in all devices are different.
-         * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
-         *
-         * @param token The token for authentication:
-         * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
-         * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
-         * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported character scopes are:
-         * - All lowercase English letters: a to z.
-         * - All uppercase English letters: A to Z.
-         * - All numeric characters: 0 to 9.
-         * - The space character.
-         * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-         * @param channelMediaOptions The channel media options: ChannelMediaOptions.
-         *
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         *    - `ERR_INVALID_ARGUMENT(-2)`
-         *    - `ERR_NOT_READY(-3)`
-         *    - `ERR_REFUSED(-5)`
-         */
+        /** Joins the channel with a user account.
+        *
+        * This method differs from the `JoinChannelWithUserAccount` method in the `IRtcEngine` class in the following aspects:
+        *
+        * | AgoraChannel::JoinChannelWithUserAccount                                                                                                                    | IRtcEngine::JoinChannelWithUserAccount                                                                                      |
+        * |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
+        * | Does not contain the `channelId` parameter, because the channel name is specified when creating the `AgoraChannel` object.                              | Contains the `channelId` parameter, which specifies the channel to join.                                       |
+        * | Contains the `autoSubscribeAudio` and `autoSubscribeVideo` parameters, which decide whether to subscribe to audio or video streams before joining the channel.                            | Does not contain the `autoSubscribeAudio` or `autoSubscribeVideo` parameter. By default, users subscribe to all streams when joining the channel. |
+        * | Users can join multiple channels simultaneously by creating multiple `AgoraChannel` objects and calling the `JoinChannelWithUserAccount` method of each object. | Users can join only one channel.                                                                             |
+        * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the {@link agora_gaming_rtc.AgoraChannel.Publish Publish} method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
+        *
+        * Once the user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
+        *
+        * @note
+        * - If you are already in a channel, you cannot rejoin it with the same `uid`.
+        * - We recommend using different userAccount for different channels.
+        * - If you want to join the same channel from different devices, ensure that the userAccount in all devices are different.
+        * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
+        *
+        * @param token The token for authentication:
+        * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
+        * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
+        * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported character scopes are:
+        * - All lowercase English letters: a to z.
+        * - All uppercase English letters: A to Z.
+        * - All numeric characters: 0 to 9.
+        * - The space character.
+        * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+        * @param channelMediaOptions The channel media options: ChannelMediaOptions.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        *    - `ERR_INVALID_ARGUMENT(-2)`
+        *    - `ERR_NOT_READY(-3)`
+        *    - `ERR_REFUSED(-5)`
+        */
         public int JoinChannelWithUserAccount(string token, string userAccount, ChannelMediaOptions channelMediaOptions)
         {
             if (_rtcEngine == null)
@@ -386,13 +386,14 @@ namespace agora_gaming_rtc
         * - The empty string "", if the method call fails.
         */
 #if UNITY_WEBGL
-            [Obsolete("This API is not supported for WebGL")]
+        [Obsolete("This API is not supported for WebGL")]
 #endif
         public string ChannelId()
         {
-            if(Application.platform == RuntimePlatform.WebGLPlayer) {
-                return ""; 
-	        }
+            if (Application.platform == RuntimePlatform.WebGLPlayer)
+            {
+                return "";
+            }
 
             if (_rtcEngine == null)
                 return ERROR_CODE.ERROR_NOT_INIT_ENGINE + "";
@@ -412,7 +413,7 @@ namespace agora_gaming_rtc
          *  - < 0: Failure.
          */
 #if UNITY_WEBGL
-            [Obsolete("This API is not supported for WebGL")]
+        [Obsolete("This API is not supported for WebGL")]
 #endif
         public string GetCallId()
         {
@@ -548,7 +549,7 @@ namespace agora_gaming_rtc
 #else
             return IRtcEngineNative.setClientRole2(_channelHandler, (int)role);
 #endif
-        }        
+        }
 
         /** Prioritizes a remote user's stream.
          * 
@@ -722,7 +723,7 @@ namespace agora_gaming_rtc
          */
         public int AdjustUserPlaybackSignalVolume(uint userId, int volume)
         {
-           if (_rtcEngine == null)
+            if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
              IRtcEngineNative.setCurrentChannel_WGL(_channelId);
@@ -787,7 +788,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
 #endif
-            return IRtcEngineNative.muteAllRemoteVideoStreams2(_channelHandler, mute);                    
+            return IRtcEngineNative.muteAllRemoteVideoStreams2(_channelHandler, mute);
         }
 
         /** Stops or resumes subscribing to the video stream of a specified user.
@@ -876,7 +877,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
 #endif
-            return IRtcEngineNative.setRemoteDefaultVideoStreamType2(_channelHandler, (int)streamType);             
+            return IRtcEngineNative.setRemoteDefaultVideoStreamType2(_channelHandler, (int)streamType);
         }
 
         /** Creates a data stream.
@@ -907,7 +908,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.createDataStream2(_channelHandler, reliable, ordered);        
+            return IRtcEngineNative.createDataStream2(_channelHandler, reliable, ordered);
         }
 
         /** Creates a data stream.
@@ -931,7 +932,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.createDataStream_channel(_channelHandler, config.syncWithAudio, config.ordered);        
+            return IRtcEngineNative.createDataStream_channel(_channelHandler, config.syncWithAudio, config.ordered);
         }
 
         /** Sends data stream messages to all users in a channel.
@@ -962,8 +963,8 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.sendStreamMessage2(_channelHandler, streamId, data, length);            
-        }    
+            return IRtcEngineNative.sendStreamMessage2(_channelHandler, streamId, data, length);
+        }
 
         /** Publishes the local stream to a specified CDN streaming URL. (CDN live only.)
          * 
@@ -995,7 +996,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
 #endif
-            return IRtcEngineNative.addPublishStreamUrl2(_channelHandler, url, transcodingEnabled);            
+            return IRtcEngineNative.addPublishStreamUrl2(_channelHandler, url, transcodingEnabled);
         }
 
         /** Removes an RTMP or RTMPS stream from the CDN. (CDN live only.)
@@ -1051,8 +1052,10 @@ namespace agora_gaming_rtc
 #endif
 
             String transcodingUserInfo = "";
-            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null) {
-                for (int i = 0; i < liveTranscoding.userCount; i ++) {
+            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null)
+            {
+                for (int i = 0; i < liveTranscoding.userCount; i++)
+                {
                     transcodingUserInfo += liveTranscoding.transcodingUsers[i].uid;
                     transcodingUserInfo += "\t";
                     transcodingUserInfo += liveTranscoding.transcodingUsers[i].x;
@@ -1073,15 +1076,17 @@ namespace agora_gaming_rtc
             }
 
             String liveStreamAdvancedFeaturesStr = "";
-            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0) {
-                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++) {
+            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0)
+            {
+                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++)
+                {
                     liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].featureName;
                     liveStreamAdvancedFeaturesStr += "\t";
                     liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].opened;
                     liveStreamAdvancedFeaturesStr += "\t";
                 }
             }
-            return IRtcEngineNative.setLiveTranscoding2(_channelHandler, liveTranscoding.width, liveTranscoding.height, liveTranscoding.videoBitrate, liveTranscoding.videoFramerate, liveTranscoding.lowLatency, liveTranscoding.videoGop, (int)liveTranscoding.videoCodecProfile, liveTranscoding.backgroundColor, liveTranscoding.userCount, transcodingUserInfo.ToString(),liveTranscoding.transcodingExtraInfo, liveTranscoding.metadata, liveTranscoding.watermark.url, liveTranscoding.watermark.x, liveTranscoding.watermark.y, liveTranscoding.watermark.width, liveTranscoding.watermark.height, liveTranscoding.backgroundImage.url, liveTranscoding.backgroundImage.x, liveTranscoding.backgroundImage.y, liveTranscoding.backgroundImage.width, liveTranscoding.backgroundImage.height, (int)liveTranscoding.audioSampleRate, liveTranscoding.audioBitrate, liveTranscoding.audioChannels, (int)liveTranscoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)liveTranscoding.liveStreamAdvancedFeatures.Length);
+            return IRtcEngineNative.setLiveTranscoding2(_channelHandler, liveTranscoding.width, liveTranscoding.height, liveTranscoding.videoBitrate, liveTranscoding.videoFramerate, liveTranscoding.lowLatency, liveTranscoding.videoGop, (int)liveTranscoding.videoCodecProfile, liveTranscoding.backgroundColor, liveTranscoding.userCount, transcodingUserInfo.ToString(), liveTranscoding.transcodingExtraInfo, liveTranscoding.metadata, liveTranscoding.watermark.url, liveTranscoding.watermark.x, liveTranscoding.watermark.y, liveTranscoding.watermark.width, liveTranscoding.watermark.height, liveTranscoding.backgroundImage.url, liveTranscoding.backgroundImage.x, liveTranscoding.backgroundImage.y, liveTranscoding.backgroundImage.width, liveTranscoding.backgroundImage.height, (int)liveTranscoding.audioSampleRate, liveTranscoding.audioBitrate, liveTranscoding.audioChannels, (int)liveTranscoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)liveTranscoding.liveStreamAdvancedFeatures.Length);
         }
 
         /** Adds a voice or video stream URL address to the interactive live streaming.
@@ -1120,7 +1125,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.addInjectStreamUrl2(_channelHandler, url, config.width, config.height, config.videoGop, config.videoFramerate, config.videoBitrate, (int)config.audioSampleRate, config.audioBitrate, config.audioChannels);             
+            return IRtcEngineNative.addInjectStreamUrl2(_channelHandler, url, config.width, config.height, config.videoGop, config.videoFramerate, config.videoBitrate, (int)config.audioSampleRate, config.audioBitrate, config.audioChannels);
         }
 
         /** Removes the voice or video stream URL address from the interactive live streaming.
@@ -1163,7 +1168,7 @@ namespace agora_gaming_rtc
          * - < 0: Failure.
          */
         public int StartChannelMediaRelay(ChannelMediaRelayConfiguration channelMediaRelayConfiguration)
-        {            
+        {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -1171,7 +1176,7 @@ namespace agora_gaming_rtc
             IRtcEngineNative.startChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid + "", channelMediaRelayConfiguration.destCount);
             return 0;
 #else
-            return IRtcEngineNative.startChannelMediaRelay2(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token , channelMediaRelayConfiguration.srcInfo.uid, channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid, channelMediaRelayConfiguration.destCount);
+            return IRtcEngineNative.startChannelMediaRelay2(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid, channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid, channelMediaRelayConfiguration.destCount);
 #endif
         }
 
@@ -1225,7 +1230,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.stopChannelMediaRelay2(_channelHandler);
 
         }
-        
+
         /** Retrieves the connection state of the SDK.
          * 
          * @note You can call this method either before or after joining a channel.
@@ -1320,17 +1325,26 @@ namespace agora_gaming_rtc
         public int MuteLocalVideoStream(bool mute)
         {
             if (_rtcEngine == null)
-                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;  
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.muteLocalVideoStream_channel(_channelId, mute);
+#else
             return IRtcEngineNative.muteLocalVideoStream_channel(_channelHandler, mute);
+#endif
+
         }
 
         public int MuteLocalAudioStream(bool mute)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
-            
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.muteLocalAudioStream_channel(_channelId, mute);
+#else
             return IRtcEngineNative.muteLocalAudioStream_channel(_channelHandler, mute);
+#endif
         }
 
         /// @cond
@@ -1393,7 +1407,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);     
+            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
         }
         /// @endcond
 
@@ -1409,16 +1423,17 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
-                        if (_channelDictionary.ContainsKey(channelId))
+                        queue.EnQueue(() =>
                         {
-                            AgoraChannel ch = _channelDictionary[channelId];
-                            if (ch != null && channel.ChannelOnWarning != null)
+                            if (_channelDictionary.ContainsKey(channelId))
                             {
-                                ch.ChannelOnWarning(channelId, warn, message);
+                                AgoraChannel ch = _channelDictionary[channelId];
+                                if (ch != null && channel.ChannelOnWarning != null)
+                                {
+                                    ch.ChannelOnWarning(channelId, warn, message);
+                                }
                             }
-                        }
-                    });
+                        });
                     }
                 }
             }
@@ -1436,7 +1451,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -1463,14 +1479,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnJoinChannelSuccess != null)
                                 {
                                     ch.ChannelOnJoinChannelSuccess(channelId, uid, elapsed);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1490,14 +1507,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnReJoinChannelSuccess != null)
                                 {
                                     ch.ChannelOnJoinChannelSuccess(channelId, uid, elapsed);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1506,7 +1524,7 @@ namespace agora_gaming_rtc
         }
 
         [MonoPInvokeCallback(typeof(ChannelEngineEventOnLeaveChannelHandler))]
-        private static void OnLeaveChannelCallback(string channelId, uint duration, uint txBytes, uint rxBytes, uint txAudioBytes, 
+        private static void OnLeaveChannelCallback(string channelId, uint duration, uint txBytes, uint rxBytes, uint txAudioBytes,
         uint txVideoBytes, uint rxAudioBytes, uint rxVideoBytes, ushort txKBitRate, ushort rxKBitRate, ushort rxAudioKBitRate, ushort txAudioKBitRate, ushort rxVideoKBitRate, ushort txVideoKBitRate, ushort lastmileDelay, ushort txPacketLossRate, ushort rxPacketLossRate, uint userCount, double cpuAppUsage, double cpuTotalUsage, int gatewayRtt, double memoryAppUsageRatio, double memoryTotalUsageRatio, int memoryAppUsageInKbytes)
         {
             AgoraChannel channel = null;
@@ -1518,7 +1536,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -1549,7 +1568,7 @@ namespace agora_gaming_rtc
                                     rtcStats.memoryTotalUsageRatio = memoryTotalUsageRatio;
                                     rtcStats.memoryAppUsageInKbytes = memoryAppUsageInKbytes;
                                     ch.ChannelOnLeaveChannel(channelId, rtcStats);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1569,14 +1588,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnClientRoleChanged != null)
                                 {
                                     ch.ChannelOnClientRoleChanged(channelId, oldRole, newRole);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1596,14 +1616,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnUserJoined != null)
                                 {
                                     ch.ChannelOnUserJoined(channelId, uid, elapsed);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1623,14 +1644,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnUserOffLine != null)
                                 {
                                     ch.ChannelOnUserOffLine(channelId, uid, reason);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1650,14 +1672,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnConnectionLost != null)
                                 {
                                     ch.ChannelOnConnectionLost(channelId);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1677,14 +1700,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnRequestToken != null)
                                 {
                                     ch.ChannelOnRequestToken(channelId);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1704,24 +1728,25 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnTokenPrivilegeWillExpire != null)
                                 {
                                     ch.ChannelOnTokenPrivilegeWillExpire(channelId, token);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        }    
+        }
 
 
         [MonoPInvokeCallback(typeof(ChannelEngineEventOnRtcStatsHandler))]
-        private static void OnRtcStatsCallback(string channelId, uint duration, uint txBytes, uint rxBytes, uint txAudioBytes, 
+        private static void OnRtcStatsCallback(string channelId, uint duration, uint txBytes, uint rxBytes, uint txAudioBytes,
         uint txVideoBytes, uint rxAudioBytes, uint rxVideoBytes, ushort txKBitRate, ushort rxKBitRate, ushort rxAudioKBitRate, ushort txAudioKBitRate, ushort rxVideoKBitRate, ushort txVideoKBitRate, ushort lastmileDelay, ushort txPacketLossRate, ushort rxPacketLossRate, uint userCount, double cpuAppUsage, double cpuTotalUsage, int gatewayRtt, double memoryAppUsageRatio, double memoryTotalUsageRatio, int memoryAppUsageInKbytes)
         {
             AgoraChannel channel = null;
@@ -1733,7 +1758,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -1763,14 +1789,14 @@ namespace agora_gaming_rtc
                                     rtcStats.memoryAppUsageRatio = memoryAppUsageRatio;
                                     rtcStats.memoryTotalUsageRatio = memoryTotalUsageRatio;
                                     rtcStats.memoryAppUsageInKbytes = memoryAppUsageInKbytes;
-                                    ch.ChannelOnRtcStats(channelId, rtcStats);   
+                                    ch.ChannelOnRtcStats(channelId, rtcStats);
                                 }
                             }
                         });
                     }
                 }
             }
-        } 
+        }
 
         [MonoPInvokeCallback(typeof(ChannelOnNetworkQualityHandler))]
         private static void OnNetworkQualityCallback(string channelId, uint uid, int txQuality, int rxQuality)
@@ -1784,20 +1810,21 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnNetworkQuality != null)
                                 {
                                     ch.ChannelOnNetworkQuality(channelId, uid, txQuality, rxQuality);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        } 
+        }
 
         [MonoPInvokeCallback(typeof(ChannelEngineEventOnRemoteVideoStatsHandler))]
         private static void OnRemoteVideoStatsCallback(string channelId, uint uid, int delay, int width, int height, int receivedBitrate, int decoderOutputFrameRate, int rendererOutputFrameRate, int packetLossRate, int rxStreamType, int totalFrozenTime, int frozenRate, int totalActiveTime, int publishDuration)
@@ -1811,7 +1838,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -1832,13 +1860,13 @@ namespace agora_gaming_rtc
                                     remoteVideoStats.totalActiveTime = totalActiveTime;
                                     remoteVideoStats.publishDuration = publishDuration;
                                     ch.ChannelOnRemoteVideoStats(channelId, remoteVideoStats);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        } 
+        }
 
         [MonoPInvokeCallback(typeof(ChannelEngineEventOnRemoteAudioStatsHandler))]
         private static void OnRemoteAudioStatsCallback(string channelId, uint uid, int quality, int networkTransportDelay, int jitterBufferDelay, int audioLossRate, int numChannels, int receivedSampleRate, int receivedBitrate, int totalFrozenTime, int frozenRate, int totalActiveTime, int publishDuration, int qoeQuality, int qualityChangedReason, int mosValue)
@@ -1852,7 +1880,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -1875,13 +1904,13 @@ namespace agora_gaming_rtc
                                     remoteAudioStats.qualityChangedReason = qualityChangedReason;
                                     remoteAudioStats.mosValue = mosValue;
                                     ch.ChannelOnRemoteAudioStats(channelId, remoteAudioStats);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        } 
+        }
 
 
         [MonoPInvokeCallback(typeof(ChannelOnRemoteAudioStateChangedHandler))]
@@ -1896,20 +1925,21 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnRemoteAudioStateChanged != null)
                                 {
                                     ch.ChannelOnRemoteAudioStateChanged(channelId, uid, state, reason, elapsed);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        } 		
+        }
 
         [MonoPInvokeCallback(typeof(ChannelOnActiveSpeakerHandler))]
         private static void OnActiveSpeakerCallback(string channelId, uint uid)
@@ -1923,20 +1953,21 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnActiveSpeaker != null)
                                 {
                                     ch.ChannelOnActiveSpeaker(channelId, uid);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        } 
+        }
 
         [MonoPInvokeCallback(typeof(ChannelOnVideoSizeChangedHandler))]
         private static void OnVideoSizeChangedCallback(string channelId, uint uid, int width, int height, int rotation)
@@ -1950,14 +1981,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnVideoSizeChanged != null)
                                 {
                                     ch.ChannelOnVideoSizeChanged(channelId, uid, width, height, rotation);
-                                }   
+                                }
                             }
                         });
                     }
@@ -1965,7 +1997,7 @@ namespace agora_gaming_rtc
             }
         }
 
-       [MonoPInvokeCallback(typeof(ChannelOnRemoteVideoStateChangedHandler))]
+        [MonoPInvokeCallback(typeof(ChannelOnRemoteVideoStateChangedHandler))]
         private static void OnRemoteVideoStateChangedCallback(string channelId, uint uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
         {
             AgoraChannel channel = null;
@@ -1977,20 +2009,21 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnRemoteVideoStateChanged != null)
                                 {
                                     ch.ChannelOnRemoteVideoStateChanged(channelId, uid, state, reason, elapsed);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        }  
+        }
 
         [MonoPInvokeCallback(typeof(ChannelOnStreamMessageHandler))]
         private static void OnStreamMessageCallback(string channelId, uint uid, int streamId, string data, int length)
@@ -2004,21 +2037,22 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnStreamMessage != null)
                                 {
                                     ch.ChannelOnStreamMessage(channelId, uid, streamId, data, length);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        }  
-		
+        }
+
         [MonoPInvokeCallback(typeof(ChannelOnStreamMessageErrorHandler))]
         private static void OnStreamMessageErrorCallback(string channelId, uint uid, int streamId, int code, int missed, int cached)
         {
@@ -2031,20 +2065,21 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnStreamMessageError != null)
                                 {
                                     ch.ChannelOnStreamMessageError(channelId, uid, streamId, code, missed, cached);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
-        }  
+        }
 
         [MonoPInvokeCallback(typeof(ChannelOnMediaRelayStateChangedHandler))]
         private static void OnMediaRelayStateChangedCallback(string channelId, CHANNEL_MEDIA_RELAY_STATE state, CHANNEL_MEDIA_RELAY_ERROR code)
@@ -2058,7 +2093,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -2085,14 +2121,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnMediaRelayEvent != null)
                                 {
                                     ch.ChannelOnMediaRelayEvent(channelId, code);
-                                }   
+                                }
                             }
                         });
                     }
@@ -2112,21 +2149,22 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnRtmpStreamingStateChanged != null)
                                 {
                                     ch.ChannelOnRtmpStreamingStateChanged(channelId, url, state, errCode);
-                                }   
+                                }
                             }
                         });
                     }
                 }
             }
         }
-		
+
         [MonoPInvokeCallback(typeof(ChannelOnTranscodingUpdatedHandler))]
         private static void OnTranscodingUpdatedCallback(string channelId)
         {
@@ -2139,14 +2177,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnTranscodingUpdated != null)
                                 {
                                     ch.ChannelOnTranscodingUpdated(channelId);
-                                }   
+                                }
                             }
                         });
                     }
@@ -2166,14 +2205,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnStreamInjectedStatus != null)
                                 {
                                     ch.ChannelOnStreamInjectedStatus(channelId, url, uid, status);
-                                }   
+                                }
                             }
                         });
                     }
@@ -2193,14 +2233,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnRemoteSubscribeFallbackToAudioOnly != null)
                                 {
                                     ch.ChannelOnRemoteSubscribeFallbackToAudioOnly(channelId, uid, isFallbackOrRecover);
-                                }   
+                                }
                             }
                         });
                     }
@@ -2208,7 +2249,7 @@ namespace agora_gaming_rtc
             }
         }
 
-       [MonoPInvokeCallback(typeof(ChannelOnConnectionStateChangedHandler))]
+        [MonoPInvokeCallback(typeof(ChannelOnConnectionStateChangedHandler))]
         private static void OnConnectionStateChangedCallback(string channelId, CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
         {
             AgoraChannel channel = null;
@@ -2220,14 +2261,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnConnectionStateChanged != null)
                                 {
                                     ch.ChannelOnConnectionStateChanged(channelId, state, reason);
-                                }  
+                                }
                             }
                         });
                     }
@@ -2247,21 +2289,22 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnLocalPublishFallbackToAudioOnly != null)
                                 {
                                     ch.ChannelOnLocalPublishFallbackToAudioOnly(channelId, isFallbackOrRecover);
-                                }  
+                                }
                             }
                         });
                     }
                 }
             }
         }
- 
+
         [MonoPInvokeCallback(typeof(ChannelOnRtmpStreamingEventHandler))]
         private static void OnRtmpStreamingEventCallback(string channelId, string url, RTMP_STREAMING_EVENT eventCode)
         {
@@ -2274,21 +2317,22 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnRtmpStreamingEvent != null)
                                 {
                                     ch.ChannelOnRtmpStreamingEvent(channelId, url, eventCode);
-                                }  
+                                }
                             }
                         });
                     }
                 }
             }
         }
- 
+
         [MonoPInvokeCallback(typeof(ChannelOnAudioPublishStateChangedHandler))]
         private static void OnAudioPublishStateChangedCallback(string channelId, STREAM_PUBLISH_STATE oldState, STREAM_PUBLISH_STATE newState, int elapseSinceLastState)
         {
@@ -2301,14 +2345,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnAudioPublishStateChanged != null)
                                 {
                                     ch.ChannelOnAudioPublishStateChanged(channelId, oldState, newState, elapseSinceLastState);
-                                }  
+                                }
                             }
                         });
                     }
@@ -2328,14 +2373,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnVideoPublishStateChanged != null)
                                 {
                                     ch.ChannelOnVideoPublishStateChanged(channelId, oldState, newState, elapseSinceLastState);
-                                }  
+                                }
                             }
                         });
                     }
@@ -2355,14 +2401,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnAudioSubscribeStateChanged != null)
                                 {
                                     ch.ChannelOnAudioSubscribeStateChanged(channelId, uid, oldState, newState, elapseSinceLastState);
-                                }  
+                                }
                             }
                         });
                     }
@@ -2382,14 +2429,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnVideoSubscribeStateChanged != null)
                                 {
                                     ch.ChannelOnVideoSubscribeStateChanged(channelId, uid, oldState, newState, elapseSinceLastState);
-                                }  
+                                }
                             }
                         });
                     }
@@ -2397,7 +2445,7 @@ namespace agora_gaming_rtc
             }
         }
 
-       [MonoPInvokeCallback(typeof(ChannelOnUserSuperResolutionEnabledHandler))]
+        [MonoPInvokeCallback(typeof(ChannelOnUserSuperResolutionEnabledHandler))]
         private static void OnUserSuperResolutionEnabledCallback(string channelId, uint uid, bool enabled, SUPER_RESOLUTION_STATE_REASON reason)
         {
             AgoraChannel channel = null;
@@ -2409,14 +2457,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnUserSuperResolutionEnabled != null)
                                 {
                                     ch.ChannelOnUserSuperResolutionEnabled(channelId, uid, enabled, reason);
-                                }  
+                                }
                             }
                         });
                     }
