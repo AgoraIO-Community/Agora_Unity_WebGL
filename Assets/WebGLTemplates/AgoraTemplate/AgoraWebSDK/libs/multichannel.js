@@ -290,6 +290,20 @@ function muteAllRemoteVideoStreams2_mc_WGL(mute) {
   }
 }
 
+function muteLocalAudioStream2_mc_WGL(channel, mute) {
+  if (typeof clients[channel] === "undefined") {
+    return 0;
+  } 
+  clients[channel].muteLocalAudioStream(mute);
+}
+
+function muteLocalVideoStream2_mc_WGL(channel, mute) {
+  if (typeof clients[channel] === "undefined") {
+    return 0;
+  } 
+  clients[channel].muteLocalVideoStream(mute);
+}
+
 function muteRemoteAudioStream2_mc_WGL(userId, mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
