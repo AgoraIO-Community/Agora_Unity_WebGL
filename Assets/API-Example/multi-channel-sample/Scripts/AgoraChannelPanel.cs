@@ -2,17 +2,20 @@
 using UnityEngine;
 using agora_gaming_rtc;
 using UnityEngine.UI;
+using agora_utilities;
 
 public class AgoraChannelPanel : MonoBehaviour
 {
     [SerializeField] private string channelName;
     [SerializeField] private string channelToken;
+    [SerializeField] uint ClientUID;
+    [SerializeField] bool UseToken;
 
     [SerializeField] private Transform videoSpawnPoint;
     [SerializeField] private RectTransform panelContentWindow;
     [SerializeField] private bool isPublishing;
 
-    private AgoraChannel newChannel;
+    private AgoraChannel mChannel;
     private List<GameObject> userVideos;
     public Text txtLocaluserId;
     public Text txtInfo;
@@ -32,6 +35,14 @@ public class AgoraChannelPanel : MonoBehaviour
         ChannelLabel.text = channelName;
         userVideos = new List<GameObject>();
         SetButtonsState(true, false, false, false);
+        if (UseToken)
+        {
+            TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
+        {
+            channelToken = token;
+            Debug.Log(gameObject.name + " Got rtc token:" + token);
+        });
+        }
     }
 
     void SetButtonsState(bool joinButtonFlag, bool leaveButtonFlag, bool publishButtonFlag, bool unpublishButtonFlag)
@@ -47,23 +58,23 @@ public class AgoraChannelPanel : MonoBehaviour
     public void Button_JoinChannel()
     {
 
-        if (newChannel == null)
+        if (mChannel == null)
         {
-            newChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
+            mChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
 
-            newChannel.ChannelOnJoinChannelSuccess = OnJoinChannelSuccessHandler;
-            newChannel.ChannelOnUserJoined = OnUserJoinedHandler;
-            newChannel.ChannelOnLeaveChannel = OnLeaveHandler;
-            newChannel.ChannelOnUserOffLine = OnUserLeftHandler;
-            newChannel.ChannelOnRemoteVideoStats = OnRemoteVideoStatsHandler;
-            newChannel.ChannelOnError += HandleChannelError;
-            newChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
+            mChannel.ChannelOnJoinChannelSuccess += OnJoinChannelSuccessHandler;
+            mChannel.ChannelOnUserJoined += OnUserJoinedHandler;
+            mChannel.ChannelOnLeaveChannel += OnLeaveHandler;
+            mChannel.ChannelOnUserOffLine += OnUserLeftHandler;
+            mChannel.ChannelOnRemoteVideoStats += OnRemoteVideoStatsHandler;
+            mChannel.ChannelOnError += HandleChannelError;
+            mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
         }
 
-        newChannel.JoinChannel(channelToken, null, 2, new ChannelMediaOptions(true, true));
+        mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true));
         Debug.Log("Joining channel: " + channelName);
 
-        SetButtonsState(false, true, true, false);
     }
 
     public void handleChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
@@ -73,10 +84,10 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void Button_LeaveChannel()
     {
-        if (newChannel != null)
+        if (mChannel != null)
         {
             isPublishing = false;
-            newChannel.LeaveChannel();
+            mChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
             SetButtonsState(true, false, false, false);
         }
@@ -88,7 +99,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void Button_PublishToPartyChannel()
     {
-        if (newChannel == null)
+        if (mChannel == null)
         {
             Debug.LogError("New channel isn't created yet.");
             return;
@@ -96,7 +107,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
         if (isPublishing == false)
         {
-            int publishResult = newChannel.Publish();
+            int publishResult = mChannel.Publish();
             if (publishResult == 0)
             {
                 isPublishing = true;
@@ -112,7 +123,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     public void Button_CancelPublishFromChannel()
     {
-        if (newChannel == null)
+        if (mChannel == null)
         {
             Debug.Log("New channel isn't created yet.");
             return;
@@ -120,7 +131,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
         if (isPublishing == true)
         {
-            int unpublishResult = newChannel.Unpublish();
+            int unpublishResult = mChannel.Unpublish();
             if (unpublishResult == 0)
             {
                 isPublishing = false;
@@ -139,14 +150,14 @@ public class AgoraChannelPanel : MonoBehaviour
     public void Button_MuteLocalAudio(Text buttonText)
     {
         isLocalAudioMuted = !isLocalAudioMuted;
-        newChannel.MuteLocalAudioStream(isLocalAudioMuted);
+        mChannel.MuteLocalAudioStream(isLocalAudioMuted);
         buttonText.text = isLocalAudioMuted ? "Unmute LocalAudio" : "Mute LocalAudio";
     }
 
     public void Button_MuteLocalVideo(Text buttonText)
     {
         isLocalVideoMuted = !isLocalVideoMuted;
-        newChannel.MuteLocalVideoStream(isLocalVideoMuted);
+        mChannel.MuteLocalVideoStream(isLocalVideoMuted);
         buttonText.text = isLocalVideoMuted ? "Unmute LocalVideo" : "Mute LocalVideo";
         localVideoSurface.SetEnable(!isLocalVideoMuted);
     }
@@ -160,6 +171,7 @@ public class AgoraChannelPanel : MonoBehaviour
         txtLocaluserId.text = "Local user Id: " + uid;
         //src_uid = uid;
         MakeImageSurface(channelID, uid, true);
+        SetButtonsState(false, true, true, false);
     }
 
     public void OnUserJoinedHandler(string channelID, uint uid, int elapsed)
@@ -307,10 +319,10 @@ public class AgoraChannelPanel : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        if (newChannel != null)
+        if (mChannel != null)
         {
-            newChannel.LeaveChannel();
-            newChannel.ReleaseChannel();
+            mChannel.LeaveChannel();
+            mChannel.ReleaseChannel();
         }
     }
 
