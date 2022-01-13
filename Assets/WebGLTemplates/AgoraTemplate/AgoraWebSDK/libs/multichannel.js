@@ -11,7 +11,8 @@ function setMultiChannelWant_MC(multiChannelWant) {
   }
 }
 
-var mc2 = false;
+var mc2 = false; // indicates live or rtc profile
+var roles = {}; // dictionary saving role of the user in this channel
 function setClientMode_RTC() {
   mc2 = false;
 }
@@ -26,10 +27,15 @@ function wgl_mc_createChannel(channelId) {
     c.channelId = channelId;
     clients[channelId] = c;
 
+    selectedCurrentChannel = channelId;
+
     if (mc2 == false) {
       c.createClient();
     } else {
       c.createClient_Live();
+      if (roles[channelId] != undefined) {
+        c.setClientRole2_MC(roles[channelId]);
+      }
     }
   } else {
     throw "Cannot create Channel as Multi Channel want is set to False"; // throw a text
@@ -69,6 +75,7 @@ function setCurrentChannel_WGL(channelId) {
 }
 
 function setClientRole2_MC(role) {
+  roles[selectedCurrentChannel] = role;
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   } else {
@@ -295,7 +302,7 @@ function muteLocalAudioStream2_mc_WGL(channel, mute) {
   if (typeof clients[channel] === "undefined") {
     return 0;
   } 
-  clients[channel].muteLocalAudioTrack(mute);
+  clients[channel].muteLocalAudioStream(mute);
 }
 
 function muteLocalVideoStream2_mc_WGL(channel, mute) {
