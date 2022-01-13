@@ -7,8 +7,9 @@ using agora_utilities;
 public class AgoraChannelPanel : MonoBehaviour
 {
     [SerializeField] private string channelName;
-    [SerializeField] private string channelToken;
     [SerializeField] uint ClientUID;
+
+    [Tooltip("Use token with the TokenClient Object")]
     [SerializeField] bool UseToken;
 
     [SerializeField] private Transform videoSpawnPoint;
@@ -17,6 +18,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     private AgoraChannel mChannel;
     private List<GameObject> userVideos;
+
     public Text txtLocaluserId;
     public Text txtInfo;
     public Text ChannelLabel;
@@ -29,6 +31,7 @@ public class AgoraChannelPanel : MonoBehaviour
     public GameObject unpublishButton;
 
     private VideoSurface localVideoSurface;
+    private string channelToken;
 
     void Start()
     {
@@ -75,11 +78,6 @@ public class AgoraChannelPanel : MonoBehaviour
         mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true));
         Debug.Log("Joining channel: " + channelName);
 
-    }
-
-    public void handleChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
-    {
-        //txtConState.text = "ChannelOnClientRoleChanged -> " + oldRole + " to " + newRole;
     }
 
     public void Button_LeaveChannel()
@@ -165,21 +163,20 @@ public class AgoraChannelPanel : MonoBehaviour
     #endregion
 
     #region Callbacks
-    public void OnJoinChannelSuccessHandler(string channelID, uint uid, int elapsed)
+    void OnJoinChannelSuccessHandler(string channelID, uint uid, int elapsed)
     {
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
         txtLocaluserId.text = "Local user Id: " + uid;
-        //src_uid = uid;
         MakeImageSurface(channelID, uid, true);
         SetButtonsState(false, true, true, false);
     }
 
-    public void OnUserJoinedHandler(string channelID, uint uid, int elapsed)
+    void OnUserJoinedHandler(string channelID, uint uid, int elapsed)
     {
         Debug.Log("User: " + uid + "joined channel: + " + channelID);
     }
 
-    private void OnLeaveHandler(string channelID, RtcStats stats)
+    void OnLeaveHandler(string channelID, RtcStats stats)
     {
         Debug.Log("You left the party channel.");
         foreach (GameObject player in userVideos)
@@ -190,14 +187,19 @@ public class AgoraChannelPanel : MonoBehaviour
         userVideos.Clear();
     }
 
-    public void OnUserLeftHandler(string channelID, uint uid, USER_OFFLINE_REASON reason)
+    void OnUserLeftHandler(string channelID, uint uid, USER_OFFLINE_REASON reason)
     {
         Debug.Log("User: " + uid + " left party - channel: + " + uid + "for reason: " + reason);
         RemoveUserVideoSurface(uid);
     }
 
 
-    private void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
+    void handleChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    {
+        //txtConState.text = "ChannelOnClientRoleChanged -> " + oldRole + " to " + newRole;
+    }
+
+    void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
     {
         Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID
             + ", remoteStats.receivedBitrate: " + remoteStats.receivedBitrate
@@ -241,8 +243,15 @@ public class AgoraChannelPanel : MonoBehaviour
             }
         }
     }
+
+
+    void HandleChannelError(string channelId, int err, string message)
+    {
+        Debug.LogWarning("Channel Error: " + IRtcEngine.GetErrorDescription(err));
+    }
     #endregion
 
+    #region UI Handling
     void MakeImageSurface(string channelID, uint uid, bool isLocalUser = false)
     {
         Debug.Log("in MakeImageSurface");
@@ -316,6 +325,7 @@ public class AgoraChannelPanel : MonoBehaviour
             }
         }
     }
+    #endregion
 
     private void OnApplicationQuit()
     {
@@ -326,10 +336,5 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
-
-    void HandleChannelError(string channelId, int err, string message)
-    {
-        Debug.LogWarning("Channel Error: " + IRtcEngine.GetErrorDescription(err));
-    }
 
 }

@@ -27,7 +27,7 @@ namespace agora_gaming_rtc
     /** The definition of VideoSurface. */
     public class VideoSurface : MonoBehaviour
     {
-        
+
         private System.IntPtr data = Marshal.AllocHGlobal(1920 * 1080 * 4);
         private int defWidth = 0;
         private int defHeight = 0;
@@ -43,7 +43,7 @@ namespace agora_gaming_rtc
         private bool _initialized = false;
         public bool _enableFlipHorizontal = false;
         public bool _enableFlipVertical = false;
-        public uint videoFps = 30; 
+        public uint videoFps = 30;
         [SerializeField]
         AgoraVideoSurfaceType VideoSurfaceType = AgoraVideoSurfaceType.Renderer;
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -84,10 +84,10 @@ namespace agora_gaming_rtc
             }
             else
             {
-                #if UNITY_EDITOR
+#if UNITY_EDITOR
                 // Used to add more light to material if it is too dark.
                 UpdateShader();
-                #endif
+#endif
                 _initialized = true;
             }
         }
@@ -138,7 +138,7 @@ namespace agora_gaming_rtc
         void UpdateOther()
         {
 #if UNITY_STANDALONE_WIN || UNITY_EDITOR || UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
-            if (updateVideoFrameCount >= videoFps/videoFilter)
+            if (updateVideoFrameCount >= videoFps / videoFilter)
             {
                 updateVideoFrameCount = 0;
             }
@@ -169,7 +169,7 @@ namespace agora_gaming_rtc
                         }
                         else
                         {
-                            tmpi = videoRender.UpdateVideoRawData(mChannelId, uid, data, ref defWidth, ref defHeight);    
+                            tmpi = videoRender.UpdateVideoRawData(mChannelId, uid, data, ref defWidth, ref defHeight);
                         }
                     }
                     else
@@ -197,13 +197,13 @@ namespace agora_gaming_rtc
                     }
                 }
                 else
-                { 
+                {
                     if (nativeTexture == null)
                     {
                         Debug.LogError("You didn't initialize native texture, please remove native texture and initialize it by agora.");
                         return;
                     }
-      
+
                     int width = 0;
                     int height = 0;
                     int tmpi = -1;
@@ -229,12 +229,14 @@ namespace agora_gaming_rtc
                     try
                     {
                         // Condition to check the width & height and set the texture according to necessity.
-                        if (width == defWidth  && height == defHeight)
+                        if (width == defWidth && height == defHeight)
                         {
 
                             nativeTexture.LoadRawTextureData(data, (int)width * (int)height * 4);
                             nativeTexture.Apply();
-                        } else {
+                        }
+                        else
+                        {
 
                             defWidth = width;
                             defHeight = height;
@@ -243,7 +245,7 @@ namespace agora_gaming_rtc
                             nativeTexture.Apply();
                         }
                     }
-                    catch (System.Exception e)
+                    catch (Exception e)
                     {
                         Debug.LogError("Exception e = " + e);
                     }
@@ -306,7 +308,7 @@ namespace agora_gaming_rtc
         [Obsolete("Invoking future API will have no effect")]
         public void SetGameFps(uint fps)
         {
-            videoFps = fps; 
+            videoFps = fps;
         }
 
         // call this to render video stream from uid on this game object
@@ -349,7 +351,7 @@ namespace agora_gaming_rtc
 
         public void SetForMultiChannelUser(string channelId, uint uid)
         {
-            
+
 #if !UNITY_EDITOR && UNITY_WEBGL
 
             mUid = uid;
@@ -489,7 +491,7 @@ namespace agora_gaming_rtc
             }
         }
 
-        
+
         // Used to adjust light of Material in case visibility is too dark
         private void UpdateShader()
         {

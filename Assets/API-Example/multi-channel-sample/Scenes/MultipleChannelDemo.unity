@@ -3059,7 +3059,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channelName: unity3d
-  channelToken: 
   ClientUID: 0
   UseToken: 0
   videoSpawnPoint: {fileID: 1859537993}
@@ -3184,6 +3183,11 @@ Prefab:
         type: 2}
       propertyPath: AppID
       value: 3df5beb6c72340639f5b214c59f763c6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114763651108330218, guid: bf1f86f0796c445879a608e99ae1de4a,
+        type: 2}
+      propertyPath: serverURL
+      value: http://localhost:8080
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
@@ -3392,7 +3396,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channelName: unity2d
-  channelToken: 
   ClientUID: 3
   UseToken: 0
   videoSpawnPoint: {fileID: 1679465262}
