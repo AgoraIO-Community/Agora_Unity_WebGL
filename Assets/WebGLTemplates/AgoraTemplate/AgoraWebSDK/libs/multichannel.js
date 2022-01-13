@@ -25,6 +25,7 @@ function wgl_mc_createChannel(channelId) {
     var c = new AgoraChannel();
     c.channelId = channelId;
     clients[channelId] = c;
+
     if (mc2 == false) {
       c.createClient();
     } else {
@@ -294,7 +295,7 @@ function muteLocalAudioStream2_mc_WGL(channel, mute) {
   if (typeof clients[channel] === "undefined") {
     return 0;
   } 
-  clients[channel].muteLocalAudioStream(mute);
+  clients[channel].muteLocalAudioTrack(mute);
 }
 
 function muteLocalVideoStream2_mc_WGL(channel, mute) {
@@ -413,8 +414,7 @@ function wgl_mc_joinChannel2(
     return 0;
   } else {
     var c = clients[selectedCurrentChannel];
-    c.setOptions(token, selectedCurrentChannel, uid);
-    c.joinChannel();
+    c.joinChannelWithUserAccount_MC(token, uid, autoSubscribeAudio, autoSubscribeVideo);
   }
 }
 // NEW MULTI CLIENT API's ENDS
