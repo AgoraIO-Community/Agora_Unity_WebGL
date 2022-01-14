@@ -1069,7 +1069,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4499321887419714, guid: f5f96853bf0ca2a45aeedc8c9afc5364, type: 2}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: f5f96853bf0ca2a45aeedc8c9afc5364, type: 2}
@@ -2736,7 +2736,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -78, y: 225.92}
+  m_AnchoredPosition: {x: 166, y: 251}
   m_SizeDelta: {x: 209.93, y: 25.15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1840391295
@@ -3059,7 +3059,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channelName: unity3d
-  channelToken: 
+  ClientUID: 0
+  UseToken: 0
   videoSpawnPoint: {fileID: 1859537993}
   panelContentWindow: {fileID: 1531243673}
   isPublishing: 0
@@ -3139,6 +3140,58 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1942410744}
+--- !u!1001 &1978961771
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 114763651108330218, guid: bf1f86f0796c445879a608e99ae1de4a,
+        type: 2}
+      propertyPath: AppID
+      value: 3df5beb6c72340639f5b214c59f763c6
+      objectReference: {fileID: 0}
+    - target: {fileID: 114763651108330218, guid: bf1f86f0796c445879a608e99ae1de4a,
+        type: 2}
+      propertyPath: serverURL
+      value: http://localhost:8080
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &1987360962
 GameObject:
   m_ObjectHideFlags: 0
@@ -3343,7 +3396,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   channelName: unity2d
-  channelToken: 
+  ClientUID: 3
+  UseToken: 0
   videoSpawnPoint: {fileID: 1679465262}
   panelContentWindow: {fileID: 1942410745}
   isPublishing: 0

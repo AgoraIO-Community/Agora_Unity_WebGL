@@ -33,6 +33,9 @@ class ClientManager {
     this.client = null;
     _logger("created new client");
     this.client = AgoraRTC.createClient({ mode: mode, codec: "vp8" });
+    if (mode == "live") {
+      setClientMode_LIVE(); // let multichannel know
+    } // else default is "rtc"
   }
 
   getChannelProfileMode = function () {

@@ -21,23 +21,25 @@ public class MultiChannelSceneCtrl : MonoBehaviour
     {
         if (!CheckAppId())
         {
-            return;	
-	    }
+            return;
+        }
 
-        if(mRtcEngine == null)
+        if (mRtcEngine == null)
         {
             mRtcEngine = IRtcEngine.GetEngine(appID);
         }
 
-        mRtcEngine.SetMultiChannelWant(true);
 
         if (mRtcEngine == null)
         {
             Debug.Log("engine is null");
             return;
         }
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
+        mRtcEngine.SetMultiChannelWant(true);
         mRtcEngine.EnableVideo();
+        mRtcEngine.EnableAudio();
         mRtcEngine.EnableVideoObserver();
     }
 
