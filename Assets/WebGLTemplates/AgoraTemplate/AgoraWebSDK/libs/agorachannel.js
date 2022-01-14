@@ -503,16 +503,26 @@ class AgoraChannel {
 }
 
 // Stops/Resumes sending the local video stream.
-async muteLocalVideoStream(enabled) {
-  if (enabled == true) {
-    await this.client.unpublish(localTracks.videoTrack);
-  }
-  else {
-    await this.client.publish(localTracks.videoTrack);
+async muteLocalVideoStream(mute) {
+  if (this.client) {
+    if (mute) {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+    } else {
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack(),
+      ]);
+
+      localTracks.videoTrack.play("local-player");
+      if (this.is_publishing) {
+        await this.client.publish(localTracks.videoTrack);
+      }
+    }
   }
 }
 
-// Stops/Resumes sending the local video stream.
+// Stops/Resumes sending the local audio stream.
 async muteLocalAudioStream(enabled) {
   if (enabled == true) {
     await this.client.unpublish(localTracks.audioTrack);
