@@ -241,7 +241,8 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            return IRtcEngineNative.joinChannel2(_channelId, token, info, uid, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo);
+            // For WebGL audio and video are auto subscribed
+            return IRtcEngineNative.joinChannel2(_channelId, token, info, uid, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #else
             return IRtcEngineNative.joinChannel2(_channelHandler, token, info, uid, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #endif
@@ -291,7 +292,8 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            return IRtcEngineNative.joinChannelWithUserAccount2(_channelId, token, userAccount, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo);
+            // For WebGL audio and video are auto subscribed
+            return IRtcEngineNative.joinChannelWithUserAccount2(_channelId, token, userAccount, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #else
             return IRtcEngineNative.joinChannelWithUserAccount2(_channelHandler, token, userAccount, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #endif

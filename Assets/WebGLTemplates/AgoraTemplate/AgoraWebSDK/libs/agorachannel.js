@@ -86,9 +86,11 @@ class AgoraChannel {
   async publish() {
     // parameter is not local track
     if (this.is_publishing == false) {
+      await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
         await this.client.publish(localTracks.videoTrack);
       }
+      await this.setupLocalAudioTrack();
       if (localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);
       }
@@ -101,6 +103,23 @@ class AgoraChannel {
   async renewToken2_mc(token_str) {
     if (this.client) {
       await this.client.renewToken(token_str);
+    }
+  }
+
+  async setupLocalVideoTrack() {
+    if (localTracks.videoTrack == undefined) {
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack(),
+      ]);
+    }
+    localTracks.videoTrack.play("local-player");
+  }
+
+  async setupLocalAudioTrack() {
+    if (localTracks.audioTrack == undefined) {
+      [localTracks.audioTrack] = await Promise.all([
+        AgoraRTC.createMicrophoneAudioTrack(),
+      ]);
     }
   }
 
@@ -132,8 +151,8 @@ class AgoraChannel {
   async joinChannelWithUserAccount_MC(
     token_str,
     userAccount_str,
-    autoSubscribeAudio,
-    autoSubscribeVideo
+    autoPublishAudio,
+    autoPublishVideo
   ) {
     this.options.token = token_str;
     this.options.channel = this.channelId;
@@ -144,17 +163,6 @@ class AgoraChannel {
     this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
     this.client.on("user-left", this.handleUserLeft.bind(this));
 
-    if (localTracks.videoTrack == undefined) {
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
-      ]);
-    }
-
-    if (localTracks.audioTrack == undefined) {
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack(),
-      ]);
-    }
 
     [this.options.uid] = await Promise.all([
       this.client.join(
@@ -165,54 +173,29 @@ class AgoraChannel {
       ),
     ]);
 
-    if (localTracks.videoTrack != undefined) {
-      localTracks.videoTrack.play("local-player");
+    if (autoPublishVideo) {
+      await this.setupLocalVideoTrack();
+      if (localTracks.videoTrack != undefined) {
+        localTracks.videoTrack.play("local-player");
+      }
+      await this.client.publish(localTracks.videoTrack);
+      this.is_publishing = true;
     }
+
+    if (autoPublishAudio) {
+      await this.setupLocalAudioTrack();
+      if (localTracks.audioTrack != undefined) {
+        await this.client.publish(localTracks.audioTrack);
+      }
+      this.is_publishing = true;
+    }
+
     multiclient_connections++;
     event_manager.raiseJoinChannelSuccess_MC(
       this.options.uid.toString(),
       this.options.channel
     );
     event_manager.raiseCustomMsg("Channel Joined With user Account");
-  }
-
-  async joinChannel() {
-    // add event listener to play remote tracks when remote user publishs.
-    this.client.on("user-joined", this.handleUserJoined.bind(this));
-    this.client.on("user-published", this.handleUserPublished.bind(this));
-    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
-    this.client.on("user-left", this.handleUserLeft.bind(this));
-
-    if (localTracks.videoTrack == undefined) {
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
-      ]);
-    }
-
-    if (localTracks.audioTrack == undefined) {
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack(),
-      ]);
-    }
-
-    [this.options.uid] = await Promise.all([
-      this.client.join(
-        this.options.appid,
-        this.options.channel,
-        this.options.token || null
-      ),
-    ]);
-
-    if (localTracks.videoTrack != undefined) {
-      localTracks.videoTrack.play("local-player");
-    }
-
-    event_manager.raiseJoinChannelSuccess_MC(
-      this.options.uid.toString(),
-      this.options.channel
-    );
-    multiclient_connections++;
-    event_manager.raiseCustomMsg("Channel Joined");
   }
 
   async leave() {
@@ -503,16 +486,26 @@ class AgoraChannel {
 }
 
 // Stops/Resumes sending the local video stream.
-async muteLocalVideoStream(enabled) {
-  if (enabled == true) {
-    await this.client.unpublish(localTracks.videoTrack);
-  }
-  else {
-    await this.client.publish(localTracks.videoTrack);
+async muteLocalVideoStream(mute) {
+  if (this.client) {
+    if (mute) {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+    } else {
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack(),
+      ]);
+
+      localTracks.videoTrack.play("local-player");
+      if (this.is_publishing) {
+        await this.client.publish(localTracks.videoTrack);
+      }
+    }
   }
 }
 
-// Stops/Resumes sending the local video stream.
+// Stops/Resumes sending the local audio stream.
 async muteLocalAudioStream(enabled) {
   if (enabled == true) {
     await this.client.unpublish(localTracks.audioTrack);

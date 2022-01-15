@@ -45,8 +45,8 @@ function wgl_mc_createChannel(channelId) {
 function joinChannelWithUserAccount_MC(
   token_str,
   userAccount_str,
-  autoSubscribeAudio,
-  autoSubscribeVideo
+  autoPublishAudio,
+  autoPublishVideo
 ) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
@@ -55,8 +55,8 @@ function joinChannelWithUserAccount_MC(
     c.joinChannelWithUserAccount_MC(
       token_str,
       userAccount_str,
-      autoSubscribeAudio,
-      autoSubscribeVideo
+      autoPublishAudio,
+      autoPublishVideo
     );
   }
 }
@@ -414,14 +414,14 @@ function wgl_mc_joinChannel2(
   token,
   info,
   uid,
-  autoSubscribeAudio,
-  autoSubscribeVideo
+  autoPublishAudio,
+  autoPublishVideo
 ) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   } else {
     var c = clients[selectedCurrentChannel];
-    c.joinChannelWithUserAccount_MC(token, uid, autoSubscribeAudio, autoSubscribeVideo);
+    c.joinChannelWithUserAccount_MC(token, uid, autoPublishAudio, autoPublishVideo);
   }
 }
 // NEW MULTI CLIENT API's ENDS

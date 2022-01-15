@@ -2,6 +2,12 @@
 using UnityEngine.UI;
 using agora_gaming_rtc;
 
+/// <summary>
+///  This demo shows MultiChannel video streaming.
+///  A major different between Native(including Editor) vs WebGL:
+///     You may only broadcast on one channel on Native platforms while you
+///  may broadcast to multiple channels.  There is no limitation of audience.
+/// </summary>
 public class MultiChannelSceneCtrl : MonoBehaviour
 {
     [SerializeField]

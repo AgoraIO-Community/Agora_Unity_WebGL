@@ -75,7 +75,7 @@ public class AgoraChannelPanel : MonoBehaviour
         }
 
         mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true));
+        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true, false, false));
         Debug.Log("Joining channel: " + channelName);
 
     }
