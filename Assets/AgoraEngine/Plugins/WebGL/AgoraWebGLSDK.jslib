@@ -793,8 +793,8 @@ var LibraryAgoraWebGLSDK = {
     channel,
     token,
     userAccount,
-    autoSubscribeAudio,
-    autoSubscribeVideo
+    autoPublishAudio,
+    autoPublishVideo
   ) {
     _logger("joinChannelWithUserAccount2 in jslib");
     var token_str = Pointer_stringify(token);
@@ -802,8 +802,8 @@ var LibraryAgoraWebGLSDK = {
     joinChannelWithUserAccount_MC(
       token_str,
       userAccount_str,
-      autoSubscribeAudio,
-      autoSubscribeVideo
+      autoPublishAudio,
+      autoPublishVideo
     );
   },
   getCurrentRecordingDeviceInfo: function (deviceName, deviceId) {},
