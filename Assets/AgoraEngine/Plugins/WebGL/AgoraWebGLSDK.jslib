@@ -423,6 +423,14 @@ var LibraryAgoraWebGLSDK = {
       startScreenCaptureForWeb();
   },
 
+  startScreenCaptureForWeb2: function() {
+      startScreenCaptureForWeb2();
+  },
+
+  stopScreenCapture2 : function() {
+    stopScreenCapture2();
+  },
+
   startPreview: function () {
     startPreview();
   },

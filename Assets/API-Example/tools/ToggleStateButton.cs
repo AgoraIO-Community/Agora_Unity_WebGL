@@ -18,6 +18,7 @@ public class ToggleStateButton : MonoBehaviour
         OnOffState = initOnOff;
         OnStateText = onStateText;
         OffStateText = offStateText;
+        text.text = OnOffState ? OffStateText : OnStateText;
 
         button.onClick.AddListener(() =>
         {

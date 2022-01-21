@@ -10,6 +10,7 @@ class AgoraChannel {
       token: null,
     };
     this.is_publishing = false;
+    this.is_screensharing = false;
     this.remoteUsers = {};
     this.channelId = "";
     this.mode = "rtc";
@@ -487,7 +488,7 @@ class AgoraChannel {
 
 // Stops/Resumes sending the local video stream.
 async muteLocalVideoStream(mute) {
-  if (this.client) {
+  if (this.client && !this.is_screensharing) {
     if (mute) {
       localTracks.videoTrack.stop();
       localTracks.videoTrack.close();
@@ -559,6 +560,33 @@ async muteLocalAudioStream(enabled) {
     } catch (error) {
       console.log("error from SetRemoteVideoSTreamType", error);
     }
+  }
+
+  async startScreenCapture() {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+  
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createScreenVideoTrack(),
+      ]);
+      localTracks.videoTrack.play("local-player");
+      await this.client.publish(localTracks.videoTrack);
+      this.is_screensharing = true;
+  }
+
+  // Stop screen sharing.
+  async stopScreenCapture() {
+    localTracks.videoTrack.stop();
+    localTracks.videoTrack.close();
+    await this.client.unpublish(localTracks.videoTrack);
+    this.is_screensharing = false;
+
+    [localTracks.videoTrack] = await Promise.all([
+      AgoraRTC.createCameraVideoTrack(),
+    ]);
+    localTracks.videoTrack.play("local-player");
+    await this.client.publish(localTracks.videoTrack);
   }
 
   setRemoteUserPriority(uid, userPriority) {

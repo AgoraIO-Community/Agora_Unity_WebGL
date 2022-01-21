@@ -723,6 +723,10 @@ namespace agora_gaming_rtc
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern void startScreenCaptureForWeb();
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void startScreenCaptureForWeb2();
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void stopScreenCapture2();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

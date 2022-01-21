@@ -84,6 +84,24 @@ function setClientRole2_MC(role) {
   }
 }
 
+function startScreenCaptureForWeb2() {
+  if (typeof clients[selectedCurrentChannel] === "undefined") {
+    return 1;
+  } else {
+    var c = clients[selectedCurrentChannel]; 
+    c.startScreenCapture();
+  }
+}
+
+function stopScreenCapture2() {
+  if (typeof clients[selectedCurrentChannel] === "undefined") {
+    return 1;
+  } else {
+    var c = clients[selectedCurrentChannel]; 
+    c.stopScreenCapture();
+  }
+}
+
 function getConnectionState2_MC() {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 1;

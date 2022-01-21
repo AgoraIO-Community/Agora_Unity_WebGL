@@ -25,10 +25,12 @@ public class AgoraChannelPanel : MonoBehaviour
 
     private const float SPACE_BETWEEN_USER_VIDEOS = 150f;
 
-    public GameObject joinButton;
-    public GameObject leaveButton;
-    public GameObject publishButton;
-    public GameObject unpublishButton;
+    public ToggleStateButton JoinChannelButton;
+    public ToggleStateButton PublishButton;
+    public ToggleStateButton ScreenShareButton;
+    public ToggleStateButton MuteAudioButton;
+    public ToggleStateButton MuteVideoButton;
+
 
     private VideoSurface localVideoSurface;
     private string channelToken;
@@ -37,7 +39,53 @@ public class AgoraChannelPanel : MonoBehaviour
     {
         ChannelLabel.text = channelName;
         userVideos = new List<GameObject>();
-        SetButtonsState(true, false, false, false);
+
+        if (JoinChannelButton != null)
+        {
+            JoinChannelButton.Setup(initOnOff: false,
+                onStateText: "Join Channel", offStateText: "Leave Channel",
+                callOnAction: Button_JoinChannel,
+                callOffAction: Button_LeaveChannel
+            );
+        }
+
+        if (PublishButton != null)
+        {
+            PublishButton.Setup(initOnOff: false,
+                onStateText: "Publish", offStateText: "Unpublish",
+                callOnAction: Button_PublishToPartyChannel,
+                callOffAction: Button_CancelPublishFromChannel
+            );
+        }
+
+        if (MuteAudioButton != null)
+        {
+            MuteAudioButton.Setup(initOnOff: true,
+                onStateText: "Unmute Audio", offStateText: "Mute Audio",
+                callOnAction: Button_MuteLocalAudio,
+                callOffAction: Button_MuteLocalAudio
+            );
+        }
+
+        if (MuteVideoButton != null)
+        {
+            MuteVideoButton.Setup(initOnOff: true,
+                onStateText: "Unmute Video", offStateText: "Mute Video",
+                callOnAction: Button_MuteLocalVideo,
+                callOffAction: Button_MuteLocalVideo
+            );
+        }
+
+        if (ScreenShareButton != null)
+        {
+            ScreenShareButton.Setup(initOnOff: false,
+                onStateText: "Share Screen (Web)", offStateText: "Stop ScreenShare",
+                callOnAction: Button_ShareScreen,
+                callOffAction: Button_ShareScreen
+            );
+        }
+
+        SetButtonsState(false, false, false, false);
         if (UseToken)
         {
             TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
@@ -48,19 +96,30 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
-    void SetButtonsState(bool joinButtonFlag, bool leaveButtonFlag, bool publishButtonFlag, bool unpublishButtonFlag)
+    void SetButtonsState(bool publishButtonFlag, bool screenShareButtonFlag, bool muteAudioFlag, bool muteVideoFlag)
     {
-        joinButton.SetActive(joinButtonFlag);
-        publishButton.SetActive(publishButtonFlag);
-        unpublishButton.SetActive(unpublishButtonFlag);
-        leaveButton.SetActive(leaveButtonFlag);
+        if (PublishButton)
+        {
+            PublishButton.gameObject.SetActive(publishButtonFlag);
+        }
+        if (ScreenShareButton)
+        {
+            ScreenShareButton.gameObject.SetActive(screenShareButtonFlag);
+        }
+        if (MuteAudioButton)
+        {
+            MuteAudioButton.gameObject.SetActive(muteAudioFlag);
+        }
+        if (MuteVideoButton)
+        {
+            MuteVideoButton.gameObject.SetActive(muteVideoFlag);
+        }
     }
 
     #region Buttons
 
     public void Button_JoinChannel()
     {
-
         if (mChannel == null)
         {
             mChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
@@ -77,7 +136,6 @@ public class AgoraChannelPanel : MonoBehaviour
         mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true, false, false));
         Debug.Log("Joining channel: " + channelName);
-
     }
 
     public void Button_LeaveChannel()
@@ -87,7 +145,7 @@ public class AgoraChannelPanel : MonoBehaviour
             isPublishing = false;
             mChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
-            SetButtonsState(true, false, false, false);
+            SetButtonsState(false, false, false, false);
         }
         else
         {
@@ -110,7 +168,7 @@ public class AgoraChannelPanel : MonoBehaviour
             {
                 isPublishing = true;
             }
-            SetButtonsState(false, true, false, true);
+            SetButtonsState(true, true, true, true);
             Debug.Log("Publishing to channel: " + channelName + " result: " + publishResult);
         }
         else
@@ -134,7 +192,7 @@ public class AgoraChannelPanel : MonoBehaviour
             {
                 isPublishing = false;
             }
-            SetButtonsState(false, true, true, false);
+            SetButtonsState(true, false, false, false);
             Debug.Log("Unpublish from channel: " + channelName + " result: " + unpublishResult);
         }
         else
@@ -143,21 +201,30 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
-    bool isLocalAudioMuted = false;
-    bool isLocalVideoMuted = false;
-    public void Button_MuteLocalAudio(Text buttonText)
+    public void Button_MuteLocalAudio()
     {
-        isLocalAudioMuted = !isLocalAudioMuted;
-        mChannel.MuteLocalAudioStream(isLocalAudioMuted);
-        buttonText.text = isLocalAudioMuted ? "Unmute LocalAudio" : "Mute LocalAudio";
+        // on means muted
+        mChannel.MuteLocalAudioStream(!MuteAudioButton.OnOffState);
     }
 
-    public void Button_MuteLocalVideo(Text buttonText)
+    public void Button_MuteLocalVideo()
     {
-        isLocalVideoMuted = !isLocalVideoMuted;
-        mChannel.MuteLocalVideoStream(isLocalVideoMuted);
-        buttonText.text = isLocalVideoMuted ? "Unmute LocalVideo" : "Mute LocalVideo";
-        localVideoSurface.SetEnable(!isLocalVideoMuted);
+        // on means muted
+        mChannel.MuteLocalVideoStream(!MuteVideoButton.OnOffState);
+    }
+
+    public void Button_ShareScreen()
+    {
+        if (ScreenShareButton.OnOffState)
+        {
+            Debug.Log("Screen sharing button.... share");
+            mChannel.StartScreenCaptureForWeb();
+        }
+        else
+        {
+            Debug.Log("Screen sharing button.... stop");
+            mChannel.StopScreenCapture();
+        }
     }
 
     #endregion
@@ -168,7 +235,7 @@ public class AgoraChannelPanel : MonoBehaviour
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
         txtLocaluserId.text = "Local user Id: " + uid;
         MakeImageSurface(channelID, uid, true);
-        SetButtonsState(false, true, true, false);
+        SetButtonsState(true, false, false, false);
     }
 
     void OnUserJoinedHandler(string channelID, uint uid, int elapsed)
