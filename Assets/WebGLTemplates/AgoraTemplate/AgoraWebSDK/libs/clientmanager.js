@@ -73,6 +73,36 @@ class ClientManager {
     }
   }
 
+  createEngine2(appID, areaCode) {
+    var AreaCodeValue;
+    switch(areaCode) {
+      case 1:
+        AreaCodeValue = "CHINA";
+        break;
+      case 2:
+        AreaCodeValue = "NORTH_AMERICA";
+        break;
+      case 4:
+        AreaCodeValue = "EUROPE";
+        break; 
+      case 8:
+        AreaCodeValue = "ASIA";
+        break; 
+      case 0x10:
+        AreaCodeValue = "JAPAN";
+        break; 
+      case 0x20:
+        AreaCodeValue = "INDIA";
+        break; 
+      default:
+        AreaCodeValue = "GLOBAL";
+    }
+    AgoraRTC.setArea({
+      areaCode:AreaCodeValue
+    });
+    return this.createEngine(appID);
+  }
+
   // subscribe
   async subscribe_remoteuser(user, mediaType) {
     const uid = user.uid;
