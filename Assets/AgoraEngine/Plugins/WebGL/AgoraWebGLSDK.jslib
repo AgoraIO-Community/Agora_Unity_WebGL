@@ -1098,7 +1098,12 @@ var LibraryAgoraWebGLSDK = {
     setRemoteDefaultVideoStreamType(remoteVideoStreamType);
   },
   setLocalVoiceReverb: function (reverbKey, value) {},
-  createEngine2: function (appId, areaCode) {},
+
+  createEngine2: function (appID, areaCode, filePath, fileSize, level) {
+    var app_id = Pointer_stringify(appID);
+    return createIRtcEngine2(app_id, areaCode);
+  },
+
   setPlaybackDeviceVolume: function (volume) {},
   updateScreenCaptureParameters: function (
     screenCaptureVideoDimenWidth,

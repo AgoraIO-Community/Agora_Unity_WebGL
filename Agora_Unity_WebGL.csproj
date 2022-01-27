@@ -297,12 +297,14 @@
     <Compile Include="Assets\AgoraEngine\Utils\TokenRequestHelper.cs" />
     <Compile Include="Assets\API-Example\app-screenshare-sample\AgoraScreenShare.cs" />
     <Compile Include="Assets\API-Example\desktop-screenshare-sample\WebScreenShare.cs" />
-    <Compile Include="Assets\API-Example\JoinChannelVideo\HelloVideoAgora.cs" />
+    <Compile Include="Assets\API-Example\geo-area-sample\HelloVideoAgora2.cs" />
+    <Compile Include="Assets\API-Example\multi-channel-sample\AgoraMultiChannel.cs" />
     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanel.cs" />
     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\MultiChannelSceneCtrl.cs" />
     <Compile Include="Assets\API-Example\rtmp-streaming-sample\RtmpStreaming.cs" />
     <Compile Include="Assets\API-Example\tools\Logger.cs" />
     <Compile Include="Assets\API-Example\tools\PermissionHelper.cs" />
+    <Compile Include="Assets\API-Example\tools\ToggleStateButton.cs" />
     <Compile Include="Assets\API-Example\tools\UIElementDragger.cs" />
     <Compile Include="Assets\API-Example\video-encoder-configuration\video_encoder_configuration.cs" />
   </ItemGroup>

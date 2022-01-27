@@ -3,6 +3,10 @@ async function createIRtcEngine(appID) {
   return client_manager.createEngine(appID);
 }
 
+async function createIRtcEngine2(appID, areaCode) {
+  return client_manager.createEngine2(appID, areaCode);
+}
+
 //Allows a user to join a channel.
 async function wglw_joinChannel(channelkey, channelName, info, uid) {
   client_manager.setOptions(channelkey, channelName, uid);
