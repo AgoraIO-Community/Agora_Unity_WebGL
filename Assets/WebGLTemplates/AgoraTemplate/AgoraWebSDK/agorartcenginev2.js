@@ -390,17 +390,8 @@ async function unsubscribe(user, mediaType) {
   client_manager.unsubscribe(user, mediaType);
 }
 
-// Disables/Re-enables the local audio function.
 async function enableLocalAudio(enabled) {
-  if (enabled == false) {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(0);
-    }
-  } else {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(100);
-    }
-  }
+  client_manager.enableLocalAudio(enabled);
 }
 
 // Disables/Re-enables the local audio function.

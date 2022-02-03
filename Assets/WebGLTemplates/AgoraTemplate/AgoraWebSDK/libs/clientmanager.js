@@ -8,6 +8,7 @@ class ClientManager {
       token: null,
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
+    this.audioEnabled = false; // if true then mic access is created, if false then not
     this.client_role = 1; // default is host, 2 is audience
     this._storedChannelProfile = 0; // channel profile saved before join is called
   }
@@ -147,6 +148,7 @@ class ClientManager {
     }
 
     this.videoEnabled = false; // set to default
+    this.audioEnabled = false; // set to default
     localTracks.audioMixingTrack = null;
 
     if (_isCopyVideoToMainCanvasOn) {
@@ -301,7 +303,7 @@ class ClientManager {
             this.options.token || null,
             userAccount_str.toString() || null
           ),
-          AgoraRTC.createMicrophoneAudioTrack(),
+          this.audioEnabled ? AgoraRTC.createMicrophoneAudioTrack() : null,
           AgoraRTC.createCameraVideoTrack(),
         ]);
 
@@ -309,9 +311,11 @@ class ClientManager {
         localTracks.videoTrack._deviceName
       );
 
-      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
-        localTracks.audioTrack._deviceName
-      );
+      if (this.audioEnabled) {
+        currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
+          localTracks.audioTrack._deviceName
+        );
+      }
 
       event_manager.raiseGetCurrentVideoDevice();
       event_manager.raiseGetCurrentAudioDevice();
@@ -379,7 +383,7 @@ class ClientManager {
             this.options.token || null,
             this.options.uid || null
           ),
-          AgoraRTC.createMicrophoneAudioTrack(),
+          this.audioEnabled ? AgoraRTC.createMicrophoneAudioTrack() : null,
           AgoraRTC.createCameraVideoTrack(),
         ]);
 
@@ -387,9 +391,11 @@ class ClientManager {
         localTracks.videoTrack._deviceName
       );
 
-      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
-        localTracks.audioTrack._deviceName
-      );
+      if(this.audioEnabled) {
+        currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
+          localTracks.audioTrack._deviceName
+        );
+      }
 
       event_manager.raiseGetCurrentVideoDevice();
       event_manager.raiseGetCurrentAudioDevice();
@@ -416,12 +422,14 @@ class ClientManager {
           this.options.token || null,
           this.options.uid || null
         ),
-        AgoraRTC.createMicrophoneAudioTrack(),
+        this.audioEnabled ? AgoraRTC.createMicrophoneAudioTrack() : null,
       ]);
 
-      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
-        localTracks.audioTrack._deviceName
-      );
+      if (this.audioEnabled) {
+        currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
+          localTracks.audioTrack._deviceName
+        );
+      }
 
       event_manager.raiseGetCurrentAudioDevice();
       event_manager.raiseGetCurrentPlayBackDevice();
@@ -434,9 +442,15 @@ class ClientManager {
     }
 
     if (this.client_role == 1) {
-        await this.client.publish(
-          Object.values(localTracks).filter((track) => track !== null)
-        );
+      for (var trackName in localTracks) {
+        var track = localTracks[trackName];
+        if (track) {
+          await this.client.publish(track);
+        }
+      }
+      //  await this.client.publish(
+      //    Object.values(localTracks).filter((track) => track !== null )
+      //  );
     }
   }
 
@@ -459,8 +473,22 @@ class ClientManager {
       }
     }
   }
+// Disables/Re-enables the local audio function.
+  async enableLocalAudio(enabled) {
+    if (enabled == false) {
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.setVolume(0);
+      }
+    } else {
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.setVolume(100);
+      }
+    }
+    this.audioEnabled = enabled;
+  }
 
   async enableLocalVideo(enabled) {
+    console.log("EnableLocalVideo (clientManager):" + enabled);
     if (this.client) {
       if (enabled == false) {
         localTracks.videoTrack.stop();
@@ -476,6 +504,7 @@ class ClientManager {
         await this.client.publish(localTracks.videoTrack);
       }
     }
+    this.videoEnabled = enabled;
   }
 
   async startPreview() {

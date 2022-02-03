@@ -80,10 +80,11 @@ public class TestHelloUnityVideo
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
         // join channel
-        mRtcEngine.JoinChannel(channel, null, 0);
+        // mRtcEngine.JoinChannel(channel, null, 0);
+        mRtcEngine.JoinChannelByKey(null, channel);
 
     }
-    
+
     void OnLeaveChannelHandler(RtcStats stats)
     {
         Debug.Log("OnLeaveChannelSuccess ---- TEST");
@@ -251,7 +252,7 @@ public class TestHelloUnityVideo
         float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
         float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(3*1.6666f, 3f, 1f);
+        go.transform.localScale = new Vector3(3 * 1.6666f, 3f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
