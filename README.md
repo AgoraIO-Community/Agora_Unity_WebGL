@@ -1,6 +1,10 @@
 # Agora Unity WebGL Plugin and Demo
 
-This project is the open source WebGL SDK for Unity, a wrapper to the Agora Web SDK 4.x.
+This project is the open source WebGL SDK for Unity, a wrapper to the Agora Web SDK 4.x.  
+
+**Please be aware that this is still a beta release.  Do not assume everything works correctly and expect remedy as an official product. Do not expect the same behaviors from the original Unity SDK. You should check the README files to understand this SDK some more before proceeding to download. **
+
+
 ## Prerequisites
 - Unity 2017 and up
 - Agora Developer Account
