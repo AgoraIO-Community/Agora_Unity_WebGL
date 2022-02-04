@@ -19,6 +19,7 @@ class ClientManager {
 
   setVideoEnabled(enabled) {
     this.videoEnabled = enabled;
+    this.videoSubscribing = enabled;
   }
 
   getMainAppId() {
@@ -212,85 +213,23 @@ class ClientManager {
 
   async switchChannel(token_str, channelId_str) {
     await this.leave();
-
     this.options.token = token_str;
     this.options.channel = channelId_str;
-
-    if (this.videoEnabled) {
-      [this.options.uid, localTracks.audioTrack, localTracks.videoTrack] =
-        await Promise.all([
-          this.client.join(
-            this.options.appid,
-            this.options.channel,
-            this.options.token || null
-          ),
-          AgoraRTC.createMicrophoneAudioTrack(),
-          AgoraRTC.createCameraVideoTrack(),
-        ]);
-
-      currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
-        localTracks.videoTrack._deviceName
-      );
-
-      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
-        localTracks.audioTrack._deviceName
-      );
-
-      event_manager.raiseGetCurrentVideoDevice();
-      event_manager.raiseGetCurrentAudioDevice();
-      event_manager.raiseGetCurrentPlayBackDevice();
-
-      localTracks.videoTrack.play("local-player", {
-        fit: "cover",
-        mirror: mlocal,
-      });
-
-      event_manager.raiseJoinChannelSuccess(
-        this.options.uid.toString(),
-        this.options.channel
-      );
-
-      $("#local-player-name").text(`localVideo(${this.options.uid})`);
-
-      if (this.client_role == 1) {
-        await this.client.publish(
-          Object.values(localTracks).filter((track) => track !== null)
-        );
-      }
-    } else {
-      [this.options.uid, localTracks.audioTrack] = await Promise.all([
-        this.client.join(
-          this.options.appid,
-          this.options.channel,
-          this.options.token || null
-        ),
-        AgoraRTC.createMicrophoneAudioTrack(),
-      ]);
-
-      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
-        localTracks.audioTrack._deviceName
-      );
-
-      event_manager.raiseGetCurrentAudioDevice();
-      event_manager.raiseGetCurrentPlayBackDevice();
-
-      event_manager.raiseJoinChannelSuccess(
-        this.options.uid.toString(),
-        this.options.channel
-      );
-
-      if (this.client_role == 1) {
-        await this.client.publish(
-          Object.values(localTracks).filter((track) => track !== null)
-        );
-      }
-    }
+    this.options.uid = await Promise.all([
+      this.client.join(
+        this.options.appid,
+        this.options.channel,
+        this.options.token || null
+      )
+    ]);
+    await this.processJoinChannelAVTrack();
   }
 
+  // check if this is a host
   isHosting() {
     if (this._storedChannelProfile == 0) { return true; }
     if (this._storedChannelProfile == 1) {
-	return (this.client_role == 1);
+	    return (this.client_role == 1);
     }
     return false;
   }
@@ -299,7 +238,7 @@ class ClientManager {
   // . JOIN CHANNEL METHOD 
   // Params: user - can be either string or uint
   //============================================================================== 
-   async joinAgoraChannel(user)
+  async joinAgoraChannel(user)
   {
     this.client.on("user-published", this.handleUserPublished.bind(this));
     this.client.on("user-joined", this.handleUserJoined.bind(this));
@@ -307,7 +246,7 @@ class ClientManager {
     this.client.on("exception", this.handleException.bind(this));
     this.client.on("error", this.handleError.bind(this));
     if (typeof(user) == "string") {
-	user = 0; // let system assign uid
+	    user = 0; // let system assign uid
     }
 
     [this.options.uid] = await Promise.all([
@@ -319,6 +258,11 @@ class ClientManager {
       ),
     ]);
 
+    await this.processJoinChannelAVTrack();
+  }
+
+  // Help function for JoinChannel
+  async processJoinChannelAVTrack() {  
     if (this.videoEnabled && this.isHosting()) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack()
@@ -340,6 +284,7 @@ class ClientManager {
     event_manager.raiseGetCurrentAudioDevice();
     event_manager.raiseGetCurrentPlayBackDevice();
 
+    // videoTrack exists implies videoEnabled
     if (localTracks.videoTrack) {
       localTracks.videoTrack.play("local-player", {
         fit: "cover",
@@ -382,6 +327,12 @@ class ClientManager {
       }
     }
   }
+
+  async enableAudio(enabled) {
+    this.audioEnabled = enabled;
+    this.audioSubscribing = enabled;
+  }
+
 // Disables/Re-enables the local audio function.
   async enableLocalAudio(enabled) {
     if (enabled == false) {
@@ -394,6 +345,19 @@ class ClientManager {
       }
     }
     this.audioEnabled = enabled;
+  }
+
+  // mute the stream meaning unpublish, but local display 
+  // can still be on
+  // if wanting both off, call disableLocalVideo
+  async muteLocalVideoStream(mute) {
+    if (localTracks.videoTrack) {
+      if (mute) {
+        await this.client.unpublish(localTracks.videoTrack);
+      } else {
+        await this.client.publish(localTracks.videoTrack);
+      }
+    }
   }
 
   async enableLocalVideo(enabled) {

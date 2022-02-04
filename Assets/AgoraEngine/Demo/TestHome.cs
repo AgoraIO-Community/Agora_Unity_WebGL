@@ -27,19 +27,23 @@ public class TestHome : MonoBehaviour
     [SerializeField]
     private string AppID = "your_appid";
 
-    private string ChannelName { 
-        get {
+    private string ChannelName
+    {
+        get
+        {
             string cached = PlayerPrefs.GetString("ChannelName");
-            if (string.IsNullOrEmpty(cached)) {
+            if (string.IsNullOrEmpty(cached))
+            {
                 cached = inputField.text;
-	        }
+            }
 
             return cached;
-	    }
+        }
 
-        set {
+        set
+        {
             PlayerPrefs.SetString("ChannelName", value);
-	    }
+        }
     }
 
     [SerializeField]
@@ -103,6 +107,21 @@ public class TestHome : MonoBehaviour
 #endif
     }
 
+    public void onJoinAudience()
+    {
+        // create app if nonexistent
+        if (ReferenceEquals(app, null))
+        {
+            app = new TestHelloUnityVideo(); // create app
+            app.loadEngine(AppID); // load engine
+        }
+
+        ChannelName = inputField.text;
+        app.joinAudience(ChannelName);
+        SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
+        SceneManager.LoadScene(PlaySceneName, LoadSceneMode.Single);
+    }
+
     public void onJoinButtonClicked(bool enableVideo, bool muted = false)
     {
         // create app if nonexistent
@@ -119,7 +138,7 @@ public class TestHome : MonoBehaviour
         SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
         SceneManager.LoadScene(PlaySceneName, LoadSceneMode.Single);
     }
-    
+
     public void onLeaveButtonClicked()
     {
         if (!ReferenceEquals(app, null))

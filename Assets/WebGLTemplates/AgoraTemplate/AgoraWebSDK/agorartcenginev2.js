@@ -50,6 +50,14 @@ function switchChannel_WGL(token_str, channelId_str) {
   client_manager.switchChannel(token_str, channelId_str);
 }
 
+function switchChannel2_WGL(token_str, channelId_str,
+  subscribeAudio, subscribeVideo,
+  publishAudio, publishVideo
+) {
+  client_manager.setAVControl(subscribeAudio, subscribeVideo, publishAudio, publishVideo);
+  client_manager.switchChannel(token_str, channelId_str);
+}
+
 function setMLocal(val) {
   mlocal = val;
   $("#info_mirror_local").text("Local mirror: " + mlocal);
@@ -281,10 +289,10 @@ async function setAudioRecordingCollectionDeviceWGL(deviceId) {
   setLocalAudioTrackMicrophone(deviceId);
 }
 
-function handleConnectionStateChange(curState, revState, reason) {}
+function handleConnectionStateChange(curState, revState, reason) { }
 
 async function startScreenCaptureForWeb() {
-  client_manager.startScreenCaptureForWeb(); 
+  client_manager.startScreenCaptureForWeb();
 }
 
 async function startScreenCaptureByDisplayId(
@@ -402,27 +410,32 @@ async function unsubscribe(user, mediaType) {
   client_manager.unsubscribe(user, mediaType);
 }
 
+async function enableAudio(enabled) {
+  client_manager.enableAudio(enabled);
+}
+
 async function enableLocalAudio(enabled) {
   client_manager.enableLocalAudio(enabled);
 }
 
 // Disables/Re-enables the local audio function.
 async function enableDisableAudio(enabled) {
-  if (enabled == false) {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(0);
-    }
-  } else {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(100);
+  if (localTracks.audioTrack) {
+    if (enabled == false) {
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.setVolume(0);
+      }
+    } else {
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.setVolume(100);
+      }
     }
   }
 }
 
 // Stops/Resumes sending the local video stream.
-function muteLocalVideoTrack(enabled) {
-  if (enabled == true) localTracks.videoTrack.stop();
-  else localTracks.videoTrack.play("local-player");
+function muteLocalVideoTrack(mute) {
+  client_manager.muteLocalVideoStream(mute);
 }
 
 // Sets the stream type for all remote users

@@ -454,15 +454,15 @@ var LibraryAgoraWebGLSDK = {
 
   //Enables the audio module.
   enableAudio: function () {
-    enableDisableAudio(true);
+    enableAudio(true);
   },
 
   disableAudio: function () {
-    enableDisableAudio(false);
+    enableAudio(false);
   },
 
   muteLocalAudioStream: function (muteStream) {
-    enableDisableAudio(muteStream);
+    enableLocalAudio(!muteStream);
   },
 
   muteLocalVideoStream: function (enable) {
