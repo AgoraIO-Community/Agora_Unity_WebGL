@@ -17,6 +17,8 @@ public class TestHelloUnityVideo
     private IRtcEngine mRtcEngine;
     private Text MessageText;
 
+    private AudioVideoStates AudioVideoState = new AudioVideoStates();
+
     // load agora engine
     public void loadEngine(string appId)
     {
@@ -36,6 +38,23 @@ public class TestHelloUnityVideo
         mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
     }
 
+    public void SetupInitState()
+    {
+        GameObject avObj = GameObject.Find("AVToggles");
+        if (avObj != null)
+        {
+            var av = avObj.GetComponent<AudioVideoStateControl>();
+            AudioVideoState.pubAudio = av.togglePubAudio.isOn;
+            AudioVideoState.pubVideo = av.togglePubVideo.isOn;
+            AudioVideoState.subAudio = av.toggleSubAudio.isOn;
+            AudioVideoState.subVideo = av.toggleSubVideo.isOn;
+        }
+        else
+        {
+            Debug.Log("AV NULL");
+        }
+    }
+
     public void join(string channel, bool enableVideoOrNot, bool muted = false)
     {
         Debug.Log("calling join (channel = " + channel + ")");
@@ -44,6 +63,7 @@ public class TestHelloUnityVideo
             return;
 
 
+        SetupInitState();
 
         // set callbacks (optional)
         mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
@@ -55,21 +75,7 @@ public class TestHelloUnityVideo
             Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
         };
         mRtcEngine.OnError = HandleError;
-
-        // enable video
-        if (enableVideoOrNot)
-        {
-            mRtcEngine.EnableVideo();
-            // allow camera output callback
-            mRtcEngine.EnableVideoObserver();
-        }
-
         var _orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE;
-        if (muted)
-        {
-            mRtcEngine.EnableLocalAudio(false);
-            mRtcEngine.MuteLocalAudioStream(true);
-        }
 
         VideoEncoderConfiguration config = new VideoEncoderConfiguration
         {
@@ -79,9 +85,36 @@ public class TestHelloUnityVideo
             // note: mirrorMode is not effective for WebGL
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
-        // join channel
-        // mRtcEngine.JoinChannel(channel, null, 0);
-        mRtcEngine.JoinChannelByKey(null, channel);
+
+        // enable video
+        if (enableVideoOrNot)
+        {
+            mRtcEngine.EnableVideo();
+            // allow camera output callback
+            mRtcEngine.EnableVideoObserver();
+        }
+        else
+        {
+            AudioVideoState.subVideo = false;
+            AudioVideoState.pubVideo = false;
+        }
+
+        // NOTE, we use the third button to invoke JoinChannelByKey
+        // otherwise, it joins using JoinChannelWithUserAccount
+        if (muted)
+        {
+            // mute locally only. still subscribing
+            mRtcEngine.EnableLocalAudio(false);
+            mRtcEngine.MuteLocalAudioStream(true);
+            mRtcEngine.JoinChannelByKey(channelKey: null, channelName: channel, info: "", uid: 0);
+        }
+        else
+        {
+            // join channel with string user name
+            mRtcEngine.JoinChannelWithUserAccount(null, channel, "user" + Random.Range(1, 99999),
+                 new ChannelMediaOptions(AudioVideoState.subAudio, AudioVideoState.subVideo,
+                 AudioVideoState.pubAudio, AudioVideoState.pubVideo));
+        }
 
     }
 
@@ -169,6 +202,8 @@ public class TestHelloUnityVideo
         {
             MessageText = text.GetComponent<Text>();
         }
+
+
     }
 
     // implement engine callbacks
@@ -245,7 +280,7 @@ public class TestHelloUnityVideo
         GameObject canvas = GameObject.Find("Canvas");
         if (canvas != null)
         {
-            go.transform.parent = canvas.transform;
+            go.transform.SetParent(canvas.transform);
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);

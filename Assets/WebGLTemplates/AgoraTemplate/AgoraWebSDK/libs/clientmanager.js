@@ -9,6 +9,8 @@ class ClientManager {
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
     this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.videoSubscribing = true; 
+    this.audioSubscribing = true; 
     this.client_role = 1; // default is host, 2 is audience
     this._storedChannelProfile = 0; // channel profile saved before join is called
   }
@@ -52,6 +54,13 @@ class ClientManager {
     this.options.token = channelkey;
     this.options.channel = channelName;
     this.options.uid = uid;
+  }
+
+  setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
+    this.audioEnabled = pubAudio;
+    this.videoEnabled = pubVideo;
+    this.audioSubscribing = subAudio;
+    this.videoSubscribing = subVideo;
   }
 
   createEngine(appID) {
@@ -122,9 +131,16 @@ class ClientManager {
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
     remoteUsers[id] = user;
-    await this.subscribe_remoteuser(user, mediaType);
+    if (this.audioSubscribing && mediaType == "audio") {
+      await this.subscribe_remoteuser(user, mediaType);
+    } else if(this.videoSubscribing && mediaType == "video") {
+      await this.subscribe_remoteuser(user, mediaType);
+    }
   }
 
+  // Note this event doesn't truly map to Unity's OnUserJoined
+  // since it can called twice based on mediaType
+  // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
     const id = user.uid;
   }
@@ -278,6 +294,78 @@ class ClientManager {
     }
     return false;
   }
+
+  //============================================================================== 
+  // . JOIN CHANNEL METHOD 
+  // Params: user - can be either string or uint
+  //============================================================================== 
+   //============================================================================== 
+  // . JOIN CHANNEL METHOD 
+  // Params: user - can be either string or uint
+  //============================================================================== 
+  async joinAgoraChannel(user)
+  {
+    this.client.on("user-published", this.handleUserPublished.bind(this));
+    this.client.on("user-joined", this.handleUserJoined.bind(this));
+    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
+    this.client.on("exception", this.handleException.bind(this));
+    this.client.on("error", this.handleError.bind(this));
+    if (typeof(user) == "string") {
+	user = 0; // let system assign uid
+    }
+
+    [this.options.uid] = await Promise.all([
+      this.client.join(
+        this.options.appid,
+        this.options.channel,
+        this.options.token || null,
+        user || null
+      ),
+    ]);
+
+    if (this.videoEnabled && this.isHosting()) {
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack()
+      ]);
+      currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
+        localTracks.videoTrack._deviceName
+      );
+    }
+
+    if (this.audioEnabled) {
+      [localTracks.audioTrack] = await Promise.all([
+        AgoraRTC.createMicrophoneAudioTrack()
+      ]);
+      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
+          localTracks.audioTrack._deviceName
+      );
+    }
+    event_manager.raiseGetCurrentVideoDevice();
+    event_manager.raiseGetCurrentAudioDevice();
+    event_manager.raiseGetCurrentPlayBackDevice();
+
+    if (localTracks.videoTrack) {
+      localTracks.videoTrack.play("local-player", {
+        fit: "cover",
+        mirror: mlocal,
+      });
+    }
+
+    event_manager.raiseJoinChannelSuccess(
+        this.options.uid.toString(),
+        this.options.channel
+      );
+
+    $("#local-player-name").text(`localVideo(${this.options.uid})`);
+    if (this.client_role == 1) {
+      for (var trackName in localTracks) {
+        var track = localTracks[trackName];
+        if (track) {
+          await this.client.publish(track);
+        }
+      }
+    }
+  } 
 
   async joinChannelWithUserAccount_WGL(
     token_str,
@@ -448,9 +536,6 @@ class ClientManager {
           await this.client.publish(track);
         }
       }
-      //  await this.client.publish(
-      //    Object.values(localTracks).filter((track) => track !== null )
-      //  );
     }
   }
 

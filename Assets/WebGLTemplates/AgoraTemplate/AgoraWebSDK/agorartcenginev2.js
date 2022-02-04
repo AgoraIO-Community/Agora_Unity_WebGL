@@ -10,9 +10,31 @@ async function createIRtcEngine2(appID, areaCode) {
 //Allows a user to join a channel.
 async function wglw_joinChannel(channelkey, channelName, info, uid) {
   client_manager.setOptions(channelkey, channelName, uid);
-  await client_manager.joinChannel();
+  await client_manager.joinAgoraChannel(uid);
   wrapper.initStats();
   cacheDevices();
+}
+
+async function joinChannelWithUserAccount_WGL(
+  token_str,
+  channelId_str,
+  userAccount_str
+) {
+  client_manager.setOptions(token_str, channelId_str);
+  await client_manager.joinAgoraChannel(userAccount_str);
+  wrapper.initStats();
+  cacheDevices();
+}
+
+async function joinChannelWithUserAccount_engine_WGL(
+  token_str,
+  channelId_str,
+  userAccount_str,
+  subscribeAudio, subscribeVideo,
+  publishAudio, publishVideo
+) {
+  client_manager.setAVControl(subscribeAudio, subscribeVideo, publishAudio, publishVideo);
+  await joinChannelWithUserAccount_WGL(token_str, channelId_str, userAccount_str);
 }
 
 // Allows a user to leave a channel, such as hanging up or exiting a call.
@@ -93,17 +115,7 @@ function enableAudioVolumeIndicator() {
   client_manager.enableAudioVolumeIndicator();
 }
 
-function joinChannelWithUserAccount_WGL(
-  token_str,
-  channelId_str,
-  userAccount_str
-) {
-  client_manager.joinChannelWithUserAccount_WGL(
-    token_str,
-    channelId_str,
-    userAccount_str
-  );
-}
+
 
 // Sets the built-in encryption mode.
 function setEncryptionMode(mode) {

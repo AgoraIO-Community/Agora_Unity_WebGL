@@ -1305,6 +1305,15 @@ var LibraryAgoraWebGLSDK = {
     var userAccount_str = Pointer_stringify(userAccount);
     joinChannelWithUserAccount_WGL(token_str, channelId_str, userAccount_str);
   },
+  joinChannelWithUserAccount_engine: function (token, channelId, userAccount, 
+      autoSubscribeAudio, autoSubscribeVideo,
+      publishLocalAudio, publishLocalVideo) {
+    var token_str = Pointer_stringify(token);
+    var channelId_str = Pointer_stringify(channelId);
+    var userAccount_str = Pointer_stringify(userAccount); 
+    joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str, 
+      autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
+  },
   setClientRole2: function (channel, role) {
     setClientRole2_MC(role);
   },

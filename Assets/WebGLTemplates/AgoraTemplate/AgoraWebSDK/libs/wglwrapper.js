@@ -155,60 +155,66 @@ var WglWrapper = function () {
       var video = self.remoteTracksStatsStored[uid].video;
       var audio = self.remoteTracksStatsStored[uid].audio;
 
-      dataBuilder.add(
-        "ru_" + uid + "_" + "a_receiveDelay",
-        Number(audio.receiveDelay).toFixed(2)
-      );
-      dataBuilder.add(
-        "ru_" + uid + "_" + "v_receiveDelay",
-        Number(video.receiveDelay).toFixed(2)
-      );
-      dataBuilder.add("ru_" + uid + "_" + "a_receiveBytes", audio.receiveBytes);
-      dataBuilder.add(
-        "ru_" + uid + "_" + "a_receivePackets",
-        audio.receivePackets
-      );
-      dataBuilder.add(
-        "ru_" + uid + "_" + "a_receivePacketsLost",
-        audio.receivePacketsLost
-      );
-      dataBuilder.add(
-        "ru_" + uid + "_" + "a_",
-        Number(audio.packetLossRate).toFixed(3)
-      );
-      dataBuilder.add(
-        "ru_" + uid + "_" + "v_receiveResolutionHeight",
-        video.receiveResolutionHeight
-      );
-      dataBuilder.add(
-        "ru_" + uid + "_" + "v_receiveResolutionWidth",
-        video.receiveResolutionWidth
-      );
+      if (audio) {
+        dataBuilder.add(
+          "ru_" + uid + "_" + "a_receiveDelay",
+          Number(audio.receiveDelay).toFixed(2)
+        );
+        dataBuilder.add("ru_" + uid + "_" + "a_receiveBytes", audio.receiveBytes);
+        dataBuilder.add(
+          "ru_" + uid + "_" + "a_receivePackets",
+          audio.receivePackets
+        );
+        dataBuilder.add(
+          "ru_" + uid + "_" + "a_receivePacketsLost",
+          audio.receivePacketsLost
+        );
+        dataBuilder.add(
+          "ru_" + uid + "_" + "a_",
+          Number(audio.packetLossRate).toFixed(3)
+        );
+      }
 
-      dataBuilder.add(
-        "ru_" + uid + "_" + "v_receiveBitrate",
-        video.receiveBitrate
-      );
-      dataBuilder.add("ru_" + uid + "_" + "v_receiveBytes", video.receiveBytes);
-      dataBuilder.add(
-        "ru_" + uid + "_" + "v_receivePackets",
-        video.receivePackets
-      );
-      dataBuilder.add(
-        "ru_" + uid + "_" + "v_receivePacketsLost",
-        video.receivePacketsLost
-      );
+      if (video) {
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receiveDelay",
+          Number(video.receiveDelay).toFixed(2)
+        );
 
-      dataBuilder.add(
-        `ru_${uid}_v_receivePacketsLost`,
-        Number(video.receivePacketsLost).toFixed(3)
-      );
-      dataBuilder.add(`ru_${uid}_v_totalDuration`, video.totalDuration);
-      dataBuilder.add(`ru_${uid}_v_totalFreezeTime`, video.totalFreezeTime);
-      dataBuilder.add(
-        `ru_${uid}_v_freezeRate`,
-        Number(video.freezeRate).toFixed(3)
-      );
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receiveResolutionHeight",
+          video.receiveResolutionHeight
+        );
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receiveResolutionWidth",
+          video.receiveResolutionWidth
+        );
+
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receiveBitrate",
+          video.receiveBitrate
+        );
+        dataBuilder.add("ru_" + uid + "_" + "v_receiveBytes", video.receiveBytes);
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receivePackets",
+          video.receivePackets
+        );
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receivePacketsLost",
+          video.receivePacketsLost
+        );
+
+        dataBuilder.add(
+          `ru_${uid}_v_receivePacketsLost`,
+          Number(video.receivePacketsLost).toFixed(3)
+        );
+        dataBuilder.add(`ru_${uid}_v_totalDuration`, video.totalDuration);
+        dataBuilder.add(`ru_${uid}_v_totalFreezeTime`, video.totalFreezeTime);
+        dataBuilder.add(
+          `ru_${uid}_v_freezeRate`,
+          Number(video.freezeRate).toFixed(3)
+        );
+      }
     });
 
     return dataBuilder.build();
