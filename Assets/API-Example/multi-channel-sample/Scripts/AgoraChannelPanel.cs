@@ -14,7 +14,10 @@ public class AgoraChannelPanel : MonoBehaviour
 
     [SerializeField] private Transform videoSpawnPoint;
     [SerializeField] private RectTransform panelContentWindow;
-    [SerializeField] private bool isPublishing;
+    [SerializeField] private bool AudienceMode;
+    [SerializeField] Text InfoText;
+
+    private bool isPublishing;
 
     private AgoraChannel mChannel;
     private List<GameObject> userVideos;
@@ -94,6 +97,8 @@ public class AgoraChannelPanel : MonoBehaviour
             Debug.Log(gameObject.name + " Got rtc token:" + token);
         });
         }
+
+        InfoText.text = AudienceMode ? "Audience" : "Broadcaster";
     }
 
     void SetButtonsState(bool publishButtonFlag, bool screenShareButtonFlag, bool muteAudioFlag, bool muteVideoFlag)
@@ -133,7 +138,14 @@ public class AgoraChannelPanel : MonoBehaviour
             mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
         }
 
-        mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        if (AudienceMode)
+        {
+            mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+        }
+        else
+        {
+            mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        }
         mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true, false, false));
         Debug.Log("Joining channel: " + channelName);
     }

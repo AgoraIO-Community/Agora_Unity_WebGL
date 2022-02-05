@@ -473,9 +473,9 @@ class AgoraChannel {
     });
   }
 
-// Disables/Re-enables the local audio function.
- enableDisableAudio(enabled) {
-  if (enabled == false) {
+// Must/Unmute local audio (mic)
+muteLocalAudioStream(mute) {
+  if (mute) {
     if (localTracks.audioTrack) {
       localTracks.audioTrack.setVolume(0);
     }
@@ -503,16 +503,6 @@ async muteLocalVideoStream(mute) {
         await this.client.publish(localTracks.videoTrack);
       }
     }
-  }
-}
-
-// Stops/Resumes sending the local audio stream.
-async muteLocalAudioStream(enabled) {
-  if (enabled == true) {
-    await this.client.unpublish(localTracks.audioTrack);
-  }
-  else {
-    await this.client.publish(localTracks.audioTrack);
   }
 }
   muteRemoteAudioStream(uid, mute) {

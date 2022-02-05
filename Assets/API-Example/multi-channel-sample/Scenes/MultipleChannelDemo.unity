@@ -145,7 +145,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 10.765, y: -257.88007}
+  m_AnchoredPosition: {x: 72, y: -257.88007}
   m_SizeDelta: {x: 398.34, y: 25.15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &136727091
@@ -160,7 +160,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.81844354, g: 0.9191176, b: 0.18923011, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -180,7 +180,9 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Local User Id: 0'
+  m_Text: 'Channel 1 info
+
+'
 --- !u!222 &136727092
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1733,7 +1735,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -9.5, y: -261.42}
+  m_AnchoredPosition: {x: 77, y: -257}
   m_SizeDelta: {x: 398.34, y: 25.15}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1230599890
@@ -1748,7 +1750,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_Color: {r: 0.7654964, g: 0.9191176, b: 0.22302118, a: 1}
   m_RaycastTarget: 0
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1768,7 +1770,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Local User Id: 0'
+  m_Text: Chanel 2 info
 --- !u!222 &1230599891
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2766,7 +2768,8 @@ MonoBehaviour:
   UseToken: 0
   videoSpawnPoint: {fileID: 1859537993}
   panelContentWindow: {fileID: 1531243673}
-  isPublishing: 0
+  AudienceMode: 0
+  InfoText: {fileID: 136727091}
   txtLocaluserId: {fileID: 2117064455}
   txtInfo: {fileID: 136727091}
   ChannelLabel: {fileID: 1132270659}
@@ -3027,13 +3030,14 @@ MonoBehaviour:
   UseToken: 0
   videoSpawnPoint: {fileID: 1679465262}
   panelContentWindow: {fileID: 1942410745}
-  isPublishing: 0
+  AudienceMode: 1
+  InfoText: {fileID: 1230599890}
   txtLocaluserId: {fileID: 1840391295}
   txtInfo: {fileID: 1230599890}
   ChannelLabel: {fileID: 1612668472}
   JoinChannelButton: {fileID: 1386605303}
-  PublishButton: {fileID: 2096343375}
-  ScreenShareButton: {fileID: 2078573363}
+  PublishButton: {fileID: 0}
+  ScreenShareButton: {fileID: 0}
   MuteAudioButton: {fileID: 0}
   MuteVideoButton: {fileID: 0}
 --- !u!114 &2076221812
@@ -3087,7 +3091,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2078573362
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3102,9 +3106,9 @@ RectTransform:
   m_Father: {fileID: 1115427099}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -73.465}
   m_SizeDelta: {x: 160, y: 36.93}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2078573363
@@ -3210,7 +3214,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2096343371
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3225,9 +3229,9 @@ RectTransform:
   m_Father: {fileID: 1115427099}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 80, y: -65.395004}
   m_SizeDelta: {x: 160, y: 36.93}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2096343372
