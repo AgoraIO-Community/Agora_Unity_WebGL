@@ -15,16 +15,19 @@ public class TestHelloUnityVideo
 {
 
     // instance of agora engine
-    private IRtcEngine mRtcEngine;
-    private Text MessageText;
+    private IRtcEngine mRtcEngine { get; set; }
+    private Text MessageText { get; set; }
 
     private AudioVideoStates AudioVideoState = new AudioVideoStates();
 
-    string mChannelName;
 
-    List<GameObject> remoteUserDisplays = new List<GameObject>();
 
-    Text ChannelNameLabel;
+    private List<GameObject> remoteUserDisplays = new List<GameObject>();
+
+    private string mChannelName { get; set; }
+    private Text ChannelNameLabel { get; set; }
+    private CLIENT_ROLE_TYPE ClientRole { get; set; }
+    private ToggleStateButton RoleButton { get; set; }
 
     // load agora engine
     public void loadEngine(string appId)
@@ -71,6 +74,7 @@ public class TestHelloUnityVideo
     {
         Debug.Log("calling join (channel = " + channel + ")");
 
+
         if (mRtcEngine == null)
             return;
         // set callbacks (optional)
@@ -91,6 +95,7 @@ public class TestHelloUnityVideo
         mRtcEngine.EnableVideoObserver();
         mRtcEngine.JoinChannelByKey("", channel);
         mChannelName = channel;
+        ClientRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
     }
 
     /// <summary>
@@ -165,9 +170,8 @@ public class TestHelloUnityVideo
         }
 
         mChannelName = channel;
+        ClientRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
     }
-
-
 
     public string getSdkVersion()
     {
@@ -298,6 +302,30 @@ public class TestHelloUnityVideo
         }
 
         ChannelNameLabel = GameObject.Find("ChannelName").GetComponent<Text>();
+
+        RoleButton = GameObject.Find("RoleButton").GetComponent<ToggleStateButton>();
+        SetupRoleButton(isHost: ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+    }
+
+    private void SetupRoleButton(bool isHost)
+    {
+        //if (RoleButton != null)
+        {
+            RoleButton.Setup(initOnOff: isHost,
+                 onStateText: "Host", offStateText: "Audience",
+                 callOnAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Broadcaster");
+                     mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+                 },
+                 callOffAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Audience");
+                     mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+                 }
+                 );
+
+        }
     }
 
     /// <summary>

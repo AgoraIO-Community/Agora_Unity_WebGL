@@ -259,6 +259,11 @@ class ClientManager {
     ]);
 
     await this.processJoinChannelAVTrack();
+
+    event_manager.raiseJoinChannelSuccess(
+      this.options.uid.toString(),
+      this.options.channel
+    );
   }
 
   // Help function for JoinChannel
@@ -292,11 +297,6 @@ class ClientManager {
       });
     }
 
-    event_manager.raiseJoinChannelSuccess(
-        this.options.uid.toString(),
-        this.options.channel
-      );
-
     $("#local-player-name").text(`localVideo(${this.options.uid})`);
     if (this.client_role == 1) {
       for (var trackName in localTracks) {
@@ -308,22 +308,15 @@ class ClientManager {
     }
   } 
 
-  async setClientRole(role) {
+  async setClientRole(role, optionLevel) {
     if (this.client) {
       this.client_role = role;
       if (role === 1) {
-        this.client.setClientRole("host", function (e) {
-          if (!e) {
-            this.client_role = 1;
-          }
-        });
+        this.client.setClientRole("host", optionLevel);
+        await this.processJoinChannelAVTrack();
       } else if (role === 2) {
-        await this.client.unpublish(localTracks.videoTrack);
-        this.client.setClientRole("audience", function (e) {
-          if (!e) {
-            this.client_role = 2;
-          }
-        });
+        await this.unpublishAll();
+        this.client.setClientRole("audience", optionLevel);
       }
     }
   }
@@ -652,6 +645,15 @@ class ClientManager {
       await this.client.unsubscribe(user, mediaType);
     } catch (error) {
       console.log("unsubscribe error ", error);
+    }
+  }
+
+  async unpublishAll() {
+    for (var trackName in localTracks) {
+      var track = localTracks[trackName];
+      if (track) {
+        await this.client.unpublish(track);
+      }
     }
   }
 

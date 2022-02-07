@@ -126,11 +126,11 @@ class AgoraChannel {
 
   async unpublish() {
     if (this.is_publishing == true) {
-      if (localTracks.videoTrack != undefined) {
-        await this.client.unpublish(localTracks.videoTrack);
-      }
-      if (localTracks.audioTrack != undefined) {
-        await this.client.unpublish(localTracks.audioTrack);
+      for (var trackName in localTracks) {
+        var track = localTracks[trackName];
+        if (track) {
+          await this.client.unpublish(track);
+        }
       }
       this.is_publishing = false;
       event_manager.raiseCustomMsg("Unpublish Success");
@@ -621,21 +621,30 @@ async muteLocalVideoStream(mute) {
     }
   }
 
-  setClientRole2_MC(role) {
+  async setClientRole2_MC(role, optionLevel) {
     if (this.client) {
+      // host
       if (role === 1) {
-        this.client.setClientRole("host", function (e) {
-          if (!e) {
-            this.client_role = 1;
+        await this.client.setClientRole("host", optionLevel);
+        if (this.channelId === "" ) {
+          // called before join channel
+          // do nothing, just mark it at the end
+        } else {
+          if (this.client_role == 2) {
+            // called after join channel
+            // and previosly it is audience, default to publish
+            await this.publish();
           }
-        });
+        }
       } else if (role === 2) {
-        this.client.setClientRole("audience", function (e) {
-          if (!e) {
-            this.client_role = 2;
-          }
-        });
+      // audience
+        if (this.client_role != role)
+        {
+          await this.unpublish();
+        }
+        await this.client.setClientRole("audience", optionLevel);
       }
+      this.client_role = role;
     }
   }
 }

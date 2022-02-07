@@ -344,7 +344,15 @@ var LibraryAgoraWebGLSDK = {
   setClientRole: function (role) {
     setClientRole(role);
   },
-
+  setClientRole_1: function (role, audienceLatencyLevel) {
+    setClientRole1(role, audienceLatencyLevel);
+  },
+  setClientRole2: function (channel, role) {
+    setClientRole2_MC(role);
+  },
+  setClientRole_2: function (channel, role, audienceLatencyLevel) {
+    setClientRole2_MC(role, audienceLatencyLevel);
+  },
   enableAudioVolumeIndication: function (interval, smooth, report_vad) {
     enableAudioVolumeIndicator();
   },
@@ -1314,9 +1322,7 @@ var LibraryAgoraWebGLSDK = {
     joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str, 
       autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
-  setClientRole2: function (channel, role) {
-    setClientRole2_MC(role);
-  },
+
   setDefaultEngineSettings: function () {},
   setVideoQualityParameters: function (preferFrameRateOverImageQuality) {},
   getCurrentPlaybackDeviceInfo: function (deviceName, deviceId) {},
@@ -1388,9 +1394,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
     var volume = GetAudioMixingPublishVolume();
     return volume;
   },
-  setClientRole_2: function (channel, role, audienceLatencyLevel) {
-    setClientRole2_MC(role);
-  },
+
   getAudioPlaybackDevice: function (index, deviceName, deviceId) {},
   enableLoopbackRecording: function (enabled, deviceName) {},
 
@@ -1462,7 +1466,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
   generateNativeTexture: function () {},
   setLocalVoicePitch: function (pitch) {},
   createDataStream2: function (channel, reliable, ordered) {},
-  setClientRole_1: function (role, audienceLatencyLevel) {},
   addInjectStreamUrl2: function (
     channel,
     url,

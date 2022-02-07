@@ -18,12 +18,12 @@ public class ToggleStateButton : MonoBehaviour
         OnOffState = initOnOff;
         OnStateText = onStateText;
         OffStateText = offStateText;
-        text.text = OnOffState ? OffStateText : OnStateText;
+        UpdateText();
 
         button.onClick.AddListener(() =>
         {
             OnOffState = !OnOffState;
-            text.text = OnOffState ? OffStateText : OnStateText;
+            UpdateText();
             if (OnOffState)
             {
                 callOnAction();
@@ -35,4 +35,17 @@ public class ToggleStateButton : MonoBehaviour
         });
     }
 
+    public void SetState(bool onOffState)
+    {
+        OnOffState = onOffState;
+        UpdateText();
+    }
+
+    void UpdateText()
+    {
+        if (text != null)
+        {
+            text.text = OnOffState ? OffStateText : OnStateText;
+        }
+    }
 }

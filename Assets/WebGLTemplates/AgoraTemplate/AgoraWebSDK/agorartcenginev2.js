@@ -147,7 +147,10 @@ function setEncryptionSecret(secret) {
 
 //  Sets the role of the user, such as a host or an audience (default), before joining a channel in the interactive live streaming.
 async function setClientRole(role) {
-  client_manager.setClientRole(role);
+  client_manager.setClientRole(role, null);
+}
+async function setClientRole1(role, audienceLatencyLevel) {
+  client_manager.setClientRole(role, audienceLatencyLevel);
 }
 
 async function setMirrorApplied_WGL(apply) {

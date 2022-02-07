@@ -547,6 +547,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
             return IRtcEngineNative.setClientRole2(_channelId, (int)role);
 #else
             return IRtcEngineNative.setClientRole2(_channelHandler, (int)role);
@@ -1283,9 +1284,11 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return SetClientRole(role);
-#endif
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            return IRtcEngineNative.setClientRole_2(_channelId, (int)role, (int)audienceLatencyLevel.audienceLatencyLevel);
+#else
             return IRtcEngineNative.setClientRole_2(_channelHandler, (int)role, (int)audienceLatencyLevel.audienceLatencyLevel);
+#endif
         }
 
         /** Enables/Disables the built-in encryption.
