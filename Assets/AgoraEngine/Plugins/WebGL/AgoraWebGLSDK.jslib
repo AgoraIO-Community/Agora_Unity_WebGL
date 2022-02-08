@@ -1703,6 +1703,29 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
 
   releaseAAudioPlaybackDeviceManager: function () {},
+
+  // Stubs for Unity 2021.2.x, see https://github.com/AgoraIO-Community/Agora_Unity_WebGL/issues/17
+  adjustLoopbackRecordingSignalVolume: function() {},
+  createDataStream_channel: function() {},
+  createDataStream_engine: function() {},
+  enableDeepLearningDenoise: function() {},
+  enableVirtualBackground: function() {},
+  getAudioMixingDuration2: function() {},
+  getEffectCurrentPosition: function() {},
+  getEffectDuration: function() {},
+  isCameraTorchSupported: function() {},
+  joinChannelWithMediaOption: function() {},
+  playEffect2: function() {},
+  setCameraTorchOn: function() {},
+  setCloudProxy: function() {},
+  setEffectPosition: function() {},
+  setLocalAccessPoint: function() {},
+  setVoiceBeautifierParameters: function() {},
+  setVoiceConversionPreset: function() {},
+  startAudioMixing2: function() {},
+  startAudioRecordingWithConfig: function() {},
+  switchChannel2: function() {},
+  uploadLogFile: function() {},
 };
 
 autoAddDeps(LibraryAgoraWebGLSDK, "$localVideo");
