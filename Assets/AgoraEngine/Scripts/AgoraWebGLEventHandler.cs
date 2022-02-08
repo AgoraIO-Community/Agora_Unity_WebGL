@@ -488,6 +488,30 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void onRemoteUserMuted(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            if (events.Length < 3)
+            {
+                Debug.LogError("Unexpected value for onRemoteUserMuted:" + eventData);
+                return;
+            }
+
+            uint userId = uint.Parse(events[0]);
+            string mediaType = events[1];
+            bool muted = events[2].Equals("1");
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine == null) return;
+            if (mediaType == "video")
+            {
+                engine.OnUserMuteVideo(userId, muted);
+            }
+            else if (mediaType == "audio")
+            {
+                engine.OnUserMutedAudio(userId, muted);
+            }
+        }
+
         public void OnLeaveChannel(string statData)
         {
             BuildData(statData);
@@ -642,7 +666,8 @@ namespace agora_gaming_rtc
                 RemoteVideoStats remoteStats = new RemoteVideoStats();
                 remoteStats.receivedBitrate = 0; // to make it visible, put more than 0
                 remoteStats.uid = uint.Parse(userId);
-                if (ch.ChannelOnRemoteVideoStats != null) {
+                if (ch.ChannelOnRemoteVideoStats != null)
+                {
                     ch.ChannelOnRemoteVideoStats(channel, remoteStats);
                 }
             }
@@ -723,7 +748,7 @@ namespace agora_gaming_rtc
                 }
 
                 ch.ChannelOnClientRoleChanged(channel, oldRole, newRole);
-                
+
             }
         }
 
@@ -779,9 +804,9 @@ namespace agora_gaming_rtc
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnTokenPrivilegeWillExpire != null)
             {
-                engine.OnTokenPrivilegeWillExpire(token);    
+                engine.OnTokenPrivilegeWillExpire(token);
             }
-            
+
         }
 
         public void OnVolumeIndication(string data)

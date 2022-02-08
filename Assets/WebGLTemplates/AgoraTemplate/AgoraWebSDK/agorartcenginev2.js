@@ -436,6 +436,10 @@ async function enableDisableAudio(enabled) {
   }
 }
 
+function muteLocalAudioStream(mute) {
+  client_manager.muteLocalAudioStream(mute);
+}
+
 // Stops/Resumes sending the local video stream.
 function muteLocalVideoTrack(mute) {
   client_manager.muteLocalVideoStream(mute);

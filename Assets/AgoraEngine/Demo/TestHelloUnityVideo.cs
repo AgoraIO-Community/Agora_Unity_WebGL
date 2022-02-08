@@ -125,6 +125,9 @@ public class TestHelloUnityVideo
         };
         mRtcEngine.OnError = HandleError;
 
+        mRtcEngine.OnUserMutedAudio = OnUserMutedAudio;
+        mRtcEngine.OnUserMuteVideo = OnUserMutedVideo;
+
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
@@ -326,6 +329,16 @@ public class TestHelloUnityVideo
                  );
 
         }
+    }
+
+    private void OnUserMutedAudio(uint uid, bool muted)
+    {
+        Debug.LogFormat("user {0} muted audio:{1}", uid, muted);
+    }
+
+    private void OnUserMutedVideo(uint uid, bool muted)
+    {
+        Debug.LogFormat("user {0} muted video:{1}", uid, muted);
     }
 
     /// <summary>

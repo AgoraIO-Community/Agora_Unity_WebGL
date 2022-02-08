@@ -129,6 +129,9 @@ class ClientManager {
     }
   }
 
+  //============================================================================== 
+  // Event Handlers
+  //============================================================================== 
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
     remoteUsers[id] = user;
@@ -136,6 +139,7 @@ class ClientManager {
       await this.subscribe_remoteuser(user, mediaType);
     } else if(this.videoSubscribing && mediaType == "video") {
       await this.subscribe_remoteuser(user, mediaType);
+      event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
     }
   }
 
@@ -146,13 +150,61 @@ class ClientManager {
     const id = user.uid;
   }
 
-  handleUserUnpublished(user) {
+  handleUserUnpublished(user, mediaType) {
+    const id = user.uid;
+    // delete remoteUsers[id];
+    // $(`#player-wrapper-${id}`).remove();
+    var strUID = id.toString();
+    event_manager.raiseOnRemoteUserMuted(strUID, mediaType, 1);
+  }
+
+  handleUserLeft(user, reason) {
     const id = user.uid;
     delete remoteUsers[id];
     $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
-    event_manager.raiseOnRemoteUserLeaved(strUID);
+    var rcode = 0; // QUIT
+    if (reason === "ServerTimeOut") {
+      rcode = 1; //DROPPED
+    } else if (reason === "BecomeAudience") {
+      rcode = 2;
+    }
+
+    event_manager.raiseOnRemoteUserLeaved(strUID, rcode); 
   }
+
+  // Note that the "enable-local-video" and "disable-local-video" states 
+  // are only for synchronizing states with the clients that integrate the RTC Native SDK.
+  handleUserInfoUpdate(uid, msg) {
+    const strUID = uid.toString();
+    switch(msg) {
+      case "mute-audio" :
+        event_manager.raiseOnRemoteUserMuted(strUID, "audio", 1);
+        break;
+      case  "mute-video" : 
+        event_manager.raiseOnRemoteUserMuted(strUID, "video", 1);
+        break; 
+      case "enable-local-video" : 
+        break;
+      case "unmute-audio" : 
+        event_manager.raiseOnRemoteUserMuted(strUID, "audio", 0);
+        break;
+      case "unmute-video" : 
+        event_manager.raiseOnRemoteUserMuted(strUID, "video", 0);
+        break;
+      case "disable-local-video" :
+        break;
+    }
+  }
+
+  handleException(e) {
+    console.log(e);
+  }
+
+  handleError(e) {
+    console.log(e);
+  }
+  //============================================================================== 
 
   async leave() {
     for (var trackName in localTracks) {
@@ -203,13 +255,6 @@ class ClientManager {
     await this.client.leave();
   }
 
-  handleException(e) {
-    console.log(e);
-  }
-
-  handleError(e) {
-    console.log(e);
-  }
 
   async switchChannel(token_str, channelId_str) {
     await this.leave();
@@ -242,9 +287,12 @@ class ClientManager {
   {
     this.client.on("user-published", this.handleUserPublished.bind(this));
     this.client.on("user-joined", this.handleUserJoined.bind(this));
-    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
+    this.client.on("user-left", this.handleUserLeft.bind(this));
+    //unpublish is used to track mute/unmute, it is recommended to use UserInfoUpdate instead
+    //this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
     this.client.on("exception", this.handleException.bind(this));
     this.client.on("error", this.handleError.bind(this));
+    this.client.on("user-info-updated", this.handleUserInfoUpdate.bind(this));
     if (typeof(user) == "string") {
 	    user = 0; // let system assign uid
     }
@@ -349,6 +397,18 @@ class ClientManager {
         await this.client.unpublish(localTracks.videoTrack);
       } else {
         await this.client.publish(localTracks.videoTrack);
+      }
+    }
+  }
+
+  async muteLocalAudioStream(mute) {
+    if (mute) {
+      if (localTracks.audioTrack) {
+        await this.client.unpublish(localTracks.audioTrack);
+      }
+    } else {
+      if (localTracks.audioTrack) {
+        await this.client.publish(localTracks.audioTrack);
       }
     }
   }

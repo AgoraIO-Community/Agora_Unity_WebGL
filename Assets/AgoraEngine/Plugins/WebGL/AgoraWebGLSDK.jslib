@@ -470,7 +470,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   muteLocalAudioStream: function (muteStream) {
-    enableLocalAudio(!muteStream);
+    muteLocalAudioStream(muteStream);
   },
 
   muteLocalVideoStream: function (enable) {

@@ -474,14 +474,14 @@ class AgoraChannel {
   }
 
 // Must/Unmute local audio (mic)
-muteLocalAudioStream(mute) {
+async muteLocalAudioStream(mute) {
   if (mute) {
     if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(0);
+      await this.client.unpublish(localTracks.audioTrack);
     }
   } else {
     if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(100);
+      await this.client.publish(localTracks.audioTrack);
     }
   }
 }
