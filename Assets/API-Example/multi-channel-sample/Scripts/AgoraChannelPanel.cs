@@ -308,6 +308,8 @@ public class AgoraChannelPanel : MonoBehaviour
     void OnLeaveHandler(string channelID, RtcStats stats)
     {
         Debug.Log("You left the party channel.");
+        Debug.LogFormat("OnLeaveChannelSuccess ---- duration = {0} txVideoBytes:{1} ", stats.duration, stats.txVideoBytes);
+
         foreach (GameObject player in userVideos)
         {
             Destroy(player);

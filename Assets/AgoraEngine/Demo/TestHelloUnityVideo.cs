@@ -347,7 +347,7 @@ public class TestHelloUnityVideo
     /// <param name="stats"></param>
     private void OnLeaveChannelHandler(RtcStats stats)
     {
-        Debug.Log("OnLeaveChannelSuccess ---- TEST");
+        Debug.LogFormat("OnLeaveChannelSuccess ---- duration = {0} txVideoBytes:{1} ", stats.duration, stats.txVideoBytes);
         // Clean up the displays
         foreach (var go in remoteUserDisplays)
         {
