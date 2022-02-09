@@ -360,11 +360,11 @@ class ClientManager {
     if (this.client) {
       this.client_role = role;
       if (role === 1) {
-        this.client.setClientRole("host", optionLevel);
+        await this.client.setClientRole("host", optionLevel);
         await this.processJoinChannelAVTrack();
       } else if (role === 2) {
         await this.unpublishAll();
-        this.client.setClientRole("audience", optionLevel);
+        await this.client.setClientRole("audience", optionLevel);
       }
     }
   }
