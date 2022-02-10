@@ -448,7 +448,7 @@ namespace agora_gaming_rtc
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
                 ch.ChannelOnJoinChannelSuccess(channel, uint.Parse(userId), 0);
-                
+
             }
         }
 
@@ -478,13 +478,23 @@ namespace agora_gaming_rtc
             }
         }
 
-        public void onRemoteUserLeaved(string userId)
+        public void onRemoteUserLeaved(string eventData)
         {
-            _remoteUserListing.Remove(uint.Parse(userId));
+            string[] events = eventData.Split('|');
+            if (events.Length < 2)
+            {
+                Debug.LogError("Unexpected value for onRemoteUserLeaved:" + eventData);
+                return;
+            }
+            uint uid = uint.Parse(events[0]);
+            _remoteUserListing.Remove(uid);
+
+            USER_OFFLINE_REASON reason = (USER_OFFLINE_REASON)int.Parse(events[1]);
+
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnUserOffline != null)
             {
-                engine.OnUserOffline(uint.Parse(userId), USER_OFFLINE_REASON.DROPPED);
+                engine.OnUserOffline(uid, reason);
             }
         }
 
