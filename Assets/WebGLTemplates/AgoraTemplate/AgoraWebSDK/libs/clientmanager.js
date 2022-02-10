@@ -114,18 +114,26 @@ class ClientManager {
     return this.createEngine(appID);
   }
 
-  // subscribe
+  // called after user published event
+  // subscribe to the user and raise OnRemoteUserJoined
   async subscribe_remoteuser(user, mediaType) {
-    const uid = user.uid;
+    var strUID = user.uid.toString();
     // subscribe to a remote user
     await this.client.subscribe(user, mediaType);
     if (mediaType === "video") {
-      user.videoTrack.play(`player-${uid}`, { fit: "cover", mirror: mremote });
-      var strUID = uid.toString();
-      event_manager.raiseOnRemoteUserJoined(strUID);
-    }
-    if (mediaType === "audio") {
-      user.audioTrack.play();
+      user.videoTrack.play(`player-${strUID}`, { fit: "cover", mirror: mremote });
+      if (remoteUsers[user.uid] == null)
+      {
+        event_manager.raiseOnRemoteUserJoined(strUID);
+      }
+    } else {
+      if (mediaType === "audio") {
+        user.audioTrack.play();
+        // for Voice only subscription only, the raise won't happen above
+        if (remoteUsers[user.uid] == null) {
+          event_manager.raiseOnRemoteUserJoined(strUID);
+        }
+      }
     }
   }
 
@@ -134,13 +142,13 @@ class ClientManager {
   //============================================================================== 
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
-    remoteUsers[id] = user;
     if (this.audioSubscribing && mediaType == "audio") {
       await this.subscribe_remoteuser(user, mediaType);
     } else if(this.videoSubscribing && mediaType == "video") {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
     }
+    remoteUsers[id] = user;
   }
 
   // Note this event doesn't truly map to Unity's OnUserJoined
@@ -289,7 +297,7 @@ class ClientManager {
     this.client.on("user-joined", this.handleUserJoined.bind(this));
     this.client.on("user-left", this.handleUserLeft.bind(this));
     //unpublish is used to track mute/unmute, it is recommended to use UserInfoUpdate instead
-    //this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
+    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
     this.client.on("exception", this.handleException.bind(this));
     this.client.on("error", this.handleError.bind(this));
     this.client.on("user-info-updated", this.handleUserInfoUpdate.bind(this));
@@ -346,7 +354,7 @@ class ClientManager {
     }
 
     $("#local-player-name").text(`localVideo(${this.options.uid})`);
-    if (this.client_role == 1) {
+    if (this.isHosting()) {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
         if (track) {
@@ -358,10 +366,13 @@ class ClientManager {
 
   async setClientRole(role, optionLevel) {
     if (this.client) {
+      var wasAudience = (this.client_role == 2);
       this.client_role = role;
       if (role === 1) {
         await this.client.setClientRole("host", optionLevel);
-        await this.processJoinChannelAVTrack();
+        if (wasAudience) {
+          await this.processJoinChannelAVTrack();
+        }
       } else if (role === 2) {
         await this.unpublishAll();
         await this.client.setClientRole("audience", optionLevel);

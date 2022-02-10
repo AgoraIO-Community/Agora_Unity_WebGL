@@ -167,8 +167,13 @@ public class TestHelloUnityVideo
         else
         {
             // join channel with string user name
-            mRtcEngine.JoinChannelWithUserAccount(null, channel, "user" + Random.Range(1, 99999),
-                 new ChannelMediaOptions(AudioVideoState.subAudio, AudioVideoState.subVideo,
+            // ************************************************************************************* 
+            // !!!  There is incompatibiity with string Native UID and Web string UIDs !!!
+            // !!!  We strongly recommend to use uint uid only !!!!
+            // mRtcEngine.JoinChannelWithUserAccount(null, channel, "user" + Random.Range(1, 99999),
+            // ************************************************************************************* 
+            mRtcEngine.JoinChannel(token: null, channelId: channel, info: "", uid: 0,
+                 options: new ChannelMediaOptions(AudioVideoState.subAudio, AudioVideoState.subVideo,
                  AudioVideoState.pubAudio, AudioVideoState.pubVideo));
         }
 
