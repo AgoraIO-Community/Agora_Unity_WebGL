@@ -511,14 +511,15 @@ namespace agora_gaming_rtc
             string mediaType = events[1];
             bool muted = events[2].Equals("1");
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
-            if (engine == null) return;
-            if (mediaType == "video")
-            {
-                engine.OnUserMuteVideo(userId, muted);
-            }
-            else if (mediaType == "audio")
-            {
-                engine.OnUserMutedAudio(userId, muted);
+            if(engine != null && engine.OnUserMuteVideo != null) {
+                if (mediaType == "video")
+                {
+                    engine.OnUserMuteVideo(userId, muted);
+                }
+                else if (mediaType == "audio")
+                {
+                    engine.OnUserMutedAudio(userId, muted);
+                }
             }
         }
 
