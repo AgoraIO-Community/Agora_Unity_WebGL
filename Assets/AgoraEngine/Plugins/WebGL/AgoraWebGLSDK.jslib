@@ -7,7 +7,9 @@ var LibraryAgoraWebGLSDK = {
     return createIRtcEngine(app_id);
   },
   createLocalTexture: function () {
-    localVideo = document.getElementById("video_" + localTracks.videoTrack._ID);
+    if(localTracks.videoTrack) {
+      localVideo = document.getElementById("video_" + localTracks.videoTrack._ID);
+    }
   },
   setVideoDeviceCollectionDeviceWGL: function (deviceID) {
     var deviceID_Str = Pointer_stringify(deviceID);
@@ -96,10 +98,11 @@ var LibraryAgoraWebGLSDK = {
     var ch_userId = Pointer_stringify(userId);
 
     // approximate 1~2 frames time delay to avoid race condition
-    setTimeout(function(){ 
-        if (remoteUsers[ch_userId] != undefined) {
+    setTimeout(function(){
+        var remoteUser = remoteUsers[ch_userId];
+        if (remoteUser && remoteUser.videoTrack) {
           video = document.getElementById(
-            "video_" + remoteUsers[ch_userId].videoTrack._ID
+            "video_" + remoteUser.videoTrack._ID
           );
           remoteVideoInstances[ch_userId] = video;
         }

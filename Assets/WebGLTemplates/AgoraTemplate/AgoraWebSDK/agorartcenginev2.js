@@ -186,7 +186,9 @@ function setAudioRecordingDeviceVolume(volume) {
 function adjustPlaybackSignalVolume_WGL(volume) {
   Object.keys(remoteUsers).forEach((uid) => {
     var audioTrack = remoteUsers[uid]._audioTrack;
-    audioTrack.setVolume(volume);
+    if(audioTrack) {
+      audioTrack.setVolume(volume);
+    }
   });
 }
 
@@ -194,7 +196,9 @@ function adjustUserPlaybackSignalVolume_WGL(uid, volume) {
   Object.keys(remoteUsers).forEach((uid_in) => {
     if (uid_in == uid) {
       var audioTrack = remoteUsers[uid_in]._audioTrack;
-      audioTrack.setVolume(volume);
+      if(audioTrack) {
+        audioTrack.setVolume(volume);
+      }
     }
   });
 }
@@ -203,7 +207,9 @@ function setAudioPlaybackDeviceVolume(volume) {
   wrapper.savedSettings.playbackVolume = volume;
   Object.keys(remoteUsers).forEach((uid) => {
     var audioTrack = remoteUsers[uid]._audioTrack;
-    audioTrack.setVolume(volume);
+    if(audioTrack) {
+      audioTrack.setVolume(volume);
+    }
   });
   if (localTracks.audioMixingTrack) {
     localTracks.audioMixingTrack.setVolume(volume);
@@ -220,7 +226,9 @@ function setAudioPlaybackDeviceMute(mute) {
   if (mute == 1) {
     Object.keys(remoteUsers).forEach((uid) => {
       var audioTrack = remoteUsers[uid]._audioTrack;
-      audioTrack._mediaStreamTrack.enabled = false;
+      if(audioTrack) {
+        audioTrack._mediaStreamTrack.enabled = false;
+      }
     });
     if (localTracks.audioMixingTrack) {
       localTracks.audioMixingTrack._mediaStreamTrack.enabled = false;
@@ -229,7 +237,9 @@ function setAudioPlaybackDeviceMute(mute) {
   } else {
     Object.keys(remoteUsers).forEach((uid) => {
       var audioTrack = remoteUsers[uid]._audioTrack;
-      audioTrack._mediaStreamTrack.enabled = true;
+      if(audioTrack) {
+        audioTrack._mediaStreamTrack.enabled = true;
+      }
     });
     if (localTracks.audioMixingTrack) {
       localTracks.audioMixingTrack._mediaStreamTrack.enabled = true;
@@ -277,7 +287,9 @@ async function setPlaybackCollectionDeviceWGL(deviceId) {
   currentPlayBackDevice = deviceId;
   Object.keys(remoteUsers).forEach((uid) => {
     var audioTrack = remoteUsers[uid]._audioTrack;
-    audioTrack.setPlaybackDevice(deviceId);
+    if(audioTrack) {
+      audioTrack.setPlaybackDevice(deviceId);
+    }
   });
   if (localTracks.audioMixingTrack) {
     localTracks.audioMixingTrack.setPlaybackDevice(deviceId);
