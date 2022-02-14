@@ -15,6 +15,18 @@ async function wglw_joinChannel(channelkey, channelName, info, uid) {
   cacheDevices();
 }
 
+async function wglw_joinChannel_withOption(
+  token_str,
+  channelId_str,
+  info,
+  uid,
+  subscribeAudio, subscribeVideo,
+  publishAudio, publishVideo
+) {
+  client_manager.setAVControl(subscribeAudio, subscribeVideo, publishAudio, publishVideo);
+  await wglw_joinChannel(token_str, channelId_str, info, uid);
+}
+
 async function joinChannelWithUserAccount_WGL(
   token_str,
   channelId_str,

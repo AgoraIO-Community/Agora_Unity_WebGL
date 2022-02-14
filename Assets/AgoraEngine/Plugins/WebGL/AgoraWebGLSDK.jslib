@@ -1326,6 +1326,15 @@ var LibraryAgoraWebGLSDK = {
       autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
 
+  joinChannelWithMediaOption : function (token, channelId, info, uid, 
+      autoSubscribeAudio, autoSubscribeVideo,
+      publishLocalAudio, publishLocalVideo) {
+    var token_str = Pointer_stringify(token);
+    var channelId_str = Pointer_stringify(channelId);
+    wglw_joinChannel_withOption(token_str,channelId_str, info, uid, 
+      autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
+  },
+
   setDefaultEngineSettings: function () {},
   setVideoQualityParameters: function (preferFrameRateOverImageQuality) {},
   getCurrentPlaybackDeviceInfo: function (deviceName, deviceId) {},
@@ -1717,7 +1726,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
   getEffectCurrentPosition: function() {},
   getEffectDuration: function() {},
   isCameraTorchSupported: function() {},
-  joinChannelWithMediaOption: function() {},
   playEffect2: function() {},
   setCameraTorchOn: function() {},
   setCloudProxy: function() {},
