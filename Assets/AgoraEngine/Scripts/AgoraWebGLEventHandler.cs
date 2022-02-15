@@ -819,9 +819,15 @@ namespace agora_gaming_rtc
 
         }
 
+        // sending to OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
+        // volumn info is <uid volume vad channel>* 
+        // in native, it seems the speaker number is always 1, even with multiple people in the channel
+        // vad is not used for WebGL, so it is hardcoded to 0 
+        // WebGL will pass back  <uid volume vad channel>* | speakerNumber | totalVolume
         public void OnVolumeIndication(string data)
         {
-
+            string[] events = data.Split('|');
+            IRtcEngine.OnAudioVolumeIndicationCallback(events[0], int.Parse(events[1]), int.Parse(events[2]));
         }
 
         public void refreshLocalCamera()

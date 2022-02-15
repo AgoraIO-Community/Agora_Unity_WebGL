@@ -127,9 +127,11 @@ public class TestHelloUnityVideo
 
         mRtcEngine.OnUserMutedAudio = OnUserMutedAudio;
         mRtcEngine.OnUserMuteVideo = OnUserMutedVideo;
+        mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
 
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        mRtcEngine.EnableAudioVolumeIndication(500, 8, report_vad: true);
 
         var _orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE;
 
@@ -344,6 +346,15 @@ public class TestHelloUnityVideo
     private void OnUserMutedVideo(uint uid, bool muted)
     {
         Debug.LogFormat("user {0} muted video:{1}", uid, muted);
+    }
+
+    void OnVolumeIndicationHandler(AudioVolumeInfo[] speakers, int speakerNumber, int totalVolume)
+    {
+        Debug.Log("OnVolumeIndicationHandler speakerNumber:" + speakerNumber + " totalvolume:" + totalVolume);
+        foreach (var sp in speakers)
+        {
+            Debug.LogFormat("Speaker:{0} level:{1} channel:{2}", sp.uid, sp.volume, sp.channelId);
+        }
     }
 
     /// <summary>
