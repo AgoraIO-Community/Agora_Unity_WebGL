@@ -207,4 +207,13 @@ class EventManager {
       data_chunk
     );
   }
+
+  raiseVolumeIndicator(volumeInfo, speakers, total)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnVolumeIndication",
+      volumeInfo + "|" + speakers + "|" + total
+    );
+  }
 }

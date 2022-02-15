@@ -13,6 +13,7 @@ class ClientManager {
     this.audioSubscribing = true; 
     this.client_role = 1; // default is host, 2 is audience
     this._storedChannelProfile = 0; // channel profile saved before join is called
+    this._inChannel = false;
   }
 
   manipulate() {}
@@ -206,6 +207,27 @@ class ClientManager {
     }
   }
 
+  async handleVolumeIndicator(result) {
+    var total = 0;
+    var count = result.length;
+    var info = "";
+    const vad = 0;
+    result.forEach(function(volume, index){
+      console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
+
+      if (index != 0) {
+        info += "\t";
+      }
+      if (volume.level > total) {
+        total = volume.level;
+      }
+      var level = volume.level.toFixed();
+      const channel = client_manager.options.channel;
+      info += `${volume.uid}\t${level}\t${vad}\t${channel}`;
+    });
+    event_manager.raiseVolumeIndicator(info, count, total.toFixed());
+  }
+
   handleException(e) {
     console.log(e);
   }
@@ -262,6 +284,7 @@ class ClientManager {
 
     // leave the channel
     await this.client.leave();
+    this._inChannel = false;
   }
 
 
@@ -302,6 +325,7 @@ class ClientManager {
     this.client.on("exception", this.handleException.bind(this));
     this.client.on("error", this.handleError.bind(this));
     this.client.on("user-info-updated", this.handleUserInfoUpdate.bind(this));
+    this.client.on("volume-indicator", this.handleVolumeIndicator.bind(this));
     if (typeof(user) == "string") {
 	    user = 0; // let system assign uid
     }
@@ -321,6 +345,8 @@ class ClientManager {
       this.options.uid.toString(),
       this.options.channel
     );
+
+    this._inChannel = true;
   }
 
   // Help function for JoinChannel
@@ -355,7 +381,7 @@ class ClientManager {
     }
 
     $("#local-player-name").text(`localVideo(${this.options.uid})`);
-    if (this.isHosting()) {
+    if (this.isHosting() && this._inChannel) {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
         if (track) {
