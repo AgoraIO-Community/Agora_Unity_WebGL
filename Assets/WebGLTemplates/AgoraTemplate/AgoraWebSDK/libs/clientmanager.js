@@ -280,10 +280,10 @@ class ClientManager {
     // remove remote users and player views
     remoteUsers = {};
 
-    event_manager.raiseOnLeaveChannel();
-
     // leave the channel
     await this.client.leave();
+    event_manager.raiseOnLeaveChannel();
+
     this._inChannel = false;
   }
 
