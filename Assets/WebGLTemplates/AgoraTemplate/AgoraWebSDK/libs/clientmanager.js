@@ -215,15 +215,12 @@ class ClientManager {
     result.forEach(function(volume, index){
       console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
 
-      if (index != 0) {
-        info += "\t";
-      }
       if (volume.level > total) {
         total = volume.level;
       }
       var level = volume.level.toFixed();
       const channel = client_manager.options.channel;
-      info += `${volume.uid}\t${level}\t${vad}\t${channel}`;
+      info += `\t${volume.uid}\t${level}\t${vad}\t${channel}`;
     });
     event_manager.raiseVolumeIndicator(info, count, total.toFixed());
   }

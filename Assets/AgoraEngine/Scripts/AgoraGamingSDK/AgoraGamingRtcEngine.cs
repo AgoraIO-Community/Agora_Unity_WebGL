@@ -4515,7 +4515,7 @@ namespace agora_gaming_rtc
                         if (instance != null && instance.OnVolumeIndication != null)
                         {
                             string[] sArray = volumeInfo.Split('\t');
-                            int j = 0;
+                            int j = 1;
                             AudioVolumeInfo[] infos = new AudioVolumeInfo[speakerNumber];
                             if (speakerNumber > 0)
                             {
