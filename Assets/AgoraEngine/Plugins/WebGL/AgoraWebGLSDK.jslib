@@ -1289,7 +1289,13 @@ var LibraryAgoraWebGLSDK = {
   },
   stopEchoTest: function () {},
   creatAAudioRecordingDeviceManager: function () {},
-  createDataStream: function (channel, reliable, ordered) {},
+  createDataStream: function (reliable, ordered) { 
+    createDataStream(ordered);
+    return 0;
+  },
+  createDataStream_engine: function(syncWithAudio, ordered) {
+    createDataStream(ordered);
+  },
   initEventOnCaptureVideoFrame: function (onCaptureVideoFrame) {},
   getCurrentVideoDevice: function (deviceId) {},
   setAudioRecordingDeviceMute: function (mute) {
@@ -1301,7 +1307,15 @@ var LibraryAgoraWebGLSDK = {
   setRemoteRenderMode2: function (channel, userId, renderMode, mirrorMode) {},
   setRemoteVoicePosition2: function (channel, uid, pan, gain) {},
   channelId: function (channel) {},
-  sendStreamMessage: function (streamId, data, length) {},
+  sendStreamMessage: function (streamId, data, length) {
+      // there is no notion of streamId 
+      const newArray =new ArrayBuffer(length);
+      const newByteArray = new Uint8Array(newArray);
+      for(var i = 0; i < length; i++) {
+        newByteArray[i]=HEAPU8[data + i];
+      }
+      return sendStreamMessage(newByteArray);
+  },
   sendMetadata: function (uid, size, buffer, timeStampMs) {},
   initEventOnRecordAudioFrame: function (onRecordAudioFrame) {},
   getAudioMixingPublishVolume: function () {},
@@ -1477,7 +1491,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
   ) {},
   generateNativeTexture: function () {},
   setLocalVoicePitch: function (pitch) {},
-  createDataStream2: function (channel, reliable, ordered) {},
   addInjectStreamUrl2: function (
     channel,
     url,
@@ -1718,8 +1731,9 @@ muteLocalAudioStream_channel: function(channel, mute) {
 
   // Stubs for Unity 2021.2.x, see https://github.com/AgoraIO-Community/Agora_Unity_WebGL/issues/17
   adjustLoopbackRecordingSignalVolume: function() {},
-  createDataStream_channel: function() {},
-  createDataStream_engine: function() {},
+  createDataStream2: function (channel, reliable, ordered) {},
+  createDataStream_channel: function(channel, syncWithAudio, ordered) {},
+
   enableDeepLearningDenoise: function() {},
   enableVirtualBackground: function() {},
   getAudioMixingDuration2: function() {},
