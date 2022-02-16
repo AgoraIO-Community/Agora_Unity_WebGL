@@ -14,6 +14,7 @@ class ClientManager {
     this.client_role = 1; // default is host, 2 is audience
     this._storedChannelProfile = 0; // channel profile saved before join is called
     this._inChannel = false;
+    this._streamMessageRetry = false;
   }
 
   manipulate() {}
@@ -225,6 +226,12 @@ class ClientManager {
     event_manager.raiseVolumeIndicator(info, count, total.toFixed());
   }
 
+  async handleStreamMessage(uid, data) {
+    // const str = utf8ArrayToString(data);
+    // console.log(str);
+    UnityHooks.InvokeStreamMessageCallback(uid, data, data.length);
+  }
+
   handleException(e) {
     console.log(e);
   }
@@ -323,6 +330,8 @@ class ClientManager {
     this.client.on("error", this.handleError.bind(this));
     this.client.on("user-info-updated", this.handleUserInfoUpdate.bind(this));
     this.client.on("volume-indicator", this.handleVolumeIndicator.bind(this));
+    this.client.on("stream-message", this.handleStreamMessage.bind(this));
+
     if (typeof(user) == "string") {
 	    user = 0; // let system assign uid
     }
@@ -798,5 +807,20 @@ class ClientManager {
   disableLogUpload() {
     AgoraRTC.disableLogUpload();
     console.log("----------- log upload to server disabled -------- ");
+  }
+
+  createDataStream(needRetry) {
+    this._streamMessageRetry = needRetry;
+  }
+
+  sendDataStream(data) {
+    try {
+        this.client.sendStreamMessage(data, this._streamMessageRetry);
+    } catch(e) {
+        event_manager.raise
+        return -1;
+    }
+
+    return 0;
   }
 }

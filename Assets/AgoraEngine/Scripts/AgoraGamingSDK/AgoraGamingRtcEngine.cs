@@ -210,11 +210,8 @@ namespace agora_gaming_rtc
         {
 
             InitGameObject();
-
-#if !UNITY_EDITOR && UNITY_WEBGL
-#else
             InitEngineCallback();
-#endif
+
             int retCode = IRtcEngineNative.createEngine(appId);
             if (retCode != 0)
             {
@@ -4325,6 +4322,19 @@ namespace agora_gaming_rtc
         }
 
         private static IRtcEngine instance = null;
+
+        internal static void EnqueueCallback(Action action)
+        {
+
+            AgoraCallbackQueue queue = instance._AgoraCallbackObject._CallbackQueue;
+            if (!ReferenceEquals(queue, null))
+            {
+                queue.EnQueue(() =>
+                {
+                    action.Invoke();
+                });
+            }
+        }
 
         [MonoPInvokeCallback(typeof(OnJoinChannelSuccessHandler))]
         private static void OnJoinChannelSuccessCallback(string channel, uint uid, int elapsed)

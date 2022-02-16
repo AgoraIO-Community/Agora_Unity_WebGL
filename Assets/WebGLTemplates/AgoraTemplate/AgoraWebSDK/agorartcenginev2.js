@@ -135,7 +135,14 @@ function enableAudioVolumeIndicator() {
   client_manager.enableAudioVolumeIndicator();
 }
 
-
+// create a data stream
+function createDataStream(needRetry) {
+  client_manager.createDataStream(needRetry);
+}
+// sends a stream message of byte array
+function sendStreamMessage(data) {
+  return client_manager.sendDataStream(data);
+}
 
 // Sets the built-in encryption mode.
 function setEncryptionMode(mode) {
