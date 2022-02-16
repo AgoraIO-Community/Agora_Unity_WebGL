@@ -114,3 +114,7 @@ function _throw(msg) {
 setInterval(function () {
   $("#info").html("multiclient_connections: " + multiclient_connections);
 }, 3000);*/
+
+var UnityHooks={
+  isLoaded:false
+}

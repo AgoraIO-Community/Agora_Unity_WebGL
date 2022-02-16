@@ -227,9 +227,9 @@ class ClientManager {
   }
 
   async handleStreamMessage(uid, data) {
-    console.log("-------- stream message ---------->"+uid);
-    const str = utf8ArrayToString(data);
-    console.log(str);
+    // const str = utf8ArrayToString(data);
+    // console.log(str);
+    UnityHooks.InvokeStreamMessageCallback(uid, data, data.length);
   }
 
   handleException(e) {

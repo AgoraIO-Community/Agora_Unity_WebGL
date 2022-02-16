@@ -201,7 +201,7 @@ public class TestDataStream : MonoBehaviour
         float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(3f, 4f, 1f);
+        go.transform.localScale = new Vector3(1.5f, 1f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
