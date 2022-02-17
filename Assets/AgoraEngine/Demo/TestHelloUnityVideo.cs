@@ -20,15 +20,19 @@ public class TestHelloUnityVideo
 
     private AudioVideoStates AudioVideoState = new AudioVideoStates();
 
-
-
     private List<GameObject> remoteUserDisplays = new List<GameObject>();
 
     private string mChannelName { get; set; }
     private Text ChannelNameLabel { get; set; }
     private CLIENT_ROLE_TYPE ClientRole { get; set; }
+
+    private ToggleStateButton MuteAudioButton { get; set; }
+    private ToggleStateButton MuteVideoButton { get; set; }
     private ToggleStateButton RoleButton { get; set; }
     private ToggleStateButton ChannelButton { get; set; }
+
+    // Testing Volume Indication
+    private bool TestVolumeIndication = false;
 
     // load agora engine
     public void loadEngine(string appId)
@@ -132,7 +136,12 @@ public class TestHelloUnityVideo
 
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-        mRtcEngine.EnableAudioVolumeIndication(500, 8, report_vad: true);
+
+        // Turn this on to receive volumenIndication
+        if (TestVolumeIndication)
+        {
+            mRtcEngine.EnableAudioVolumeIndication(500, 8, report_vad: true);
+        }
 
         var _orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE;
 
@@ -264,7 +273,12 @@ public class TestHelloUnityVideo
             MessageText = text.GetComponent<Text>();
         }
 
-        ToggleStateButton MuteAudioButton = GameObject.Find("MuteButton").GetComponent<ToggleStateButton>();
+        SetButtons();
+    }
+
+    private void SetButtons()
+    {
+        MuteAudioButton = GameObject.Find("MuteButton").GetComponent<ToggleStateButton>();
         if (MuteAudioButton != null)
         {
             MuteAudioButton.Setup(initOnOff: false,
@@ -280,7 +294,7 @@ public class TestHelloUnityVideo
             );
         }
 
-        ToggleStateButton MuteVideoButton = GameObject.Find("CamButton").GetComponent<ToggleStateButton>();
+        MuteVideoButton = GameObject.Find("CamButton").GetComponent<ToggleStateButton>();
         if (MuteVideoButton != null)
         {
             MuteVideoButton.Setup(initOnOff: false,
@@ -296,11 +310,11 @@ public class TestHelloUnityVideo
             );
         }
 
-        ToggleStateButton chButton = GameObject.Find("ChannelButton").GetComponent<ToggleStateButton>();
-        if (chButton != null)
+        ChannelButton = GameObject.Find("ChannelButton").GetComponent<ToggleStateButton>();
+        if (ChannelButton != null)
         {
-            chButton.Setup(initOnOff: false,
-                onStateText: "Channel:" + mChannelName + "2", offStateText: "Channel:" + mChannelName,
+            ChannelButton.Setup(initOnOff: false,
+                onStateText: mChannelName + "2", offStateText: mChannelName,
                 callOnAction: () =>
                 {
                     mRtcEngine.SwitchChannel(null, mChannelName + "2");
@@ -310,7 +324,6 @@ public class TestHelloUnityVideo
                     mRtcEngine.SwitchChannel(null, mChannelName);
                 }
                 );
-            ChannelButton = chButton;
         }
 
         ChannelNameLabel = GameObject.Find("ChannelName").GetComponent<Text>();
@@ -318,26 +331,32 @@ public class TestHelloUnityVideo
         RoleButton = GameObject.Find("RoleButton").GetComponent<ToggleStateButton>();
         SetupRoleButton(isHost: ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        ChannelButton.GetComponent<Button>().enabled = ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+        ChannelButton.GetComponent<Button>().interactable = ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
     }
 
     private void SetupRoleButton(bool isHost)
     {
-        //if (RoleButton != null)
+        if (RoleButton != null)
         {
             RoleButton.Setup(initOnOff: isHost,
                  onStateText: "Host", offStateText: "Audience",
                  callOnAction: () =>
                  {
-                     Debug.LogWarning("Switching role to Broadcaster");
+                     Debug.Log("Switching role to Broadcaster");
                      mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-                     ChannelButton.GetComponent<Button>().enabled = false;
+                     ChannelButton.GetComponent<Button>().interactable = false;
+                     MuteAudioButton.Reset();
+                     MuteVideoButton.Reset();
+                     MuteVideoButton.GetComponent<Button>().interactable = true;
+                     MuteAudioButton.GetComponent<Button>().interactable = true;
                  },
                  callOffAction: () =>
                  {
-                     Debug.LogWarning("Switching role to Audience");
+                     Debug.Log("Switching role to Audience");
                      mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
-                     ChannelButton.GetComponent<Button>().enabled = true;
+                     ChannelButton.GetComponent<Button>().interactable = true;
+                     MuteVideoButton.GetComponent<Button>().interactable = false;
+                     MuteAudioButton.GetComponent<Button>().interactable = false;
                  }
                  );
 
