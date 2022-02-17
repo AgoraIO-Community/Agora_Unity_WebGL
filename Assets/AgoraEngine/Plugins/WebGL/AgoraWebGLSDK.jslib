@@ -213,13 +213,13 @@ var LibraryAgoraWebGLSDK = {
 
     if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
 
-    if (v.lastUpdateTextureTime === v.currentTime) return false;
+    // if (v.lastUpdateTextureTime === v.currentTime) return false;
 
-    v.lastUpdateTextureTime = v.currentTime;
+    // v.lastUpdateTextureTime = v.currentTime;
 
-    if (
-      v.previousUploadedWidth != v.videoWidth ||
-      v.previousUploadedHeight != v.videoHeight
+    if ( 1 
+      // v.previousUploadedWidth != v.videoWidth ||
+      // v.previousUploadedHeight != v.videoHeight
     ) {
       GLctx.deleteTexture(GL.textures[tex]);
       var t = GLctx.createTexture();

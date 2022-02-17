@@ -293,6 +293,8 @@ class ClientManager {
 
 
   async switchChannel(token_str, channelId_str) {
+    const enableVideoBefore = this.videoEnabled;
+    const enableAudioBefore = this.audioEnabled;
     await this.leave();
     this.options.token = token_str;
     this.options.channel = channelId_str;
@@ -303,6 +305,9 @@ class ClientManager {
         this.options.token || null
       )
     ]);
+    // restore a/v enable
+    this.videoEnabled = enableVideoBefore;
+    this.audioEnabled = enableAudioBefore;
     await this.processJoinChannelAVTrack();
   }
 
@@ -345,14 +350,13 @@ class ClientManager {
       ),
     ]);
 
+    this._inChannel = true;
     await this.processJoinChannelAVTrack();
 
     event_manager.raiseJoinChannelSuccess(
       this.options.uid.toString(),
       this.options.channel
     );
-
-    this._inChannel = true;
   }
 
   // Help function for JoinChannel
@@ -366,7 +370,7 @@ class ClientManager {
       );
     }
 
-    if (this.audioEnabled) {
+    if (this.audioEnabled && this.isHosting()) {
       [localTracks.audioTrack] = await Promise.all([
         AgoraRTC.createMicrophoneAudioTrack()
       ]);
