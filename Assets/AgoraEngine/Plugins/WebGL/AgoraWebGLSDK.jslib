@@ -131,13 +131,14 @@ var LibraryAgoraWebGLSDK = {
 
     if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
 
-    if (v.lastUpdateTextureTime === v.currentTime) return false;
+    //if (v.lastUpdateTextureTime === v.currentTime) return false;
 
-    v.lastUpdateTextureTime = v.currentTime;
+    //v.lastUpdateTextureTime = v.currentTime;
 
     if (
-      v.previousUploadedWidth != v.videoWidth ||
-      v.previousUploadedHeight != v.videoHeight
+      1
+      //v.previousUploadedWidth != v.videoWidth ||
+      //v.previousUploadedHeight != v.videoHeight
     ) {
       GLctx.deleteTexture(GL.textures[tex]);
       var t = GLctx.createTexture();
@@ -170,16 +171,17 @@ var LibraryAgoraWebGLSDK = {
 
       v.previousUploadedWidth = v.videoWidth;
       v.previousUploadedHeight = v.videoHeight;
-    } else {
-      GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[tex]);
-      GLctx.texImage2D(
-        GLctx.TEXTURE_2D,
-        0,
-        GLctx.RGBA,
-        GLctx.RGBA,
-        GLctx.UNSIGNED_BYTE,
-        v
-      );
+//    } else {
+//      console.log("bindTexture////////");
+//      GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[tex]);
+//      GLctx.texImage2D(
+//        GLctx.TEXTURE_2D,
+//        0,
+//        GLctx.RGBA,
+//        GLctx.RGBA,
+//        GLctx.UNSIGNED_BYTE,
+//       v
+//      );
     }
 
     return true;

@@ -308,6 +308,7 @@
     <Compile Include="Assets\API-Example\tools\ToggleStateButton.cs" />
     <Compile Include="Assets\API-Example\tools\UIElementDragger.cs" />
     <Compile Include="Assets\API-Example\video-encoder-configuration\video_encoder_configuration.cs" />
+    <Compile Include="Assets\FunctionalTest\Respawn\TestVideoRespawn.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\AgoraEngine\Plugins\Android\AgoraRtcEngineKit.plugin\AndroidManifest.xml" />
