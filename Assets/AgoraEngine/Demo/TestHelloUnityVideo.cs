@@ -28,6 +28,7 @@ public class TestHelloUnityVideo
     private Text ChannelNameLabel { get; set; }
     private CLIENT_ROLE_TYPE ClientRole { get; set; }
     private ToggleStateButton RoleButton { get; set; }
+    private ToggleStateButton ChannelButton { get; set; }
 
     // load agora engine
     public void loadEngine(string appId)
@@ -309,12 +310,15 @@ public class TestHelloUnityVideo
                     mRtcEngine.SwitchChannel(null, mChannelName);
                 }
                 );
+            ChannelButton = chButton;
         }
 
         ChannelNameLabel = GameObject.Find("ChannelName").GetComponent<Text>();
 
         RoleButton = GameObject.Find("RoleButton").GetComponent<ToggleStateButton>();
         SetupRoleButton(isHost: ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        ChannelButton.GetComponent<Button>().enabled = ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
     }
 
     private void SetupRoleButton(bool isHost)
@@ -327,11 +331,13 @@ public class TestHelloUnityVideo
                  {
                      Debug.LogWarning("Switching role to Broadcaster");
                      mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+                     ChannelButton.GetComponent<Button>().enabled = false;
                  },
                  callOffAction: () =>
                  {
                      Debug.LogWarning("Switching role to Audience");
                      mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+                     ChannelButton.GetComponent<Button>().enabled = true;
                  }
                  );
 
