@@ -263,6 +263,8 @@ namespace agora_gaming_rtc
 
         void OnDestroy()
         {
+            SetEnable(false);
+
             if (videoRender != null && IRtcEngine.QueryEngine() != null)
             {
                 if (isMultiChannelWant)
@@ -273,7 +275,7 @@ namespace agora_gaming_rtc
                     }
                     else
                     {
-                        videoRender.RemoveUserVideoInfo(mChannelId, mUid);
+                        // videoRender.RemoveUserVideoInfo(mChannelId, mUid);
                     }
                 }
                 else
