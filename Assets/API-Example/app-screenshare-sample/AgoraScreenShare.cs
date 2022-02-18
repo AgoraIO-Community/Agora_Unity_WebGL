@@ -4,7 +4,7 @@ using agora_gaming_rtc;
 using UnityEngine.UI;
 using agora_utilities;
 
-public class AgoraScreenShare : MonoBehaviour 
+public class AgoraScreenShare : MonoBehaviour
 {
 
     [SerializeField]
@@ -19,27 +19,27 @@ public class AgoraScreenShare : MonoBehaviour
     [SerializeField]
     Toggle ScreenToggle;
 
-   	public Text logText;
+    public Text logText;
     private Logger logger;
-	public IRtcEngine mRtcEngine = null;
-	private const float Offset = 100;
-	private Texture2D mTexture;
-    private Rect mRect;	
+    public IRtcEngine mRtcEngine = null;
+    private const float Offset = 100;
+    private Texture2D mTexture;
+    private Rect mRect;
     public RawImage rawImage;
     public RawImage textureImage;
-	public Vector2 cameraSize = new Vector2(640, 480);
-	public int cameraFPS = 15;
+    public Vector2 cameraSize = new Vector2(640, 480);
+    public int cameraFPS = 15;
     bool running = false;
     int timestamp = 0;
     bool _sharingImage = false;
 
     // Use this for initialization
-    void Start () 
-	{
+    void Start()
+    {
         bool appReady = CheckAppId();
         if (!appReady) return;
 
-		InitEngine();
+        InitEngine();
         InitTexture();
 
 #if !UNITY_WEBGL || UNITY_EDITOR
@@ -86,7 +86,7 @@ public class AgoraScreenShare : MonoBehaviour
         mRtcEngine.StartScreenCaptureForWeb();
     }
 
-        
+
     // On Native only, after stopping screenshare, you need to choose the
     // external source mode again before joining the channel.
     // On Web, it is preferred to enable external source while in the channel
@@ -128,8 +128,8 @@ public class AgoraScreenShare : MonoBehaviour
             minBitrate = 1,
             orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE,
             degradationPreference = DEGRADATION_PREFERENCE.MAINTAIN_FRAMERATE,
-            mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_DISABLED 
-                // note: mirrorMode is not effective for WebGL
+            mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_DISABLED
+            // note: mirrorMode is not effective for WebGL
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
 
@@ -199,18 +199,18 @@ public class AgoraScreenShare : MonoBehaviour
     }
 
     void InitEngine()
-	{
+    {
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
-		mRtcEngine.SetLogFile("log.txt");
-		mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-		mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-		mRtcEngine.EnableAudio();
-		mRtcEngine.EnableVideo();
-		mRtcEngine.EnableVideoObserver();
+        mRtcEngine.SetLogFile("log.txt");
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        mRtcEngine.EnableAudio();
+        mRtcEngine.EnableVideo();
+        mRtcEngine.EnableVideoObserver();
 
         // Web: calling this before joining creates publish error
         // as we publish new created canvas source
-		//mRtcEngine.SetExternalVideoSource(true, false);
+        //mRtcEngine.SetExternalVideoSource(true, false);
 
         mRtcEngine.OnJoinChannelSuccess += OnJoinChannelSuccessHandler;
         mRtcEngine.OnLeaveChannel += OnLeaveChannelHandler;
@@ -219,16 +219,16 @@ public class AgoraScreenShare : MonoBehaviour
         mRtcEngine.OnConnectionLost += OnConnectionLostHandler;
         mRtcEngine.OnUserJoined += OnUserJoinedHandler;
         mRtcEngine.OnUserOffline += OnUserOfflineHandler;
-	}
+    }
 
-	void JoinChannel()
-	{
+    void JoinChannel()
+    {
         int ret = mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
         // int ret = mRtcEngine.JoinChannel(CHANNEL_NAME, "", 0);
         Debug.Log(string.Format("JoinChannel ret: ${0}", ret));
-	}
+    }
 
-	bool CheckAppId()
+    bool CheckAppId()
     {
         logger = new Logger(logText);
         return logger.DebugAssert(APP_ID.Length > 10, "<color=red>[STOP] Please fill in your appId in Canvas!!!!</color>");
@@ -268,12 +268,12 @@ public class AgoraScreenShare : MonoBehaviour
     {
         logger.UpdateLog(string.Format("OnSDKWarning warn: {0}, msg: {1}", warn, msg));
     }
-    
+
     void OnSDKErrorHandler(int error, string msg)
     {
         logger.UpdateLog(string.Format("OnSDKError error: {0}, msg: {1}", error, msg));
     }
-    
+
     void OnConnectionLostHandler()
     {
         logger.UpdateLog(string.Format("OnConnectionLost "));
@@ -283,8 +283,8 @@ public class AgoraScreenShare : MonoBehaviour
     {
         if (mRtcEngine != null)
         {
-			mRtcEngine.LeaveChannel();
-			mRtcEngine.DisableVideoObserver();
+            mRtcEngine.LeaveChannel();
+            mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
             mRtcEngine = null;
         }
@@ -309,7 +309,7 @@ public class AgoraScreenShare : MonoBehaviour
         {
             return; // reuse
         }
-        
+
         // create a GameObject and assign to this new user
         VideoSurface videoSurface = makeImageSurface(uid.ToString());
         if (!ReferenceEquals(videoSurface, null))
@@ -339,7 +339,7 @@ public class AgoraScreenShare : MonoBehaviour
         GameObject canvas = GameObject.Find("Canvas");
         if (canvas != null)
         {
-            go.transform.parent = canvas.transform;
+            go.transform.SetParent(canvas.transform);
             Debug.Log("add video view");
         }
         else
@@ -353,7 +353,7 @@ public class AgoraScreenShare : MonoBehaviour
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         //go.transform.localPosition = new Vector3(10, 10, 0f);
-        go.transform.localScale = new Vector3(3 * 1.6666f, 3f, 1f);
+        go.transform.localScale = new Vector3(1 * 1.33333f, 1f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();

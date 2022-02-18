@@ -15,6 +15,14 @@ class ClientManager {
     this._storedChannelProfile = 0; // channel profile saved before join is called
     this._inChannel = false;
     this._streamMessageRetry = false;
+    this._customVideoConfiguration = {
+      bitrateMax:undefined,
+      bitrateMin:undefined,
+      optimizationMode:"detail",
+      frameRate:undefined,
+      width:undefined,
+      height:undefined
+    };
   }
 
   manipulate() {}
@@ -40,7 +48,7 @@ class ClientManager {
     _logger("created new client");
     this.client = AgoraRTC.createClient({ mode: mode, codec: "vp8" });
     if (mode == "live") {
-      this.client_role = 2;
+      this.client_role = 1;
       setClientMode_LIVE(); // let multichannel know
     } // else default is "rtc"
   }
@@ -576,18 +584,19 @@ class ClientManager {
         await this.client.unpublish(localTracks.videoTrack);
       }
 
-      var stream = mainCanvas.captureStream(15); // 25 FPS
+      var stream = mainCanvas.captureStream(this._customVideoConfiguration.frameRate??15); // 15 FPS
       var CustomVideoTrackInitConfig = {
-        bitrateMax: 400,
-        bitrateMin: 200,
+        bitrateMax: this._customVideoConfiguration.bitrateMax??400,
+        bitrateMin: this._customVideoConfiguration.bitrateMin??200,
         mediaStreamTrack: stream.getTracks()[0],
-        optimizationMode: "detail",
+        optimizationMode: this._customVideoConfiguration.optimizationMode
       };
 
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCustomVideoTrack(CustomVideoTrackInitConfig),
       ]);
       localTracks.videoTrack.play("local-player");
+      localTracks.videoTrack.customVideoEnabled = true;
       await this.client.publish(localTracks.videoTrack);
     } else if (enable == 0) {
       localTracks.videoTrack.stop();
@@ -824,7 +833,14 @@ class ClientManager {
         event_manager.raise
         return -1;
     }
-
     return 0;
+  }
+
+  setVideoConfiguration(config) {
+    if (config.width) this._customVideoConfiguration.width = config.width;
+    if (config.height)  this._customVideoConfiguration.height = config.height;
+    if (config.frameRate) this._customVideoConfiguration.frameRate = config.frameRate;
+    if (config.bitrateMin) this._customVideoConfiguration.bitrateMin = config.bitrateMin;
+    if (config.bitrateMax) this._customVideoConfiguration.bitrateMax = config.bitrateMax;
   }
 }

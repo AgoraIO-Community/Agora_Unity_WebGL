@@ -531,9 +531,10 @@ async function SetVideoEncoderConfiguration(
   };
   if (localTracks.videoTrack == null) {
     AgoraRTC.createCameraVideoTrack({ encoderConfig: updatedConfig });
-  } else {
+  } else if (!localTracks.videoTrack.customVideoEnabled) {
     localTracks.videoTrack && await localTracks.videoTrack.setEncoderConfiguration(updatedConfig);
   }
+  client_manager.setVideoConfiguration(updatedConfig);
 }
 
 // Setting Live Transcoding Configuration
