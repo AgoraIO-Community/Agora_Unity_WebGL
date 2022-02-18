@@ -448,7 +448,7 @@ namespace agora_gaming_rtc
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
                 ch.ChannelOnJoinChannelSuccess(channel, uint.Parse(userId), 0);
-                
+
             }
         }
 
@@ -478,13 +478,47 @@ namespace agora_gaming_rtc
             }
         }
 
-        public void onRemoteUserLeaved(string userId)
+        public void onRemoteUserLeaved(string eventData)
         {
-            _remoteUserListing.Remove(uint.Parse(userId));
+            string[] events = eventData.Split('|');
+            if (events.Length < 2)
+            {
+                Debug.LogError("Unexpected value for onRemoteUserLeaved:" + eventData);
+                return;
+            }
+            uint uid = uint.Parse(events[0]);
+            _remoteUserListing.Remove(uid);
+
+            USER_OFFLINE_REASON reason = (USER_OFFLINE_REASON)int.Parse(events[1]);
+
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnUserOffline != null)
             {
-                engine.OnUserOffline(uint.Parse(userId), USER_OFFLINE_REASON.DROPPED);
+                engine.OnUserOffline(uid, reason);
+            }
+        }
+
+        public void onRemoteUserMuted(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            if (events.Length < 3)
+            {
+                Debug.LogError("Unexpected value for onRemoteUserMuted:" + eventData);
+                return;
+            }
+
+            uint userId = uint.Parse(events[0]);
+            string mediaType = events[1];
+            bool muted = events[2].Equals("1");
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine == null) return;
+            if (mediaType == "video" && engine.OnUserMuteVideo != null)
+            {
+                engine.OnUserMuteVideo(userId, muted);
+            }
+            else if (mediaType == "audio" && engine.OnUserMutedAudio != null)
+            {
+                engine.OnUserMutedAudio(userId, muted);
             }
         }
 
@@ -642,7 +676,8 @@ namespace agora_gaming_rtc
                 RemoteVideoStats remoteStats = new RemoteVideoStats();
                 remoteStats.receivedBitrate = 0; // to make it visible, put more than 0
                 remoteStats.uid = uint.Parse(userId);
-                if (ch.ChannelOnRemoteVideoStats != null) {
+                if (ch.ChannelOnRemoteVideoStats != null)
+                {
                     ch.ChannelOnRemoteVideoStats(channel, remoteStats);
                 }
             }
@@ -723,7 +758,7 @@ namespace agora_gaming_rtc
                 }
 
                 ch.ChannelOnClientRoleChanged(channel, oldRole, newRole);
-                
+
             }
         }
 
@@ -779,14 +814,20 @@ namespace agora_gaming_rtc
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnTokenPrivilegeWillExpire != null)
             {
-                engine.OnTokenPrivilegeWillExpire(token);    
+                engine.OnTokenPrivilegeWillExpire(token);
             }
-            
+
         }
 
+        // sending to OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
+        // volumn info is <uid volume vad channel>* 
+        // in native, it seems the speaker number is always 1, even with multiple people in the channel
+        // vad is not used for WebGL, so it is hardcoded to 0 
+        // WebGL will pass back  <uid volume vad channel>* | speakerNumber | totalVolume
         public void OnVolumeIndication(string data)
         {
-
+            string[] events = data.Split('|');
+            IRtcEngine.OnAudioVolumeIndicationCallback(events[0], int.Parse(events[1]), int.Parse(events[2]));
         }
 
         public void refreshLocalCamera()

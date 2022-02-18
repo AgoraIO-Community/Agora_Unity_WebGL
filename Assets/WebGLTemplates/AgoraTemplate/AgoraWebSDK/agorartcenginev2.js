@@ -10,9 +10,43 @@ async function createIRtcEngine2(appID, areaCode) {
 //Allows a user to join a channel.
 async function wglw_joinChannel(channelkey, channelName, info, uid) {
   client_manager.setOptions(channelkey, channelName, uid);
-  await client_manager.joinChannel();
+  await client_manager.joinAgoraChannel(uid);
   wrapper.initStats();
   cacheDevices();
+}
+
+async function wglw_joinChannel_withOption(
+  token_str,
+  channelId_str,
+  info,
+  uid,
+  subscribeAudio, subscribeVideo,
+  publishAudio, publishVideo
+) {
+  client_manager.setAVControl(subscribeAudio, subscribeVideo, publishAudio, publishVideo);
+  await wglw_joinChannel(token_str, channelId_str, info, uid);
+}
+
+async function joinChannelWithUserAccount_WGL(
+  token_str,
+  channelId_str,
+  userAccount_str
+) {
+  client_manager.setOptions(token_str, channelId_str);
+  await client_manager.joinAgoraChannel(userAccount_str);
+  wrapper.initStats();
+  cacheDevices();
+}
+
+async function joinChannelWithUserAccount_engine_WGL(
+  token_str,
+  channelId_str,
+  userAccount_str,
+  subscribeAudio, subscribeVideo,
+  publishAudio, publishVideo
+) {
+  client_manager.setAVControl(subscribeAudio, subscribeVideo, publishAudio, publishVideo);
+  await joinChannelWithUserAccount_WGL(token_str, channelId_str, userAccount_str);
 }
 
 // Allows a user to leave a channel, such as hanging up or exiting a call.
@@ -25,6 +59,14 @@ function setChannelProfile(profile) {
 }
 
 function switchChannel_WGL(token_str, channelId_str) {
+  client_manager.switchChannel(token_str, channelId_str);
+}
+
+function switchChannel2_WGL(token_str, channelId_str,
+  subscribeAudio, subscribeVideo,
+  publishAudio, publishVideo
+) {
+  client_manager.setAVControl(subscribeAudio, subscribeVideo, publishAudio, publishVideo);
   client_manager.switchChannel(token_str, channelId_str);
 }
 
@@ -93,16 +135,13 @@ function enableAudioVolumeIndicator() {
   client_manager.enableAudioVolumeIndicator();
 }
 
-function joinChannelWithUserAccount_WGL(
-  token_str,
-  channelId_str,
-  userAccount_str
-) {
-  client_manager.joinChannelWithUserAccount_WGL(
-    token_str,
-    channelId_str,
-    userAccount_str
-  );
+// create a data stream
+function createDataStream(needRetry) {
+  client_manager.createDataStream(needRetry);
+}
+// sends a stream message of byte array
+function sendStreamMessage(data) {
+  return client_manager.sendDataStream(data);
 }
 
 // Sets the built-in encryption mode.
@@ -127,7 +166,10 @@ function setEncryptionSecret(secret) {
 
 //  Sets the role of the user, such as a host or an audience (default), before joining a channel in the interactive live streaming.
 async function setClientRole(role) {
-  client_manager.setClientRole(role);
+  client_manager.setClientRole(role, null);
+}
+async function setClientRole1(role, audienceLatencyLevel) {
+  client_manager.setClientRole(role, audienceLatencyLevel);
 }
 
 async function setMirrorApplied_WGL(apply) {
@@ -163,7 +205,9 @@ function setAudioRecordingDeviceVolume(volume) {
 function adjustPlaybackSignalVolume_WGL(volume) {
   Object.keys(remoteUsers).forEach((uid) => {
     var audioTrack = remoteUsers[uid]._audioTrack;
-    audioTrack.setVolume(volume);
+    if(audioTrack) {
+      audioTrack.setVolume(volume);
+    }
   });
 }
 
@@ -171,7 +215,9 @@ function adjustUserPlaybackSignalVolume_WGL(uid, volume) {
   Object.keys(remoteUsers).forEach((uid_in) => {
     if (uid_in == uid) {
       var audioTrack = remoteUsers[uid_in]._audioTrack;
-      audioTrack.setVolume(volume);
+      if(audioTrack) {
+        audioTrack.setVolume(volume);
+      }
     }
   });
 }
@@ -180,7 +226,9 @@ function setAudioPlaybackDeviceVolume(volume) {
   wrapper.savedSettings.playbackVolume = volume;
   Object.keys(remoteUsers).forEach((uid) => {
     var audioTrack = remoteUsers[uid]._audioTrack;
-    audioTrack.setVolume(volume);
+    if(audioTrack) {
+      audioTrack.setVolume(volume);
+    }
   });
   if (localTracks.audioMixingTrack) {
     localTracks.audioMixingTrack.setVolume(volume);
@@ -197,7 +245,9 @@ function setAudioPlaybackDeviceMute(mute) {
   if (mute == 1) {
     Object.keys(remoteUsers).forEach((uid) => {
       var audioTrack = remoteUsers[uid]._audioTrack;
-      audioTrack._mediaStreamTrack.enabled = false;
+      if(audioTrack) {
+        audioTrack._mediaStreamTrack.enabled = false;
+      }
     });
     if (localTracks.audioMixingTrack) {
       localTracks.audioMixingTrack._mediaStreamTrack.enabled = false;
@@ -206,7 +256,9 @@ function setAudioPlaybackDeviceMute(mute) {
   } else {
     Object.keys(remoteUsers).forEach((uid) => {
       var audioTrack = remoteUsers[uid]._audioTrack;
-      audioTrack._mediaStreamTrack.enabled = true;
+      if(audioTrack) {
+        audioTrack._mediaStreamTrack.enabled = true;
+      }
     });
     if (localTracks.audioMixingTrack) {
       localTracks.audioMixingTrack._mediaStreamTrack.enabled = true;
@@ -254,7 +306,9 @@ async function setPlaybackCollectionDeviceWGL(deviceId) {
   currentPlayBackDevice = deviceId;
   Object.keys(remoteUsers).forEach((uid) => {
     var audioTrack = remoteUsers[uid]._audioTrack;
-    audioTrack.setPlaybackDevice(deviceId);
+    if(audioTrack) {
+      audioTrack.setPlaybackDevice(deviceId);
+    }
   });
   if (localTracks.audioMixingTrack) {
     localTracks.audioMixingTrack.setPlaybackDevice(deviceId);
@@ -269,10 +323,10 @@ async function setAudioRecordingCollectionDeviceWGL(deviceId) {
   setLocalAudioTrackMicrophone(deviceId);
 }
 
-function handleConnectionStateChange(curState, revState, reason) {}
+function handleConnectionStateChange(curState, revState, reason) { }
 
 async function startScreenCaptureForWeb() {
-  client_manager.startScreenCaptureForWeb(); 
+  client_manager.startScreenCaptureForWeb();
 }
 
 async function startScreenCaptureByDisplayId(
@@ -390,36 +444,36 @@ async function unsubscribe(user, mediaType) {
   client_manager.unsubscribe(user, mediaType);
 }
 
-// Disables/Re-enables the local audio function.
+async function enableAudio(enabled) {
+  client_manager.enableAudio(enabled);
+}
+
 async function enableLocalAudio(enabled) {
-  if (enabled == false) {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(0);
-    }
-  } else {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(100);
-    }
-  }
+  client_manager.enableLocalAudio(enabled);
 }
 
 // Disables/Re-enables the local audio function.
 async function enableDisableAudio(enabled) {
-  if (enabled == false) {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(0);
-    }
-  } else {
-    if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(100);
+  if (localTracks.audioTrack) {
+    if (enabled == false) {
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.setVolume(0);
+      }
+    } else {
+      if (localTracks.audioTrack) {
+        localTracks.audioTrack.setVolume(100);
+      }
     }
   }
 }
 
+function muteLocalAudioStream(mute) {
+  client_manager.muteLocalAudioStream(mute);
+}
+
 // Stops/Resumes sending the local video stream.
-function muteLocalVideoTrack(enabled) {
-  if (enabled == true) localTracks.videoTrack.stop();
-  else localTracks.videoTrack.play("local-player");
+function muteLocalVideoTrack(mute) {
+  client_manager.muteLocalVideoStream(mute);
 }
 
 // Sets the stream type for all remote users
@@ -477,9 +531,10 @@ async function SetVideoEncoderConfiguration(
   };
   if (localTracks.videoTrack == null) {
     AgoraRTC.createCameraVideoTrack({ encoderConfig: updatedConfig });
-  } else {
+  } else if (!localTracks.videoTrack.customVideoEnabled) {
     localTracks.videoTrack && await localTracks.videoTrack.setEncoderConfiguration(updatedConfig);
   }
+  client_manager.setVideoConfiguration(updatedConfig);
 }
 
 // Setting Live Transcoding Configuration

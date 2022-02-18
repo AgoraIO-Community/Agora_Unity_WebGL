@@ -74,13 +74,31 @@ function setCurrentChannel_WGL(channelId) {
   selectedCurrentChannel = channelId;
 }
 
-function setClientRole2_MC(role) {
+function setClientRole2_MC(role, optionLevel) {
   roles[selectedCurrentChannel] = role;
   if (typeof clients[selectedCurrentChannel] === "undefined") {
-    return 0;
+    return -1;
   } else {
     var c = clients[selectedCurrentChannel];
-    c.setClientRole2_MC(role);
+    c.setClientRole2_MC(role, optionLevel);
+  }
+}
+
+function startScreenCaptureForWeb2() {
+  if (typeof clients[selectedCurrentChannel] === "undefined") {
+    return 1;
+  } else {
+    var c = clients[selectedCurrentChannel]; 
+    c.startScreenCapture();
+  }
+}
+
+function stopScreenCapture2() {
+  if (typeof clients[selectedCurrentChannel] === "undefined") {
+    return 1;
+  } else {
+    var c = clients[selectedCurrentChannel]; 
+    c.stopScreenCapture();
   }
 }
 

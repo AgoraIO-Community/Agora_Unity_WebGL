@@ -723,6 +723,10 @@ namespace agora_gaming_rtc
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern void startScreenCaptureForWeb();
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void startScreenCaptureForWeb2();
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void stopScreenCapture2();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1221,8 +1225,14 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setClientRole_1(int role, int audienceLatencyLevel);
 
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setClientRole_2(string channel, int role, int audienceLatencyLevel);
+#else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setClientRole_2(IntPtr channel, int role, int audienceLatencyLevel);
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setVoiceBeautifierPreset(int preset);

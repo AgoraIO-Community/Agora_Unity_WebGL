@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 using agora_gaming_rtc;
 using agora_utilities;
@@ -14,8 +15,24 @@ public class TestHelloUnityVideo
 {
 
     // instance of agora engine
-    private IRtcEngine mRtcEngine;
-    private Text MessageText;
+    private IRtcEngine mRtcEngine { get; set; }
+    private Text MessageText { get; set; }
+
+    private AudioVideoStates AudioVideoState = new AudioVideoStates();
+
+    private List<GameObject> remoteUserDisplays = new List<GameObject>();
+
+    private string mChannelName { get; set; }
+    private Text ChannelNameLabel { get; set; }
+    private CLIENT_ROLE_TYPE ClientRole { get; set; }
+
+    private ToggleStateButton MuteAudioButton { get; set; }
+    private ToggleStateButton MuteVideoButton { get; set; }
+    private ToggleStateButton RoleButton { get; set; }
+    private ToggleStateButton ChannelButton { get; set; }
+
+    // Testing Volume Indication
+    private bool TestVolumeIndication = false;
 
     // load agora engine
     public void loadEngine(string appId)
@@ -36,6 +53,62 @@ public class TestHelloUnityVideo
         mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
     }
 
+    public void SetupInitState()
+    {
+        GameObject avObj = GameObject.Find("AVToggles");
+        if (avObj != null)
+        {
+            var av = avObj.GetComponent<AudioVideoStateControl>();
+            AudioVideoState.pubAudio = av.togglePubAudio.isOn;
+            AudioVideoState.pubVideo = av.togglePubVideo.isOn;
+            AudioVideoState.subAudio = av.toggleSubAudio.isOn;
+            AudioVideoState.subVideo = av.toggleSubVideo.isOn;
+        }
+        else
+        {
+            Debug.Log("AV NULL");
+        }
+    }
+
+    /// <summary>
+    ///   Joining the Channel as Audience.  The user won't publish local video and audio.
+    ///   User can switch channels as an audience.
+    /// </summary>
+    /// <param name="channel"></param>
+    public void joinAudience(string channel)
+    {
+        Debug.Log("calling join (channel = " + channel + ")");
+
+
+        if (mRtcEngine == null)
+            return;
+        // set callbacks (optional)
+        mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
+        mRtcEngine.OnUserJoined = onUserJoined;
+        mRtcEngine.OnUserOffline = onUserOffline;
+        mRtcEngine.OnLeaveChannel += OnLeaveChannelHandler;
+        mRtcEngine.OnWarning = (int warn, string msg) =>
+        {
+            Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
+        };
+        mRtcEngine.OnError = HandleError;
+
+
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+        mRtcEngine.EnableVideo();
+        mRtcEngine.EnableVideoObserver();
+        mRtcEngine.JoinChannelByKey("", channel);
+        mChannelName = channel;
+        ClientRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+    }
+
+    /// <summary>
+    ///    Joining a channel as a host. This is same as running in Communication mode for other hosts.
+    /// </summary>
+    /// <param name="channel"></param>
+    /// <param name="enableVideoOrNot"></param>
+    /// <param name="muted"></param>
     public void join(string channel, bool enableVideoOrNot, bool muted = false)
     {
         Debug.Log("calling join (channel = " + channel + ")");
@@ -44,6 +117,7 @@ public class TestHelloUnityVideo
             return;
 
 
+        SetupInitState();
 
         // set callbacks (optional)
         mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
@@ -56,20 +130,20 @@ public class TestHelloUnityVideo
         };
         mRtcEngine.OnError = HandleError;
 
-        // enable video
-        if (enableVideoOrNot)
+        mRtcEngine.OnUserMutedAudio = OnUserMutedAudio;
+        mRtcEngine.OnUserMuteVideo = OnUserMutedVideo;
+        mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
+
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        // Turn this on to receive volumenIndication
+        if (TestVolumeIndication)
         {
-            mRtcEngine.EnableVideo();
-            // allow camera output callback
-            mRtcEngine.EnableVideoObserver();
+            mRtcEngine.EnableAudioVolumeIndication(500, 8, report_vad: true);
         }
 
         var _orientationMode = ORIENTATION_MODE.ORIENTATION_MODE_FIXED_LANDSCAPE;
-        if (muted)
-        {
-            mRtcEngine.EnableLocalAudio(false);
-            mRtcEngine.MuteLocalAudioStream(true);
-        }
 
         VideoEncoderConfiguration config = new VideoEncoderConfiguration
         {
@@ -79,14 +153,44 @@ public class TestHelloUnityVideo
             // note: mirrorMode is not effective for WebGL
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
-        // join channel
-        mRtcEngine.JoinChannel(channel, null, 0);
 
-    }
-    
-    void OnLeaveChannelHandler(RtcStats stats)
-    {
-        Debug.Log("OnLeaveChannelSuccess ---- TEST");
+        // enable video
+        if (enableVideoOrNot)
+        {
+            mRtcEngine.EnableVideo();
+            // allow camera output callback
+            mRtcEngine.EnableVideoObserver();
+        }
+        else
+        {
+            AudioVideoState.subVideo = false;
+            AudioVideoState.pubVideo = false;
+        }
+
+        // NOTE, we use the third button to invoke JoinChannelByKey
+        // otherwise, it joins using JoinChannelWithUserAccount
+        if (muted)
+        {
+            // mute locally only. still subscribing
+            mRtcEngine.EnableLocalAudio(false);
+            mRtcEngine.MuteLocalAudioStream(true);
+            mRtcEngine.JoinChannelByKey(channelKey: null, channelName: channel, info: "", uid: 0);
+        }
+        else
+        {
+            // join channel with string user name
+            // ************************************************************************************* 
+            // !!!  There is incompatibiity with string Native UID and Web string UIDs !!!
+            // !!!  We strongly recommend to use uint uid only !!!!
+            // mRtcEngine.JoinChannelWithUserAccount(null, channel, "user" + Random.Range(1, 99999),
+            // ************************************************************************************* 
+            mRtcEngine.JoinChannel(token: null, channelId: channel, info: "", uid: 0,
+                 options: new ChannelMediaOptions(AudioVideoState.subAudio, AudioVideoState.subVideo,
+                 AudioVideoState.pubAudio, AudioVideoState.pubVideo));
+        }
+
+        mChannelName = channel;
+        ClientRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
     }
 
     public string getSdkVersion()
@@ -168,14 +272,138 @@ public class TestHelloUnityVideo
         {
             MessageText = text.GetComponent<Text>();
         }
+
+        SetButtons();
+    }
+
+    private void SetButtons()
+    {
+        MuteAudioButton = GameObject.Find("MuteButton").GetComponent<ToggleStateButton>();
+        if (MuteAudioButton != null)
+        {
+            MuteAudioButton.Setup(initOnOff: false,
+                onStateText: "Mute Local Audio", offStateText: "Unmute Local Audio",
+                callOnAction: () =>
+                {
+                    mRtcEngine.MuteLocalAudioStream(true);
+                },
+                callOffAction: () =>
+                {
+                    mRtcEngine.MuteLocalAudioStream(false);
+                }
+            );
+        }
+
+        MuteVideoButton = GameObject.Find("CamButton").GetComponent<ToggleStateButton>();
+        if (MuteVideoButton != null)
+        {
+            MuteVideoButton.Setup(initOnOff: false,
+                onStateText: "Mute Local video", offStateText: "Unmute Local video",
+                callOnAction: () =>
+                {
+                    mRtcEngine.MuteLocalVideoStream(true);
+                },
+                callOffAction: () =>
+                {
+                    mRtcEngine.MuteLocalVideoStream(false);
+                }
+            );
+        }
+
+        ChannelButton = GameObject.Find("ChannelButton").GetComponent<ToggleStateButton>();
+        if (ChannelButton != null)
+        {
+            ChannelButton.Setup(initOnOff: false,
+                onStateText: mChannelName + "2", offStateText: mChannelName,
+                callOnAction: () =>
+                {
+                    mRtcEngine.SwitchChannel(null, mChannelName + "2");
+                },
+                callOffAction: () =>
+                {
+                    mRtcEngine.SwitchChannel(null, mChannelName);
+                }
+                );
+        }
+
+        ChannelNameLabel = GameObject.Find("ChannelName").GetComponent<Text>();
+
+        RoleButton = GameObject.Find("RoleButton").GetComponent<ToggleStateButton>();
+        SetupRoleButton(isHost: ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        ChannelButton.GetComponent<Button>().interactable = ClientRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+    }
+
+    private void SetupRoleButton(bool isHost)
+    {
+        if (RoleButton != null)
+        {
+            RoleButton.Setup(initOnOff: isHost,
+                 onStateText: "Host", offStateText: "Audience",
+                 callOnAction: () =>
+                 {
+                     Debug.Log("Switching role to Broadcaster");
+                     mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+                     ChannelButton.GetComponent<Button>().interactable = false;
+                     MuteAudioButton.Reset();
+                     MuteVideoButton.Reset();
+                     MuteVideoButton.GetComponent<Button>().interactable = true;
+                     MuteAudioButton.GetComponent<Button>().interactable = true;
+                 },
+                 callOffAction: () =>
+                 {
+                     Debug.Log("Switching role to Audience");
+                     mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+                     ChannelButton.GetComponent<Button>().interactable = true;
+                     MuteVideoButton.GetComponent<Button>().interactable = false;
+                     MuteAudioButton.GetComponent<Button>().interactable = false;
+                 }
+                 );
+
+        }
+    }
+
+    private void OnUserMutedAudio(uint uid, bool muted)
+    {
+        Debug.LogFormat("user {0} muted audio:{1}", uid, muted);
+    }
+
+    private void OnUserMutedVideo(uint uid, bool muted)
+    {
+        Debug.LogFormat("user {0} muted video:{1}", uid, muted);
+    }
+
+    void OnVolumeIndicationHandler(AudioVolumeInfo[] speakers, int speakerNumber, int totalVolume)
+    {
+        Debug.Log("OnVolumeIndicationHandler speakerNumber:" + speakerNumber + " totalvolume:" + totalVolume);
+        foreach (var sp in speakers)
+        {
+            Debug.LogFormat("Speaker:{0} level:{1} channel:{2}", sp.uid, sp.volume, sp.channelId);
+        }
+    }
+
+    /// <summary>
+    ///   Leaving the channel.  Clean up the subscription UIs.
+    /// </summary>
+    /// <param name="stats"></param>
+    private void OnLeaveChannelHandler(RtcStats stats)
+    {
+        Debug.LogFormat("OnLeaveChannelSuccess ---- duration = {0} txVideoBytes:{1} ", stats.duration, stats.txVideoBytes);
+        // Clean up the displays
+        foreach (var go in remoteUserDisplays)
+        {
+            GameObject.Destroy(go);
+        }
+        remoteUserDisplays.Clear();
     }
 
     // implement engine callbacks
     private void onJoinChannelSuccess(string channelName, uint uid, int elapsed)
     {
-        Debug.Log("JoinChannelSuccessHandler: uid = " + uid);
+        Debug.Log("JoinChannel " + channelName + " Success: uid = " + uid);
         GameObject textVersionGameObject = GameObject.Find("VersionText");
         textVersionGameObject.GetComponent<Text>().text = "SDK Version : " + getSdkVersion();
+        ChannelNameLabel.text = channelName;
     }
 
     // When a remote user joined, this delegate will be called. Typically
@@ -200,10 +428,12 @@ public class TestHelloUnityVideo
             videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+
+            remoteUserDisplays.Add(videoSurface.gameObject);
         }
     }
 
-    public VideoSurface makePlaneSurface(string goName)
+    VideoSurface makePlaneSurface(string goName)
     {
         GameObject go = GameObject.CreatePrimitive(PrimitiveType.Plane);
 
@@ -244,19 +474,21 @@ public class TestHelloUnityVideo
         GameObject canvas = GameObject.Find("Canvas");
         if (canvas != null)
         {
-            go.transform.parent = canvas.transform;
+            go.transform.SetParent(canvas.transform);
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
         float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
         float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(3*1.6666f, 3f, 1f);
+        go.transform.localScale = new Vector3(3 * 1.6666f, 3f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
         return videoSurface;
     }
+
+
     // When remote user is offline, this delegate will be called. Typically
     // delete the GameObject for this user
     private void onUserOffline(uint uid, USER_OFFLINE_REASON reason)

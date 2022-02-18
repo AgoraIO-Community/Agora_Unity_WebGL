@@ -14,7 +14,11 @@ public class AgoraChannelPanel : MonoBehaviour
 
     [SerializeField] private Transform videoSpawnPoint;
     [SerializeField] private RectTransform panelContentWindow;
-    [SerializeField] private bool isPublishing;
+    [SerializeField] private bool AudienceMode;
+    [SerializeField] Text InfoText;
+
+    private bool IsPublishing { get; set; }
+    private bool InChannel { get; set; }
 
     private AgoraChannel mChannel;
     private List<GameObject> userVideos;
@@ -25,19 +29,68 @@ public class AgoraChannelPanel : MonoBehaviour
 
     private const float SPACE_BETWEEN_USER_VIDEOS = 150f;
 
-    public GameObject joinButton;
-    public GameObject leaveButton;
-    public GameObject publishButton;
-    public GameObject unpublishButton;
+    public ToggleStateButton JoinChannelButton;
+    public ToggleStateButton PublishButton;
+    public ToggleStateButton ScreenShareButton;
+    public ToggleStateButton MuteAudioButton;
+    public ToggleStateButton MuteVideoButton;
+    public ToggleStateButton ClientRoleButton;
 
-    private VideoSurface localVideoSurface;
     private string channelToken;
 
     void Start()
     {
         ChannelLabel.text = channelName;
         userVideos = new List<GameObject>();
-        SetButtonsState(true, false, false, false);
+
+        if (JoinChannelButton != null)
+        {
+            JoinChannelButton.Setup(initOnOff: false,
+                onStateText: "Join Channel", offStateText: "Leave Channel",
+                callOnAction: Button_JoinChannel,
+                callOffAction: Button_LeaveChannel
+            );
+        }
+
+        if (PublishButton != null)
+        {
+            PublishButton.Setup(initOnOff: false,
+                onStateText: "Publish", offStateText: "Unpublish",
+                callOnAction: Button_PublishToPartyChannel,
+                callOffAction: Button_CancelPublishFromChannel
+            );
+        }
+
+        if (MuteAudioButton != null)
+        {
+            MuteAudioButton.Setup(initOnOff: true,
+                onStateText: "Unmute Audio", offStateText: "Mute Audio",
+                callOnAction: Button_MuteLocalAudio,
+                callOffAction: Button_MuteLocalAudio
+            );
+        }
+
+        if (MuteVideoButton != null)
+        {
+            MuteVideoButton.Setup(initOnOff: true,
+                onStateText: "Unmute Video", offStateText: "Mute Video",
+                callOnAction: Button_MuteLocalVideo,
+                callOffAction: Button_MuteLocalVideo
+            );
+        }
+
+        if (ScreenShareButton != null)
+        {
+            ScreenShareButton.Setup(initOnOff: false,
+                onStateText: "Share Screen (Web)", offStateText: "Stop ScreenShare",
+                callOnAction: Button_ShareScreen,
+                callOffAction: Button_ShareScreen
+            );
+        }
+
+        SetupRoleButton(isHost: !AudienceMode);
+
+        SetButtonsState(false, false, false, false);
         if (UseToken)
         {
             TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
@@ -46,21 +99,81 @@ public class AgoraChannelPanel : MonoBehaviour
             Debug.Log(gameObject.name + " Got rtc token:" + token);
         });
         }
+
+        InfoText.text = AudienceMode ? "Audience" : "Broadcaster";
     }
 
-    void SetButtonsState(bool joinButtonFlag, bool leaveButtonFlag, bool publishButtonFlag, bool unpublishButtonFlag)
+    private void SetupRoleButton(bool isHost)
     {
-        joinButton.SetActive(joinButtonFlag);
-        publishButton.SetActive(publishButtonFlag);
-        unpublishButton.SetActive(unpublishButtonFlag);
-        leaveButton.SetActive(leaveButtonFlag);
+        if (ClientRoleButton != null)
+        {
+            ClientRoleButton.Setup(initOnOff: isHost,
+                 onStateText: "To Host", offStateText: "To Audience",
+                 callOnAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Broadcaster");
+                     if (mChannel != null)
+                     {
+                         mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+                     }
+                     AudienceMode = false;
+                     InfoText.text = "Broadcaster";
+                     // change role to Broadcaster will automatically publish
+                     if (InChannel)
+                     {
+                         SetButtonsState(true, true, true, true);
+                         // set to unpublish
+                         PublishButton.SetState(true);
+                         IsPublishing = true;
+                     }
+                     else
+                     {
+                         SetButtonsState(false, false, false, false);
+                     }
+                 },
+                 callOffAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Audience");
+                     if (mChannel != null)
+                     {
+                         mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+                     }
+                     AudienceMode = true;
+                     InfoText.text = "Audience";
+                     if (IsPublishing)
+                     {
+                         Button_CancelPublishFromChannel();
+                     }
+                     SetButtonsState(false, false, false, false);
+                 }
+                 );
+        }
+    }
+
+    void SetButtonsState(bool publishButtonFlag, bool screenShareButtonFlag, bool muteAudioFlag, bool muteVideoFlag)
+    {
+        if (PublishButton)
+        {
+            PublishButton.gameObject.SetActive(publishButtonFlag);
+        }
+        if (ScreenShareButton)
+        {
+            ScreenShareButton.gameObject.SetActive(screenShareButtonFlag);
+        }
+        if (MuteAudioButton)
+        {
+            MuteAudioButton.gameObject.SetActive(muteAudioFlag);
+        }
+        if (MuteVideoButton)
+        {
+            MuteVideoButton.gameObject.SetActive(muteVideoFlag);
+        }
     }
 
     #region Buttons
 
     public void Button_JoinChannel()
     {
-
         if (mChannel == null)
         {
             mChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
@@ -74,20 +187,26 @@ public class AgoraChannelPanel : MonoBehaviour
             mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
         }
 
-        mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        if (AudienceMode)
+        {
+            mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+        }
+        else
+        {
+            mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        }
         mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true, false, false));
         Debug.Log("Joining channel: " + channelName);
-
     }
 
     public void Button_LeaveChannel()
     {
         if (mChannel != null)
         {
-            isPublishing = false;
+            IsPublishing = false;
             mChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
-            SetButtonsState(true, false, false, false);
+            SetButtonsState(false, false, false, false);
         }
         else
         {
@@ -103,14 +222,14 @@ public class AgoraChannelPanel : MonoBehaviour
             return;
         }
 
-        if (isPublishing == false)
+        if (IsPublishing == false)
         {
             int publishResult = mChannel.Publish();
             if (publishResult == 0)
             {
-                isPublishing = true;
+                IsPublishing = true;
             }
-            SetButtonsState(false, true, false, true);
+            SetButtonsState(true, true, true, true);
             Debug.Log("Publishing to channel: " + channelName + " result: " + publishResult);
         }
         else
@@ -127,14 +246,14 @@ public class AgoraChannelPanel : MonoBehaviour
             return;
         }
 
-        if (isPublishing == true)
+        if (IsPublishing == true)
         {
             int unpublishResult = mChannel.Unpublish();
             if (unpublishResult == 0)
             {
-                isPublishing = false;
+                IsPublishing = false;
             }
-            SetButtonsState(false, true, true, false);
+            SetButtonsState(true, false, false, false);
             Debug.Log("Unpublish from channel: " + channelName + " result: " + unpublishResult);
         }
         else
@@ -143,21 +262,30 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
-    bool isLocalAudioMuted = false;
-    bool isLocalVideoMuted = false;
-    public void Button_MuteLocalAudio(Text buttonText)
+    public void Button_MuteLocalAudio()
     {
-        isLocalAudioMuted = !isLocalAudioMuted;
-        mChannel.MuteLocalAudioStream(isLocalAudioMuted);
-        buttonText.text = isLocalAudioMuted ? "Unmute LocalAudio" : "Mute LocalAudio";
+        // on means muted
+        mChannel.MuteLocalAudioStream(!MuteAudioButton.OnOffState);
     }
 
-    public void Button_MuteLocalVideo(Text buttonText)
+    public void Button_MuteLocalVideo()
     {
-        isLocalVideoMuted = !isLocalVideoMuted;
-        mChannel.MuteLocalVideoStream(isLocalVideoMuted);
-        buttonText.text = isLocalVideoMuted ? "Unmute LocalVideo" : "Mute LocalVideo";
-        localVideoSurface.SetEnable(!isLocalVideoMuted);
+        // on means muted
+        mChannel.MuteLocalVideoStream(!MuteVideoButton.OnOffState);
+    }
+
+    public void Button_ShareScreen()
+    {
+        if (ScreenShareButton.OnOffState)
+        {
+            Debug.Log("Screen sharing button.... share");
+            mChannel.StartScreenCaptureForWeb();
+        }
+        else
+        {
+            Debug.Log("Screen sharing button.... stop");
+            mChannel.StopScreenCapture();
+        }
     }
 
     #endregion
@@ -168,7 +296,8 @@ public class AgoraChannelPanel : MonoBehaviour
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
         txtLocaluserId.text = "Local user Id: " + uid;
         MakeImageSurface(channelID, uid, true);
-        SetButtonsState(false, true, true, false);
+        SetButtonsState(!AudienceMode, false, false, false);
+        InChannel = true;
     }
 
     void OnUserJoinedHandler(string channelID, uint uid, int elapsed)
@@ -179,12 +308,15 @@ public class AgoraChannelPanel : MonoBehaviour
     void OnLeaveHandler(string channelID, RtcStats stats)
     {
         Debug.Log("You left the party channel.");
+        Debug.LogFormat("OnLeaveChannelSuccess ---- duration = {0} txVideoBytes:{1} ", stats.duration, stats.txVideoBytes);
+
         foreach (GameObject player in userVideos)
         {
             Destroy(player);
         }
 
         userVideos.Clear();
+        InChannel = false;
     }
 
     void OnUserLeftHandler(string channelID, uint uid, USER_OFFLINE_REASON reason)
@@ -291,10 +423,6 @@ public class AgoraChannelPanel : MonoBehaviour
             Debug.Log("MakeImageSurface - isLocalUser == false");
             videoSurface.SetForMultiChannelUser(channelID, uid);
             Debug.Log("MakeImageSurface - SetForMultiChannelUser after");
-        }
-        else
-        {
-            localVideoSurface = videoSurface;
         }
     }
 

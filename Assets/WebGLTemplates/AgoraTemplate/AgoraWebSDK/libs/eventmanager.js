@@ -90,12 +90,20 @@ class EventManager {
     );
   }
 
-  raiseOnRemoteUserLeaved(strUID) {
+  raiseOnRemoteUserLeaved(strUID, reason) {
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "onRemoteUserLeaved",
-      strUID
+      strUID + "|" + reason
     );
+  }
+
+  raiseOnRemoteUserMuted(strUID, mediaType, muted) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onRemoteUserMuted",
+      strUID + "|" + mediaType + "|" + muted
+    ); 
   }
 
   raiseGetCurrentVideoDevice() {
@@ -197,6 +205,15 @@ class EventManager {
       "AgoraEventHandler",
       "HandleFrameHandler",
       data_chunk
+    );
+  }
+
+  raiseVolumeIndicator(volumeInfo, speakers, total)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnVolumeIndication",
+      volumeInfo + "|" + speakers + "|" + total
     );
   }
 }

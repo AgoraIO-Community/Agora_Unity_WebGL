@@ -7,7 +7,9 @@ var LibraryAgoraWebGLSDK = {
     return createIRtcEngine(app_id);
   },
   createLocalTexture: function () {
-    localVideo = document.getElementById("video_" + localTracks.videoTrack._ID);
+    if(localTracks.videoTrack) {
+      localVideo = document.getElementById("video_" + localTracks.videoTrack._ID);
+    }
   },
   setVideoDeviceCollectionDeviceWGL: function (deviceID) {
     var deviceID_Str = Pointer_stringify(deviceID);
@@ -96,10 +98,11 @@ var LibraryAgoraWebGLSDK = {
     var ch_userId = Pointer_stringify(userId);
 
     // approximate 1~2 frames time delay to avoid race condition
-    setTimeout(function(){ 
-        if (remoteUsers[ch_userId] != undefined) {
+    setTimeout(function(){
+        var remoteUser = remoteUsers[ch_userId];
+        if (remoteUser && remoteUser.videoTrack) {
           video = document.getElementById(
-            "video_" + remoteUsers[ch_userId].videoTrack._ID
+            "video_" + remoteUser.videoTrack._ID
           );
           remoteVideoInstances[ch_userId] = video;
         }
@@ -128,13 +131,14 @@ var LibraryAgoraWebGLSDK = {
 
     if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
 
-    if (v.lastUpdateTextureTime === v.currentTime) return false;
+    //if (v.lastUpdateTextureTime === v.currentTime) return false;
 
-    v.lastUpdateTextureTime = v.currentTime;
+    //v.lastUpdateTextureTime = v.currentTime;
 
     if (
-      v.previousUploadedWidth != v.videoWidth ||
-      v.previousUploadedHeight != v.videoHeight
+      1
+      //v.previousUploadedWidth != v.videoWidth ||
+      //v.previousUploadedHeight != v.videoHeight
     ) {
       GLctx.deleteTexture(GL.textures[tex]);
       var t = GLctx.createTexture();
@@ -167,16 +171,17 @@ var LibraryAgoraWebGLSDK = {
 
       v.previousUploadedWidth = v.videoWidth;
       v.previousUploadedHeight = v.videoHeight;
-    } else {
-      GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[tex]);
-      GLctx.texImage2D(
-        GLctx.TEXTURE_2D,
-        0,
-        GLctx.RGBA,
-        GLctx.RGBA,
-        GLctx.UNSIGNED_BYTE,
-        v
-      );
+//    } else {
+//      console.log("bindTexture////////");
+//      GLctx.bindTexture(GLctx.TEXTURE_2D, GL.textures[tex]);
+//      GLctx.texImage2D(
+//        GLctx.TEXTURE_2D,
+//        0,
+//        GLctx.RGBA,
+//        GLctx.RGBA,
+//        GLctx.UNSIGNED_BYTE,
+//       v
+//      );
     }
 
     return true;
@@ -208,13 +213,13 @@ var LibraryAgoraWebGLSDK = {
 
     if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
 
-    if (v.lastUpdateTextureTime === v.currentTime) return false;
+    // if (v.lastUpdateTextureTime === v.currentTime) return false;
 
-    v.lastUpdateTextureTime = v.currentTime;
+    // v.lastUpdateTextureTime = v.currentTime;
 
-    if (
-      v.previousUploadedWidth != v.videoWidth ||
-      v.previousUploadedHeight != v.videoHeight
+    if ( 1 
+      // v.previousUploadedWidth != v.videoWidth ||
+      // v.previousUploadedHeight != v.videoHeight
     ) {
       GLctx.deleteTexture(GL.textures[tex]);
       var t = GLctx.createTexture();
@@ -344,7 +349,15 @@ var LibraryAgoraWebGLSDK = {
   setClientRole: function (role) {
     setClientRole(role);
   },
-
+  setClientRole_1: function (role, audienceLatencyLevel) {
+    setClientRole1(role, audienceLatencyLevel);
+  },
+  setClientRole2: function (channel, role) {
+    setClientRole2_MC(role);
+  },
+  setClientRole_2: function (channel, role, audienceLatencyLevel) {
+    setClientRole2_MC(role, audienceLatencyLevel);
+  },
   enableAudioVolumeIndication: function (interval, smooth, report_vad) {
     enableAudioVolumeIndicator();
   },
@@ -423,6 +436,14 @@ var LibraryAgoraWebGLSDK = {
       startScreenCaptureForWeb();
   },
 
+  startScreenCaptureForWeb2: function() {
+      startScreenCaptureForWeb2();
+  },
+
+  stopScreenCapture2 : function() {
+    stopScreenCapture2();
+  },
+
   startPreview: function () {
     startPreview();
   },
@@ -446,15 +467,15 @@ var LibraryAgoraWebGLSDK = {
 
   //Enables the audio module.
   enableAudio: function () {
-    enableDisableAudio(true);
+    enableAudio(true);
   },
 
   disableAudio: function () {
-    enableDisableAudio(false);
+    enableAudio(false);
   },
 
   muteLocalAudioStream: function (muteStream) {
-    enableDisableAudio(muteStream);
+    muteLocalAudioStream(muteStream);
   },
 
   muteLocalVideoStream: function (enable) {
@@ -1270,7 +1291,13 @@ var LibraryAgoraWebGLSDK = {
   },
   stopEchoTest: function () {},
   creatAAudioRecordingDeviceManager: function () {},
-  createDataStream: function (channel, reliable, ordered) {},
+  createDataStream: function (reliable, ordered) { 
+    createDataStream(ordered);
+    return 0;
+  },
+  createDataStream_engine: function(syncWithAudio, ordered) {
+    createDataStream(ordered);
+  },
   initEventOnCaptureVideoFrame: function (onCaptureVideoFrame) {},
   getCurrentVideoDevice: function (deviceId) {},
   setAudioRecordingDeviceMute: function (mute) {
@@ -1282,7 +1309,15 @@ var LibraryAgoraWebGLSDK = {
   setRemoteRenderMode2: function (channel, userId, renderMode, mirrorMode) {},
   setRemoteVoicePosition2: function (channel, uid, pan, gain) {},
   channelId: function (channel) {},
-  sendStreamMessage: function (streamId, data, length) {},
+  sendStreamMessage: function (streamId, data, length) {
+      // there is no notion of streamId 
+      const newArray =new ArrayBuffer(length);
+      const newByteArray = new Uint8Array(newArray);
+      for(var i = 0; i < length; i++) {
+        newByteArray[i]=HEAPU8[data + i];
+      }
+      return sendStreamMessage(newByteArray);
+  },
   sendMetadata: function (uid, size, buffer, timeStampMs) {},
   initEventOnRecordAudioFrame: function (onRecordAudioFrame) {},
   getAudioMixingPublishVolume: function () {},
@@ -1297,9 +1332,25 @@ var LibraryAgoraWebGLSDK = {
     var userAccount_str = Pointer_stringify(userAccount);
     joinChannelWithUserAccount_WGL(token_str, channelId_str, userAccount_str);
   },
-  setClientRole2: function (channel, role) {
-    setClientRole2_MC(role);
+  joinChannelWithUserAccount_engine: function (token, channelId, userAccount, 
+      autoSubscribeAudio, autoSubscribeVideo,
+      publishLocalAudio, publishLocalVideo) {
+    var token_str = Pointer_stringify(token);
+    var channelId_str = Pointer_stringify(channelId);
+    var userAccount_str = Pointer_stringify(userAccount); 
+    joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str, 
+      autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
+
+  joinChannelWithMediaOption : function (token, channelId, info, uid, 
+      autoSubscribeAudio, autoSubscribeVideo,
+      publishLocalAudio, publishLocalVideo) {
+    var token_str = Pointer_stringify(token);
+    var channelId_str = Pointer_stringify(channelId);
+    wglw_joinChannel_withOption(token_str,channelId_str, info, uid, 
+      autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
+  },
+
   setDefaultEngineSettings: function () {},
   setVideoQualityParameters: function (preferFrameRateOverImageQuality) {},
   getCurrentPlaybackDeviceInfo: function (deviceName, deviceId) {},
@@ -1371,9 +1422,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
     var volume = GetAudioMixingPublishVolume();
     return volume;
   },
-  setClientRole_2: function (channel, role, audienceLatencyLevel) {
-    setClientRole2_MC(role);
-  },
+
   getAudioPlaybackDevice: function (index, deviceName, deviceId) {},
   enableLoopbackRecording: function (enabled, deviceName) {},
 
@@ -1444,8 +1493,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
   ) {},
   generateNativeTexture: function () {},
   setLocalVoicePitch: function (pitch) {},
-  createDataStream2: function (channel, reliable, ordered) {},
-  setClientRole_1: function (role, audienceLatencyLevel) {},
   addInjectStreamUrl2: function (
     channel,
     url,
@@ -1464,90 +1511,106 @@ muteLocalAudioStream_channel: function(channel, mute) {
     return getConnectionState2_MC();
   },
 
-  initEventOnEngineCallback: function (
-    OnJoinChannelSuccess,
-    OnReJoinChannelSuccess,
-    OnConnectionLost,
-    OnLeaveChannel,
-    OnConnectionInterrupted,
-    OnRequestToken,
-    OnUserJoined,
-    OnUserOffline,
-    OnAudioVolumeIndication,
-    OnUserMuteAudio,
-    OnSDKWarning,
-    OnSDKError,
-    OnRtcStats,
-    OnAudioMixingFinished,
-    OnAudioRouteChanged,
-    OnFirstRemoteVideoDecoded,
-    OnVideoSizeChanged,
-    onClientRolteChanged,
-    OnUserMuteVideo,
-    OnMicrophoneEnabled,
-    OnApiExecuted,
-    OnFirstLocalAudioFrame,
-    OnFirstRemoteAudioFrame,
-    OnLastmileQuality,
-    onAudioQuality,
-    onStreamInjectedStatus,
-    onStreamUnpublished,
-    onStreamPublished,
-    onStreamMessageError,
-    onStreamMessage,
-    onConnectionBanned,
-    OnVideoStopped,
-    onTokenPrivilegeWillExpire,
-    onNetworkQuality,
-    onLocalVideoStats,
-    onRemoteVideoStats,
-    onRemoteAudioStats,
-    OnFirstLocalVideoFrame,
-    OnFirstRemoteVideoFrame,
-    OnUserEnableVideo,
-    onAudioDeviceStateChanged,
-    onCameraReady,
-    onCameraFocusAreaChanged,
-    onCameraExposureAreaChanged,
-    onRemoteAudioMixingBegin,
-    onRemoteAudioMixingEnd,
-    onAudioEffectFinished,
-    onVideoDeviceStateChanged,
-    OnRemoteVideoStateChanged,
-    OnUserEnableLocalVideo,
-    OnLocalPublishFallbackToAudioOnly,
-    onRemoteSubscribeFallbackToAudioOnly,
-    onConnectionStateChanged,
-    onRemoteVideoTransportStats,
-    onRemoteAudioTransportStats,
-    onTranscodingUpdated,
-    onAudioDeviceVolumeChanged,
-    onActiveSpeaker,
-    onMediaEngineStartCallSuccess,
-    onMediaEngineLoadSuccess,
-    onAudioMixingStateChanged,
-    onFirstRemoteAudioDecoded,
-    onLocalVideoStateChanged,
-    onRtmpStreamingStateChanged,
-    onNetworkTypeChanged,
-    onLastmileProbeResult,
-    onLocalUserRegistered,
-    onUserInfoUpdated,
-    onLocalAudioStateChanged,
-    onRemoteAudioStateChanged,
-    onLocalAudioStats,
-    onChannelMediaRelayStateChanged,
-    onChannelMediaRelayEvent,
-    onFacePositionChanged,
-    onRtmpStreamingEvent,
-    onAudioPublishStateChange,
-    onVideoPublishStateChanged,
-    onAudioSubscribeStateChanged,
-    onVideoSubscribeStateChanged,
-    onFirstLocalAudioFramePublished,
-    onFirstLocalVideoFramePublished,
-    onUserSuperResolutionEnabled
-  ) {},
+  initEventOnEngineCallback: function (OnJoinChannelSuccessCallback,
+                                      OnReJoinChannelSuccessCallback,
+                                      OnConnectionLostCallback,
+                                      OnLeaveChannelCallback,
+                                      OnConnectionInterruptedCallback,
+                                      OnRequestTokenCallback,
+                                      OnUserJoinedCallback,
+                                      OnUserOfflineCallback,
+                                      OnAudioVolumeIndicationCallback,
+                                      OnUserMuteAudioCallback,
+                                      OnSDKWarningCallback,
+                                      OnSDKErrorCallback,
+                                      OnRtcStatsCallback,
+                                      OnAudioMixingFinishedCallback,
+                                      OnAudioRouteChangedCallback,
+                                      OnFirstRemoteVideoDecodedCallback,
+                                      OnVideoSizeChangedCallback,
+                                      OnClientRoleChangedCallback,
+                                      OnUserMuteVideoCallback,
+                                      OnMicrophoneEnabledCallback,
+                                      OnApiExecutedCallback,
+                                      OnFirstLocalAudioFrameCallback,
+                                      OnFirstRemoteAudioFrameCallback,
+                                      OnLastmileQualityCallback,
+                                      OnAudioQualityCallback,
+                                      OnStreamInjectedStatusCallback,
+                                      OnStreamUnpublishedCallback,
+                                      OnStreamPublishedCallback,
+                                      OnStreamMessageErrorCallback,
+                                      OnStreamMessageCallback,
+                                      OnConnectionBannedCallback,
+                                      OnVideoStoppedCallback,
+                                      OnTokenPrivilegeWillExpireCallback,
+                                      OnNetworkQualityCallback,
+                                      OnLocalVideoStatsCallback,
+                                      OnRemoteVideoStatsCallback,
+                                      OnRemoteAudioStatsCallback,
+                                      OnFirstLocalVideoFrameCallback,
+                                      OnFirstRemoteVideoFrameCallback,
+                                      OnUserEnableVideoCallback,
+                                      OnAudioDeviceStateChangedCallback,
+                                      OnCameraReadyCallback,
+                                      OnCameraFocusAreaChangedCallback,
+                                      OnCameraExposureAreaChangedCallback,
+                                      OnRemoteAudioMixingBeginCallback,
+                                      OnRemoteAudioMixingEndCallback,
+                                      OnAudioEffectFinishedCallback,
+                                      OnVideoDeviceStateChangedCallback,
+                                      OnRemoteVideoStateChangedCallback,
+                                      OnUserEnableLocalVideoCallback,
+                                      OnLocalPublishFallbackToAudioOnlyCallback,
+                                      OnRemoteSubscribeFallbackToAudioOnlyCallback,
+                                      OnConnectionStateChangedCallback,
+                                      OnRemoteVideoTransportStatsCallback,
+                                      OnRemoteAudioTransportStatsCallback,
+                                      OnTranscodingUpdatedCallback,
+                                      OnAudioDeviceVolumeChangedCallback,
+                                      OnActiveSpeakerCallback,
+                                      OnMediaEngineStartCallSuccessCallback,
+                                      OnMediaEngineLoadSuccessCallback,
+                                      OnAudioMixingStateChangedCallback,
+                                      OnFirstRemoteAudioDecodedCallback,
+                                      OnLocalVideoStateChangedCallback,
+                                      OnRtmpStreamingStateChangedCallback,
+                                      OnNetworkTypeChangedCallback,
+                                      OnLastmileProbeResultCallback,
+                                      OnLocalUserRegisteredCallback,
+                                      OnUserInfoUpdatedCallback,
+                                      OnLocalAudioStateChangedCallback,
+                                      OnRemoteAudioStateChangedCallback,
+                                      OnLocalAudioStatsCallback,
+                                      OnChannelMediaRelayStateChangedCallback,
+                                      OnChannelMediaRelayEventCallback,
+                                      OnFacePositionChangedCallback,
+                                      OnRtmpStreamingEventCallback,
+                                      OnAudioPublishStateChangeCallback,
+                                      OnVideoPublishStateChangeCallback,
+                                      OnAudioSubscribeStateChangeCallback,
+                                      OnVideoSubscribeStateChangeCallback,
+                                      OnFirstLocalAudioFramePublishedCallback,
+                                      OnFirstLocalVideoFramePublishedCallback,
+                                      OnUserSuperResolutionEnabledCallback,
+                                      OnUploadLogResultCallback,
+                                      OnVirtualBackgroundSourceEnabledCallback
+  ) {
+    UnityHooks.OnStreamMessageCallback = OnStreamMessageCallback;
+    UnityHooks.InvokeStreamMessageCallback = function(uid, bytes, length) {
+      if (UnityHooks.data) {
+        _free(UnityHooks.data);
+      }
+      var data = _malloc(length);
+      for(var i=0; i<length; i++) {
+        HEAPU8[data+i] = bytes[i];
+      }
+      UnityHooks.data = data;
+      Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
+    }
+
+    UnityHooks.isLoaded = true;
+  },
 
   getCallId2: function (channel) {},
   getAudioPlaybackDeviceCount: function () {},
@@ -1683,6 +1746,29 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
 
   releaseAAudioPlaybackDeviceManager: function () {},
+
+  // Stubs for Unity 2021.2.x, see https://github.com/AgoraIO-Community/Agora_Unity_WebGL/issues/17
+  adjustLoopbackRecordingSignalVolume: function() {},
+  createDataStream2: function (channel, reliable, ordered) {},
+  createDataStream_channel: function(channel, syncWithAudio, ordered) {},
+
+  enableDeepLearningDenoise: function() {},
+  enableVirtualBackground: function() {},
+  getAudioMixingDuration2: function() {},
+  getEffectCurrentPosition: function() {},
+  getEffectDuration: function() {},
+  isCameraTorchSupported: function() {},
+  playEffect2: function() {},
+  setCameraTorchOn: function() {},
+  setCloudProxy: function() {},
+  setEffectPosition: function() {},
+  setLocalAccessPoint: function() {},
+  setVoiceBeautifierParameters: function() {},
+  setVoiceConversionPreset: function() {},
+  startAudioMixing2: function() {},
+  startAudioRecordingWithConfig: function() {},
+  switchChannel2: function() {},
+  uploadLogFile: function() {},
 };
 
 autoAddDeps(LibraryAgoraWebGLSDK, "$localVideo");

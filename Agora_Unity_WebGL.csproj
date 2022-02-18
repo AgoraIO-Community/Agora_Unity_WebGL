@@ -268,6 +268,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\AgoraEngine\Demo\AudioVideoStateControl.cs" />
     <Compile Include="Assets\AgoraEngine\Demo\ButtonHandler.cs" />
     <Compile Include="Assets\AgoraEngine\Demo\TestHelloUnityVideo.cs" />
     <Compile Include="Assets\AgoraEngine\Demo\TestHome.cs" />
@@ -296,9 +297,9 @@
     <Compile Include="Assets\AgoraEngine\Utils\TokenClient.cs" />
     <Compile Include="Assets\AgoraEngine\Utils\TokenRequestHelper.cs" />
     <Compile Include="Assets\API-Example\app-screenshare-sample\AgoraScreenShare.cs" />
+    <Compile Include="Assets\API-Example\datastream-sample\TestDataStream.cs" />
     <Compile Include="Assets\API-Example\desktop-screenshare-sample\WebScreenShare.cs" />
     <Compile Include="Assets\API-Example\geo-area-sample\HelloVideoAgora2.cs" />
-    <Compile Include="Assets\API-Example\multi-channel-sample\AgoraMultiChannel.cs" />
     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanel.cs" />
     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\MultiChannelSceneCtrl.cs" />
     <Compile Include="Assets\API-Example\rtmp-streaming-sample\RtmpStreaming.cs" />
@@ -307,6 +308,8 @@
     <Compile Include="Assets\API-Example\tools\ToggleStateButton.cs" />
     <Compile Include="Assets\API-Example\tools\UIElementDragger.cs" />
     <Compile Include="Assets\API-Example\video-encoder-configuration\video_encoder_configuration.cs" />
+    <Compile Include="Assets\FunctionalTest\JoinMultipleChannel\AgoraMultiChannel.cs" />
+    <Compile Include="Assets\FunctionalTest\Respawn\TestVideoRespawn.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\AgoraEngine\Plugins\Android\AgoraRtcEngineKit.plugin\AndroidManifest.xml" />

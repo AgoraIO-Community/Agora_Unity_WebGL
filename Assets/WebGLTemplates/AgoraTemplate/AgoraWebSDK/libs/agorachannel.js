@@ -10,6 +10,7 @@ class AgoraChannel {
       token: null,
     };
     this.is_publishing = false;
+    this.is_screensharing = false;
     this.remoteUsers = {};
     this.channelId = "";
     this.mode = "rtc";
@@ -125,11 +126,11 @@ class AgoraChannel {
 
   async unpublish() {
     if (this.is_publishing == true) {
-      if (localTracks.videoTrack != undefined) {
-        await this.client.unpublish(localTracks.videoTrack);
-      }
-      if (localTracks.audioTrack != undefined) {
-        await this.client.unpublish(localTracks.audioTrack);
+      for (var trackName in localTracks) {
+        var track = localTracks[trackName];
+        if (track) {
+          await this.client.unpublish(track);
+        }
       }
       this.is_publishing = false;
       event_manager.raiseCustomMsg("Unpublish Success");
@@ -472,22 +473,22 @@ class AgoraChannel {
     });
   }
 
-// Disables/Re-enables the local audio function.
- enableDisableAudio(enabled) {
-  if (enabled == false) {
+// Must/Unmute local audio (mic)
+async muteLocalAudioStream(mute) {
+  if (mute) {
     if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(0);
+      await this.client.unpublish(localTracks.audioTrack);
     }
   } else {
     if (localTracks.audioTrack) {
-      localTracks.audioTrack.setVolume(100);
+      await this.client.publish(localTracks.audioTrack);
     }
   }
 }
 
 // Stops/Resumes sending the local video stream.
 async muteLocalVideoStream(mute) {
-  if (this.client) {
+  if (this.client && !this.is_screensharing) {
     if (mute) {
       localTracks.videoTrack.stop();
       localTracks.videoTrack.close();
@@ -502,16 +503,6 @@ async muteLocalVideoStream(mute) {
         await this.client.publish(localTracks.videoTrack);
       }
     }
-  }
-}
-
-// Stops/Resumes sending the local audio stream.
-async muteLocalAudioStream(enabled) {
-  if (enabled == true) {
-    await this.client.unpublish(localTracks.audioTrack);
-  }
-  else {
-    await this.client.publish(localTracks.audioTrack);
   }
 }
   muteRemoteAudioStream(uid, mute) {
@@ -561,6 +552,33 @@ async muteLocalAudioStream(enabled) {
     }
   }
 
+  async startScreenCapture() {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+  
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createScreenVideoTrack(),
+      ]);
+      localTracks.videoTrack.play("local-player");
+      await this.client.publish(localTracks.videoTrack);
+      this.is_screensharing = true;
+  }
+
+  // Stop screen sharing.
+  async stopScreenCapture() {
+    localTracks.videoTrack.stop();
+    localTracks.videoTrack.close();
+    await this.client.unpublish(localTracks.videoTrack);
+    this.is_screensharing = false;
+
+    [localTracks.videoTrack] = await Promise.all([
+      AgoraRTC.createCameraVideoTrack(),
+    ]);
+    localTracks.videoTrack.play("local-player");
+    await this.client.publish(localTracks.videoTrack);
+  }
+
   setRemoteUserPriority(uid, userPriority) {
     if (userPriority == 50 || userPriority == 0)
       this.client.setRemoteVideoStreamType(uid, 0);
@@ -603,21 +621,30 @@ async muteLocalAudioStream(enabled) {
     }
   }
 
-  setClientRole2_MC(role) {
+  async setClientRole2_MC(role, optionLevel) {
     if (this.client) {
+      // host
       if (role === 1) {
-        this.client.setClientRole("host", function (e) {
-          if (!e) {
-            this.client_role = 1;
+        await this.client.setClientRole("host", optionLevel);
+        if (this.channelId === "" ) {
+          // called before join channel
+          // do nothing, just mark it at the end
+        } else {
+          if (this.client_role == 2) {
+            // called after join channel
+            // and previosly it is audience, default to publish
+            await this.publish();
           }
-        });
+        }
       } else if (role === 2) {
-        this.client.setClientRole("audience", function (e) {
-          if (!e) {
-            this.client_role = 2;
-          }
-        });
+      // audience
+        if (this.client_role != role)
+        {
+          await this.unpublish();
+        }
+        await this.client.setClientRole("audience", optionLevel);
       }
+      this.client_role = role;
     }
   }
 }

@@ -10,6 +10,7 @@ public class ToggleStateButton : MonoBehaviour
 
     private Button button;
     private Text text;
+    private bool initState;
 
     public void Setup(bool initOnOff, string onStateText, string offStateText, System.Action callOnAction, System.Action callOffAction)
     {
@@ -18,11 +19,14 @@ public class ToggleStateButton : MonoBehaviour
         OnOffState = initOnOff;
         OnStateText = onStateText;
         OffStateText = offStateText;
+        initState = initOnOff;
+
+        UpdateText();
 
         button.onClick.AddListener(() =>
         {
             OnOffState = !OnOffState;
-            text.text = OnOffState ? OffStateText : OnStateText;
+            UpdateText();
             if (OnOffState)
             {
                 callOnAction();
@@ -34,4 +38,22 @@ public class ToggleStateButton : MonoBehaviour
         });
     }
 
+    public void SetState(bool onOffState)
+    {
+        OnOffState = onOffState;
+        UpdateText();
+    }
+
+    public void Reset()
+    {
+        SetState(initState);
+    }
+
+    void UpdateText()
+    {
+        if (text != null)
+        {
+            text.text = OnOffState ? OffStateText : OnStateText;
+        }
+    }
 }

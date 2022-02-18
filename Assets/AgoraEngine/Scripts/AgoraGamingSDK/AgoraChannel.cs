@@ -547,6 +547,7 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
             return IRtcEngineNative.setClientRole2(_channelId, (int)role);
 #else
             return IRtcEngineNative.setClientRole2(_channelHandler, (int)role);
@@ -1283,9 +1284,11 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return SetClientRole(role);
-#endif
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            return IRtcEngineNative.setClientRole_2(_channelId, (int)role, (int)audienceLatencyLevel.audienceLatencyLevel);
+#else
             return IRtcEngineNative.setClientRole_2(_channelHandler, (int)role, (int)audienceLatencyLevel.audienceLatencyLevel);
+#endif
         }
 
         /** Enables/Disables the built-in encryption.
@@ -1324,6 +1327,38 @@ namespace agora_gaming_rtc
 #endif
         }
 
+        /// <summary>
+        ///   Invoke Web's screen sharing capability. Note that the browser can only have one sharing
+        /// instance.  Your channels cannot share different contents.
+        /// </summary>
+        public void StartScreenCaptureForWeb()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.startScreenCaptureForWeb2();
+#else
+            Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
+#endif
+        }
+
+        /// <summary>
+        ///   Stop the screen share
+        /// </summary>
+        public void StopScreenCapture()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.stopScreenCapture2();
+#else
+            Debug.LogWarning("StopScreenCapture is called in non-WebGL environment. Ignored.");
+#endif
+        }
+
+        /// <summary>
+        ///   Mute the Camera video stream. Does not affect share screen
+        /// </summary>
+        /// <param name="mute"></param>
+        /// <returns></returns>
         public int MuteLocalVideoStream(bool mute)
         {
             if (_rtcEngine == null)
@@ -1337,6 +1372,11 @@ namespace agora_gaming_rtc
 
         }
 
+        /// <summary>
+        ///   Mute the mic input 
+        /// </summary>
+        /// <param name="mute"></param>
+        /// <returns></returns>
         public int MuteLocalAudioStream(bool mute)
         {
             if (_rtcEngine == null)
