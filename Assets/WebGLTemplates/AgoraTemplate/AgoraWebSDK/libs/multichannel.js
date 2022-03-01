@@ -428,18 +428,17 @@ function leaveChannel2_WGL() {
 }
 
 function wgl_mc_joinChannel2(
-  channel,
   token,
-  info,
   uid,
-  autoPublishAudio,
-  autoPublishVideo
+  autoSubscribeAudio, autoSubscribeVideo,
+  autoPublishAudio, autoPublishVideo
 ) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   } else {
     var c = clients[selectedCurrentChannel];
-    c.joinChannelWithUserAccount_MC(token, uid, autoPublishAudio, autoPublishVideo);
+    c.setAVControl(autoSubscribeAudio, autoSubscribeVideo, autoPublishAudio, autoPublishVideo);
+    c.joinChannel2(token, uid);
   }
 }
 // NEW MULTI CLIENT API's ENDS

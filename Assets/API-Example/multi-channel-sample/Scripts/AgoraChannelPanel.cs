@@ -35,6 +35,13 @@ public class AgoraChannelPanel : MonoBehaviour
     public ToggleStateButton MuteAudioButton;
     public ToggleStateButton MuteVideoButton;
     public ToggleStateButton ClientRoleButton;
+    public Toggle subscribeAudio;
+    public Toggle subscribeVideo;
+    public Toggle publishAudio;
+    public Toggle publishVideo;
+
+    List<ToggleStateButton> ButtonCollection = new List<ToggleStateButton>();
+    List<Toggle> ToggleCollection = new List<Toggle>();
 
     private string channelToken;
 
@@ -50,6 +57,7 @@ public class AgoraChannelPanel : MonoBehaviour
                 callOnAction: Button_JoinChannel,
                 callOffAction: Button_LeaveChannel
             );
+            ButtonCollection.Add(JoinChannelButton);
         }
 
         if (PublishButton != null)
@@ -59,6 +67,7 @@ public class AgoraChannelPanel : MonoBehaviour
                 callOnAction: Button_PublishToPartyChannel,
                 callOffAction: Button_CancelPublishFromChannel
             );
+            ButtonCollection.Add(PublishButton);
         }
 
         if (MuteAudioButton != null)
@@ -68,6 +77,7 @@ public class AgoraChannelPanel : MonoBehaviour
                 callOnAction: Button_MuteLocalAudio,
                 callOffAction: Button_MuteLocalAudio
             );
+            ButtonCollection.Add(MuteAudioButton);
         }
 
         if (MuteVideoButton != null)
@@ -77,6 +87,7 @@ public class AgoraChannelPanel : MonoBehaviour
                 callOnAction: Button_MuteLocalVideo,
                 callOffAction: Button_MuteLocalVideo
             );
+            ButtonCollection.Add(MuteVideoButton);
         }
 
         if (ScreenShareButton != null)
@@ -86,6 +97,7 @@ public class AgoraChannelPanel : MonoBehaviour
                 callOnAction: Button_ShareScreen,
                 callOffAction: Button_ShareScreen
             );
+            ButtonCollection.Add(ScreenShareButton);
         }
 
         SetupRoleButton(isHost: !AudienceMode);
@@ -101,6 +113,11 @@ public class AgoraChannelPanel : MonoBehaviour
         }
 
         InfoText.text = AudienceMode ? "Audience" : "Broadcaster";
+
+        if (publishVideo != null) { ToggleCollection.Add(publishVideo); }
+        if (publishAudio != null) { ToggleCollection.Add(publishAudio); }
+        if (subscribeVideo != null) { ToggleCollection.Add(subscribeVideo); }
+        if (subscribeAudio != null) { ToggleCollection.Add(subscribeAudio); }
     }
 
     private void SetupRoleButton(bool isHost)
@@ -170,6 +187,21 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
+    void ResetButtons()
+    {
+        foreach (var btn in ButtonCollection)
+        {
+            btn.Reset();
+        }
+    }
+
+    void ActiveToggles(bool on)
+    {
+        foreach (var tog in ToggleCollection)
+        {
+            tog.interactable = on;
+        }
+    }
     #region Buttons
 
     public void Button_JoinChannel()
@@ -195,7 +227,8 @@ public class AgoraChannelPanel : MonoBehaviour
         {
             mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         }
-        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, new ChannelMediaOptions(true, true, false, false));
+        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID,
+            new ChannelMediaOptions(subscribeAudio.isOn, subscribeVideo.isOn, publishAudio.isOn, publishVideo.isOn));
         Debug.Log("Joining channel: " + channelName);
     }
 
@@ -207,6 +240,8 @@ public class AgoraChannelPanel : MonoBehaviour
             mChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
             SetButtonsState(false, false, false, false);
+            ResetButtons();
+            ActiveToggles(true);
         }
         else
         {
@@ -296,8 +331,18 @@ public class AgoraChannelPanel : MonoBehaviour
         Debug.Log("Join party channel success - channel: " + channelID + " uid: " + uid);
         txtLocaluserId.text = "Local user Id: " + uid;
         MakeImageSurface(channelID, uid, true);
-        SetButtonsState(!AudienceMode, false, false, false);
+        if ((publishAudio != null && publishAudio.isOn) || (publishVideo != null && publishVideo.isOn))
+        {
+            SetButtonsState(true, true, true, true);
+            PublishButton.SetState(true);
+            IsPublishing = true;
+        }
+        else
+        {
+            SetButtonsState(!AudienceMode, false, false, false);
+        }
         InChannel = true;
+        ActiveToggles(false);
     }
 
     void OnUserJoinedHandler(string channelID, uint uid, int elapsed)

@@ -1031,10 +1031,10 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int joinChannel2(string channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo);
+        protected static extern int joinChannel2(string channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int joinChannelWithUserAccount2(string channel, string token, string userAccount, bool autoSubscribeAudio, bool autoSubscribeVideo);
+        protected static extern int joinChannelWithUserAccount2(string channel, string token, string userAccount, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int leaveChannel2(string channel);

@@ -9,6 +9,11 @@ class AgoraChannel {
       uid: null,
       token: null,
     };
+    this.videoEnabled = false; // if true then camera is created, if false then not
+    this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.videoSubscribing = true; 
+    this.audioSubscribing = true; 
+
     this.is_publishing = false;
     this.is_screensharing = false;
     this.remoteUsers = {};
@@ -22,6 +27,13 @@ class AgoraChannel {
     this.options.token = channelkey;
     this.options.channel = channelName;
     this.options.uid = uid;
+  }
+  
+  setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
+    this.audioEnabled = pubAudio;
+    this.videoEnabled = pubVideo;
+    this.audioSubscribing = subAudio;
+    this.videoSubscribing = subVideo;
   }
 
   getConnectionState() {
@@ -149,11 +161,9 @@ class AgoraChannel {
     event_manager.raiseCustomMsg("New User Published: " + id);
   }
 
-  async joinChannelWithUserAccount_MC(
+  async joinChannel2(
     token_str,
-    userAccount_str,
-    autoPublishAudio,
-    autoPublishVideo
+    userAccount_str
   ) {
     this.options.token = token_str;
     this.options.channel = this.channelId;
@@ -174,7 +184,7 @@ class AgoraChannel {
       ),
     ]);
 
-    if (autoPublishVideo) {
+    if (this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
@@ -183,7 +193,7 @@ class AgoraChannel {
       this.is_publishing = true;
     }
 
-    if (autoPublishAudio) {
+    if (this.audioEnabled) {
       await this.setupLocalAudioTrack();
       if (localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);
@@ -484,15 +494,19 @@ async muteLocalAudioStream(mute) {
       await this.client.publish(localTracks.audioTrack);
     }
   }
+  this.audioEnabled = !mute;
 }
 
 // Stops/Resumes sending the local video stream.
 async muteLocalVideoStream(mute) {
   if (this.client && !this.is_screensharing) {
     if (mute) {
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      if (localTracks.videoTrack)
+      {
+        localTracks.videoTrack.stop();
+        localTracks.videoTrack.close();
+        await this.client.unpublish(localTracks.videoTrack);
+      }
     } else {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(),
@@ -503,6 +517,7 @@ async muteLocalVideoStream(mute) {
         await this.client.publish(localTracks.videoTrack);
       }
     }
+    this.videoEnabled = !mute;
   }
 }
   muteRemoteAudioStream(uid, mute) {
