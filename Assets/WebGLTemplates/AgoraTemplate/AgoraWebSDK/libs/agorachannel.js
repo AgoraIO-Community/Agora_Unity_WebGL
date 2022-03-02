@@ -184,7 +184,7 @@ class AgoraChannel {
       ),
     ]);
 
-    if (this.videoEnabled) {
+    if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
@@ -193,7 +193,7 @@ class AgoraChannel {
       this.is_publishing = true;
     }
 
-    if (this.audioEnabled) {
+    if (this.client_role === 1 && this.audioEnabled) {
       await this.setupLocalAudioTrack();
       if (localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);
