@@ -17,6 +17,7 @@ public class MultiChannelSceneCtrl : MonoBehaviour
     Text logText;
 
     static IRtcEngine mRtcEngine;
+    static string APPID { get; set; }
 
     private void Awake()
     {
@@ -29,10 +30,15 @@ public class MultiChannelSceneCtrl : MonoBehaviour
         {
             return;
         }
+        APPID = appID;
+        SetupEngine();
+    }
 
-        if (mRtcEngine == null)
+    public static void SetupEngine(bool resetting = false)
+    {
+        if (mRtcEngine == null || resetting)
         {
-            mRtcEngine = IRtcEngine.GetEngine(appID);
+            mRtcEngine = IRtcEngine.GetEngine(APPID);
         }
 
 

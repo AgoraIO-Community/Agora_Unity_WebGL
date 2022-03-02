@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using agora_gaming_rtc;
 using UnityEngine.UI;
@@ -204,6 +205,25 @@ public class AgoraChannelPanel : MonoBehaviour
     }
     #region Buttons
 
+    public void Restart()
+    {
+        StartCoroutine(CoRestart());
+    }
+
+    IEnumerator CoRestart()
+    {
+        Button_LeaveChannel();
+        yield return new WaitForSeconds(0.5f);
+
+        mChannel.ReleaseChannel();
+        mChannel = null;
+
+        IRtcEngine.Destroy();
+
+        yield return new WaitForFixedUpdate();
+        MultiChannelSceneCtrl.SetupEngine(resetting: true);
+    }
+
     public void Button_JoinChannel()
     {
         if (mChannel == null)
@@ -227,8 +247,14 @@ public class AgoraChannelPanel : MonoBehaviour
         {
             mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         }
-        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID,
-            new ChannelMediaOptions(subscribeAudio.isOn, subscribeVideo.isOn, publishAudio.isOn, publishVideo.isOn));
+        ChannelMediaOptions channelMediaOptions = new ChannelMediaOptions(
+            subscribeAudio == null ? true : subscribeAudio.isOn,
+            subscribeVideo == null ? true : subscribeVideo.isOn,
+            publishAudio == null ? false : publishAudio.isOn,
+            publishVideo == null ? false : publishVideo.isOn
+        );
+        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, channelMediaOptions);
+
         Debug.Log("Joining channel: " + channelName);
     }
 
@@ -357,6 +383,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
         foreach (GameObject player in userVideos)
         {
+            Debug.LogWarning("Destroying " + player.name);
             Destroy(player);
         }
 

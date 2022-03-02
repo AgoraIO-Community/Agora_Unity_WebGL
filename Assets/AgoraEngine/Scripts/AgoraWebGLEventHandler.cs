@@ -380,7 +380,8 @@ namespace agora_gaming_rtc
         // MULTI CLIENT MANAGEMENT
         public static void AddClient(string channelId, AgoraChannel channel)
         {
-            GetInstance()._clientsList.Add(channelId, channel);
+            //GetInstance()._clientsList.Add(channelId, channel);
+            GetInstance()._clientsList[channelId] = channel;
         }
 
         // encapsulate all video thing in one object
