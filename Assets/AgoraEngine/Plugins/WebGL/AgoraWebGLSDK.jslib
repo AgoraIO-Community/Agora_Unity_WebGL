@@ -361,6 +361,9 @@ var LibraryAgoraWebGLSDK = {
   enableAudioVolumeIndication: function (interval, smooth, report_vad) {
     enableAudioVolumeIndicator();
   },
+  enableAudioVolumeIndication2: function () {
+    enableAudioVolumeIndicator2();
+  },
 
   setBeautyEffectOptions: function (
     enabled,
@@ -1388,6 +1391,10 @@ muteLocalAudioStream_channel: function(channel, mute) {
       publishLocalAudio, publishLocalVideo
     );
   },
+  ReleaseChannel: function (channel) {
+    var channel_str = Pointer_stringify(channel);
+    wgl_mc_releaseChannel(channel_str);
+  },
   adjustRecordingSignalVolume: function (volume) {
     adjustRecordingSignalVolume_WGL(volume);
   },
@@ -1442,7 +1449,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
     switchChannel_WGL(token_str, channelId_str);
   },
   setAudioRecordingDevice: function (deviceId) {},
-  ReleaseChannel: function (channel) {},
   sendStreamMessage2: function (channel, streamId, data, length) {},
   isSpeakerphoneEnabled: function () {},
   setRemoteUserPriority: function (uid, userPriority) {},

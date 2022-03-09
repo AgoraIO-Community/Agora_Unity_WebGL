@@ -215,24 +215,34 @@ public class AgoraChannelPanel : MonoBehaviour
         Button_LeaveChannel();
         yield return new WaitForSeconds(0.5f);
 
-        mChannel.ReleaseChannel();
-        mChannel = null;
-
+        if (mChannel != null)
+        {
+            mChannel.ReleaseChannel();
+            mChannel = null;
+        }
         IRtcEngine.Destroy();
 
         yield return new WaitForFixedUpdate();
-        MultiChannelSceneCtrl.SetupEngine(resetting: true);
+        MultiChannelSceneCtrl.Instance.SetupEngine(resetting: true);
     }
 
     public void Button_JoinChannel()
     {
-        if (mChannel == null)
+        var engine = IRtcEngine.QueryEngine();
+        if (engine != null)
         {
-            mChannel = IRtcEngine.QueryEngine().CreateChannel(channelName);
+            engine.OnVolumeIndication += OnVolumeIndicationHandler;
 
+            if (mChannel != null)
+            {
+                mChannel.ReleaseChannel();
+            }
+            mChannel = engine.CreateChannel(channelName);
+
+            mChannel.EnableAudioVolumeIndicator();
             mChannel.ChannelOnJoinChannelSuccess += OnJoinChannelSuccessHandler;
             mChannel.ChannelOnUserJoined += OnUserJoinedHandler;
-            mChannel.ChannelOnLeaveChannel += OnLeaveHandler;
+            mChannel.ChannelOnLeaveChannel = OnLeaveHandler;
             mChannel.ChannelOnUserOffLine += OnUserLeftHandler;
             mChannel.ChannelOnRemoteVideoStats += OnRemoteVideoStatsHandler;
             mChannel.ChannelOnError += HandleChannelError;
@@ -262,9 +272,19 @@ public class AgoraChannelPanel : MonoBehaviour
     {
         if (mChannel != null)
         {
-            IsPublishing = false;
-            mChannel.LeaveChannel();
             Debug.Log("Leaving channel: " + channelName);
+
+            IsPublishing = false;
+            var engine = IRtcEngine.QueryEngine();
+            engine.OnVolumeIndication -= OnVolumeIndicationHandler;
+            mChannel.ChannelOnJoinChannelSuccess -= OnJoinChannelSuccessHandler;
+            mChannel.ChannelOnUserJoined -= OnUserJoinedHandler;
+            mChannel.ChannelOnUserOffLine -= OnUserLeftHandler;
+            mChannel.ChannelOnRemoteVideoStats -= OnRemoteVideoStatsHandler;
+            mChannel.ChannelOnError -= HandleChannelError;
+            mChannel.ChannelOnClientRoleChanged -= handleChannelOnClientRoleChangedHandler;
+
+            mChannel.LeaveChannel();
             SetButtonsState(false, false, false, false);
             ResetButtons();
             ActiveToggles(true);
@@ -374,6 +394,7 @@ public class AgoraChannelPanel : MonoBehaviour
     void OnUserJoinedHandler(string channelID, uint uid, int elapsed)
     {
         Debug.Log("User: " + uid + "joined channel: + " + channelID);
+        MakeImageSurface(channelID, uid);
     }
 
     void OnLeaveHandler(string channelID, RtcStats stats)
@@ -405,6 +426,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
     {
+        return;
         Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID
             + ", remoteStats.receivedBitrate: " + remoteStats.receivedBitrate
             + ", remoteStats.uid: " + remoteStats.uid);
@@ -448,18 +470,26 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
-
     void HandleChannelError(string channelId, int err, string message)
     {
         Debug.LogWarning("Channel Error: " + IRtcEngine.GetErrorDescription(err));
+    }
+
+    void OnVolumeIndicationHandler(AudioVolumeInfo[] speakers, int speakerNumber, int totalVolume)
+    {
+        Debug.Log("OnVolumeIndicationHandler speakerNumber:" + speakerNumber + " totalvolume:" + totalVolume);
+        foreach (var sp in speakers)
+        {
+            Debug.LogFormat("Speaker:{0} level:{1} channel:{2}", sp.uid, sp.volume, sp.channelId);
+        }
     }
     #endregion
 
     #region UI Handling
     void MakeImageSurface(string channelID, uint uid, bool isLocalUser = false)
     {
-        Debug.Log("in MakeImageSurface");
-        if (GameObject.Find(uid.ToString()) != null)
+        string objName = isLocalUser ? "LocalUser" : uid.ToString();
+        if (GameObject.Find(objName) != null)
         {
             Debug.Log("A video surface already exists with this uid: " + uid.ToString());
             return;
@@ -467,7 +497,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
         // Create my new image surface
         GameObject go = new GameObject();
-        go.name = uid.ToString();
+        go.name = objName;
         go.AddComponent<RawImage>();
 
         // Child it inside the panel scroller
@@ -476,7 +506,6 @@ public class AgoraChannelPanel : MonoBehaviour
             go.transform.SetParent(videoSpawnPoint);
         }
 
-        Debug.Log("in MakeImageSurface 2");
 
         go.transform.localScale = new Vector3(1, -1, 1);
         // Update the layout of the panel scrollers
@@ -485,16 +514,12 @@ public class AgoraChannelPanel : MonoBehaviour
 
         userVideos.Add(go);
 
-        Debug.Log("in MakeImageSurface 3");
 
         go.GetComponent<RectTransform>().anchoredPosition = new Vector2(0, spawnY);
-        Debug.Log("MakeImageSurface - before adding video surface");
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
         if (isLocalUser == false)
         {
-            Debug.Log("MakeImageSurface - isLocalUser == false");
             videoSurface.SetForMultiChannelUser(channelID, uid);
-            Debug.Log("MakeImageSurface - SetForMultiChannelUser after");
         }
     }
 
