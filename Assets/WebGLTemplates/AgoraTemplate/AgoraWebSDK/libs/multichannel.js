@@ -438,7 +438,23 @@ function wgl_mc_joinChannel2(
   } else {
     var c = clients[selectedCurrentChannel];
     c.setAVControl(autoSubscribeAudio, autoSubscribeVideo, autoPublishAudio, autoPublishVideo);
-    c.joinChannel2(token, uid);
+    c.joinChannel2(selectedCurrentChannel, token, uid);
+  }
+}
+function wgl_mc_releaseChannel(channel_str) {
+  if (typeof clients[channel_str] === "undefined" || clients[channel_str] == null) {
+    return 0;
+  } else {
+    clients[channel_str] = null;
+  }
+}
+
+function enableAudioVolumeIndicator2() {
+  if (typeof clients[selectedCurrentChannel] === "undefined") {
+    return 0;
+  } else {
+    var c = clients[selectedCurrentChannel]; 
+    c.enableAudioVolumeIndicator2();
   }
 }
 // NEW MULTI CLIENT API's ENDS
