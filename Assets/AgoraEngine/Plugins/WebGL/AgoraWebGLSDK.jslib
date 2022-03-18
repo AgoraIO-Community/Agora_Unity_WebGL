@@ -361,6 +361,9 @@ var LibraryAgoraWebGLSDK = {
   enableAudioVolumeIndication: function (interval, smooth, report_vad) {
     enableAudioVolumeIndicator();
   },
+  enableAudioVolumeIndication2: function () {
+    enableAudioVolumeIndicator2();
+  },
 
   setBeautyEffectOptions: function (
     enabled,
@@ -810,23 +813,7 @@ var LibraryAgoraWebGLSDK = {
   ) {},
   releaseAAudioRecordingDeviceManager: function () {},
   setAudioSessionOperationRestriction: function (restriction) {},
-  joinChannelWithUserAccount2: function (
-    channel,
-    token,
-    userAccount,
-    autoPublishAudio,
-    autoPublishVideo
-  ) {
-    _logger("joinChannelWithUserAccount2 in jslib");
-    var token_str = Pointer_stringify(token);
-    var userAccount_str = Pointer_stringify(userAccount);
-    joinChannelWithUserAccount_MC(
-      token_str,
-      userAccount_str,
-      autoPublishAudio,
-      autoPublishVideo
-    );
-  },
+
   getCurrentRecordingDeviceInfo: function (deviceName, deviceId) {},
   setDefaultAudioRoutetoSpeakerphone: function (enabled) {},
   setRecordingAudioFrameParameters: function (
@@ -1370,25 +1357,43 @@ muteLocalAudioStream_channel: function(channel, mute) {
   var str_chan = Pointer_stringify(channel);
   muteLocalAudioStream2_mc_WGL(str_chan, mute);
 },
-
+  joinChannelWithUserAccount2: function (
+    channel,
+    token,
+    userAccount,
+    autoPublishAudio, autoPublishVideo,
+    publishLocalAudio, publishLocalVideo
+  ) {
+    _logger("joinChannelWithUserAccount2 in jslib");
+    var token_str = Pointer_stringify(token);
+    var userAccount_str = Pointer_stringify(userAccount);
+    wgl_mc_joinChannel2(
+      token_str,
+      userAccount_str,
+      autoPublishAudio, autoPublishVideo,
+      publishLocalAudio, publishLocalVideo
+    );
+  },
   joinChannel2: function (
     channel,
     token,
     info,
     uid,
-    autoSubscribeAudio,
-    autoSubscribeVideo
+    autoSubscribeAudio, autoSubscribeVideo,
+    publishLocalAudio, publishLocalVideo
   ) {
     var token_Str = Pointer_stringify(token);
     var info_Str = Pointer_stringify(info);
     wgl_mc_joinChannel2(
-      channel,
       token_Str,
-      info_Str,
       uid,
-      autoSubscribeAudio,
-      autoSubscribeVideo
+      autoSubscribeAudio, autoSubscribeVideo,
+      publishLocalAudio, publishLocalVideo
     );
+  },
+  ReleaseChannel: function (channel) {
+    var channel_str = Pointer_stringify(channel);
+    wgl_mc_releaseChannel(channel_str);
   },
   adjustRecordingSignalVolume: function (volume) {
     adjustRecordingSignalVolume_WGL(volume);
@@ -1444,7 +1449,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
     switchChannel_WGL(token_str, channelId_str);
   },
   setAudioRecordingDevice: function (deviceId) {},
-  ReleaseChannel: function (channel) {},
   sendStreamMessage2: function (channel, streamId, data, length) {},
   isSpeakerphoneEnabled: function () {},
   setRemoteUserPriority: function (uid, userPriority) {},

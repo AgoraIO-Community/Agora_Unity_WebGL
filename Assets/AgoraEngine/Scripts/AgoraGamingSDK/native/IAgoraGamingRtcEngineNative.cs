@@ -196,6 +196,9 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setWebParametersString(string key, string value);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableAudioVolumeIndication2();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1025,16 +1028,15 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern IntPtr createChannel(string channelId);
 
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int ReleaseChannel(IntPtr channel);
+
 
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int joinChannel2(string channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo);
+        protected static extern int joinChannel2(string channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int joinChannelWithUserAccount2(string channel, string token, string userAccount, bool autoSubscribeAudio, bool autoSubscribeVideo);
+        protected static extern int joinChannelWithUserAccount2(string channel, string token, string userAccount, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int leaveChannel2(string channel);
@@ -1044,7 +1046,13 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int unpublish(string channel);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int ReleaseChannel(string channel);
 #else
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int ReleaseChannel(IntPtr channel);
+
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int joinChannel2(IntPtr channel, string token, string info, uint uid, bool autoSubscribeAudio, bool autoSubscribeVideo, bool publishLocalAudio, bool publishLocalVideo);
 

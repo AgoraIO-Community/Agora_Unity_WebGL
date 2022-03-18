@@ -380,7 +380,8 @@ namespace agora_gaming_rtc
         // MULTI CLIENT MANAGEMENT
         public static void AddClient(string channelId, AgoraChannel channel)
         {
-            GetInstance()._clientsList.Add(channelId, channel);
+            //GetInstance()._clientsList.Add(channelId, channel);
+            GetInstance()._clientsList[channelId] = channel;
         }
 
         // encapsulate all video thing in one object
@@ -447,8 +448,10 @@ namespace agora_gaming_rtc
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
-                ch.ChannelOnJoinChannelSuccess(channel, uint.Parse(userId), 0);
-
+                if (ch.ChannelOnJoinChannelSuccess != null)
+                {
+                    ch.ChannelOnJoinChannelSuccess(channel, uint.Parse(userId), 0);
+                }
             }
         }
 
@@ -689,7 +692,10 @@ namespace agora_gaming_rtc
             {
                 RtcStats stat = new RtcStats();
                 AgoraChannel ch = GetInstance()._clientsList[channel];
-                ch.ChannelOnLeaveChannel(channel, stat);
+                if (ch.ChannelOnLeaveChannel != null)
+                {
+                    ch.ChannelOnLeaveChannel(channel, stat);
+                }
             }
         }
 
@@ -721,7 +727,10 @@ namespace agora_gaming_rtc
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
-                ch.ChannelOnError(channel, int.Parse(errCode), msg);
+                if (ch.ChannelOnError != null)
+                {
+                    ch.ChannelOnError(channel, int.Parse(errCode), msg);
+                }
             }
         }
 
@@ -756,8 +765,10 @@ namespace agora_gaming_rtc
                 {
                     newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
                 }
-
-                ch.ChannelOnClientRoleChanged(channel, oldRole, newRole);
+                if (ch.ChannelOnClientRoleChanged != null)
+                {
+                    ch.ChannelOnClientRoleChanged(channel, oldRole, newRole);
+                }
 
             }
         }

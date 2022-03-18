@@ -9,6 +9,11 @@ class AgoraChannel {
       uid: null,
       token: null,
     };
+    this.videoEnabled = false; // if true then camera is created, if false then not
+    this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.videoSubscribing = true; 
+    this.audioSubscribing = true; 
+
     this.is_publishing = false;
     this.is_screensharing = false;
     this.remoteUsers = {};
@@ -16,12 +21,20 @@ class AgoraChannel {
     this.mode = "rtc";
     this.client_role = 1; // default is host, 2 is audience
     this.liveTranscodingConfig = null;
+    this.volumeIndicationOn = false;
   }
 
   setOptions(channelkey, channelName, uid) {
     this.options.token = channelkey;
     this.options.channel = channelName;
     this.options.uid = uid;
+  }
+  
+  setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
+    this.audioEnabled = pubAudio;
+    this.videoEnabled = pubVideo;
+    this.audioSubscribing = subAudio;
+    this.videoSubscribing = subVideo;
   }
 
   getConnectionState() {
@@ -35,6 +48,9 @@ class AgoraChannel {
     if (this.client == undefined) {
       this.client = AgoraRTC.createClient({ mode: this.mode, codec: "vp8" });
       this.options.appid = client_manager.getMainAppId();
+      if (this.volumeIndicationOn) {
+        this.client.enableAudioVolumeIndicator();
+      }
       return true;
     }
   }
@@ -44,6 +60,9 @@ class AgoraChannel {
       this.mode = "live";
       this.client = AgoraRTC.createClient({ mode: this.mode, codec: "vp8" });
       this.options.appid = client_manager.getMainAppId();
+      if (this.volumeIndicationOn) {
+        this.client.enableAudioVolumeIndicator();
+      }
       return true;
     }
   }
@@ -149,21 +168,54 @@ class AgoraChannel {
     event_manager.raiseCustomMsg("New User Published: " + id);
   }
 
-  async joinChannelWithUserAccount_MC(
+  async handleVolumeIndicator(result) {
+    var total = 0;
+    var count = result.length;
+    var info = "";
+    const vad = 0;
+    const channel_str = this.channelId;
+    result.forEach(function(volume, index){
+      console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
+
+      if (volume.level > total) {
+        total = volume.level;
+      }
+      var level = volume.level.toFixed();
+      info += `\t${volume.uid}\t${level}\t${vad}\t${channel_str}`;
+    });
+    event_manager.raiseVolumeIndicator(info, count, total.toFixed());
+  }
+
+  async handleStreamMessage(uid, data) {
+    UnityHooks.InvokeStreamMessageCallback(uid, data, data.length);
+  }
+
+  handleException(e) {
+    console.log(e);
+  }
+
+  handleError(e) {
+    console.log(e);
+  }
+   //============================================================================== 
+  async joinChannel2(
+    channel_str,
     token_str,
-    userAccount_str,
-    autoPublishAudio,
-    autoPublishVideo
+    userAccount_str
   ) {
     this.options.token = token_str;
-    this.options.channel = this.channelId;
+    this.options.channel = channel_str;
+    this.channelId = channel_str;
 
     // add event listener to play remote tracks when remote user publishs.
     this.client.on("user-joined", this.handleUserJoined.bind(this));
     this.client.on("user-published", this.handleUserPublished.bind(this));
     this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
     this.client.on("user-left", this.handleUserLeft.bind(this));
-
+    this.client.on("exception", this.handleException.bind(this));
+    this.client.on("error", this.handleError.bind(this));
+    this.client.on("volume-indicator", this.handleVolumeIndicator.bind(this));
+    this.client.on("stream-message", this.handleStreamMessage.bind(this));
 
     [this.options.uid] = await Promise.all([
       this.client.join(
@@ -174,7 +226,7 @@ class AgoraChannel {
       ),
     ]);
 
-    if (autoPublishVideo) {
+    if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
@@ -183,7 +235,7 @@ class AgoraChannel {
       this.is_publishing = true;
     }
 
-    if (autoPublishAudio) {
+    if (this.client_role === 1 && this.audioEnabled) {
       await this.setupLocalAudioTrack();
       if (localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);
@@ -484,15 +536,19 @@ async muteLocalAudioStream(mute) {
       await this.client.publish(localTracks.audioTrack);
     }
   }
+  this.audioEnabled = !mute;
 }
 
 // Stops/Resumes sending the local video stream.
 async muteLocalVideoStream(mute) {
   if (this.client && !this.is_screensharing) {
     if (mute) {
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      if (localTracks.videoTrack)
+      {
+        localTracks.videoTrack.stop();
+        localTracks.videoTrack.close();
+        await this.client.unpublish(localTracks.videoTrack);
+      }
     } else {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(),
@@ -503,6 +559,7 @@ async muteLocalVideoStream(mute) {
         await this.client.publish(localTracks.videoTrack);
       }
     }
+    this.videoEnabled = !mute;
   }
 }
   muteRemoteAudioStream(uid, mute) {
@@ -645,6 +702,14 @@ async muteLocalVideoStream(mute) {
         await this.client.setClientRole("audience", optionLevel);
       }
       this.client_role = role;
+    }
+  }
+
+  enableAudioVolumeIndicator2() {
+    if (this.client) {
+      this.client.enableAudioVolumeIndicator();
+    } else {
+      this.volumeIndicationOn = true;
     }
   }
 }

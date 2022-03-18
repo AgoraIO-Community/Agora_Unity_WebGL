@@ -17,10 +17,18 @@ public class MultiChannelSceneCtrl : MonoBehaviour
     Text logText;
 
     static IRtcEngine mRtcEngine;
+    static string APPID { get; set; }
+
+    public static MultiChannelSceneCtrl Instance { get; private set; }
 
     private void Awake()
     {
         DontDestroyOnLoad(gameObject);
+        if (Instance != null)
+        {
+            Destroy(Instance);
+        }
+        Instance = this;
     }
 
     void Start()
@@ -29,10 +37,15 @@ public class MultiChannelSceneCtrl : MonoBehaviour
         {
             return;
         }
+        APPID = appID;
+        SetupEngine();
+    }
 
-        if (mRtcEngine == null)
+    public void SetupEngine(bool resetting = false)
+    {
+        if (mRtcEngine == null || resetting)
         {
-            mRtcEngine = IRtcEngine.GetEngine(appID);
+            mRtcEngine = IRtcEngine.GetEngine(APPID);
         }
 
 
@@ -42,7 +55,6 @@ public class MultiChannelSceneCtrl : MonoBehaviour
             return;
         }
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-
         mRtcEngine.SetMultiChannelWant(true);
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableAudio();

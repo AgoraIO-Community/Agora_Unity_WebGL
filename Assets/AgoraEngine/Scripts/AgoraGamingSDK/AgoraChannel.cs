@@ -142,7 +142,11 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
+#if !UNITY_EDITOR && UNITY_WEBGL
+            int ret = IRtcEngineNative.ReleaseChannel(_channelId);
+#else
             int ret = IRtcEngineNative.ReleaseChannel(_channelHandler);
+#endif
             if (_channelDictionary.ContainsKey(_channelId))
             {
                 _channelDictionary.Remove(_channelId);
@@ -242,7 +246,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
             // For WebGL audio and video are auto subscribed
-            return IRtcEngineNative.joinChannel2(_channelId, token, info, uid, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
+            return IRtcEngineNative.joinChannel2(_channelId, token, info, uid, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #else
             return IRtcEngineNative.joinChannel2(_channelHandler, token, info, uid, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #endif
@@ -293,7 +297,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
             // For WebGL audio and video are auto subscribed
-            return IRtcEngineNative.joinChannelWithUserAccount2(_channelId, token, userAccount, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
+            return IRtcEngineNative.joinChannelWithUserAccount2(_channelId, token, userAccount, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #else
             return IRtcEngineNative.joinChannelWithUserAccount2(_channelHandler, token, userAccount, channelMediaOptions.autoSubscribeAudio, channelMediaOptions.autoSubscribeVideo, channelMediaOptions.publishLocalAudio, channelMediaOptions.publishLocalVideo);
 #endif
@@ -330,7 +334,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
             return IRtcEngineNative.leaveChannel2(_channelId);
-#else 
+#else
             return IRtcEngineNative.leaveChannel2(_channelHandler);
 #endif
 
@@ -487,7 +491,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             // do nothing for WebGL since deprecation
             return -1;
-#else 
+#else
             return IRtcEngineNative.setEncryptionSecret2(_channelHandler, secret);
 #endif
         }
@@ -1452,6 +1456,20 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
         }
         /// @endcond
+
+
+        /**
+        *  WebGL Only EnableAudioVolume Indication for MultiChannel. Use the same 
+        *  OnVolumeIndicationHandler from IRtcEngine to get the callback.
+	    *   
+        */
+        public void EnableAudioVolumeIndicator()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.enableAudioVolumeIndication2();	
+#endif
+        }
 
         [MonoPInvokeCallback(typeof(ChannelOnWarningHandler))]
         private static void OnWarningCallback(string channelId, int warn, string message)
