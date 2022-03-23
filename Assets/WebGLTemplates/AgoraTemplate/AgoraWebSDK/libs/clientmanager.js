@@ -717,6 +717,17 @@ class ClientManager {
     await this.client.publish(localTracks.videoTrack);
   }
 
+  async startNewScreenCaptureForWeb(uid) {
+    var c = clients[selectedCurrentChannel];
+    console.log(c);
+    c.startNewScreenCaptureForWeb(uid);
+  }
+
+  async stopNewScreenCaptureForWeb(){
+    var c = clients[selectedCurrentChannel];
+    c.stopNewScreenCaptureForWeb();
+  }
+
   // Stop screen sharing.
   async stopScreenCapture() {
     localTracks.videoTrack.stop();
