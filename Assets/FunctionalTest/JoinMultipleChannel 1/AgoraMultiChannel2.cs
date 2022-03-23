@@ -43,6 +43,16 @@ public class AgoraMultiChannel2 : MonoBehaviour
         logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
     }
 
+    public void startNewScreenShare()
+    {
+        channel1.StartNewScreenCaptureForWeb(1000);
+    }
+
+    public void stopNewScreenShare()
+    {
+        channel1.StopNewScreenCaptureForWeb();
+    }
+
     void InitEngine()
     {
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
@@ -54,26 +64,19 @@ public class AgoraMultiChannel2 : MonoBehaviour
         mRtcEngine.EnableVideoObserver();
 
         channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
-        channel2 = mRtcEngine.CreateChannel(CHANNEL_NAME_2);
         channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-        channel2.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
 
         channel1.ChannelOnJoinChannelSuccess = Channel1OnJoinChannelSuccessHandler;
         channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
         channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
         channel1.ChannelOnError = Channel1OnErrorHandler;
         channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
-        channel2.ChannelOnJoinChannelSuccess = Channel2OnJoinChannelSuccessHandler;
-        channel2.ChannelOnLeaveChannel = Channel2OnLeaveChannelHandler;
-        channel2.ChannelOnUserJoined = Channel2OnUserJoinedHandler;
-        channel2.ChannelOnError = Channel2OnErrorHandler;
-        channel2.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+
     }
 
     void JoinChannel()
     {
         channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
-        channel2.JoinChannel(TOKEN_2, "", 0, new ChannelMediaOptions(true, true, false, false));
     }
 
     void OnApplicationQuit()
@@ -82,9 +85,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         if (mRtcEngine != null)
         {
             channel1.LeaveChannel();
-            channel2.LeaveChannel();
             channel1.ReleaseChannel();
-            channel2.ReleaseChannel();
 
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();

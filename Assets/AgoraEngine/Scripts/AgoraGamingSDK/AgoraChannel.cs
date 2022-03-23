@@ -1345,6 +1345,26 @@ namespace agora_gaming_rtc
 #endif
         }
 
+        public void StartNewScreenCaptureForWeb(uint uid)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.startNewScreenCaptureForWeb(uid);
+#else
+            Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
+#endif
+        }
+
+        public void StopNewScreenCaptureForWeb()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.stopNewScreenCaptureForWeb();
+#else
+            Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
+#endif
+        }
+
         /// <summary>
         ///   Stop the screen share
         /// </summary>
