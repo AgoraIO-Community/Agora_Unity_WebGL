@@ -391,7 +391,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1348336710}
-        m_MethodName: stopNewScreenShare
+        m_MethodName: stopNewScreenShare2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1109,7 +1109,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1348336710}
-        m_MethodName: startNewScreenShare
+        m_MethodName: startNewScreenShare2
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

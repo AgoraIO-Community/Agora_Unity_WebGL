@@ -43,6 +43,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
     }
 
+    //for starting/stopping a new screen share through AgoraChannel class.
     public void startNewScreenShare()
     {
         channel1.StartNewScreenCaptureForWeb(1000);
@@ -51,6 +52,18 @@ public class AgoraMultiChannel2 : MonoBehaviour
     public void stopNewScreenShare()
     {
         channel1.StopNewScreenCaptureForWeb();
+    }
+
+
+    //for starting/stopping a new screen share through IRtcEngine class.
+    public void startNewScreenShare2()
+    {
+        mRtcEngine.StartNewScreenCaptureForWeb(1000);
+    }
+
+    public void stopNewScreenShare2()
+    {
+        mRtcEngine.StopNewScreenCaptureForWeb();
     }
 
     void InitEngine()

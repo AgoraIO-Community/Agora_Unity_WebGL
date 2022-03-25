@@ -1345,21 +1345,36 @@ namespace agora_gaming_rtc
 #endif
         }
 
+
+        /** Shares the screen without using a seperate client so it doesn't
+         * interfere with the webcam stream for the user. Making it so it's two
+         * seperate streams for the user, one for the webcam, and another for the
+         * screen share. 
+         * @notes
+         * - Ensure that you call this method only after joining a channel.
+         * - Only one new Screen Share can be used for a client. If user tries
+         * to start a second Screen Share an alert window will appear telling the
+         * user that they need to stop the current screen share before starting
+         * another one.
+         */
         public void StartNewScreenCaptureForWeb(uint uid)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startNewScreenCaptureForWeb(uid);
+            IRtcEngineNative.startNewScreenCaptureForWeb2(uid);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
         }
 
+        /** Stops the new screen share client that was created with 
+         * StartNewScreenCaptureForWeb(uint uid).
+         * */
         public void StopNewScreenCaptureForWeb()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.stopNewScreenCaptureForWeb();
+            IRtcEngineNative.stopNewScreenCaptureForWeb2();
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
