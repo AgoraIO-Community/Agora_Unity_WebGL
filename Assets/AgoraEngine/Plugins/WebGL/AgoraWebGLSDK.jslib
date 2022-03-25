@@ -443,12 +443,12 @@ var LibraryAgoraWebGLSDK = {
       startScreenCaptureForWeb2();
   },
 
-  startNewScreenCaptureForWeb: function() {
-     startNewScreenCaptureForWeb();
+  startNewScreenCaptureForWeb: function(uid) {
+     startNewScreenCaptureForWeb(uid);
   },
 
-  stopNewScreenCaptureForWeb: function(uid) {
-      stopNewScreenCaptureForWeb(uid);
+  stopNewScreenCaptureForWeb: function() {
+      stopNewScreenCaptureForWeb();
   },
 
   stopScreenCapture2 : function() {

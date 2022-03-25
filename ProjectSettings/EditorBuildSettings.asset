@@ -17,3 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/FunctionalTest/JoinMultipleChannel 1/MainSceneNew.unity
     guid: 39e056144cfa246eb88df188c22cecf2
+  - enabled: 0
+    path: Assets/API-Example/multi-channel-sample/Scenes/MultipleChannelDemo.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 0
+    path: Assets/FunctionalTest/JoinMultipleChannel/MainScene.unity
+    guid: 253acdf0e3d6a43c792d3b1e6534584c

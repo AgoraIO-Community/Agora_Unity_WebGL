@@ -102,6 +102,16 @@ function stopScreenCapture2() {
   }
 }
 
+function startNewScreenCaptureForWeb(uid) {
+  var c = clients[selectedCurrentChannel];
+  c.startNewScreenCaptureForWeb(uid);
+}
+
+function stopNewScreenCaptureForWeb(){
+  var c = clients[selectedCurrentChannel];
+  c.stopNewScreenCaptureForWeb();
+}
+
 function getConnectionState2_MC() {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 1;

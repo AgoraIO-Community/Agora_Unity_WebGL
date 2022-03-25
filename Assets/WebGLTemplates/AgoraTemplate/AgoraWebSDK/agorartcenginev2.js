@@ -329,13 +329,7 @@ async function startScreenCaptureForWeb() {
   client_manager.startScreenCaptureForWeb();
 }
 
-async function startNewScreenCaptureForWeb(uid) {
-  client_manager.startNewScreenCaptureForWeb(uid);
-}
 
-async function stopNewScreenCaptureForWeb() {
-  client_manager.stopNewScreenCaptureForWeb();
-}
 
 async function startScreenCaptureByDisplayId(
   displayId,
