@@ -102,6 +102,18 @@ function stopScreenCapture2() {
   }
 }
 
+function startNewScreenCaptureForWeb2(uid) {
+  console.log("Multichannel startNewScreenCaptureForWeb2");
+  var c = clients[selectedCurrentChannel];
+  c.startNewScreenCaptureForWeb2(uid);
+}
+
+function stopNewScreenCaptureForWeb2(){
+  console.log("Multichannel stopNewScreenCaptureForWeb2");
+  var c = clients[selectedCurrentChannel];
+  c.stopNewScreenCaptureForWeb2();
+}
+
 function getConnectionState2_MC() {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 1;

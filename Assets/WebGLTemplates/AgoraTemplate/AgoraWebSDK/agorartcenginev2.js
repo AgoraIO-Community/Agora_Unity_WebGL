@@ -329,6 +329,16 @@ async function startScreenCaptureForWeb() {
   client_manager.startScreenCaptureForWeb();
 }
 
+function startNewScreenCaptureForWeb(uid) {
+  console.log("agora engine startNewScreenCaptureForWeb");
+  client_manager.startNewScreenCaptureForWeb(uid);
+}
+
+function stopNewScreenCaptureForWeb(){
+  console.log("agora engine stopNewScreenCaptureForWeb");
+  client_manager.stopNewScreenCaptureForWeb();
+}
+
 async function startScreenCaptureByDisplayId(
   displayId,
   x,
