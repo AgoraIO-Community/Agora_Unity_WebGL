@@ -44,24 +44,24 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
     //for starting/stopping a new screen share through AgoraChannel class.
-    public void startNewScreenShare()
+    public void startNewScreenShare2()
     {
         channel1.StartNewScreenCaptureForWeb(1000);
     }
 
-    public void stopNewScreenShare()
+    public void stopNewScreenShare2()
     {
         channel1.StopNewScreenCaptureForWeb();
     }
 
 
     //for starting/stopping a new screen share through IRtcEngine class.
-    public void startNewScreenShare2()
+    public void startNewScreenShare()
     {
         mRtcEngine.StartNewScreenCaptureForWeb(1000);
     }
 
-    public void stopNewScreenShare2()
+    public void stopNewScreenShare()
     {
         mRtcEngine.StopNewScreenCaptureForWeb();
     }

@@ -2906,7 +2906,7 @@ namespace agora_gaming_rtc
         public void StartNewScreenCaptureForWeb(uint uid)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.startNewScreenCaptureForWeb2(uid);
+            IRtcEngineNative.startNewScreenCaptureForWeb(uid);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
@@ -2918,7 +2918,7 @@ namespace agora_gaming_rtc
         public void StopNewScreenCaptureForWeb()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.stopNewScreenCaptureForWeb2();
+            IRtcEngineNative.stopNewScreenCaptureForWeb();
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif

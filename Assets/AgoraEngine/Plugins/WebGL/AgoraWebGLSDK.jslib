@@ -443,12 +443,24 @@ var LibraryAgoraWebGLSDK = {
       startScreenCaptureForWeb2();
   },
 
-  startNewScreenCaptureForWeb2: function(uid) {
+  startNewScreenCaptureForWeb: function(uid) {
+    console.log("SDK startNewScreenCaptureForWeb");
      startNewScreenCaptureForWeb(uid);
   },
 
-  stopNewScreenCaptureForWeb2: function() {
+  stopNewScreenCaptureForWeb: function() {
+    console.log("SDK stopNewScreenCaptureForWeb");
       stopNewScreenCaptureForWeb();
+  },
+
+  startNewScreenCaptureForWeb2: function(uid) {
+    console.log("SDK startNewScreenCaptureForWeb2");
+     startNewScreenCaptureForWeb2(uid);
+  },
+
+  stopNewScreenCaptureForWeb2: function() {
+      console.log("SDK stopNewScreenCaptureForWeb2");
+      stopNewScreenCaptureForWeb2();
   },
 
   stopScreenCapture2 : function() {
