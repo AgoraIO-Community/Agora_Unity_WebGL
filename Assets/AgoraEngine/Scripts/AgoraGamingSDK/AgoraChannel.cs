@@ -1357,7 +1357,7 @@ namespace agora_gaming_rtc
          * user that they need to stop the current screen share before starting
          * another one.
          */
-        public void StartNewScreenCaptureForWeb(uint uid)
+        public void StartNewScreenCaptureForWeb2(uint uid)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
@@ -1370,7 +1370,7 @@ namespace agora_gaming_rtc
         /** Stops the new screen share client that was created with 
          * StartNewScreenCaptureForWeb(uint uid).
          * */
-        public void StopNewScreenCaptureForWeb()
+        public void StopNewScreenCaptureForWeb2()
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);

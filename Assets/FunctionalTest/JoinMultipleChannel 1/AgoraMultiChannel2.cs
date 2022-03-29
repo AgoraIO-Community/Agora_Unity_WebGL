@@ -46,12 +46,12 @@ public class AgoraMultiChannel2 : MonoBehaviour
     //for starting/stopping a new screen share through AgoraChannel class.
     public void startNewScreenShare2()
     {
-        channel1.StartNewScreenCaptureForWeb(1000);
+        channel1.StartNewScreenCaptureForWeb2(1000);
     }
 
     public void stopNewScreenShare2()
     {
-        channel1.StopNewScreenCaptureForWeb();
+        channel1.StopNewScreenCaptureForWeb2();
     }
 
 
