@@ -26,7 +26,11 @@ public class AgoraMultiChannel2 : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        CheckAppId();
+        if (!CheckAppId())
+        {
+            return;
+        }
+
         InitEngine();
         JoinChannel();
     }
@@ -37,31 +41,32 @@ public class AgoraMultiChannel2 : MonoBehaviour
         PermissionHelper.RequestCameraPermission();
     }
 
-    void CheckAppId()
+    bool CheckAppId()
     {
         logger = new Logger(logText);
         logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        return (APP_ID.Length > 10);
     }
 
     //for starting/stopping a new screen share through AgoraChannel class.
-    public void startNewScreenShare()
+    public void startNewScreenShare2()
     {
-        channel1.StartNewScreenCaptureForWeb(1000);
+        channel1.StartNewScreenCaptureForWeb2(1000);
     }
 
-    public void stopNewScreenShare()
+    public void stopNewScreenShare2()
     {
-        channel1.StopNewScreenCaptureForWeb();
+        channel1.StopNewScreenCaptureForWeb2();
     }
 
 
     //for starting/stopping a new screen share through IRtcEngine class.
-    public void startNewScreenShare2()
+    public void startNewScreenShare()
     {
         mRtcEngine.StartNewScreenCaptureForWeb(1000);
     }
 
-    public void stopNewScreenShare2()
+    public void stopNewScreenShare()
     {
         mRtcEngine.StopNewScreenCaptureForWeb();
     }

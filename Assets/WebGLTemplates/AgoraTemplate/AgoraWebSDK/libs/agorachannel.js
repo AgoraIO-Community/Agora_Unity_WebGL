@@ -636,7 +636,8 @@ async muteLocalVideoStream(mute) {
     await this.client.publish(localTracks.videoTrack);
   }
 
-  async startNewScreenCaptureForWeb(uid) {
+  async startNewScreenCaptureForWeb2(uid) {
+    console.log("AgoraChannel startNewScreenCaptureForWeb2");
     var screenShareTrack = null;
     if(!this.is_screensharing){
     this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -654,7 +655,8 @@ async muteLocalVideoStream(mute) {
     }
 }
 
-async stopNewScreenCaptureForWeb() {
+async stopNewScreenCaptureForWeb2() {
+  console.log("AgoraChannel stopNewScreenCaptureForWeb2");
     this.screenShareClient.leave();
     this.is_screensharing = false;
 }

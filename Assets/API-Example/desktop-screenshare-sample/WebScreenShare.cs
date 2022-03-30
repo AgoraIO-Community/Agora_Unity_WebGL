@@ -17,11 +17,14 @@ public class WebScreenShare : MonoBehaviour
 
     [SerializeField]
     private Button button;
+    [SerializeField]
+    private Button button2;
 
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine;
     bool _isSharing = false;
+    bool _isSharingNew = false;
 
     // Use this for initialization
     void Start()
@@ -75,8 +78,12 @@ public class WebScreenShare : MonoBehaviour
         }
 
         button.onClick.AddListener(ToggleScreenShare);
+        button2.onClick.AddListener(ToggleNewScreenShare);
     }
 
+    /// <summary>
+    ///   Start a screensharing using the current video stream (web client)
+    /// </summary>
     public void ToggleScreenShare()
     {
         _isSharing = !_isSharing;
@@ -85,14 +92,37 @@ public class WebScreenShare : MonoBehaviour
         {
             logger.UpdateLog("Start screen capture for web...");
             mRtcEngine.StartScreenCaptureForWeb();
+            button2.interactable = false;
         }
         else
         {
             logger.UpdateLog("Stop screen capture");
             mRtcEngine.StopScreenCapture();
+            button2.interactable = true;
         }
     }
 
+    /// <summary>
+    ///   Start a screen sharing using a separate web client instance.  Passing 
+    /// a dedicated user id to indicate this is screen sharing for remote to know.
+    /// </summary>
+    public void ToggleNewScreenShare()
+    {
+        _isSharingNew = !_isSharingNew;
+        button2.GetComponentInChildren<Text>().text = _isSharingNew ? "Stop New Sharing" : "Share Screen New";
+        if (_isSharingNew)
+        {
+            logger.UpdateLog("Start new screen capture for web...");
+            mRtcEngine.StartNewScreenCaptureForWeb(uid: 7777);
+            button.interactable = false;
+        }
+        else
+        {
+            logger.UpdateLog("Stop new screen capture");
+            mRtcEngine.StopNewScreenCaptureForWeb();
+            button.interactable = true;
+        }
+    }
     #endregion
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)

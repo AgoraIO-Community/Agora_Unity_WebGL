@@ -15,6 +15,7 @@ class ClientManager {
     this._storedChannelProfile = 0; // channel profile saved before join is called
     this._inChannel = false;
     this._streamMessageRetry = false;
+    this.is_screensharing = false;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -730,6 +731,31 @@ class ClientManager {
     ]);
     localTracks.videoTrack.play("local-player");
     await this.client.publish(localTracks.videoTrack);
+  }
+
+  async startNewScreenCaptureForWeb(uid) {
+    console.log("ClientManager startNewScreenCaptureForWeb");
+    var screenShareTrack = null;
+    if(!this.is_screensharing){
+    this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+    AgoraRTC.createScreenVideoTrack({
+      encoderConfig: "1080p_1", optimizationMode: "detail"}
+      ).then(localVideoTrack => { 
+          screenShareTrack = localVideoTrack; 
+          this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+            this.screenShareClient.publish(screenShareTrack);
+            this.is_screensharing = true;
+          });
+      });
+    } else {
+      window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
+    }
+  }
+
+  async stopNewScreenCaptureForWeb() {
+    console.log("ClientManager stopNewScreenCaptureForWeb");
+    this.screenShareClient.leave();
+    this.is_screensharing = false;
   }
 
   // Starts the last-mile network probe test.
