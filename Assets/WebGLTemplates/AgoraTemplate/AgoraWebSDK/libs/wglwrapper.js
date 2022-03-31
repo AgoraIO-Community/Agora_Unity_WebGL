@@ -154,65 +154,88 @@ var WglWrapper = function () {
     Object.keys(self.remoteTracksStatsStored).forEach((uid) => {
       var video = self.remoteTracksStatsStored[uid].video;
       var audio = self.remoteTracksStatsStored[uid].audio;
-
+      var num = undefined;
       if (audio) {
+        num =  Number(audio.receiveDelay) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "a_receiveDelay",
-          Number(audio.receiveDelay).toFixed(2)
+          num.toFixed(2)
         );
-        dataBuilder.add("ru_" + uid + "_" + "a_receiveBytes", audio.receiveBytes);
+        num =  Number(audio.receiveBytes) ?? 0;
+        dataBuilder.add("ru_" + uid + "_" + "a_receiveBytes", num.toFixed(3));
+        num =  Number(audio.receivePackets) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "a_receivePackets",
-          audio.receivePackets
+          num.toFixed(3)
         );
+        num =  Number(audio.receivePacketsLost) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "a_receivePacketsLost",
-          audio.receivePacketsLost
+          num.toFixed(3)
         );
+        num =  Number(audio.packetLossRate) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "a_",
-          Number(audio.packetLossRate).toFixed(3)
+          num.toFixed(3)
         );
       }
 
       if (video) {
+        num =  Number(video.receiveDelay) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "v_receiveDelay",
-          Number(video.receiveDelay).toFixed(2)
+          num.toFixed(2)
         );
 
+        num =  Number(video.receiveResolutionHeight) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "v_receiveResolutionHeight",
-          video.receiveResolutionHeight
+          num.toFixed(2)
         );
+
+        num =  Number(video.receiveResolutionWidth) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "v_receiveResolutionWidth",
-          video.receiveResolutionWidth
+          num.toFixed(2)
         );
 
+        num =  Number(video.receiveBitrate) ?? 0;
         dataBuilder.add(
           "ru_" + uid + "_" + "v_receiveBitrate",
-          video.receiveBitrate
-        );
-        dataBuilder.add("ru_" + uid + "_" + "v_receiveBytes", video.receiveBytes);
-        dataBuilder.add(
-          "ru_" + uid + "_" + "v_receivePackets",
-          video.receivePackets
-        );
-        dataBuilder.add(
-          "ru_" + uid + "_" + "v_receivePacketsLost",
-          video.receivePacketsLost
+          num.toFixed(2)
         );
 
+        num =  Number(video.receiveBytes) ?? 0;
+        dataBuilder.add("ru_" + uid + "_" + "v_receiveBytes", num.toFixed(2));
+
+        num =  Number(video.receivePackets) ?? 0;
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receivePackets",
+          num.toFixed(2)
+        );
+
+        num =  Number(video.receivePacketsLost) ?? 0;
+        dataBuilder.add(
+          "ru_" + uid + "_" + "v_receivePacketsLost",
+          num.toFixed(2)
+        );
+
+        num =  Number(video.receivePacketsLost) ?? 0;
         dataBuilder.add(
           `ru_${uid}_v_receivePacketsLost`,
-          Number(video.receivePacketsLost).toFixed(3)
+          num.toFixed(3)
         );
-        dataBuilder.add(`ru_${uid}_v_totalDuration`, video.totalDuration);
-        dataBuilder.add(`ru_${uid}_v_totalFreezeTime`, video.totalFreezeTime);
+
+        num =  Number(video.totalDuration) ?? 0;
+        dataBuilder.add(`ru_${uid}_v_totalDuration`, num.toFixed(2));
+
+        num =  Number(video.totalFreezeTime) ?? 0;
+        dataBuilder.add(`ru_${uid}_v_totalFreezeTime`, num.toFixed(2));
+
+        num =  Number(video.freezeRate) ?? 0;
         dataBuilder.add(
           `ru_${uid}_v_freezeRate`,
-          Number(video.freezeRate).toFixed(3)
+          num.toFixed(3)
         );
       }
     });
