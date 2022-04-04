@@ -68,6 +68,7 @@ class AgoraChannel {
   }
 
   handleUserJoined(user, mediaType) {
+    console.log("User Has Joined");
     const id = user.uid;
     event_manager.raiseChannelOnUserJoined_MC(id, this.options.channel);
     event_manager.raiseCustomMsg("New User Joined: " + id);
@@ -613,17 +614,24 @@ async muteLocalVideoStream(mute) {
       localTracks.videoTrack.stop();
       localTracks.videoTrack.close();
       await this.client.unpublish(localTracks.videoTrack);
-  
+    try {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createScreenVideoTrack(),
       ]);
       localTracks.videoTrack.play("local-player");
+    } catch (error){
+      console.error("ScreenSharing Canceled");
+      event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
+      return;
+    }
       await this.client.publish(localTracks.videoTrack);
       this.is_screensharing = true;
+      event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
   }
 
   // Stop screen sharing.
   async stopScreenCapture() {
+    if(this.is_screensharing){
     localTracks.videoTrack.stop();
     localTracks.videoTrack.close();
     await this.client.unpublish(localTracks.videoTrack);
@@ -634,6 +642,8 @@ async muteLocalVideoStream(mute) {
     ]);
     localTracks.videoTrack.play("local-player");
     await this.client.publish(localTracks.videoTrack);
+    event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
+    }
   }
 
   async startNewScreenCaptureForWeb2(uid) {
@@ -648,8 +658,9 @@ async muteLocalVideoStream(mute) {
           this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
             this.screenShareClient.publish(screenShareTrack);
             this.is_screensharing = true;
+            event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
           });
-      });
+      }).catch(error => event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid));
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
     }
@@ -657,8 +668,11 @@ async muteLocalVideoStream(mute) {
 
 async stopNewScreenCaptureForWeb2() {
   console.log("AgoraChannel stopNewScreenCaptureForWeb2");
+  if(this.is_screensharing){
     this.screenShareClient.leave();
     this.is_screensharing = false;
+    event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
+  }
 }
 
   setRemoteUserPriority(uid, userPriority) {

@@ -470,6 +470,50 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void OnScreenShareStarted(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnScreenShareStarted != null)
+            {
+                engine.OnScreenShareStarted(channel, uint.Parse(userId), 1);
+            }
+        }
+
+        public void OnScreenShareStopped(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnScreenShareStopped != null)
+            {
+                engine.OnScreenShareStopped(channel, uint.Parse(userId), 1);
+            }
+        }
+
+        public void OnScreenShareCanceled(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnScreenShareCanceled != null)
+            {
+                engine.OnScreenShareCanceled(channel, uint.Parse(userId), 1);
+            }
+        }
+
+        
+
         public void onRemoteUserJoined(string userId)
         {
             _remoteUserListing[uint.Parse(userId)] = uint.Parse(userId);

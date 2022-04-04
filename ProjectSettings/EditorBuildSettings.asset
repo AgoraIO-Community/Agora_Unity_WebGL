@@ -15,7 +15,7 @@ EditorBuildSettings:
     path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
     guid: 5a4d72265ca2c1b4393e31ef58d0988d
   - enabled: 1
-    path: Assets/FunctionalTest/JoinMultipleChannel 1/MainSceneNew.unity
+    path: Assets/FunctionalTest/NewScreenShareMChannel/MainSceneNew.unity
     guid: 39e056144cfa246eb88df188c22cecf2
   - enabled: 0
     path: Assets/API-Example/multi-channel-sample/Scenes/MultipleChannelDemo.unity
@@ -23,3 +23,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/FunctionalTest/JoinMultipleChannel/MainScene.unity
     guid: 253acdf0e3d6a43c792d3b1e6534584c
+  - enabled: 0
+    path: Assets/API-Example/desktop-screenshare-sample/WebScreenShareScene.unity
+    guid: 46764890e023f4bef80ff1279a94451d

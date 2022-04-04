@@ -167,6 +167,7 @@ class ClientManager {
   // since it can called twice based on mediaType
   // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
+  	console.log("User has Joined");
     const id = user.uid;
   }
 
@@ -327,6 +328,31 @@ class ClientManager {
 	    return (this.client_role == 1);
     }
     return false;
+  }
+
+  async handleStopNewScreenShare(){
+    console.log("Stopping New Screen Share");
+    stopNewScreenCaptureForWeb();
+  }
+
+  async handleStartNewScreenShare(){
+    console.log("Start New Screen Share");
+    event_manager.raiseEngineScreenShareStarted(this.options.channel, this.options.uid);
+  }
+
+  async handleStartScreenShare(){
+    console.log("Starting Screen Share");
+    event_manager.raiseEngineScreenShareStarted(this.options.channel, this.options.uid);
+  }
+
+  async handleStopScreenShare(){
+    console.log("Stopping Screen Share");
+    stopScreenCaptureForWeb();
+  }
+
+  async handleStopNewScreenShare(){
+    console.log("Stopping Screen Share");
+    stopNewScreenCaptureForWeb();
   }
 
   //============================================================================== 
@@ -685,11 +711,20 @@ class ClientManager {
     localTracks.videoTrack.close();
     await this.client.unpublish(localTracks.videoTrack);
 
+    try{
     [localTracks.videoTrack] = await Promise.all([
       AgoraRTC.createScreenVideoTrack(),
     ]);
     localTracks.videoTrack.play("local-player");
+    } catch (error){
+      console.error("ScreenSharing Canceled");
+      event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
+      return;
+    }
     await this.client.publish(localTracks.videoTrack);
+    this.is_screensharing = true;
+    event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
+
   }
 
   // Shares the whole or part of a screen by specifying the display ID.
@@ -722,15 +757,20 @@ class ClientManager {
 
   // Stop screen sharing.
   async stopScreenCapture() {
+    if(this.is_screensharing){
     localTracks.videoTrack.stop();
     localTracks.videoTrack.close();
     await this.client.unpublish(localTracks.videoTrack);
-
+    
     [localTracks.videoTrack] = await Promise.all([
       AgoraRTC.createCameraVideoTrack(),
     ]);
     localTracks.videoTrack.play("local-player");
+
     await this.client.publish(localTracks.videoTrack);
+    this.is_screensharing = false;
+    event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
+    }
   }
 
   async startNewScreenCaptureForWeb(uid) {
@@ -741,12 +781,15 @@ class ClientManager {
     AgoraRTC.createScreenVideoTrack({
       encoderConfig: "1080p_1", optimizationMode: "detail"}
       ).then(localVideoTrack => { 
+          console.log("Working");
+          this.is_screensharing = true;
           screenShareTrack = localVideoTrack; 
+          screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
-            this.screenShareClient.publish(screenShareTrack);
-            this.is_screensharing = true;
+          this.screenShareClient.publish(screenShareTrack);
+          event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
           });
-      });
+      }).catch(error => event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid));
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
     }
@@ -754,8 +797,11 @@ class ClientManager {
 
   async stopNewScreenCaptureForWeb() {
     console.log("ClientManager stopNewScreenCaptureForWeb");
-    this.screenShareClient.leave();
-    this.is_screensharing = false;
+    if(this.is_screensharing){
+      this.screenShareClient.leave();
+      this.is_screensharing = false;
+      event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
+    }
   }
 
   // Starts the last-mile network probe test.

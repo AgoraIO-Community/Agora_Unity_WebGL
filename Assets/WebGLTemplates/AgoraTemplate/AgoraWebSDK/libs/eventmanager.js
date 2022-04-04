@@ -130,6 +130,30 @@ class EventManager {
     );
   }
 
+  raiseScreenShareStarted(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnScreenShareStarted",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareStopped(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnScreenShareStopped",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareCanceled(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnScreenShareCanceled",
+      channel + "|" + uid
+    );
+  }
+
   // multi channel events, AgoraChannel binding
   raiseJoinChannelSuccess_MC(userId, channel) {
     unityInstance.SendMessage(
