@@ -133,7 +133,7 @@ class EventManager {
   raiseScreenShareStarted(channel, uid) {
     unityInstance.SendMessage(
       "AgoraEventHandler",
-      "OnScreenShareStarted",
+      "onScreenShareStarted",
       channel + "|" + uid
     );
   }
@@ -141,7 +141,7 @@ class EventManager {
   raiseScreenShareStopped(channel, uid) {
     unityInstance.SendMessage(
       "AgoraEventHandler",
-      "OnScreenShareStopped",
+      "onScreenShareStopped",
       channel + "|" + uid
     );
   }
@@ -149,7 +149,31 @@ class EventManager {
   raiseScreenShareCanceled(channel, uid) {
     unityInstance.SendMessage(
       "AgoraEventHandler",
-      "OnScreenShareCanceled",
+      "onScreenShareCanceled",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareStarted_MC(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareStarted_MC",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareStopped_MC(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareStopped_MC",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareCanceled_MC(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareCanceled_MC",
       channel + "|" + uid
     );
   }

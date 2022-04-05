@@ -347,7 +347,7 @@ class ClientManager {
 
   async handleStopScreenShare(){
     console.log("Stopping Screen Share");
-    stopScreenCaptureForWeb();
+    stopScreenCapture();
   }
 
   async handleStopNewScreenShare(){
@@ -707,24 +707,24 @@ class ClientManager {
   }
 
   async startScreenCaptureForWeb() {
-    localTracks.videoTrack.stop();
-    localTracks.videoTrack.close();
-    await this.client.unpublish(localTracks.videoTrack);
-
-    try{
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createScreenVideoTrack(),
-    ]);
-    localTracks.videoTrack.play("local-player");
-    } catch (error){
-      console.error("ScreenSharing Canceled");
-      event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
-      return;
-    }
-    await this.client.publish(localTracks.videoTrack);
     this.is_screensharing = true;
-    event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
-
+    var screenShareTrack = null;
+    screenShareTrack = await Promise.all([
+      AgoraRTC.createScreenVideoTrack().catch(error => {
+        event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
+        this.is_screensharing = false;
+      }),
+    ]);
+    if (this.is_screensharing) {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+      [localTracks.videoTrack] = screenShareTrack;
+      localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
+      localTracks.videoTrack.play("local-player");
+      await this.client.publish(localTracks.videoTrack);
+      event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
+    }
   }
 
   // Shares the whole or part of a screen by specifying the display ID.
@@ -757,38 +757,39 @@ class ClientManager {
 
   // Stop screen sharing.
   async stopScreenCapture() {
-    if(this.is_screensharing){
-    localTracks.videoTrack.stop();
-    localTracks.videoTrack.close();
-    await this.client.unpublish(localTracks.videoTrack);
-    
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack(),
-    ]);
-    localTracks.videoTrack.play("local-player");
+    if (this.is_screensharing) {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
 
-    await this.client.publish(localTracks.videoTrack);
-    this.is_screensharing = false;
-    event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack(),
+      ]);
+      localTracks.videoTrack.play("local-player");
+
+      await this.client.publish(localTracks.videoTrack);
+      this.is_screensharing = false;
+      event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
     }
   }
 
   async startNewScreenCaptureForWeb(uid) {
     console.log("ClientManager startNewScreenCaptureForWeb");
     var screenShareTrack = null;
-    if(!this.is_screensharing){
-    this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-    AgoraRTC.createScreenVideoTrack({
-      encoderConfig: "1080p_1", optimizationMode: "detail"}
-      ).then(localVideoTrack => { 
-          console.log("Working");
-          this.is_screensharing = true;
-          screenShareTrack = localVideoTrack; 
-          screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
-          this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+    if (!this.is_screensharing) {
+      this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      AgoraRTC.createScreenVideoTrack({
+        encoderConfig: "1080p_1", optimizationMode: "detail"
+      }
+      ).then(localVideoTrack => {
+        console.log("Working");
+        this.is_screensharing = true;
+        screenShareTrack = localVideoTrack;
+        screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.options.uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
-          event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
-          });
+          event_manager.raiseScreenShareStarted(this.options.channel, uid + this.options.uid);
+        });
       }).catch(error => event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid));
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
@@ -797,7 +798,7 @@ class ClientManager {
 
   async stopNewScreenCaptureForWeb() {
     console.log("ClientManager stopNewScreenCaptureForWeb");
-    if(this.is_screensharing){
+    if (this.is_screensharing) {
       this.screenShareClient.leave();
       this.is_screensharing = false;
       event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);

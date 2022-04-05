@@ -51,6 +51,9 @@ namespace agora_gaming_rtc
         public ChannelOnAudioSubscribeStateChangedHandler ChannelOnAudioSubscribeStateChanged;
         public ChannelOnVideoSubscribeStateChangedHandler ChannelOnVideoSubscribeStateChanged;
         public ChannelOnUserSuperResolutionEnabledHandler ChannelOnUserSuperResolutionEnabled;
+        public OnChannelScreenShareStarted ChannelOnScreenShareStarted;
+        public OnChannelScreenShareStopped ChannelOnScreenShareStopped;
+        public OnChannelScreenShareCanceled ChannelOnScreenShareCanceled;
 
         /** Creates and gets an `AgoraChannel` object.
          *

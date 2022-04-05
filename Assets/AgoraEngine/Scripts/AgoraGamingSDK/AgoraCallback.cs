@@ -970,5 +970,11 @@ namespace agora_gaming_rtc
 
         public delegate void OnUserScreenShareCanceled(string channelName, uint id, int elapsed);
 
-        
+        public delegate void OnChannelScreenShareStarted(string channelName, uint id, int elapsed);
+
+        public delegate void OnChannelScreenShareStopped(string channelName, uint id, int elapsed);
+
+        public delegate void OnChannelScreenShareCanceled(string channelName, uint id, int elapsed);
+
+
 }

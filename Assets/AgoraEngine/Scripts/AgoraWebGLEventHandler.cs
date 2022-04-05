@@ -470,7 +470,7 @@ namespace agora_gaming_rtc
             }
         }
 
-        public void OnScreenShareStarted(string eventData)
+        public void onScreenShareStarted(string eventData)
         {
             string[] events = eventData.Split('|');
 
@@ -484,7 +484,7 @@ namespace agora_gaming_rtc
             }
         }
 
-        public void OnScreenShareStopped(string eventData)
+        public void onScreenShareStopped(string eventData)
         {
             string[] events = eventData.Split('|');
 
@@ -498,7 +498,7 @@ namespace agora_gaming_rtc
             }
         }
 
-        public void OnScreenShareCanceled(string eventData)
+        public void onScreenShareCanceled(string eventData)
         {
             string[] events = eventData.Split('|');
 
@@ -512,7 +512,53 @@ namespace agora_gaming_rtc
             }
         }
 
-        
+        public void onScreenShareStarted_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnScreenShareStarted != null)
+                {
+                    ch.ChannelOnScreenShareStarted(channel, uint.Parse(userId), 0);
+                }
+            }
+        }
+
+        public void onScreenShareStopped_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnScreenShareStopped != null)
+                {
+                    ch.ChannelOnScreenShareStopped(channel, uint.Parse(userId), 0);
+                }
+            }
+        }
+
+        public void onScreenShareCanceled_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnScreenShareCanceled != null)
+                {
+                    ch.ChannelOnScreenShareCanceled(channel, uint.Parse(userId), 0);
+                }
+            }
+        }
 
         public void onRemoteUserJoined(string userId)
         {
