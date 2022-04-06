@@ -782,7 +782,7 @@ class ClientManager {
         encoderConfig: "1080p_1", optimizationMode: "detail"
       }
       ).then(localVideoTrack => {
-        console.log("Working");
+        console.log(this.options.channel);
         this.is_screensharing = true;
         screenShareTrack = localVideoTrack;
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());

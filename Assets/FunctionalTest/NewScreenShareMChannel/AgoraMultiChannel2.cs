@@ -23,6 +23,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     private AgoraChannel channel2 = null;
     private const float Offset = 100;
 
+    public Button startScreenShareButton, stopScreenShareButton;
+    public bool useEngine = false, useNewScreenShare = false;
+
     // Use this for initialization
     void Start()
     {
@@ -32,7 +35,33 @@ public class AgoraMultiChannel2 : MonoBehaviour
         }
 
         InitEngine();
-        JoinChannel2();
+        if (useEngine)
+        {
+            //engine/client manager setup.
+            JoinChannel();
+            if (!useNewScreenShare) {
+               startScreenShareButton.onClick.AddListener(delegate{ startScreenShare(); });
+               stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare(); });
+            } else {
+               startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare(); });
+               stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare(); });
+            }
+        }
+        else
+        {
+            //channel setup.
+            JoinChannel2();
+            if (!useNewScreenShare)
+            {
+                startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(); });
+                stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare2(); });
+            }
+            else
+            {
+                startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare2(); });
+                stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare2(); });
+            }
+        }
     }
 
     void Update()
@@ -128,14 +157,14 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     }
 
-    void JoinChannel()
+    void JoinChannel2()
     {
         channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
     }
 
-    void JoinChannel2()
+    void JoinChannel()
     {
-        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true));
+        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
     void OnApplicationQuit()
@@ -206,9 +235,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("onJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
+        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
             elapsed));
-        makeVideoView(CHANNEL_NAME_1, 0);
+        makeVideoView(channelId, 0);
     }
 
     void Channel1OnLeaveChannelHandler(string channelId, RtcStats rtcStats)

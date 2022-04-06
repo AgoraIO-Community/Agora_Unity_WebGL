@@ -389,18 +389,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 630712823}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1348336710}
-        m_MethodName: stopNewScreenShare2
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: unity3d
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &630712823
@@ -836,6 +825,10 @@ MonoBehaviour:
   TOKEN_2: 
   CHANNEL_NAME_2: unity2d
   logText: {fileID: 1416670727}
+  startScreenShareButton: {fileID: 1632797613}
+  stopScreenShareButton: {fileID: 630712822}
+  useEngine: 0
+  useNewScreenShare: 0
 --- !u!1 &1416670726
 GameObject:
   m_ObjectHideFlags: 0
@@ -1107,18 +1100,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1632797614}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1348336710}
-        m_MethodName: startNewScreenShare2
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: unity3d
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &1632797614
