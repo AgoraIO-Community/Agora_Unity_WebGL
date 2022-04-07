@@ -58,6 +58,9 @@ public class WebScreenShare : MonoBehaviour
         mRtcEngine.OnConnectionLost += OnConnectionLostHandler;
         mRtcEngine.OnUserJoined += OnUserJoinedHandler;
         mRtcEngine.OnUserOffline += OnUserOfflineHandler;
+        mRtcEngine.OnScreenShareStarted += OnScreenShareStarted;
+        mRtcEngine.OnScreenShareStopped += OnScreenShareStopped;
+        mRtcEngine.OnScreenShareCanceled += OnScreenShareCanceled;
     }
 
     void JoinChannel()
@@ -162,6 +165,26 @@ public class WebScreenShare : MonoBehaviour
         logger.UpdateLog("OnConnectionLost ");
     }
 
+    void OnScreenShareStarted(string channelName, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("onScreenShareStarted channelName: {0}, uid: {1}, elapsed: {2}", channelName,
+            uid, elapsed));
+    }
+
+    void OnScreenShareStopped(string channelName, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("onScreenShareStopped channelName: {0}, uid: {1}, elapsed: {2}", channelName,
+            uid, elapsed));
+    }
+
+    void OnScreenShareCanceled(string channelName, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("onScreenShareCanceled channelName: {0}, uid: {1}, elapsed: {2}", channelName,
+            uid, elapsed));
+    }
 
     void OnApplicationQuit()
     {

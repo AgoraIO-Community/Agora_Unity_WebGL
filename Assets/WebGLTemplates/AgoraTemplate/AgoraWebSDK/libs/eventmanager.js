@@ -130,6 +130,54 @@ class EventManager {
     );
   }
 
+  raiseScreenShareStarted(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareStarted",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareStopped(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareStopped",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareCanceled(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareCanceled",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareStarted_MC(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareStarted_MC",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareStopped_MC(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareStopped_MC",
+      channel + "|" + uid
+    );
+  }
+
+  raiseScreenShareCanceled_MC(channel, uid) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onScreenShareCanceled_MC",
+      channel + "|" + uid
+    );
+  }
+
   // multi channel events, AgoraChannel binding
   raiseJoinChannelSuccess_MC(userId, channel) {
     unityInstance.SendMessage(

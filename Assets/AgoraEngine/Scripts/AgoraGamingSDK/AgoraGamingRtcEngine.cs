@@ -191,6 +191,13 @@ namespace agora_gaming_rtc
 
         public OnVirtualBackgroundSourceEnabledHandler OnVirtualBackgroundSourceEnabled;
 
+        public OnUserScreenShareStarted OnScreenShareStarted;
+
+        public OnUserScreenShareStopped OnScreenShareStopped;
+
+        public OnUserScreenShareCanceled OnScreenShareCanceled;
+
+
         #endregion  set callback here for user
 
         private readonly AudioEffectManagerImpl mAudioEffectM;

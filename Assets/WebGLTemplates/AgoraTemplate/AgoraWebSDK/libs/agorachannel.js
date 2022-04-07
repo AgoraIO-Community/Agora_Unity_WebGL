@@ -68,6 +68,7 @@ class AgoraChannel {
   }
 
   handleUserJoined(user, mediaType) {
+    console.log("User Has Joined");
     const id = user.uid;
     event_manager.raiseChannelOnUserJoined_MC(id, this.options.channel);
     event_manager.raiseCustomMsg("New User Joined: " + id);
@@ -196,6 +197,16 @@ class AgoraChannel {
 
   handleError(e) {
     console.log(e);
+  }
+
+  async handleStopScreenShare(){
+    console.log("Stopping Screen Share");
+    stopScreenCapture2();
+  }
+
+  async handleStopNewScreenShare(){
+    console.log("Stopping New Screen Share");
+    stopNewScreenCaptureForWeb2();
   }
    //============================================================================== 
   async joinChannel2(
@@ -610,56 +621,73 @@ async muteLocalVideoStream(mute) {
   }
 
   async startScreenCapture() {
+    this.is_screensharing = true;
+    var screenShareTrack = null;
+    screenShareTrack = await Promise.all([
+      AgoraRTC.createScreenVideoTrack().catch(error => {
+        event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+        this.is_screensharing = false;
+      }),
+    ]);
+    if (this.is_screensharing) {
       localTracks.videoTrack.stop();
       localTracks.videoTrack.close();
       await this.client.unpublish(localTracks.videoTrack);
-  
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createScreenVideoTrack(),
-      ]);
+      [localTracks.videoTrack] = screenShareTrack;
+      localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
       localTracks.videoTrack.play("local-player");
       await this.client.publish(localTracks.videoTrack);
-      this.is_screensharing = true;
+      event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+    }
   }
 
   // Stop screen sharing.
   async stopScreenCapture() {
-    localTracks.videoTrack.stop();
-    localTracks.videoTrack.close();
-    await this.client.unpublish(localTracks.videoTrack);
-    this.is_screensharing = false;
+    if (this.is_screensharing) {
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+      this.is_screensharing = false;
 
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack(),
-    ]);
-    localTracks.videoTrack.play("local-player");
-    await this.client.publish(localTracks.videoTrack);
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack(),
+      ]);
+      localTracks.videoTrack.play("local-player");
+      await this.client.publish(localTracks.videoTrack);
+      event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
+    }
   }
 
   async startNewScreenCaptureForWeb2(uid) {
     console.log("AgoraChannel startNewScreenCaptureForWeb2");
     var screenShareTrack = null;
-    if(!this.is_screensharing){
-    this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-    AgoraRTC.createScreenVideoTrack({
-      encoderConfig: "1080p_1", optimizationMode: "detail"}
-      ).then(localVideoTrack => { 
-          screenShareTrack = localVideoTrack; 
-          this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
-            this.screenShareClient.publish(screenShareTrack);
-            this.is_screensharing = true;
-          });
-      });
+    if (!this.is_screensharing) {
+      this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
+      AgoraRTC.createScreenVideoTrack({
+        encoderConfig: "1080p_1", optimizationMode: "detail"
+      }
+      ).then(localVideoTrack => {
+        this.is_screensharing = true;
+        screenShareTrack = localVideoTrack;
+        screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+          this.screenShareClient.publish(screenShareTrack);
+          event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+        });
+      }).catch(error => event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid));
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
     }
-}
+  }
 
-async stopNewScreenCaptureForWeb2() {
-  console.log("AgoraChannel stopNewScreenCaptureForWeb2");
-    this.screenShareClient.leave();
-    this.is_screensharing = false;
-}
+  async stopNewScreenCaptureForWeb2() {
+    console.log("AgoraChannel stopNewScreenCaptureForWeb2");
+    if (this.is_screensharing) {
+      this.screenShareClient.leave();
+      this.is_screensharing = false;
+      event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
+    }
+  }
 
   setRemoteUserPriority(uid, userPriority) {
     if (userPriority == 50 || userPriority == 0)

@@ -23,6 +23,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     private AgoraChannel channel2 = null;
     private const float Offset = 100;
 
+    public Button startScreenShareButton, stopScreenShareButton;
+    public bool useNewScreenShare = false;
+
     // Use this for initialization
     void Start()
     {
@@ -32,7 +35,19 @@ public class AgoraMultiChannel2 : MonoBehaviour
         }
 
         InitEngine();
-        JoinChannel();
+        
+        //channel setup.
+        JoinChannel2();
+        if (!useNewScreenShare)
+        {
+            startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(); });
+            stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare2(); });
+        }
+        else
+        {
+            startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare2(); });
+            stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare2(); });
+        }
     }
 
     void Update()
@@ -59,6 +74,17 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel1.StopNewScreenCaptureForWeb2();
     }
 
+    //for starting/stopping a screen share through AgoraChannel class.
+    public void startScreenShare2()
+    {
+        channel1.StartScreenCaptureForWeb();
+    }
+
+    public void stopScreenShare2()
+    {
+        channel1.StopScreenCapture();
+    }
+
 
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare()
@@ -71,6 +97,17 @@ public class AgoraMultiChannel2 : MonoBehaviour
         mRtcEngine.StopNewScreenCaptureForWeb();
     }
 
+    //for starting/stopping a screen share through IRtcEngine class.
+    public void startScreenShare()
+    {
+        mRtcEngine.StartScreenCaptureForWeb();
+    }
+
+    public void stopScreenShare()
+    {
+        mRtcEngine.StopScreenCapture();
+    }
+
     void InitEngine()
     {
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
@@ -80,6 +117,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         mRtcEngine.EnableAudio();
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
+        mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
         channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
         channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -89,12 +127,23 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
         channel1.ChannelOnError = Channel1OnErrorHandler;
         channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        channel1.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
+        channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
+        channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
 
+        
+
+
+    }
+
+    void JoinChannel2()
+    {
+        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
     }
 
     void JoinChannel()
     {
-        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
     void OnApplicationQuit()
@@ -108,6 +157,42 @@ public class AgoraMultiChannel2 : MonoBehaviour
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
+    }
+
+    void screenShareStartedHandler(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("onScreenShareStarted channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
+            elapsed));
+    }
+
+    void screenShareStoppedHandler(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("onScreenShareStopped channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
+            elapsed));
+    }
+
+    void screenShareCanceledHandler(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("onScreenShareCanceled channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
+            elapsed));
+    }
+
+    void screenShareStartedHandler_MC(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("onScreenShareStartedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
+            elapsed));
+    }
+
+    void screenShareStoppedHandler_MC(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("onScreenShareStoppedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
+            elapsed));
+    }
+
+    void screenShareCanceledHandler_MC(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("onScreenShareCanceledMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
+            elapsed));
     }
 
     void Channel1OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
@@ -126,6 +211,14 @@ public class AgoraMultiChannel2 : MonoBehaviour
         makeVideoView(channelId, 0);
     }
 
+    void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
+            elapsed));
+        makeVideoView(channelId, 0);
+    }
+
     void Channel1OnLeaveChannelHandler(string channelId, RtcStats rtcStats)
     {
         logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", channelId));
@@ -135,6 +228,11 @@ public class AgoraMultiChannel2 : MonoBehaviour
     void Channel2OnLeaveChannelHandler(string channelId, RtcStats rtcStats)
     {
         logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", channelId));
+    }
+
+    void EngineOnLeaveChannelHandler(RtcStats rtcStats)
+    {
+        logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
     }
 
     void Channel1OnErrorHandler(string channelId, int err, string message)
@@ -149,11 +247,25 @@ public class AgoraMultiChannel2 : MonoBehaviour
             message));
     }
 
+    void EngineOnErrorHandler(int err, string message)
+    {
+        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", CHANNEL_NAME_1, err,
+            message));
+    }
+
+
     void Channel1OnUserJoinedHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId,
             uid, elapsed));
         makeVideoView(channelId, uid);
+    }
+
+    void EngineOnUserJoinedHandler(uint uid, int elapsed)
+    {
+        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+            uid, elapsed));
+        makeVideoView(CHANNEL_NAME_1, uid);
     }
 
     void Channel2OnUserJoinedHandler(string channelId, uint uid, int elapsed)
@@ -167,6 +279,12 @@ public class AgoraMultiChannel2 : MonoBehaviour
     {
         logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(channelId, uid);
+    }
+
+    void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
+    {
+        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
+        DestroyVideoView(CHANNEL_NAME_1, uid);
     }
 
     public void RespawnLocal(string channelName)

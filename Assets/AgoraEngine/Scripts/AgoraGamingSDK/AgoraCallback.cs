@@ -963,4 +963,18 @@ namespace agora_gaming_rtc
         /// @endcond
 
         public delegate void OnVirtualBackgroundSourceEnabledHandler(bool enabled, VIRTUAL_BACKGROUND_SOURCE_STATE_REASON reason);
+
+        public delegate void OnUserScreenShareStarted(string channelName, uint id, int elapsed);
+
+        public delegate void OnUserScreenShareStopped(string channelName, uint id, int elapsed);
+
+        public delegate void OnUserScreenShareCanceled(string channelName, uint id, int elapsed);
+
+        public delegate void OnChannelScreenShareStarted(string channelName, uint id, int elapsed);
+
+        public delegate void OnChannelScreenShareStopped(string channelName, uint id, int elapsed);
+
+        public delegate void OnChannelScreenShareCanceled(string channelName, uint id, int elapsed);
+
+
 }

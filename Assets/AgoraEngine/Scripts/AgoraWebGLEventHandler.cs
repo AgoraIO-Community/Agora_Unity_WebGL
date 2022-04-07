@@ -470,6 +470,96 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void onScreenShareStarted(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnScreenShareStarted != null)
+            {
+                engine.OnScreenShareStarted(channel, uint.Parse(userId), 1);
+            }
+        }
+
+        public void onScreenShareStopped(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnScreenShareStopped != null)
+            {
+                engine.OnScreenShareStopped(channel, uint.Parse(userId), 1);
+            }
+        }
+
+        public void onScreenShareCanceled(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string channel = events[0];
+            string userId = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnScreenShareCanceled != null)
+            {
+                engine.OnScreenShareCanceled(channel, uint.Parse(userId), 1);
+            }
+        }
+
+        public void onScreenShareStarted_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnScreenShareStarted != null)
+                {
+                    ch.ChannelOnScreenShareStarted(channel, uint.Parse(userId), 0);
+                }
+            }
+        }
+
+        public void onScreenShareStopped_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnScreenShareStopped != null)
+                {
+                    ch.ChannelOnScreenShareStopped(channel, uint.Parse(userId), 0);
+                }
+            }
+        }
+
+        public void onScreenShareCanceled_MC(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string userId = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnScreenShareCanceled != null)
+                {
+                    ch.ChannelOnScreenShareCanceled(channel, uint.Parse(userId), 0);
+                }
+            }
+        }
+
         public void onRemoteUserJoined(string userId)
         {
             _remoteUserListing[uint.Parse(userId)] = uint.Parse(userId);
