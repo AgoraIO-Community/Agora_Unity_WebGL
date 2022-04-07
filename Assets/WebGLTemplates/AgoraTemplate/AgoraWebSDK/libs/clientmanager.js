@@ -500,8 +500,8 @@ class ClientManager {
     console.log("EnableLocalVideo (clientManager):" + enabled);
     if (this.client) {
       if (enabled == false) {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
+        localTracks.videoTrack?.stop();
+        localTracks.videoTrack?.close();
         await this.client.unpublish(localTracks.videoTrack);
       } else {
         [localTracks.videoTrack] = await Promise.all([

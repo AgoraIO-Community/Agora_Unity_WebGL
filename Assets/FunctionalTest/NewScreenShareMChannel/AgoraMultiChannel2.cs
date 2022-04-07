@@ -24,7 +24,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     private const float Offset = 100;
 
     public Button startScreenShareButton, stopScreenShareButton;
-    public bool useEngine = false, useNewScreenShare = false;
+    public bool useNewScreenShare = false;
 
     // Use this for initialization
     void Start()
@@ -35,32 +35,18 @@ public class AgoraMultiChannel2 : MonoBehaviour
         }
 
         InitEngine();
-        if (useEngine)
+        
+        //channel setup.
+        JoinChannel2();
+        if (!useNewScreenShare)
         {
-            //engine/client manager setup.
-            JoinChannel();
-            if (!useNewScreenShare) {
-               startScreenShareButton.onClick.AddListener(delegate{ startScreenShare(); });
-               stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare(); });
-            } else {
-               startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare(); });
-               stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare(); });
-            }
+            startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(); });
+            stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare2(); });
         }
         else
         {
-            //channel setup.
-            JoinChannel2();
-            if (!useNewScreenShare)
-            {
-                startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(); });
-                stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare2(); });
-            }
-            else
-            {
-                startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare2(); });
-                stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare2(); });
-            }
+            startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare2(); });
+            stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare2(); });
         }
     }
 
@@ -145,14 +131,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
 
-        mRtcEngine.OnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
-        mRtcEngine.OnUserJoined = EngineOnUserJoinedHandler;
-        mRtcEngine.OnLeaveChannel = EngineOnLeaveChannelHandler;
-        mRtcEngine.OnError = EngineOnErrorHandler;
-        mRtcEngine.OnUserOffline = EngineOnUserOfflineHandler;
-        mRtcEngine.OnScreenShareStarted = screenShareStartedHandler;
-        mRtcEngine.OnScreenShareStopped = screenShareStoppedHandler;
-        mRtcEngine.OnScreenShareCanceled = screenShareCanceledHandler;
+        
 
 
     }

@@ -702,7 +702,6 @@ GameObject:
   - component: {fileID: 1348336708}
   - component: {fileID: 1348336707}
   - component: {fileID: 1348336706}
-  - component: {fileID: 1348336705}
   - component: {fileID: 1348336710}
   m_Layer: 5
   m_Name: VideoCanvas
@@ -711,23 +710,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1348336705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1348336704}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c7577bea55cd646578af56d39ea7d33f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  APP_ID: 
-  TOKEN_1: 
-  CHANNEL_NAME_1: unity3d
-  TOKEN_2: 
-  CHANNEL_NAME_2: unity2d
-  logText: {fileID: 1416670727}
 --- !u!114 &1348336706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -827,7 +809,6 @@ MonoBehaviour:
   logText: {fileID: 1416670727}
   startScreenShareButton: {fileID: 1632797613}
   stopScreenShareButton: {fileID: 630712822}
-  useEngine: 0
   useNewScreenShare: 0
 --- !u!1 &1416670726
 GameObject:
