@@ -17,6 +17,8 @@ class AgoraChannel {
     this.is_publishing = false;
     this.is_screensharing = false;
     this.remoteUsers = {};
+    this.remoteUsersAudioMuted = {};
+    this.remoteUsersVideoMuted = {};
     this.channelId = "";
     this.mode = "rtc";
     this.client_role = 1; // default is host, 2 is audience
@@ -77,6 +79,11 @@ class AgoraChannel {
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
     this.remoteUsers[id] = user;
+    var userAudioMuted = this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
+    var userVideoMuted = this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
+    console.log(userAudioMuted);
+    if(mediaType  == "audio" && !userAudioMuted ||
+    mediaType == "video" && !userVideoMuted)
     await this.subscribe_remoteuser(user, mediaType);
   }
 
@@ -492,8 +499,10 @@ class AgoraChannel {
     Object.keys(this.remoteUsers).forEach((uid) => {
       if (mute == true) {
         this.unsubscribe(this.remoteUsers[uid], "audio");
+        this.remoteUsersAudioMuted[uid] = true;
       } else {
         this.subscribe_mv(this.remoteUsers[uid], "audio");
+        this.remoteUsersAudioMuted[uid] = false;
       }
     });
   }
@@ -530,8 +539,10 @@ class AgoraChannel {
     Object.keys(this.remoteUsers).forEach((uid) => {
       if (mute == true) {
         this.unsubscribe(this.remoteUsers[uid], "video");
+        this.remoteUsersVideoMuted[uid] = true;
       } else {
         this.subscribe_mv(this.remoteUsers[uid], "video");
+        this.remoteUsersVideoMuted[uid] = false;
       }
     });
   }
@@ -564,7 +575,6 @@ async muteLocalVideoStream(mute) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(),
       ]);
-
       localTracks.videoTrack.play("local-player");
       if (this.is_publishing) {
         await this.client.publish(localTracks.videoTrack);
@@ -575,11 +585,14 @@ async muteLocalVideoStream(mute) {
 }
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
+      
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "audio");
+          this.remoteUsersAudioMuted[uid] = true;
         } else {
           this.subscribe_mv(this.remoteUsers[uid], "audio");
+          this.remoteUsersAudioMuted[uid] = false;
         }
       }
     });
@@ -590,8 +603,10 @@ async muteLocalVideoStream(mute) {
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "video");
+          this.remoteUsersVideoMuted[uid] = true;
         } else {
           this.subscribe_mv(this.remoteUsers[uid], "video");
+          this.remoteUsersVideoMuted[uid] = false;
         }
       }
     });
