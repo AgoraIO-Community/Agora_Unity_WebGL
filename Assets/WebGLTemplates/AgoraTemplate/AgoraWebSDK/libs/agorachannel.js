@@ -19,6 +19,8 @@ class AgoraChannel {
     this.remoteUsers = {};
     this.remoteUsersAudioMuted = {};
     this.remoteUsersVideoMuted = {};
+    this.muteAllAudio = false;
+    this.muteAllVideo = false;
     this.channelId = "";
     this.mode = "rtc";
     this.client_role = 1; // default is host, 2 is audience
@@ -79,12 +81,11 @@ class AgoraChannel {
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
     this.remoteUsers[id] = user;
-    var userAudioMuted = this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
-    var userVideoMuted = this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
-    console.log(userAudioMuted);
-    if(mediaType  == "audio" && !userAudioMuted ||
-    mediaType == "video" && !userVideoMuted)
-    await this.subscribe_remoteuser(user, mediaType);
+    var userAudioMuted = this.muteAllAudio || this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
+    var userVideoMuted = this.muteAllVideo || this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
+    if (mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted) {
+      await this.subscribe_remoteuser(user, mediaType);
+    }
   }
 
   handleUserLeft(user) {
@@ -505,6 +506,7 @@ class AgoraChannel {
         this.remoteUsersAudioMuted[uid] = false;
       }
     });
+    this.muteAllAudio = mute;
   }
 
   async unsubscribe(user, mediaType) {
@@ -545,6 +547,7 @@ class AgoraChannel {
         this.remoteUsersVideoMuted[uid] = false;
       }
     });
+    this.muteAllVideo = mute;
   }
 
 // Must/Unmute local audio (mic)
