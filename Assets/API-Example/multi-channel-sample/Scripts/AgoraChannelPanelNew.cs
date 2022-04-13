@@ -121,8 +121,8 @@ public class AgoraChannelPanelNew : MonoBehaviour
         {
             MuteRemoteVideoButton.Setup(initOnOff: true,
                 onStateText: "Unmute Remote Video", offStateText: "Mute Remote Video",
-                callOnAction: Button_MuteAllRemoteVideo,
-                callOffAction: Button_MuteAllRemoteVideo
+                callOnAction: Button_MuteRemoteVideo,
+                callOffAction: Button_MuteRemoteVideo
             );
             ButtonCollection.Add(MuteRemoteVideoButton);
         }
@@ -422,7 +422,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
         // mute the first one
         if (remoteClientIDs.Count > 0)
         {
-            mChannel.MuteRemoteAudioStream(remoteClientIDs[0], !MuteAudioButton.OnOffState);
+            mChannel.MuteRemoteAudioStream(remoteClientIDs[0], !MuteRemoteAudioButton.OnOffState);
         }
     }
 
@@ -431,20 +431,20 @@ public class AgoraChannelPanelNew : MonoBehaviour
         // mute the first one
         if (remoteClientIDs.Count > 0)
         {
-            mChannel.MuteRemoteVideoStream(remoteClientIDs[0], !MuteVideoButton.OnOffState);
+            mChannel.MuteRemoteVideoStream(remoteClientIDs[0], !MuteRemoteVideoButton.OnOffState);
         }
     }
 
     public void Button_MuteAllRemoteAudio()
     {
         // on means muted
-        mChannel.MuteAllRemoteAudioStreams(!MuteAllRemoteAudioButton);
+        mChannel.MuteAllRemoteAudioStreams(!MuteAllRemoteAudioButton.OnOffState);
     }
 
     public void Button_MuteAllRemoteVideo()
     {
         // on means muted
-        mChannel.MuteAllRemoteVideoStreams(!MuteAllRemoteVideoButton);
+        mChannel.MuteAllRemoteVideoStreams(!MuteAllRemoteVideoButton.OnOffState);
     }
 
     public void Button_ShareScreen()

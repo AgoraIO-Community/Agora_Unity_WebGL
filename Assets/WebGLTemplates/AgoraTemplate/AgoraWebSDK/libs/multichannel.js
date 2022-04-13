@@ -1,8 +1,3 @@
-var isAudioMute = true;
-var isVideoMute = true;
-var isRemoteAudioMute = true;
-var isRemoteVideoMute = true;
-
 function setMultiChannelWant_MC(multiChannelWant) {
   if (multiChannelWant) {
     multiChannelWant_MC = true;
@@ -302,30 +297,16 @@ function muteAllRemoteAudioStreams2_mc_WGL(mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   }
-  if (isAudioMute) {
-    isAudioMute = false;
-    var c = clients[selectedCurrentChannel];
-    c.muteAllRemoteAudioStreams(true);
-  } else {
-    isAudioMute = true;
-    var c = clients[selectedCurrentChannel];
-    c.muteAllRemoteAudioStreams(false);
-  }
+  var c = clients[selectedCurrentChannel];
+  c.muteAllRemoteAudioStreams(mute);
 }
 
 function muteAllRemoteVideoStreams2_mc_WGL(mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   }
-  if (isVideoMute) {
-    isVideoMute = false;
-    var c = clients[selectedCurrentChannel];
-    c.muteAllRemoteVideoStreams(true);
-  } else {
-    isVideoMute = true;
-    var c = clients[selectedCurrentChannel];
-    c.muteAllRemoteVideoStreams(false);
-  }
+  var c = clients[selectedCurrentChannel];
+  c.muteAllRemoteVideoStreams(mute);
 }
 
 function muteLocalAudioStream2_mc_WGL(channel, mute) {
@@ -346,30 +327,16 @@ function muteRemoteAudioStream2_mc_WGL(userId, mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   }
-  if (isRemoteAudioMute) {
-    isRemoteAudioMute = false;
-    var c = clients[selectedCurrentChannel];
-    c.muteRemoteAudioStream(userId, true);
-  } else {
-    isRemoteAudioMute = true;
-    var c = clients[selectedCurrentChannel];
-    c.muteRemoteAudioStream(userId, false);
-  }
+  var c = clients[selectedCurrentChannel];
+  c.muteRemoteAudioStream(userId, mute);
 }
 
 function muteRemoteVideoStream2_mc_WGL(userId, mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   }
-  if (isRemoteVideoMute) {
-    isRemoteVideoMute = false;
-    var c = clients[selectedCurrentChannel];
-    c.muteRemoteVideoStream(userId, true);
-  } else {
-    isRemoteVideoMute = true;
-    var c = clients[selectedCurrentChannel];
-    c.muteRemoteVideoStream(userId, false);
-  }
+  var c = clients[selectedCurrentChannel];
+  c.muteRemoteVideoStream(userId, mute);
 }
 
 function setRemoteVideoStreamType2_mc_WGL(userId, streamType) {
