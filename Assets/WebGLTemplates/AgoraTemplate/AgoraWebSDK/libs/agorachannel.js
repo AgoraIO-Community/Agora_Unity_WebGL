@@ -81,8 +81,17 @@ class AgoraChannel {
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
     this.remoteUsers[id] = user;
-    var userAudioMuted = this.muteAllAudio || this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
-    var userVideoMuted = this.muteAllVideo || this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
+
+    if(this.muteAllAudio){
+      this.remoteUsersAudioMuted[id] = true;
+    }
+
+    if(this.muteAllVideo){
+      this.remoteUsersVideoMuted[id] = true;
+    }
+
+    var userAudioMuted = this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
+    var userVideoMuted = this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
     if (mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted) {
       await this.subscribe_remoteuser(user, mediaType);
     }
