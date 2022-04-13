@@ -295,6 +295,7 @@
     <Compile Include="Assets\API-Example\desktop-screenshare-sample\WebScreenShare.cs" />
     <Compile Include="Assets\API-Example\geo-area-sample\HelloVideoAgora2.cs" />
     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanel.cs" />
+    <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanelNew.cs" />
     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\MultiChannelSceneCtrl.cs" />
     <Compile Include="Assets\API-Example\rtmp-streaming-sample\RtmpStreaming.cs" />
     <Compile Include="Assets\API-Example\tools\Logger.cs" />

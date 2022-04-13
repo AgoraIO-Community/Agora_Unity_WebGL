@@ -17,6 +17,10 @@ class AgoraChannel {
     this.is_publishing = false;
     this.is_screensharing = false;
     this.remoteUsers = {};
+    this.remoteUsersAudioMuted = {};
+    this.remoteUsersVideoMuted = {};
+    this.muteAllAudio = false;
+    this.muteAllVideo = false;
     this.channelId = "";
     this.mode = "rtc";
     this.client_role = 1; // default is host, 2 is audience
@@ -77,7 +81,20 @@ class AgoraChannel {
   async handleUserPublished(user, mediaType) {
     const id = user.uid;
     this.remoteUsers[id] = user;
-    await this.subscribe_remoteuser(user, mediaType);
+
+    if(this.muteAllAudio){
+      this.remoteUsersAudioMuted[id] = true;
+    }
+
+    if(this.muteAllVideo){
+      this.remoteUsersVideoMuted[id] = true;
+    }
+
+    var userAudioMuted = this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
+    var userVideoMuted = this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
+    if (mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted) {
+      await this.subscribe_remoteuser(user, mediaType);
+    }
   }
 
   handleUserLeft(user) {
@@ -492,10 +509,13 @@ class AgoraChannel {
     Object.keys(this.remoteUsers).forEach((uid) => {
       if (mute == true) {
         this.unsubscribe(this.remoteUsers[uid], "audio");
+        this.remoteUsersAudioMuted[uid] = true;
       } else {
         this.subscribe_mv(this.remoteUsers[uid], "audio");
+        this.remoteUsersAudioMuted[uid] = false;
       }
     });
+    this.muteAllAudio = mute;
   }
 
   async unsubscribe(user, mediaType) {
@@ -530,10 +550,13 @@ class AgoraChannel {
     Object.keys(this.remoteUsers).forEach((uid) => {
       if (mute == true) {
         this.unsubscribe(this.remoteUsers[uid], "video");
+        this.remoteUsersVideoMuted[uid] = true;
       } else {
         this.subscribe_mv(this.remoteUsers[uid], "video");
+        this.remoteUsersVideoMuted[uid] = false;
       }
     });
+    this.muteAllVideo = mute;
   }
 
 // Must/Unmute local audio (mic)
@@ -564,7 +587,6 @@ async muteLocalVideoStream(mute) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(),
       ]);
-
       localTracks.videoTrack.play("local-player");
       if (this.is_publishing) {
         await this.client.publish(localTracks.videoTrack);
@@ -575,11 +597,14 @@ async muteLocalVideoStream(mute) {
 }
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
+      
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "audio");
+          this.remoteUsersAudioMuted[uid] = true;
         } else {
           this.subscribe_mv(this.remoteUsers[uid], "audio");
+          this.remoteUsersAudioMuted[uid] = false;
         }
       }
     });
@@ -590,8 +615,10 @@ async muteLocalVideoStream(mute) {
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "video");
+          this.remoteUsersVideoMuted[uid] = true;
         } else {
           this.subscribe_mv(this.remoteUsers[uid], "video");
+          this.remoteUsersVideoMuted[uid] = false;
         }
       }
     });
