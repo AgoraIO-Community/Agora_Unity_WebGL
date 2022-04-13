@@ -256,9 +256,9 @@ public class AgoraChannelPanelNew : MonoBehaviour
 
     void deleteRemoteUserID(uint id)
     {
-        for(int i = 0; i < remoteClientIDs.Count; i++)
+        for (int i = 0; i < remoteClientIDs.Count; i++)
         {
-            if(id == remoteClientIDs[i])
+            if (id == remoteClientIDs[i])
             {
                 remoteClientIDs.RemoveAt(i);
                 return;
@@ -419,14 +419,20 @@ public class AgoraChannelPanelNew : MonoBehaviour
 
     public void Button_MuteRemoteAudio()
     {
-        // on means muted
-        mChannel.MuteRemoteAudioStream(remoteClientIDs[0], !MuteAudioButton.OnOffState);
+        // mute the first one
+        if (remoteClientIDs.Count > 0)
+        {
+            mChannel.MuteRemoteAudioStream(remoteClientIDs[0], !MuteAudioButton.OnOffState);
+        }
     }
 
     public void Button_MuteRemoteVideo()
     {
-        // on means muted
-        mChannel.MuteRemoteVideoStream(remoteClientIDs[0], !MuteVideoButton.OnOffState);
+        // mute the first one
+        if (remoteClientIDs.Count > 0)
+        {
+            mChannel.MuteRemoteVideoStream(remoteClientIDs[0], !MuteVideoButton.OnOffState);
+        }
     }
 
     public void Button_MuteAllRemoteAudio()
@@ -509,12 +515,12 @@ public class AgoraChannelPanelNew : MonoBehaviour
 
     void handleChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
     {
-        //txtConState.text = "ChannelOnClientRoleChanged -> " + oldRole + " to " + newRole;
+        Debug.Log("ChannelOnClientRoleChanged: " + oldRole + " -> " + newRole);
     }
 
     void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
     {
-        return;
+#if DEBUG_VIDEO_STATS
         Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID
             + ", remoteStats.receivedBitrate: " + remoteStats.receivedBitrate
             + ", remoteStats.uid: " + remoteStats.uid);
@@ -556,6 +562,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
                 RemoveUserVideoSurface(remoteStats.uid);
             }
         }
+#endif
     }
 
     void HandleChannelError(string channelId, int err, string message)
