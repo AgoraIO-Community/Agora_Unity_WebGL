@@ -628,7 +628,7 @@ async muteLocalVideoStream(mute) {
     Object.keys(this.remoteUsers).forEach((uid_in) => {
       if (uid_in == uid) {
         var audioTrack = this.remoteUsers[uid_in]._audioTrack;
-        audioTrack.setVolume(volume);
+        audioTrack?.setVolume(volume);
       }
     });
   }
