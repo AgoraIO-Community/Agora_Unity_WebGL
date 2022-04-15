@@ -442,12 +442,14 @@ class ClientManager {
       this.client_role = role;
       if (role === 1) {
         await this.client.setClientRole("host", optionLevel);
+        event_manager.raiseChannelOnClientRoleChanged(this.options.channel, "2", "1");
         if (wasAudience) {
           await this.processJoinChannelAVTrack();
         }
       } else if (role === 2) {
         await this.unpublishAll();
         await this.client.setClientRole("audience", optionLevel);
+        event_manager.raiseChannelOnClientRoleChanged(this.options.channel, "1", "2");
       }
     }
   }
