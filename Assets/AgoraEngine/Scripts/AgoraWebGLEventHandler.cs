@@ -863,6 +863,42 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void OnClientRoleChanged(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            string oldRole_s = events[0];
+            string newRole_s = events[1];
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine == null) return;
+
+            CLIENT_ROLE_TYPE oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE; // 2
+                CLIENT_ROLE_TYPE newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER; // 1
+                if (oldRole_s == "1")
+                {
+                    oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
+                }
+                else
+                {
+                    oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+                }
+
+                if (newRole_s == "1")
+                {
+                    newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
+                }
+                else
+                {
+                    newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+                }
+                if (engine.OnClientRoleChanged != null)
+                {
+                    engine.OnClientRoleChanged(oldRole, newRole);
+                }
+
+            }
+
         #region Testing functions, remove later
 
         public void CustomMsg(string msg)

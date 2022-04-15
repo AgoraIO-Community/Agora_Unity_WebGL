@@ -232,6 +232,14 @@ class EventManager {
     );
   }
 
+  raiseOnClientRoleChanged(old_role, new_role) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnClientRoleChanged",
+      old_role + "|" + new_role
+    );
+  }
+
   raiseChannelOnClientRoleChanged(channel, old_role, new_role) {
     unityInstance.SendMessage(
       "AgoraEventHandler",
