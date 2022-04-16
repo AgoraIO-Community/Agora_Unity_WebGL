@@ -771,6 +771,7 @@ async muteLocalVideoStream(mute) {
             // called after join channel
             // and previosly it is audience, default to publish
             await this.publish();
+            event_manager.raiseChannelOnClientRoleChanged(this.options.channel, "2", "1");
           }
         }
       } else if (role === 2) {
@@ -780,6 +781,7 @@ async muteLocalVideoStream(mute) {
           await this.unpublish();
         }
         await this.client.setClientRole("audience", optionLevel);
+        event_manager.raiseChannelOnClientRoleChanged(this.options.channel, "1", "2");
       }
       this.client_role = role;
     }
