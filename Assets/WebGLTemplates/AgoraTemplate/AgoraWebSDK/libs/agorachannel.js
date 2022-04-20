@@ -647,7 +647,7 @@ async muteLocalVideoStream(mute) {
     }
   }
 
-  async startScreenCapture() {
+  async startScreenCapture(enableAudio) {
     this.is_screensharing = true;
     var screenShareTrack = null;
     screenShareTrack = await Promise.all([
@@ -664,6 +664,9 @@ async muteLocalVideoStream(mute) {
       localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
       localTracks.videoTrack.play("local-player");
       await this.client.publish(localTracks.videoTrack);
+      if (!enableAudio) {
+        await this.client.unpublish(localTracks.audioTrack);
+      }
       event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
     }
   }
@@ -681,12 +684,14 @@ async muteLocalVideoStream(mute) {
       ]);
       localTracks.videoTrack.play("local-player");
       await this.client.publish(localTracks.videoTrack);
+      if (localTracks.audioTrack) {
+        await this.client.publish(localTracks.audioTrack);
+      }
       event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
     }
   }
 
-  async startNewScreenCaptureForWeb2(uid) {
-    console.log("AgoraChannel startNewScreenCaptureForWeb2");
+  async startNewScreenCaptureForWeb2(uid, enableAudio) {
     var screenShareTrack = null;
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
@@ -696,6 +701,9 @@ async muteLocalVideoStream(mute) {
       ).then(localVideoTrack => {
         this.is_screensharing = true;
         screenShareTrack = localVideoTrack;
+        if(!enableAudio){
+          this.client.unpublish(localTracks.audioTrack);
+        }
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
@@ -708,10 +716,12 @@ async muteLocalVideoStream(mute) {
   }
 
   async stopNewScreenCaptureForWeb2() {
-    console.log("AgoraChannel stopNewScreenCaptureForWeb2");
     if (this.is_screensharing) {
       this.screenShareClient.leave();
       this.is_screensharing = false;
+      if(localTracks.audioTrack) {
+        this.client.publish(localTracks.audioTrack);
+      }
       event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
     }
   }

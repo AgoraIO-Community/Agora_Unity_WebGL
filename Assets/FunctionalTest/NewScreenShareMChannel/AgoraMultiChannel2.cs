@@ -25,6 +25,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public Button startScreenShareButton, stopScreenShareButton;
     public bool useNewScreenShare = false;
+    public bool useScreenShareAudio = false;
 
     // Use this for initialization
     void Start()
@@ -40,12 +41,12 @@ public class AgoraMultiChannel2 : MonoBehaviour
         JoinChannel2();
         if (!useNewScreenShare)
         {
-            startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(); });
+            startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(useScreenShareAudio); });
             stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare2(); });
         }
         else
         {
-            startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare2(); });
+            startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare2(useScreenShareAudio); });
             stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare2(); });
         }
     }
@@ -64,9 +65,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
     //for starting/stopping a new screen share through AgoraChannel class.
-    public void startNewScreenShare2()
+    public void startNewScreenShare2(bool audioEnabled)
     {
-        channel1.StartNewScreenCaptureForWeb2(1000);
+        channel1.StartNewScreenCaptureForWeb2(1000, audioEnabled);
     }
 
     public void stopNewScreenShare2()
@@ -75,9 +76,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
     //for starting/stopping a screen share through AgoraChannel class.
-    public void startScreenShare2()
+    public void startScreenShare2(bool audioEnabled)
     {
-        channel1.StartScreenCaptureForWeb();
+        channel1.StartScreenCaptureForWeb(audioEnabled);
     }
 
     public void stopScreenShare2()

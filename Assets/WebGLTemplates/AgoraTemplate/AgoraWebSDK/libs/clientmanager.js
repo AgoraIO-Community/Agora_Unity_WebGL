@@ -708,11 +708,12 @@ class ClientManager {
     await this.client.publish(localTracks.videoTrack);
   }
 
-  async startScreenCaptureForWeb() {
+  async startScreenCaptureForWeb(enableAudio) {
+    var enableAudioStr = enableAudio? "enable" : "disable";
     this.is_screensharing = true;
     var screenShareTrack = null;
     screenShareTrack = await Promise.all([
-      AgoraRTC.createScreenVideoTrack().catch(error => {
+      AgoraRTC.createScreenVideoTrack({}, enableAudioStr).catch(error => {
         event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
         this.is_screensharing = false;
       }),

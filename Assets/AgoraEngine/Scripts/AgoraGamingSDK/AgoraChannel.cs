@@ -1338,11 +1338,11 @@ namespace agora_gaming_rtc
         ///   Invoke Web's screen sharing capability. Note that the browser can only have one sharing
         /// instance.  Your channels cannot share different contents.
         /// </summary>
-        public void StartScreenCaptureForWeb()
+        public void StartScreenCaptureForWeb(bool audioEnabled)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startScreenCaptureForWeb2();
+            IRtcEngineNative.startScreenCaptureForWeb2(audioEnabled);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
@@ -1360,11 +1360,11 @@ namespace agora_gaming_rtc
          * user that they need to stop the current screen share before starting
          * another one.
          */
-        public void StartNewScreenCaptureForWeb2(uint uid)
+        public void StartNewScreenCaptureForWeb2(uint uid, bool audioEnabled)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startNewScreenCaptureForWeb2(uid);
+            IRtcEngineNative.startNewScreenCaptureForWeb2(uid, audioEnabled);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif

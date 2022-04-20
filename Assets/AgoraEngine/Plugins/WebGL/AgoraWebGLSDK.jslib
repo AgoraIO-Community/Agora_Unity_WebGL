@@ -439,8 +439,8 @@ var LibraryAgoraWebGLSDK = {
       startScreenCaptureForWeb();
   },
 
-  startScreenCaptureForWeb2: function() {
-      startScreenCaptureForWeb2();
+  startScreenCaptureForWeb2: function(enableAudio) {
+      startScreenCaptureForWeb2(enableAudio);
   },
 
   startNewScreenCaptureForWeb: function(uid) {
@@ -453,9 +453,9 @@ var LibraryAgoraWebGLSDK = {
       stopNewScreenCaptureForWeb();
   },
 
-  startNewScreenCaptureForWeb2: function(uid) {
+  startNewScreenCaptureForWeb2: function(uid, audioEnabled) {
     console.log("SDK startNewScreenCaptureForWeb2");
-     startNewScreenCaptureForWeb2(uid);
+     startNewScreenCaptureForWeb2(uid, audioEnabled);
   },
 
   stopNewScreenCaptureForWeb2: function() {

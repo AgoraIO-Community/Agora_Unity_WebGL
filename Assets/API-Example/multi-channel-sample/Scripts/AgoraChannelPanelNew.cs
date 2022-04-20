@@ -51,11 +51,15 @@ public class AgoraChannelPanelNew : MonoBehaviour
 
     private string channelToken;
 
+    private Logger logger;
+    public Text logText;
+
     void Start()
     {
         ChannelLabel.text = channelName;
         userVideos = new List<GameObject>();
         remoteClientIDs = new List<uint>();
+        logger = new Logger(logText);
 
         if (JoinChannelButton != null)
         {
@@ -147,7 +151,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
             ButtonCollection.Add(ScreenShareButton);
         }
 
-        SetupRoleButton(isHost: !AudienceMode);
+        SetupEngineRoleButton(isHost: !AudienceMode);
 
         SetButtonsState(false, false, false, false);
         if (UseToken)
@@ -201,6 +205,57 @@ public class AgoraChannelPanelNew : MonoBehaviour
                      if (mChannel != null)
                      {
                          mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+                     }
+                     AudienceMode = true;
+                     InfoText.text = "Audience";
+                     if (IsPublishing)
+                     {
+                         Button_CancelPublishFromChannel();
+                     }
+                     SetButtonsState(false, false, false, false);
+                 }
+                 );
+        }
+    }
+
+    private void SetupEngineRoleButton(bool isHost)
+    {
+        if (ClientRoleButton != null)
+        {
+            ClientRoleButton.Setup(initOnOff: isHost,
+                 onStateText: "To Host", offStateText: "To Audience",
+                 callOnAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Broadcaster");
+                     IRtcEngine engine = IRtcEngine.QueryEngine();
+                     if (engine == null) return;
+                     if (engine != null)
+                     {
+                         engine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+                     }
+                     AudienceMode = false;
+                     InfoText.text = "Broadcaster";
+                     // change role to Broadcaster will automatically publish
+                     if (InChannel)
+                     {
+                         SetButtonsState(true, true, true, true);
+                         // set to unpublish
+                         PublishButton.SetState(true);
+                         IsPublishing = true;
+                     }
+                     else
+                     {
+                         SetButtonsState(false, false, false, false);
+                     }
+                 },
+                 callOffAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Audience");
+                     IRtcEngine engine = IRtcEngine.QueryEngine();
+                     if (engine == null) return;
+                     if (engine != null)
+                     {
+                         engine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
                      }
                      AudienceMode = true;
                      InfoText.text = "Audience";
@@ -294,6 +349,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
         if (engine != null)
         {
             engine.OnVolumeIndication += OnVolumeIndicationHandler;
+            engine.OnClientRoleChanged += handleOnClientRoleChanged;
 
             if (mChannel != null)
             {
@@ -308,7 +364,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
             mChannel.ChannelOnUserOffLine += OnUserLeftHandler;
             mChannel.ChannelOnRemoteVideoStats += OnRemoteVideoStatsHandler;
             mChannel.ChannelOnError += HandleChannelError;
-            mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
+            mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChanged;
         }
 
         if (AudienceMode)
@@ -339,12 +395,13 @@ public class AgoraChannelPanelNew : MonoBehaviour
             IsPublishing = false;
             var engine = IRtcEngine.QueryEngine();
             engine.OnVolumeIndication -= OnVolumeIndicationHandler;
+            engine.OnClientRoleChanged -= handleOnClientRoleChanged;
             mChannel.ChannelOnJoinChannelSuccess -= OnJoinChannelSuccessHandler;
             mChannel.ChannelOnUserJoined -= OnUserJoinedHandler;
             mChannel.ChannelOnUserOffLine -= OnUserLeftHandler;
             mChannel.ChannelOnRemoteVideoStats -= OnRemoteVideoStatsHandler;
             mChannel.ChannelOnError -= HandleChannelError;
-            mChannel.ChannelOnClientRoleChanged -= handleChannelOnClientRoleChangedHandler;
+            mChannel.ChannelOnClientRoleChanged -= handleChannelOnClientRoleChanged;
 
             mChannel.LeaveChannel();
             SetButtonsState(false, false, false, false);
@@ -452,7 +509,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
         if (ScreenShareButton.OnOffState)
         {
             Debug.Log("Screen sharing button.... share");
-            mChannel.StartScreenCaptureForWeb();
+            mChannel.StartScreenCaptureForWeb(false);
         }
         else
         {
@@ -512,8 +569,12 @@ public class AgoraChannelPanelNew : MonoBehaviour
         deleteRemoteUserID(uid);
     }
 
+    void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    {
+        Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
+    }
 
-    void handleChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    void handleChannelOnClientRoleChanged(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
     {
         Debug.Log("ChannelOnClientRoleChanged: " + oldRole + " -> " + newRole);
     }
