@@ -27,6 +27,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
 
+    public Toggle loopbackAudioToggle;
+
     // Use this for initialization
     void Start()
     {
@@ -55,6 +57,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
     {
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
+
+        useScreenShareAudio = loopbackAudioToggle.isOn;
     }
 
     bool CheckAppId()
@@ -63,6 +67,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
         logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
         return (APP_ID.Length > 10);
     }
+
+    
 
     //for starting/stopping a new screen share through AgoraChannel class.
     public void startNewScreenShare2(bool audioEnabled)
