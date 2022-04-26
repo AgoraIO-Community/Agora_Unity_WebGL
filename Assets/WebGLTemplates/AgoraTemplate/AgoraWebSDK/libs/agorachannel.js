@@ -690,8 +690,6 @@ async muteLocalVideoStream(mute) {
       await this.client.unpublish(localTracks.videoTrack);
       this.is_screensharing = false;
       if (this.tempLocalTracks.audioTrack != null) {
-        this.tempLocalTracks.audioTrack.stop();
-        this.tempLocalTracks.audioTrack.close();
         await this.client.unpublish(this.tempLocalTracks.audioTrack);
         this.tempLocalTracks.audioTrack = null;
       }
