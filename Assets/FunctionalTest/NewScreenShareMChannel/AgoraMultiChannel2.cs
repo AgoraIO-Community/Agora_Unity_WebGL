@@ -27,7 +27,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
 
-    public Toggle loopbackAudioToggle;
+    public Toggle loopbackAudioToggle, newScreenShareToggle;
 
     // Use this for initialization
     void Start()
@@ -41,6 +41,16 @@ public class AgoraMultiChannel2 : MonoBehaviour
         
         //channel setup.
         JoinChannel2();
+        newScreenShareToggle.isOn = useNewScreenShare;
+        loopbackAudioToggle.isOn = useScreenShareAudio;
+        updateScreenShareNew();
+    }
+
+    public void updateScreenShareNew()
+    {
+        useNewScreenShare = newScreenShareToggle.isOn;
+        startScreenShareButton.onClick.RemoveAllListeners();
+        stopScreenShareButton.onClick.RemoveAllListeners();
         if (!useNewScreenShare)
         {
             startScreenShareButton.onClick.AddListener(delegate { startScreenShare2(useScreenShareAudio); });
@@ -96,7 +106,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare()
     {
-        mRtcEngine.StartNewScreenCaptureForWeb(1000);
+        mRtcEngine.StartNewScreenCaptureForWeb(1000, false);
     }
 
     public void stopNewScreenShare()
@@ -107,7 +117,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     //for starting/stopping a screen share through IRtcEngine class.
     public void startScreenShare()
     {
-        mRtcEngine.StartScreenCaptureForWeb();
+        mRtcEngine.StartScreenCaptureForWeb(false);
     }
 
     public void stopScreenShare()

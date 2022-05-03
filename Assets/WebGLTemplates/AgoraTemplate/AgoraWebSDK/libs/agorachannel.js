@@ -19,6 +19,7 @@ class AgoraChannel {
     this.remoteUsers = {};
     this.remoteUsersAudioMuted = {};
     this.remoteUsersVideoMuted = {};
+    this.enableLoopbackAudio = false;
     this.muteAllAudio = false;
     this.muteAllVideo = false;
     this.channelId = "";
@@ -93,8 +94,11 @@ class AgoraChannel {
 
     var userAudioMuted = this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
     var userVideoMuted = this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
-    if (mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted) {
-      await this.subscribe_remoteuser(user, mediaType);
+    if ((mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted)) {
+      if (mediaType == "video" || (mediaType == "audio" && this.screenShareClient == null
+        || mediaType == "audio" && this.screenShareClient != null
+        && id != this.screenShareClient.uid) && (!this.is_screensharing || mediaType != "audio" && this.is_screensharing))
+        await this.subscribe_remoteuser(user, mediaType);
     }
   }
 
@@ -668,6 +672,7 @@ async muteLocalVideoStream(mute) {
         this.tempLocalTracks.audioTrack = screenShareTrack;
         await this.client.publish(localTracks.videoTrack);
         await this.client.publish(this.tempLocalTracks.audioTrack);
+        this.enableLoopbackAudio = true;
         event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
       } else {
         localTracks.videoTrack.stop();
@@ -689,6 +694,7 @@ async muteLocalVideoStream(mute) {
       localTracks.videoTrack.close();
       await this.client.unpublish(localTracks.videoTrack);
       this.is_screensharing = false;
+      this.enableLoopbackAudio = false;
       if (this.tempLocalTracks.audioTrack != null) {
         await this.client.unpublish(this.tempLocalTracks.audioTrack);
         this.tempLocalTracks.audioTrack = null;
@@ -704,23 +710,36 @@ async muteLocalVideoStream(mute) {
 
   async startNewScreenCaptureForWeb2(uid, enableAudio) {
     var screenShareTrack = null;
+    var enableAudioStr = enableAudio? "auto" : "disable";
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       AgoraRTC.createScreenVideoTrack({
         encoderConfig: "1080p_1", optimizationMode: "detail"
-      }
+      }, enableAudioStr
       ).then(localVideoTrack => {
+        if(enableAudio){
         this.is_screensharing = true;
         screenShareTrack = localVideoTrack;
-        if(!enableAudio){
-          this.client.unpublish(localTracks.audioTrack);
-        }
+        screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
+        this.enableLoopbackAudio = enableAudio;
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+          this.screenShareClient.publish(screenShareTrack);
+          event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+          
+        });
+      } else {
+        this.is_screensharing = true;
+        screenShareTrack = localVideoTrack;
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
+        this.enableLoopbackAudio = enableAudio;
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
         });
-      }).catch(error => event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid));
+      }
+      }).catch(error => { event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid); 
+      console.log(error);
+    });
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
     }

@@ -2889,10 +2889,10 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.startScreenCaptureByDisplayId(displayId, rectangle.x, rectangle.y, rectangle.width, rectangle.height, screenCaptureParameters.dimensions.width, screenCaptureParameters.dimensions.height, screenCaptureParameters.frameRate, screenCaptureParameters.bitrate, screenCaptureParameters.captureMouseCursor);
         }
 
-        public void StartScreenCaptureForWeb()
+        public void StartScreenCaptureForWeb(bool enableAudio)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.startScreenCaptureForWeb();
+            IRtcEngineNative.startScreenCaptureForWeb(enableAudio);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb runs for WebGL only.");
 #endif
@@ -2910,10 +2910,10 @@ namespace agora_gaming_rtc
          * user that they need to stop the current screen share before starting
          * another one.
          */
-        public void StartNewScreenCaptureForWeb(uint uid)
+        public void StartNewScreenCaptureForWeb(uint uid, bool enableAudio)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.startNewScreenCaptureForWeb(uid);
+            IRtcEngineNative.startNewScreenCaptureForWeb(uid, enableAudio);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif

@@ -435,17 +435,17 @@ var LibraryAgoraWebGLSDK = {
     );
   },
 
-  startScreenCaptureForWeb: function() {
-      startScreenCaptureForWeb();
+  startScreenCaptureForWeb: function(enableAudio) {
+      startScreenCaptureForWeb(enableAudio);
   },
 
   startScreenCaptureForWeb2: function(enableAudio) {
       startScreenCaptureForWeb2(enableAudio);
   },
 
-  startNewScreenCaptureForWeb: function(uid) {
+  startNewScreenCaptureForWeb: function(uid, enableAudio) {
     console.log("SDK startNewScreenCaptureForWeb");
-     startNewScreenCaptureForWeb(uid);
+     startNewScreenCaptureForWeb(uid, enableAudio);
   },
 
   stopNewScreenCaptureForWeb: function() {
