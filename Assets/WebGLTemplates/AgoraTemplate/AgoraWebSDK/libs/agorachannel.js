@@ -653,14 +653,14 @@ async muteLocalVideoStream(mute) {
   }
 
   async startScreenCapture(enableAudio) {
-    var enableAudioStr = enableAudio? "auto" : "disable";
+    var enableAudioStr = enableAudio ? "auto" : "disable";
     this.is_screensharing = true;
     var screenShareTrack = null;
     this.tempLocalTracks = localTracks;
     screenShareTrack = await AgoraRTC.createScreenVideoTrack({}, enableAudioStr).catch(error => {
-        event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
-        this.is_screensharing = false;
-      });
+      event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+      this.is_screensharing = false;
+    });
     if (this.is_screensharing) {
       if (Array.isArray(screenShareTrack)) {
         localTracks.videoTrack.stop();
@@ -710,36 +710,37 @@ async muteLocalVideoStream(mute) {
 
   async startNewScreenCaptureForWeb2(uid, enableAudio) {
     var screenShareTrack = null;
-    var enableAudioStr = enableAudio? "auto" : "disable";
+    var enableAudioStr = enableAudio ? "auto" : "disable";
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       AgoraRTC.createScreenVideoTrack({
         encoderConfig: "1080p_1", optimizationMode: "detail"
       }, enableAudioStr
       ).then(localVideoTrack => {
-        if(enableAudio){
-        this.is_screensharing = true;
-        screenShareTrack = localVideoTrack;
-        screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
-        this.enableLoopbackAudio = enableAudio;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
-          this.screenShareClient.publish(screenShareTrack);
-          event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
-          
-        });
-      } else {
-        this.is_screensharing = true;
-        screenShareTrack = localVideoTrack;
-        screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
-        this.enableLoopbackAudio = enableAudio;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
-          this.screenShareClient.publish(screenShareTrack);
-          event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
-        });
-      }
-      }).catch(error => { event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid); 
-      console.log(error);
-    });
+        if (Array.isArray(localVideoTrack)) {
+          this.is_screensharing = true;
+          screenShareTrack = localVideoTrack;
+          screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
+          this.enableLoopbackAudio = enableAudio;
+          this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+            this.screenShareClient.publish(screenShareTrack);
+            event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+
+          });
+        } else {
+          this.is_screensharing = true;
+          screenShareTrack = localVideoTrack;
+          screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
+          this.enableLoopbackAudio = enableAudio;
+          this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+            this.screenShareClient.publish(screenShareTrack);
+            event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+          });
+        }
+      }).catch(error => {
+        event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+        console.log(error);
+      });
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
     }

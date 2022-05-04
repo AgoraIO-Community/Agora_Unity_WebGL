@@ -326,7 +326,7 @@ async function setAudioRecordingCollectionDeviceWGL(deviceId) {
 function handleConnectionStateChange(curState, revState, reason) { }
 
 async function startScreenCaptureForWeb(enableAudio) {
-  client_manager.startScreenCaptureForWeb(enableAudio);
+  client_manager.startScreenCapture(enableAudio);
 }
 
 function startNewScreenCaptureForWeb(uid, enableAudio) {
