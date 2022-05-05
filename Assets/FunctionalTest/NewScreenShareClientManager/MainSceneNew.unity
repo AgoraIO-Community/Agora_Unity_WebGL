@@ -939,11 +939,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 61627942b0dc54c12a7a9541655791a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: abc0a24c4983477bb500372a5bc3625d
+  APP_ID: 
   TOKEN_1: 
   CHANNEL_NAME_1: unity3d
   TOKEN_2: 
-  CHANNEL_NAME_2: unity2d
   logText: {fileID: 1416670727}
   startScreenShareButton: {fileID: 1632797613}
   stopScreenShareButton: {fileID: 630712822}
