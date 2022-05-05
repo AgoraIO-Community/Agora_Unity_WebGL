@@ -304,7 +304,7 @@
     <Compile Include="Assets\API-Example\tools\UIElementDragger.cs" />
     <Compile Include="Assets\API-Example\video-encoder-configuration\video_encoder_configuration.cs" />
     <Compile Include="Assets\FunctionalTest\JoinMultipleChannel\AgoraMultiChannel.cs" />
-    <Compile Include="Assets\FunctionalTest\NewScreenShareClientManager\AgoraMultiChannel3.cs" />
+    <Compile Include="Assets\FunctionalTest\NewScreenShareClientManager\AgoraClientManager.cs" />
     <Compile Include="Assets\FunctionalTest\NewScreenShareMChannel\AgoraMultiChannel2.cs" />
     <Compile Include="Assets\FunctionalTest\Respawn\TestVideoRespawn.cs" />
   </ItemGroup>

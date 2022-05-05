@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
 
-public class AgoraMultiChannel3 : MonoBehaviour
+public class AgoraClientManager : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
 
@@ -14,13 +14,9 @@ public class AgoraMultiChannel3 : MonoBehaviour
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
     [SerializeField] private string TOKEN_2 = "";
-
-    [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
-    private AgoraChannel channel1 = null;
-    private AgoraChannel channel2 = null;
     private const float Offset = 100;
 
     public Button startScreenShareButton, stopScreenShareButton;
@@ -80,27 +76,7 @@ public class AgoraMultiChannel3 : MonoBehaviour
 
     
 
-    //for starting/stopping a new screen share through AgoraChannel class.
-    public void startNewScreenShare2(bool audioEnabled)
-    {
-        channel1.StartNewScreenCaptureForWeb2(1000, audioEnabled);
-    }
-
-    public void stopNewScreenShare2()
-    {
-        channel1.StopNewScreenCaptureForWeb2();
-    }
-
-    //for starting/stopping a screen share through AgoraChannel class.
-    public void startScreenShare2(bool audioEnabled)
-    {
-        channel1.StartScreenCaptureForWeb(audioEnabled);
-    }
-
-    public void stopScreenShare2()
-    {
-        channel1.StopScreenCapture();
-    }
+    
 
 
     //for starting/stopping a new screen share through IRtcEngine class.
@@ -136,30 +112,11 @@ public class AgoraMultiChannel3 : MonoBehaviour
         mRtcEngine.EnableVideoObserver();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        
-
-        /*channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
-        channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-
-        channel1.ChannelOnJoinChannelSuccess = Channel1OnJoinChannelSuccessHandler;
-        channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
-        channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
-        channel1.ChannelOnError = Channel1OnErrorHandler;
-        channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
-        channel1.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
-        channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
-        channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;*/
-
         mRtcEngine.OnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
         mRtcEngine.OnLeaveChannel = EngineOnLeaveChannelHandler;
         mRtcEngine.OnScreenShareStarted += screenShareStartedHandler;
         mRtcEngine.OnScreenShareStopped += screenShareStoppedHandler;
         mRtcEngine.OnScreenShareCanceled += screenShareCanceledHandler;
-    }
-
-    void JoinChannel2()
-    {
-        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
     }
 
     void JoinChannel()
@@ -172,8 +129,6 @@ public class AgoraMultiChannel3 : MonoBehaviour
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)
         {
-            channel1.LeaveChannel();
-            channel1.ReleaseChannel();
 
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
