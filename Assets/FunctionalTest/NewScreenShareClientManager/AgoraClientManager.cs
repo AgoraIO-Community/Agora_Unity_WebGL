@@ -105,8 +105,7 @@ public class AgoraClientManager : MonoBehaviour
     {
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-        // If you want to user Multi Channel Video, please call "SetMultiChannleWant to true"
-        mRtcEngine.SetMultiChannelWant(true);
+
         mRtcEngine.EnableAudio();
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
@@ -171,22 +170,6 @@ public class AgoraClientManager : MonoBehaviour
             elapsed));
     }
 
-    void Channel1OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("onJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-        makeVideoView(channelId, 0);
-    }
-
-    void Channel2OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("onJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-        makeVideoView(channelId, 0);
-    }
-
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
@@ -195,32 +178,9 @@ public class AgoraClientManager : MonoBehaviour
         makeVideoView(channelId, 0);
     }
 
-    void Channel1OnLeaveChannelHandler(string channelId, RtcStats rtcStats)
-    {
-        logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", channelId));
-
-    }
-
-    void Channel2OnLeaveChannelHandler(string channelId, RtcStats rtcStats)
-    {
-        logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", channelId));
-    }
-
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
         logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
-    }
-
-    void Channel1OnErrorHandler(string channelId, int err, string message)
-    {
-        logger.UpdateLog(string.Format("Channel1OnErrorHandler channelId: {0}, err: {1}, message: {2}", channelId, err,
-            message));
-    }
-
-    void Channel2OnErrorHandler(string channelId, int err, string message)
-    {
-        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", channelId, err,
-            message));
     }
 
     void EngineOnErrorHandler(int err, string message)
@@ -229,32 +189,11 @@ public class AgoraClientManager : MonoBehaviour
             message));
     }
 
-
-    void Channel1OnUserJoinedHandler(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId,
-            uid, elapsed));
-        makeVideoView(channelId, uid);
-    }
-
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
             uid, elapsed));
         makeVideoView(CHANNEL_NAME_1, uid);
-    }
-
-    void Channel2OnUserJoinedHandler(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("Channel2OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId,
-            uid, elapsed));
-        makeVideoView(channelId, uid);
-    }
-
-    void ChannelOnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
-    {
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
-        DestroyVideoView(channelId, uid);
     }
 
     void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
