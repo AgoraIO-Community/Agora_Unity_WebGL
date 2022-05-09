@@ -435,15 +435,15 @@ var LibraryAgoraWebGLSDK = {
     );
   },
 
-  startScreenCaptureForWeb: function(enableAudio = false) {
+  startScreenCaptureForWeb: function(enableAudio) {
       startScreenCaptureForWeb(enableAudio);
   },
 
-  startScreenCaptureForWeb2: function(enableAudio = false) {
+  startScreenCaptureForWeb2: function(enableAudio) {
       startScreenCaptureForWeb2(enableAudio);
   },
 
-  startNewScreenCaptureForWeb: function(uid, enableAudio = false) {
+  startNewScreenCaptureForWeb: function(uid, enableAudio) {
     console.log("SDK startNewScreenCaptureForWeb");
      startNewScreenCaptureForWeb(uid, enableAudio);
   },
@@ -453,7 +453,7 @@ var LibraryAgoraWebGLSDK = {
       stopNewScreenCaptureForWeb();
   },
 
-  startNewScreenCaptureForWeb2: function(uid, audioEnabled = false) {
+  startNewScreenCaptureForWeb2: function(uid, audioEnabled) {
     console.log("SDK startNewScreenCaptureForWeb2");
      startNewScreenCaptureForWeb2(uid, audioEnabled);
   },

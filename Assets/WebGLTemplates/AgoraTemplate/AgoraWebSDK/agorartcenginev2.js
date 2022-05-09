@@ -325,11 +325,11 @@ async function setAudioRecordingCollectionDeviceWGL(deviceId) {
 
 function handleConnectionStateChange(curState, revState, reason) { }
 
-async function startScreenCaptureForWeb(enableAudio = false) {
+async function startScreenCaptureForWeb(enableAudio) {
   client_manager.startScreenCapture(enableAudio);
 }
 
-function startNewScreenCaptureForWeb(uid, enableAudio = false) {
+function startNewScreenCaptureForWeb(uid, enableAudio) {
   console.log("agora engine startNewScreenCaptureForWeb");
   client_manager.startNewScreenCaptureForWeb(uid, enableAudio);
 }

@@ -97,10 +97,10 @@ function stopScreenCapture2() {
   }
 }
 
-function startNewScreenCaptureForWeb2(uid, audioEnabled = false) {
+function startNewScreenCaptureForWeb2(uid, audioEnabled) {
   console.log("Multichannel startNewScreenCaptureForWeb2");
   var c = clients[selectedCurrentChannel];
-  c.startNewScreenCaptureForWeb2(uid, audioEnabled = false);
+  c.startNewScreenCaptureForWeb2(uid, audioEnabled);
 }
 
 function stopNewScreenCaptureForWeb2(){
