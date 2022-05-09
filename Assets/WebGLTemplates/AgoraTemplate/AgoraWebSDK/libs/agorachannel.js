@@ -652,7 +652,7 @@ async muteLocalVideoStream(mute) {
     }
   }
 
-  async startScreenCapture(enableAudio) {
+  async startScreenCapture(enableAudio = false) {
     var enableAudioStr = enableAudio ? "auto" : "disable";
     this.is_screensharing = true;
     var screenShareTrack = null;
@@ -708,7 +708,7 @@ async muteLocalVideoStream(mute) {
     }
   }
 
-  async startNewScreenCaptureForWeb2(uid, enableAudio) {
+  async startNewScreenCaptureForWeb2(uid, enableAudio = false) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio ? "auto" : "disable";
     if (!this.is_screensharing) {

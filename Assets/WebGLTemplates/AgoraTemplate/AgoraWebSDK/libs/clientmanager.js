@@ -712,7 +712,7 @@ class ClientManager {
     await this.client.publish(localTracks.videoTrack);
   }
 
-  async startScreenCapture(enableAudio) {
+  async startScreenCapture(enableAudio = false) {
     var enableAudioStr = enableAudio ? "auto" : "disable";
     this.is_screensharing = true;
     var screenShareTrack = null;
@@ -796,7 +796,7 @@ class ClientManager {
     }
   }
 
-  async startNewScreenCaptureForWeb(uid, enableAudio) {
+  async startNewScreenCaptureForWeb(uid, enableAudio = false) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
     if (!this.is_screensharing) {
