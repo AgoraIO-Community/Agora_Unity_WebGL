@@ -79,12 +79,12 @@ function setClientRole2_MC(role, optionLevel) {
   }
 }
 
-function startScreenCaptureForWeb2() {
+function startScreenCaptureForWeb2(enableAudio) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 1;
   } else {
     var c = clients[selectedCurrentChannel]; 
-    c.startScreenCapture();
+    c.startScreenCapture(enableAudio);
   }
 }
 
@@ -97,10 +97,10 @@ function stopScreenCapture2() {
   }
 }
 
-function startNewScreenCaptureForWeb2(uid) {
+function startNewScreenCaptureForWeb2(uid, audioEnabled) {
   console.log("Multichannel startNewScreenCaptureForWeb2");
   var c = clients[selectedCurrentChannel];
-  c.startNewScreenCaptureForWeb2(uid);
+  c.startNewScreenCaptureForWeb2(uid, audioEnabled);
 }
 
 function stopNewScreenCaptureForWeb2(){

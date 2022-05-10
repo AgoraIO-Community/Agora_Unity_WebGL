@@ -1334,37 +1334,69 @@ namespace agora_gaming_rtc
 #endif
         }
 
-        /// <summary>
-        ///   Invoke Web's screen sharing capability. Note that the browser can only have one sharing
-        /// instance.  Your channels cannot share different contents.
-        /// </summary>
-        public void StartScreenCaptureForWeb()
+        /* 
+        * Invoke Web's screen sharing capability. Note that the browser can only have one sharing
+        * instance.  Your channels cannot share different contents.
+        *
+        *@notes
+        * - This method is WebGL only.
+        * - Ensure that you call this method only after joining a channel.
+        * 
+        * @param 'enableAudio' enable loopback audio for the shared content. 
+        * setting to 'true' will publish
+        * the direct audio source of the shared content for remote users, 
+        * along with it's video source. 'false' won't publish any audio source
+        * of the shared content and only publish the video source for remote users.
+        * 
+        * Only remote users will hear the loopback audio, and not the local user broadcasting
+        * the shared content. This is to prevent overlapping audio streams for the 
+        * local user.
+        */
+        public void StartScreenCaptureForWeb(bool audioEnabled = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startScreenCaptureForWeb2();
+            IRtcEngineNative.startScreenCaptureForWeb2(audioEnabled);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
         }
 
 
-        /** Shares the screen without using a seperate client so it doesn't
-         * interfere with the webcam stream for the user. Making it so it's two
-         * seperate streams for the user, one for the webcam, and another for the
-         * screen share. 
-         * @notes
-         * - Ensure that you call this method only after joining a channel.
-         * - Only one new Screen Share can be used for a client. If user tries
+        /** Shares the screen using a seperate client so it doesn't
+         * interfere with the current webcam stream for the user.
+         * 
+         * Only one new Screen Share can be used for a client. If a user tries
          * to start a second Screen Share an alert window will appear telling the
          * user that they need to stop the current screen share before starting
          * another one.
+         * 
+         * 
+         * @notes
+         * - This method is WebGL only.
+         * - Ensure you only call this method after joining a channel.
+         * 
+         * @param 'enableAudio' enable loopback audio for the shared content. 
+         * setting to 'true' will publish
+         * the direct audio source of the shared content for remote users, 
+         * along with it's video source. 'false' won't publish any audio source
+         * of the shared content and only publish the video source for remote users.
+         * 
+         * Only remote users will hear the loopback audio, and not the local user broadcasting
+         * the shared content. This is to prevent overlapping audio streams for the 
+         * local user.
+         * 
+         * @Event Callbacks
+         * -    OnScreenShareStarted
+         * -    OnScreenShareStopped
+         * -    OnScreenShareCanceled
+         * 
          */
-        public void StartNewScreenCaptureForWeb2(uint uid)
+        public void StartNewScreenCaptureForWeb2(uint uid, bool audioEnabled = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startNewScreenCaptureForWeb2(uid);
+            IRtcEngineNative.startNewScreenCaptureForWeb2(uid, audioEnabled);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif

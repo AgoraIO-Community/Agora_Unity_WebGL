@@ -360,7 +360,7 @@ public class AgoraChannelPanel : MonoBehaviour
         if (ScreenShareButton.OnOffState)
         {
             Debug.Log("Screen sharing button.... share");
-            mChannel.StartScreenCaptureForWeb();
+            mChannel.StartScreenCaptureForWeb(false);
         }
         else
         {

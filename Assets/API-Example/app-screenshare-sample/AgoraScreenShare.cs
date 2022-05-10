@@ -83,7 +83,7 @@ public class AgoraScreenShare : MonoBehaviour
     public void WebShareScreen()
     {
         Debug.Log("ScreenShare Web API Call");
-        mRtcEngine.StartScreenCaptureForWeb();
+        mRtcEngine.StartScreenCaptureForWeb(false);
     }
 
 

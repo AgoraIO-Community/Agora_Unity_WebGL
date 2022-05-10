@@ -26,6 +26,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/API-Example/desktop-screenshare-sample/WebScreenShareScene.unity
     guid: 46764890e023f4bef80ff1279a94451d
-  - enabled: 1
+  - enabled: 0
     path: Assets/API-Example/multi-channel-sample/Scenes/MultipleChannelDemoNew.unity
     guid: f84308a8218374c829db9f2c27da72da
+  - enabled: 1
+    path: Assets/FunctionalTest/NewScreenShareClientManager/MainSceneNew.unity
+    guid: 2e38fccf7c2514f36a0ee94a6124d353

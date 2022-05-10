@@ -94,7 +94,7 @@ public class WebScreenShare : MonoBehaviour
         if (_isSharing)
         {
             logger.UpdateLog("Start screen capture for web...");
-            mRtcEngine.StartScreenCaptureForWeb();
+            mRtcEngine.StartScreenCaptureForWeb(false);
             button2.interactable = false;
         }
         else
@@ -116,7 +116,7 @@ public class WebScreenShare : MonoBehaviour
         if (_isSharingNew)
         {
             logger.UpdateLog("Start new screen capture for web...");
-            mRtcEngine.StartNewScreenCaptureForWeb(uid: 7777);
+            mRtcEngine.StartNewScreenCaptureForWeb(uid: 7777, enableAudio: false);
             button.interactable = false;
         }
         else
