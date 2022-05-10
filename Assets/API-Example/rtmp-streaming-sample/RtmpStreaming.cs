@@ -55,7 +55,7 @@ public class RtmpStreaming : MonoBehaviour
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.SetVideoEncoderConfiguration(new VideoEncoderConfiguration
         {
-            dimensions = new VideoDimensions {width = 720, height = 640},
+            dimensions = new VideoDimensions { width = 720, height = 640 },
             frameRate = FRAME_RATE.FRAME_RATE_FPS_24
         });
         mRtcEngine.EnableAudio();
@@ -80,7 +80,7 @@ public class RtmpStreaming : MonoBehaviour
         {
             mRtcEngine.RemovePublishStreamUrl(RTMP_URL);
         }
-        
+
         var lt = new LiveTranscoding();
         lt.videoBitrate = 400;
         lt.videoCodecProfile = VIDEO_CODEC_PROFILE_TYPE.VIDEO_CODEC_PROFILE_HIGH;
@@ -92,7 +92,7 @@ public class RtmpStreaming : MonoBehaviour
         lt.audioChannels = 1;
         lt.audioCodecProfile = AUDIO_CODEC_PROFILE_TYPE.AUDIO_CODEC_PROFILE_LC_AAC;
         lt.liveStreamAdvancedFeatures = new LiveStreamAdvancedFeature[0];
-        
+
         var localUesr = new TranscodingUser()
         {
             uid = 0,
@@ -103,7 +103,7 @@ public class RtmpStreaming : MonoBehaviour
             audioChannel = 0,
             alpha = 1.0,
         };
-        
+
         if (ifRemoteUser)
         {
             var remoteUser = new TranscodingUser()
@@ -119,16 +119,16 @@ public class RtmpStreaming : MonoBehaviour
             lt.userCount = 2;
             lt.width = 720;
             lt.height = 640;
-            lt.transcodingUsers = new[] {localUesr, remoteUser};
+            lt.transcodingUsers = new[] { localUesr, remoteUser };
         }
         else
         {
             lt.userCount = 1;
             lt.width = 360;
             lt.height = 640;
-            lt.transcodingUsers = new[] {localUesr};
+            lt.transcodingUsers = new[] { localUesr };
         }
-        
+
         mRtcEngine.SetLiveTranscoding(lt);
 
         var rc = mRtcEngine.AddPublishStreamUrl(RTMP_URL, true);
@@ -166,7 +166,7 @@ public class RtmpStreaming : MonoBehaviour
     void OnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
         remoteUid = 0;
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int) reason));
+        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(uid);
     }
 
@@ -190,7 +190,7 @@ public class RtmpStreaming : MonoBehaviour
         logger.UpdateLog(string.Format("OnStreamPublished url: {0}, error : {1}", url, error));
     }
 
-    void OnRtmpStreamingStateChangedHandler(string url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR code)
+    void OnRtmpStreamingStateChangedHandler(string url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE code)
     {
         logger.UpdateLog(string.Format("OnRtmpStreamingStateChanged url: {0}, state: {1}, code: {2}", url, state,
             code));

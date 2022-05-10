@@ -15,6 +15,8 @@ namespace agora_gaming_rtc
         public abstract int RegisterVideoRawDataObserver();
         
         public abstract int UnRegisterVideoRawDataObserver();
+
+        public abstract int EnableRawDataPtrCallback(bool enable);
     }
 
     /** The definition of VideoRawDataManager. */
@@ -45,6 +47,8 @@ namespace agora_gaming_rtc
          */
         public delegate void OnRenderVideoFrameHandler(uint uid, VideoFrame videoFrame);
         private OnRenderVideoFrameHandler OnRenderVideoFrame;
+
+        private static bool enableRawDataPtr = false;
         
         private VideoRawDataManager(IRtcEngine irtcEngine)
         {
@@ -205,6 +209,14 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.unRegisterVideoRawDataObserver();
         }
 
+        public override int EnableRawDataPtrCallback(bool enable)
+        {
+            if (_irtcEngine == null)
+                return (int)ERROR_CODE.ERROR_OK;
+            enableRawDataPtr = enable;
+            return 0;
+        }
+
         [MonoPInvokeCallback(typeof(EngineEventOnCaptureVideoFrame))]
         private static void OnCaptureVideoFrameCallback(int videoFrameType, int width, int height, int yStride, IntPtr buffer, int rotation, long renderTimeMs)
         {
@@ -215,9 +227,15 @@ namespace agora_gaming_rtc
                 videoFrame.width = width;
                 videoFrame.height = height;
                 videoFrame.yStride = yStride;
-                byte[] yB = new byte[yStride * height];
-                Marshal.Copy(buffer, yB, 0, yStride * height);
-                videoFrame.buffer = yB;
+
+                if (!enableRawDataPtr)
+                {
+                    byte[] yB = new byte[yStride * height];
+                    Marshal.Copy(buffer, yB, 0, yStride * height);
+                    videoFrame.buffer = yB;
+                }
+
+                videoFrame.bufferPtr = buffer;
                 videoFrame.rotation = rotation;
                 videoFrame.renderTimeMs = renderTimeMs;
                 _videoRawDataManagerInstance.OnCaptureVideoFrame(videoFrame);
@@ -234,9 +252,15 @@ namespace agora_gaming_rtc
                 videoFrame.width = width;
                 videoFrame.height = height;
                 videoFrame.yStride = yStride;
-                byte[] yB = new byte[yStride * height];
-                Marshal.Copy(yBuffer, yB, 0, yStride * height);
-                videoFrame.buffer = yB; 
+
+                if (!enableRawDataPtr)
+                {
+                    byte[] yB = new byte[yStride * height];
+                    Marshal.Copy(yBuffer, yB, 0, yStride * height);
+                    videoFrame.buffer = yB;
+                }
+                
+                videoFrame.bufferPtr = yBuffer;
                 videoFrame.rotation = rotation;
                 videoFrame.renderTimeMs = renderTimeMs;
                 _videoRawDataManagerInstance.OnRenderVideoFrame(uid, videoFrame);

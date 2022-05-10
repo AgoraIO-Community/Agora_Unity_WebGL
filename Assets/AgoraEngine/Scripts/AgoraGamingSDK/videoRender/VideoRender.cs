@@ -3,7 +3,7 @@ using System;
 
 namespace agora_gaming_rtc
 {
-    public abstract class IVideoRender : IRtcEngineNative
+    internal abstract class IVideoRender : IRtcEngineNative
     {
         /**
 		 * choose the rendreMode of video.
@@ -20,16 +20,16 @@ namespace agora_gaming_rtc
 		 */
         internal abstract int SetVideoRenderMode(VIDEO_RENDER_MODE _renderMode);
 
-         // load data to texture
+        // load data to texture
         internal abstract int UpdateTexture(int tex, uint uid, IntPtr data, ref int width, ref int height);
 
-        internal abstract int UpdateVideoRawData(uint uid, IntPtr data, ref int width, ref int height);   
+        internal abstract int UpdateVideoRawData(uint uid, IntPtr data, ref int width, ref int height);
 
         /**
          * create Native texture and return textureId.
          */
         internal abstract int GenerateNativeTexture();
-        
+
         /**
          * Delete native texture according to the textureId.
          */
@@ -40,7 +40,7 @@ namespace agora_gaming_rtc
         internal abstract void RemoveUserVideoInfo(uint _userId);
 
         internal abstract void AddUserVideoInfo(string channelId, uint _userId, uint _textureId);
-        
+
         internal abstract void RemoveUserVideoInfo(string channelId, uint _userId);
 
         internal abstract int UpdateVideoRawData(string channelId, uint uid, IntPtr data, ref int width, ref int height);
@@ -48,10 +48,7 @@ namespace agora_gaming_rtc
         internal abstract bool GetMultiChannelWanted();
     }
 
-    /**
-    *  The VideoRender class provides internal Unity level of video data processing functions.
-    */
-    public sealed class VideoRender : IVideoRender
+    internal sealed class VideoRender : IVideoRender
     {
         private static VideoRender _videoRenderInstance = null;
         private IRtcEngine _rtcEngine;
@@ -71,9 +68,9 @@ namespace agora_gaming_rtc
         }
 
         internal static void ReleaseInstance()
-		{
-			_videoRenderInstance = null;
-		}
+        {
+            _videoRenderInstance = null;
+        }
 
         internal void SetEngine(IRtcEngine rtcEngine)
         {
@@ -83,7 +80,7 @@ namespace agora_gaming_rtc
         internal override int SetVideoRenderMode(VIDEO_RENDER_MODE _renderMode)
         {
             if (_rtcEngine == null)
-			    return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
             return IRtcEngineNative.setRenderMode((int)_renderMode);
         }
@@ -114,9 +111,9 @@ namespace agora_gaming_rtc
             width = (int)rc >> 16;
             height = (int)(rc & 0xffff);
             return 0;
-        } 
+        }
 
-         // load data to texture
+        // load data to texture
         internal override int UpdateTexture(int tex, uint uid, IntPtr data, ref int width, ref int height)
         {
             if (_rtcEngine == null)
@@ -133,7 +130,7 @@ namespace agora_gaming_rtc
         internal override void AddUserVideoInfo(uint userId, uint textureId)
         {
             if (_rtcEngine == null)
-                    return;
+                return;
 
             IRtcEngineNative.addUserVideoInfo(userId, textureId);
         }
@@ -148,7 +145,7 @@ namespace agora_gaming_rtc
 
         internal override void AddUserVideoInfo(string channelId, uint _userId, uint _textureId)
         {
-           if (_rtcEngine == null)
+            if (_rtcEngine == null)
                 return;
 
             IRtcEngineNative.addUserVideoInfo2(channelId, _userId, _textureId);
@@ -156,7 +153,7 @@ namespace agora_gaming_rtc
 
         internal override void RemoveUserVideoInfo(string channelId, uint _userId)
         {
-           if (_rtcEngine == null)
+            if (_rtcEngine == null)
                 return;
 
             IRtcEngineNative.removeUserVideoInfo2(channelId, _userId);
@@ -174,7 +171,7 @@ namespace agora_gaming_rtc
         {
             if (_rtcEngine == null)
                 return;
-                
+
             IRtcEngineNative.deleteTexture(tex);
         }
 
