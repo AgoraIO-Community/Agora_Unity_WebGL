@@ -151,7 +151,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
             ButtonCollection.Add(ScreenShareButton);
         }
 
-        SetupEngineRoleButton(isHost: !AudienceMode);
+        SetupRoleButton(isHost: !AudienceMode);
 
         SetButtonsState(false, false, false, false);
         if (UseToken)
