@@ -467,9 +467,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 69e23f4a355cb4e45877ac85823cd3d3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: 00e97fd319264c1ea2be69a370bd712e
+  APP_ID: 
   TOKEN: 
   CHANNEL_NAME: unity3e
+  areaCode: 2
   logText: {fileID: 634102969}
 --- !u!114 &2114801516
 MonoBehaviour:

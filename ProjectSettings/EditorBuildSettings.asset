@@ -8,10 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/API-Example/video-encoder-configuration/MainScene.unity
     guid: 5c01eb765ee294766a2926c4d0861fdf
-  - enabled: 0
+  - enabled: 1
     path: Assets/AgoraEngine/Demo/SceneHome.unity
     guid: 04457f7085d109e45b51dd81bae1a412
-  - enabled: 0
+  - enabled: 1
     path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
     guid: 5a4d72265ca2c1b4393e31ef58d0988d
   - enabled: 0
@@ -29,6 +29,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/API-Example/multi-channel-sample/Scenes/MultipleChannelDemoNew.unity
     guid: f84308a8218374c829db9f2c27da72da
-  - enabled: 1
+  - enabled: 0
     path: Assets/FunctionalTest/NewScreenShareClientManager/MainSceneNew.unity
     guid: 2e38fccf7c2514f36a0ee94a6124d353
+  - enabled: 0
+    path: Assets/API-Example/app-screenshare-sample/MainScene.unity
+    guid: c57883c4b54ea4984b722542d3f4a76f
