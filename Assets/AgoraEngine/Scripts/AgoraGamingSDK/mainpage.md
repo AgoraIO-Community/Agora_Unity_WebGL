@@ -5,7 +5,7 @@ Agora provides ensured quality of experience (QoE) for worldwide Internet-based 
 - The {@link agora_gaming_rtc.IRtcEngine IRtcEngine} class is the entry point of the Agora RTC SDK providing API methods for applications to quickly start a voice/video communication or interactive broadcast.
 - The {@link agora_gaming_rtc.OnJoinChannelSuccessHandler AgoraCallback} reports runtime events to the applications.
 - The {@link agora_gaming_rtc.AgoraChannel AgoraChannel} class provides methods that enable real-time communications
-in a specified channel. By creating multiple RtcChannel instances, users can join multiple channels.
+in a specified channel. By creating multiple AgoraChannel instances, users can join multiple channels.
 - The {@link agora_gaming_rtc.AudioEffectManagerImpl AudioEffectManagerImpl} class provides APIs that set the audio effects.
 - The {@link agora_gaming_rtc.AudioPlaybackDeviceManager AudioPlaybackDeviceManager} class provides APIs that set the audio playback device, and retrieves the information of the audio playback device.
 - The {@link agora_gaming_rtc.AudioRecordingDeviceManager AudioRecordingDeviceManager} class provides APIs that set the audio capturing device, and retrieves the information of the audio capturing device.
@@ -15,7 +15,7 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 - The {@link agora_gaming_rtc.AudioRawDataManager AudioRawDataManager} class provides APIs that register the audio raw data observer and report the status of the audio raw data.
 - The {@link agora_gaming_rtc.VideoRawDataManager VideoRawDataManager} class provides APIs that register the video raw data observer and report the status of the video raw data.
 - The {@link agora_gaming_rtc.VideoSurface VideoSurface} class provides APIs that set the video renderer type and the local/remote video.
-
+- The {@link agora_gaming_rtc.MediaRecorder MediaRecorder} class provides APIs for recording the audio and video on the client.
 ### Core Methods
 
 <table>
@@ -53,7 +53,7 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.JoinChannel(string token, string channelId, string info, uint uid, ChannelMediaOptions options) JoinChannel}</td>
-<td>Allows a user to join a channel and set the subscribing state.</td>
+<td>Joins a channel with the user ID, and configures whether to publish or automatically subscribe to the audio or video streams.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.SwitchChannel(string token, string channelId) SwitchChannel}</td>
@@ -103,6 +103,10 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <tr>
 <td>{@link agora_gaming_rtc.OnClientRoleChangedHandler OnClientRoleChangedHandler}</td>
 <td>Occurs when the user role switches in interactive live streaming.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnClientRoleChangeFailedHandler OnClientRoleChangeFailedHandler}</td>
+<td>Occurs when the user role switch fails in the interactive live streaming.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.OnUserJoinedHandler OnUserJoinedHandler}</td>
@@ -176,6 +180,10 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.MuteAllRemoteAudioStreams MuteAllRemoteAudioStreams}</td>
 <td>Stops or resumes subscribing to the audio streams of all remote users.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetExternalAudioSourceVolume SetExternalAudioSourceVolume}</td>
+<td>Sets the volume of the external audio frame in the specified position.</td>
 </tr>
 </table>
 
@@ -357,6 +365,30 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 </tr>
 </table>
 
+### Audio file information
+
+<table>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.GetAudioFileInfo GetAudioFileInfo}</td>
+<td>Gets the information of a specified audio file.</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnRequestAudioFileInfoHandler OnRequestAudioFileInfoHandler}</td>
+<td>Reports the information of an audio file.</td>
+</tr>
+</table>
+
 ### Voice Effect
 
 <table>
@@ -396,6 +428,21 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>{@link agora_gaming_rtc.IRtcEngine.SetLocalVoiceReverb SetLocalVoiceReverb}</td>
 <td>Sets the local voice reverberation.</td>
 </tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.EnableLocalVoicePitchCallback EnableLocalVoicePitchCallback}</td>
+<td>Enables reporting the voice pitch of the local user.</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnLocalVoicePitchInHzHandler OnLocalVoicePitchInHzHandler}</td>
+<td>Reports the voice pitch of the local user.</td>
+</tr>
 </table>
 
 ### Sound Position Indication
@@ -413,6 +460,24 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Sets the sound position and gain of a remote user.</td>
 </tr>
 </table>
+
+<!--
+### Spatial audio
+
+<table>
+<tr>
+<th>Method</th>
+<th>Description</th>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.EnableSpatialAudio EnableSpatialAudio}</td>
+<td>Enables or disables the spatial audio effect.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetRemoteUserSpatialAudioParams SetRemoteUserSpatialAudioParams}</td>
+<td>Sets the spatial audio effect parameters of the remote user.</td>
+</tr>
+</table>
+-->
 
 
 ### Audio Routing Control
@@ -504,6 +569,10 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Occurs when the first remote video frame is rendered.</td>
 </tr>
 <tr>
+<td>{@link agora_gaming_rtc.OnFirstRemoteVideoDecodedHandler OnFirstRemoteVideoDecodedHandler}</td>
+<td>Occurs when the first remote video frame is received and decoded.</td>
+</tr>
+<tr>
 <td>{@link agora_gaming_rtc.OnAudioSubscribeStateChangedHandler OnAudioSubscribeStateChangedHandler}</td>
 <td>Occurs when the audio subscribing state changes.</td>
 </tr>
@@ -559,7 +628,32 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>{@link agora_gaming_rtc.IRtcEngine.SetBeautyEffectOptions SetBeautyEffectOptions}</td>
 <td>Sets the image enhancement options. (This method applies to Android and iOS only.)</td>
 </tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.EnableVirtualBackground EnableVirtualBackground}</td>
+<td>Enables/Disables the virtual background.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.EnableRemoteSuperResolution EnableRemoteSuperResolution}</td>
+<td>Enables/Disables the super resolution feature for a remote user's video.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetVideoDenoiserOptions SetVideoDenoiserOptions}</td>
+<td>Sets video noise reduction.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetLowlightEnhanceOptions SetLowlightEnhanceOptions}</td>
+<td>Sets low-light enhancement.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetColorEnhanceOptions SetColorEnhanceOptions}</td>
+<td>Sets color enhancement.</td>
+</tr>
 </table>
+
+| Event                                                                            | Description                                                            |
+|----------------------------------------------------------------------------------|------------------------------------------------------------------------|
+|{@link agora_gaming_rtc.OnVirtualBackgroundSourceEnabledHandler OnVirtualBackgroundSourceEnabledHandler}   | Reports whether the virtual background is successfully enabled. |
+|{@link agora_gaming_rtc.OnUserSuperResolutionEnabledHandler OnUserSuperResolutionEnabledHandler}   | Reports whether the super resolution feature is successfully enabled. |
 
 ### Multi-channel management
 
@@ -598,6 +692,46 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <th>Description</th>
 </tr>
 <tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.CreateScreenCaptureManager CreateScreenCaptureManager}</td>
+<td>Creates a ScreenCaptureManager class.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureSourcesCount CreateScreenCaptureManager}</td>
+<td>Gets the number of the shareable screens or windows.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureSourceType GetScreenCaptureSourceType}</td>
+<td>Gets the type of the shared target.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureSourceName GetScreenCaptureSourceName}</td>
+<td>Gets the name of the window or screen.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureSourceProcessPath GetScreenCaptureSourceProcessPath}</td>
+<td>Gets the process to which the window or screen belongs.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureSourceTitle GetScreenCaptureSourceTitle}</td>
+<td>Gets the title of the window or screen.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureSourceId GetScreenCaptureSourceId}</td>
+<td>Gets the source ID of the window or screen.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureIsPrimaryMonitor GetScreenCaptureIsPrimaryMonitor}</td>
+<td>Checks whether the screen is the primary display.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureThumbImage GetScreenCaptureThumbImage}</td>
+<td>Gets the image content of the thumbnail.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.ScreenCaptureManager.GetScreenCaptureIconImage GetScreenCaptureIconImage}</td>
+<td>Gets the image content of the icon.</td>
+</tr>
+<tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId}</td>
 <td>Shares the whole or part of a screen by specifying the display ID.</td>
 </tr>
@@ -614,6 +748,10 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Sets the content hint for screen sharing.</td>
 </tr>
 <tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetScreenCaptureScenario SetScreenCaptureScenario}</td>
+<td>Sets the screen sharing scenario.</td>
+</tr>
+<tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.UpdateScreenCaptureParameters UpdateScreenCaptureParameters}</td>
 <td>Updates the screen sharing parameters.</td>
 </tr>
@@ -624,6 +762,17 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.StopScreenCapture StopScreenCapture}</td>
 <td>Stops screen sharing.</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnScreenCaptureInfoUpdatedHandler OnScreenCaptureInfoUpdatedHandler}</td>
+<td>Occurs when the screen sharing information is updated.</td>
 </tr>
 </table>
 
@@ -675,16 +824,28 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Gets the audio mixing volume for publishing.</td>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.GetAudioMixingDuration GetAudioMixingDuration}</td>
-<td>Gets the duration (ms) of the music file.</td>
-</tr>
-<tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.GetAudioMixingCurrentPosition GetAudioMixingCurrentPosition}</td>
 <td>Gets the playback position (ms) of the music file.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.SetAudioMixingPosition SetAudioMixingPosition}</td>
 <td>Sets the playback position of the music file.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.GetAudioTrackCount GetAudioTrackCount}</td>
+<td>Gets the audio track index of the current music file (for Android, iOS, and Windows only).</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetAudioMixingPlaybackSpeed SetAudioMixingPlaybackSpeed}</td>
+<td>Sets the playback speed of the current music file.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetAudioMixingDualMonoMode SetAudioMixingDualMonoMode}</td>
+<td>Sets the channel mode of the current music file.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SelectAudioTrack SelectAudioTrack}</td>
+<td>Specifies the playback track of the current music file (for Android, iOS, and Windows only).</td>
 </tr>
 </table>
 
@@ -717,16 +878,20 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <th>Description</th>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.SetLiveTranscoding SetLiveTranscoding}</td>
-<td>Sets the video layout and audio for CDN live.</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.StartRtmpStreamWithoutTranscoding StartRtmpStreamWithoutTranscoding}</td>
+<td>Starts pushing media streams to a CDN without transcoding.</td>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.AddPublishStreamUrl AddPublishStreamUrl}</td>
-<td>Adds a CDN stream address.</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.StartRtmpStreamWithTranscoding StartRtmpStreamWithTranscoding}</td>
+<td>Starts pushing media streams to a CDN and sets the transcoding configuration.</td>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.RemovePublishStreamUrl RemovePublishStreamUrl}</td>
-<td>Removes a CDN stream address.</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.UpdateRtmpTranscoding UpdateRtmpTranscoding}</td>
+<td>Updates the transcoding configuration.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.StopRtmpStream StopRtmpStream}</td>
+<td>Stops pushing media streams to a CDN.</td>
 </tr>
 </table>
 
@@ -770,6 +935,13 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>{@link agora_gaming_rtc.IRtcEngine.StopChannelMediaRelay StopChannelMediaRelay}</td>
 <td>Stops the media stream relay.</td>
 </tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.PauseAllChannelMediaRelay PauseAllChannelMediaRelay}</td>
+<td>Pauses the media stream relay to all destination channels.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.ResumeAllChannelMediaRelay ResumeAllChannelMediaRelay}</td>
+<td>Resumes the media stream relay to all destination channels.</td>
 </table>
 
 <table>
@@ -875,6 +1047,10 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Starts an audio call test.</td>
 </tr>
 <tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.StartEchoTest(EchoTestConfiguration config) StartEchoTest}</td>
+<td>Starts an audio and video call loop test.</td>
+</tr>
+<tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.StopEchoTest StopEchoTest}</td>
 <td>Stops the audio call test.</td>
 </tr>
@@ -940,7 +1116,7 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Configures the external audio source.</td>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.PushAudioFrame PushAudioFrame}</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.PushAudioFrame(int sourcePos, AudioFrame audioFrame) PushAudioFrame}</td>
 <td>Pushes the external audio frame.</td>
 </tr>
 </table>
@@ -1121,6 +1297,30 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 </tr>
 </table>
 
+### Video snapshot
+
+<table>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.TakeSnapshot TakeSnapshot}</td>
+<td>Takes a snapshot of a video stream.</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<th>Event</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnSnapshotTakenHandler OnSnapshotTakenHandler}</td>
+<td>Reports the result of taking a video snapshot.</td>
+</tr>
+</table>
+
 
 ### Encryption
 
@@ -1151,12 +1351,52 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <th>Description</th>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.StartAudioRecording(string filePath, int sampleRate, AUDIO_RECORDING_QUALITY_TYPE quality) StartAudioRecording}</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.StartAudioRecording(AudioRecordingConfiguration config) StartAudioRecording}</td>
 <td>Starts an audio recording on the client.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.StopAudioRecording StopAudioRecording}</td>
 <td>Stops an audio recording on the client.</td>
+</tr>
+</table>
+
+### Media Recorder
+
+<table>
+<tr>
+<th>Method</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.GetMediaRecorder GetMediaRecorder}</td>
+<td>Gets the MediaRecorder object.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.MediaRecorder.StartRecording StartRecording}</td>
+<td>Starts recording the local audio and video.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.MediaRecorder.StopRecording StopRecording}</td>
+<td>Stops recording the local audio and video.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.MediaRecorder.InitMediaRecorderObserver InitMediaRecorderObserver}</td>
+<td>Registers the MediaRecorder observer.</td>
+</tr>
+</table>
+
+<table>
+<tr>
+<th>Events</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.MediaRecorder.OnRecorderStateChangedHandler OnRecorderStateChangedHandler}</td>
+<td>Occurs when the recording state changes.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.MediaRecorder.OnRecorderInfoUpdatedHandler OnRecorderInfoUpdatedHandler}</td>
+<td>Occurs when the recording information is updated.</td>
 </tr>
 </table>
 
@@ -1171,6 +1411,65 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>{@link agora_gaming_rtc.IRtcEngine.SwitchCamera SwitchCamera}</td>
 <td>Switches between front and rear cameras (for Android and iOS only).</td>
 </tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.IsCameraZoomSupported IsCameraZoomSupported}</td>
+<td>Checks whether the camera zoom function is supported (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.IsCameraTorchSupported IsCameraTorchSupported}</td>
+<td>Checks whether the device supports enabling the flash (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.IsCameraFocusSupported IsCameraFocusSupported}</td>
+<td>Checks whether the camera manual focus function is supported (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.IsCameraExposurePositionSupported IsCameraExposurePositionSupported}</td>
+<td>Checks whether the camera exposure function is supported (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.IsCameraAutoFocusFaceModeSupported IsCameraAutoFocusFaceModeSupported}</td>
+<td>Checks whether the camera face auto-focus function is supported (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetCameraZoomFactor SetCameraZoomFactor}</td>
+<td>Sets the camera zoom ratio (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.GetCameraMaxZoomFactor GetCameraMaxZoomFactor}</td>
+<td>Gets the maximum zoom ratio of the camera (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetCameraFocusPositionInPreview SetCameraFocusPositionInPreview}</td>
+<td>Sets the camera manual focus position (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetCameraExposurePosition SetCameraExposurePosition}</td>
+<td>Sets the camera exposure position (for Android and iOS only).<td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetCameraTorchOn SetCameraTorchOn}</td>
+<td>Sets whether to enable the flash (for Android and iOS only).</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.SetCameraAutoFocusFaceModeEnabled SetCameraAutoFocusFaceModeEnabled}</td>
+<td>Enables the camera auto-face focus function (for Android and iOS only).<td>
+</tr>
+</table>
+
+<table>
+<tr>
+<th>Events</th>
+<th>Description</th>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnCameraFocusAreaChangedHandler OnCameraFocusAreaChangedHandler}</td>
+<td>Occurs when the camera focus area changes.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnCameraExposureAreaChangedHandler OnCameraExposureAreaChangedHandler}</td>
+<td>Occurs when the camera exposure area changes.</td>
+</tr>
 </table>
 
 ### Audio Device Manager
@@ -1184,19 +1483,19 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.AudioPlaybackDeviceManager.CreateAAudioPlaybackDeviceManager CreateAAudioPlaybackDeviceManager}</td>
-<td>Creates an AudioPlaybackDeviceManager instance.</td>
+<td>Creates an IAudioPlaybackDeviceManager instance.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.AudioPlaybackDeviceManager.ReleaseAAudioPlaybackDeviceManager ReleaseAAudioPlaybackDeviceManager}</td>
-<td>Releases an AudioPlaybackDeviceManager instance.</td>
+<td>Releases an IAudioPlaybackDeviceManager instance.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.CreateAAudioRecordingDeviceManager CreateAAudioRecordingDeviceManager}</td>
-<td>Creates an AudioRecordingDeviceManager instance.</td>
+<td>Creates an IAudioRecordingDeviceManager instance.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.ReleaseAAudioRecordingDeviceManager ReleaseAAudioRecordingDeviceManager}</td>
-<td>Releases an AudioRecordingDeviceManager instance.</td>
+<td>Releases an IAudioRecordingDeviceManager instance.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.AudioPlaybackDeviceManager.GetAudioPlaybackDeviceCount GetAudioPlaybackDeviceCount}</td>
@@ -1219,8 +1518,16 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Sets the audio playback device using the device ID.</td>
 </tr>
 <tr>
+<td>{@link agora_gaming_rtc.AudioPlaybackDeviceManager.GetAudioPlaybackDefaultDevice GetAudioPlaybackDefaultDevice}</td>
+<td>Gets the default audio playback device of the system.</td>
+</tr>
+<tr>
 <td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.SetAudioRecordingDevice SetAudioRecordingDevice}</td>
 <td>Sets the audio capturing device using the device ID.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.GetAudioRecordingDefaultDevice GetAudioRecordingDefaultDevice}
+<td>Gets the default audio recording device of the system.</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.AudioPlaybackDeviceManager.StartAudioPlaybackDeviceTest StartAudioPlaybackDeviceTest}</td>
@@ -1286,6 +1593,22 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.GetCurrentRecordingDeviceInfo GetCurrentRecordingDeviceInfo}</td>
 <td>Retrieves the device information of the current audio capturing device.</td>
 </tr>
+<tr>
+<td>{@link agora_gaming_rtc.AudioPlaybackDeviceManager.FollowSystemPlaybackDevice FollowSystemPlaybackDevice}</td>
+<td>Sets the audio playback device used by the SDK to follow the system default audio playback device.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.FollowSystemRecordingDevice FollowSystemRecordingDevice}</td>
+<td>Sets the audio recording device used by the SDK to follow the system default audio recording device.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.StartAudioDeviceLoopbackTest StartAudioDeviceLoopbackTest}</td>
+<td>Starts the audio device loopback test (for macOS and Windows only).</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.AudioRecordingDeviceManager.StopAudioDeviceLoopbackTest StopAudioDeviceLoopbackTest}</td>
+<td>Stops the audio device loopback test (for macOS and Windows only).</td>
+</tr>
 </table>
 
 <table>
@@ -1295,11 +1618,15 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.OnAudioDeviceStateChangedHandler OnAudioDeviceStateChangedHandler}</td>
-<td>Occurs when the audio device state changes.</td>
+<td>Occurs when the audio device state changes (for macOS and Winddows only).</td>
 </tr>
 <tr>
 <td>{@link agora_gaming_rtc.OnAudioDeviceVolumeChangedHandler OnAudioDeviceVolumeChangedHandler}</td>
-<td>Occurs when the volume of the playback, microphone, or application changes. (Windows only)</td>
+<td>Occurs when the volume of the playback, microphone, or application changes.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnAudioDeviceTestVolumeIndicationHandler OnAudioDeviceTestVolumeIndicationHandler}</td>
+<td>Reports the result of an audio device test.</td>
 </tr>
 </table>
 
@@ -1404,6 +1731,10 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <td>Enables loopback capturing (for macOS and Windows only).</td>
 </tr>
 <tr>
+<td>{@link agora_gaming_rtc.IRtcEngine.AdjustLoopbackRecordingSignalVolume AdjustLoopbackRecordingSignalVolume}</td>
+<td>Enables loopback capturing (for macOS and Windows only).</td>
+</tr>
+<tr>
 <td>{@link agora_gaming_rtc.IRtcEngine.SetAudioSessionOperationRestriction SetAudioSessionOperationRestriction}</td>
 <td>Sets the audio session’s operational restriction (for iOS only).</td>
 </tr>
@@ -1497,5 +1828,9 @@ in a specified channel. By creating multiple RtcChannel instances, users can joi
 <tr>
 <td>{@link agora_gaming_rtc.OnApiExecutedHandler OnApiExecutedHandler}</td>
 <td>Occurs when a method is executed by the SDK.</td>
+</tr>
+<tr>
+<td>{@link agora_gaming_rtc.OnProxyConnectedHandler OnProxyConnectedHandler}</td>
+<td>Reports the proxy connection state.</td>
 </tr>
 </table>

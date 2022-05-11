@@ -24,7 +24,7 @@ namespace agora_gaming_rtc
         public abstract int GetCurrentVideoDevice(ref string deviceId);
     }
 
-    /** The definition of the VideoDeviceManager. */
+    /** The definition of the VideoDeviceManager. The APIs of this class are only available on Windows and macOS. */
     public sealed class VideoDeviceManager : IVideoDeviceManager
     {
         private IRtcEngine _mEngine = null;

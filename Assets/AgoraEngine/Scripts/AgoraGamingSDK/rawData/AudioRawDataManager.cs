@@ -20,6 +20,8 @@ namespace agora_gaming_rtc
         public abstract int UnRegisterAudioRawDataObserver();
 
         public abstract int PullAudioFrame(IntPtr audioBuffer, int type, int samples, int bytesPerSample, int channels, int samplesPerSec, long renderTimeMs, int avsync_type);
+
+        public abstract int EnableRawDataPtrCallback(bool enable);
     }
 
     /** The definition of AudioRawDataManager. */
@@ -60,6 +62,9 @@ namespace agora_gaming_rtc
          */
         public delegate void OnPlaybackAudioFrameBeforeMixingHandler(uint uid, AudioFrame audioFrame);
         private OnPlaybackAudioFrameBeforeMixingHandler OnPlaybackAudioFrameBeforeMixing;
+
+        private static bool enableRawDataPtr = false;
+
         private AudioRawDataManager(IRtcEngine irtcEngine)
         {
             _irtcEngine = irtcEngine;
@@ -270,6 +275,14 @@ namespace agora_gaming_rtc
 
             return IRtcEngineNative.pullAudioFrame_(audioBuffer, type, samples, bytesPerSample, channels, samplesPerSec, renderTimeMs, avsync_type);
         }
+
+        public override int EnableRawDataPtrCallback(bool enable)
+        {
+            if (_irtcEngine == null)
+                return (int)ERROR_CODE.ERROR_OK;
+            enableRawDataPtr = enable;
+            return 0;
+        }
         
         [MonoPInvokeCallback(typeof(EngineEventOnRecordAudioFrame))]
         private static void OnRecordAudioFrameCallback(int type, int samples, int bytesPerSample, int channels, int samplesPerSec, IntPtr buffer, long renderTimeMs, int avsync_type)
@@ -282,9 +295,15 @@ namespace agora_gaming_rtc
                 audioFrame.bytesPerSample = bytesPerSample;
                 audioFrame.channels = channels;
                 audioFrame.samplesPerSec = samplesPerSec;
-                byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
-                Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
-                audioFrame.buffer = byteBuffer;
+
+                if (!enableRawDataPtr)
+                {
+                    byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
+                    Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
+                    audioFrame.buffer = byteBuffer;
+                }
+                
+                audioFrame.bufferPtr = buffer;
                 audioFrame.renderTimeMs = renderTimeMs;
                 audioFrame.avsync_type = avsync_type;
                 _audioRawDataManagerInstance.OnRecordAudioFrame(audioFrame);
@@ -302,9 +321,15 @@ namespace agora_gaming_rtc
                 audioFrame.bytesPerSample = bytesPerSample;
                 audioFrame.channels = channels;
                 audioFrame.samplesPerSec = samplesPerSec;
-                byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
-                Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
-                audioFrame.buffer = byteBuffer;
+
+                if (!enableRawDataPtr)
+                {
+                    byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
+                    Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
+                    audioFrame.buffer = byteBuffer;
+                }
+                
+                audioFrame.bufferPtr = buffer;
                 audioFrame.renderTimeMs = renderTimeMs;
                 audioFrame.avsync_type = avsync_type;
                 _audioRawDataManagerInstance.OnPlaybackAudioFrame(audioFrame);
@@ -322,9 +347,15 @@ namespace agora_gaming_rtc
                 audioFrame.bytesPerSample = bytesPerSample;
                 audioFrame.channels = channels;
                 audioFrame.samplesPerSec = samplesPerSec;
-                byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
-                Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
-                audioFrame.buffer = byteBuffer;
+
+                if (!enableRawDataPtr)
+                {
+                    byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
+                    Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
+                    audioFrame.buffer = byteBuffer;
+                }
+                
+                audioFrame.bufferPtr = buffer;
                 audioFrame.renderTimeMs = renderTimeMs;
                 audioFrame.avsync_type = avsync_type;
                 _audioRawDataManagerInstance.OnMixedAudioFrame(audioFrame);
@@ -342,9 +373,15 @@ namespace agora_gaming_rtc
                 audioFrame.bytesPerSample = bytesPerSample;
                 audioFrame.channels = channels;
                 audioFrame.samplesPerSec = samplesPerSec;
-                byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
-                Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
-                audioFrame.buffer = byteBuffer;
+
+                if (!enableRawDataPtr)
+                {
+                    byte[] byteBuffer = new byte[bytesPerSample * channels * samples];
+                    Marshal.Copy(buffer, byteBuffer, 0, bytesPerSample * channels * samples);
+                    audioFrame.buffer = byteBuffer;
+                }
+
+                audioFrame.bufferPtr = buffer;
                 audioFrame.renderTimeMs = renderTimeMs;
                 audioFrame.avsync_type = avsync_type;
                 _audioRawDataManagerInstance.OnPlaybackAudioFrameBeforeMixing(uid, audioFrame);

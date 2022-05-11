@@ -435,12 +435,32 @@ var LibraryAgoraWebGLSDK = {
     );
   },
 
-  startScreenCaptureForWeb: function() {
-      startScreenCaptureForWeb();
+  startScreenCaptureForWeb: function(enableAudio) {
+      startScreenCaptureForWeb(enableAudio);
   },
 
-  startScreenCaptureForWeb2: function() {
-      startScreenCaptureForWeb2();
+  startScreenCaptureForWeb2: function(enableAudio) {
+      startScreenCaptureForWeb2(enableAudio);
+  },
+
+  startNewScreenCaptureForWeb: function(uid, enableAudio) {
+    console.log("SDK startNewScreenCaptureForWeb");
+     startNewScreenCaptureForWeb(uid, enableAudio);
+  },
+
+  stopNewScreenCaptureForWeb: function() {
+    console.log("SDK stopNewScreenCaptureForWeb");
+      stopNewScreenCaptureForWeb();
+  },
+
+  startNewScreenCaptureForWeb2: function(uid, audioEnabled) {
+    console.log("SDK startNewScreenCaptureForWeb2");
+     startNewScreenCaptureForWeb2(uid, audioEnabled);
+  },
+
+  stopNewScreenCaptureForWeb2: function() {
+      console.log("SDK stopNewScreenCaptureForWeb2");
+      stopNewScreenCaptureForWeb2();
   },
 
   stopScreenCapture2 : function() {

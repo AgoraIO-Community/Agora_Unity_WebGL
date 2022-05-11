@@ -343,7 +343,7 @@ namespace agora_gaming_rtc
          * 
          * @note
          * - For this method to work, enable stereo panning for remote users by calling the {@link agora_gaming_rtc.IRtcEngine.EnableSoundPositionIndication EnableSoundPositionIndication} method before joining a channel.
-         * - This method requires hardware support. For the best sound positioning, we recommend using a stereo speaker.
+         * - This method requires hardware support. For the best sound positioning, we recommend using a wired headset.
          * - Ensure that you call this method after joining a channel.
          * 
          * @param uid The ID of the remote user.

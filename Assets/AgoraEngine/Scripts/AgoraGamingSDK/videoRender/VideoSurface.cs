@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.UI;
 using System.Runtime.InteropServices;
 using System;
@@ -85,7 +85,7 @@ namespace agora_gaming_rtc
             else
             {
 #if UNITY_EDITOR
-                // Used to add more light to material if it is too dark.
+                // this only applies to Editor, in case of material is too dark
                 UpdateShader();
 #endif
                 _initialized = true;
@@ -231,13 +231,17 @@ namespace agora_gaming_rtc
                         // Condition to check the width & height and set the texture according to necessity.
                         if (width == defWidth && height == defHeight)
                         {
-
+                            /*
+                            *  if width and height don't change ,we only need to update data for texture, do not need to create Texture.
+                            */
                             nativeTexture.LoadRawTextureData(data, (int)width * (int)height * 4);
                             nativeTexture.Apply();
                         }
                         else
                         {
-
+                            /* 
+                            * if width or height changed ,we need to resize texture.
+                            */
                             defWidth = width;
                             defHeight = height;
                             nativeTexture.Resize(defWidth, defHeight);

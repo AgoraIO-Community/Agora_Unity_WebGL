@@ -5,7 +5,7 @@ using agora_gaming_rtc;
 using UnityEngine.UI;
 using agora_utilities;
 
-public class AgoraChannelPanel : MonoBehaviour
+public class AgoraChannelPanelNew : MonoBehaviour
 {
     [SerializeField] private string channelName;
     [SerializeField] uint ClientUID;
@@ -23,6 +23,7 @@ public class AgoraChannelPanel : MonoBehaviour
 
     private AgoraChannel mChannel;
     private List<GameObject> userVideos;
+    private List<uint> remoteClientIDs;
 
     public Text txtLocaluserId;
     public Text txtInfo;
@@ -34,7 +35,11 @@ public class AgoraChannelPanel : MonoBehaviour
     public ToggleStateButton PublishButton;
     public ToggleStateButton ScreenShareButton;
     public ToggleStateButton MuteAudioButton;
+    public ToggleStateButton MuteRemoteAudioButton;
+    public ToggleStateButton MuteAllRemoteAudioButton;
     public ToggleStateButton MuteVideoButton;
+    public ToggleStateButton MuteRemoteVideoButton;
+    public ToggleStateButton MuteAllRemoteVideoButton;
     public ToggleStateButton ClientRoleButton;
     public Toggle subscribeAudio;
     public Toggle subscribeVideo;
@@ -46,10 +51,15 @@ public class AgoraChannelPanel : MonoBehaviour
 
     private string channelToken;
 
+    private Logger logger;
+    public Text logText;
+
     void Start()
     {
         ChannelLabel.text = channelName;
         userVideos = new List<GameObject>();
+        remoteClientIDs = new List<uint>();
+        logger = new Logger(logText);
 
         if (JoinChannelButton != null)
         {
@@ -81,6 +91,26 @@ public class AgoraChannelPanel : MonoBehaviour
             ButtonCollection.Add(MuteAudioButton);
         }
 
+        if (MuteRemoteAudioButton != null)
+        {
+            MuteRemoteAudioButton.Setup(initOnOff: true,
+                onStateText: "Unmute Remote Audio", offStateText: "Mute Remote Audio",
+                callOnAction: Button_MuteRemoteAudio,
+                callOffAction: Button_MuteRemoteAudio
+            );
+            ButtonCollection.Add(MuteRemoteAudioButton);
+        }
+
+        if (MuteAllRemoteAudioButton != null)
+        {
+            MuteAllRemoteAudioButton.Setup(initOnOff: true,
+                onStateText: "Unmute All Remote Audio", offStateText: "Mute All Remote Audio",
+                callOnAction: Button_MuteAllRemoteAudio,
+                callOffAction: Button_MuteAllRemoteAudio
+            );
+            ButtonCollection.Add(MuteAllRemoteAudioButton);
+        }
+
         if (MuteVideoButton != null)
         {
             MuteVideoButton.Setup(initOnOff: true,
@@ -89,6 +119,26 @@ public class AgoraChannelPanel : MonoBehaviour
                 callOffAction: Button_MuteLocalVideo
             );
             ButtonCollection.Add(MuteVideoButton);
+        }
+
+        if (MuteRemoteVideoButton != null)
+        {
+            MuteRemoteVideoButton.Setup(initOnOff: true,
+                onStateText: "Unmute Remote Video", offStateText: "Mute Remote Video",
+                callOnAction: Button_MuteRemoteVideo,
+                callOffAction: Button_MuteRemoteVideo
+            );
+            ButtonCollection.Add(MuteRemoteVideoButton);
+        }
+
+        if (MuteAllRemoteVideoButton != null)
+        {
+            MuteAllRemoteVideoButton.Setup(initOnOff: true,
+                onStateText: "Unmute All Remote Video", offStateText: "Mute All Remote Video",
+                callOnAction: Button_MuteAllRemoteVideo,
+                callOffAction: Button_MuteAllRemoteVideo
+            );
+            ButtonCollection.Add(MuteAllRemoteVideoButton);
         }
 
         if (ScreenShareButton != null)
@@ -168,6 +218,57 @@ public class AgoraChannelPanel : MonoBehaviour
         }
     }
 
+    private void SetupEngineRoleButton(bool isHost)
+    {
+        if (ClientRoleButton != null)
+        {
+            ClientRoleButton.Setup(initOnOff: isHost,
+                 onStateText: "To Host", offStateText: "To Audience",
+                 callOnAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Broadcaster");
+                     IRtcEngine engine = IRtcEngine.QueryEngine();
+                     if (engine == null) return;
+                     if (engine != null)
+                     {
+                         engine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+                     }
+                     AudienceMode = false;
+                     InfoText.text = "Broadcaster";
+                     // change role to Broadcaster will automatically publish
+                     if (InChannel)
+                     {
+                         SetButtonsState(true, true, true, true);
+                         // set to unpublish
+                         PublishButton.SetState(true);
+                         IsPublishing = true;
+                     }
+                     else
+                     {
+                         SetButtonsState(false, false, false, false);
+                     }
+                 },
+                 callOffAction: () =>
+                 {
+                     Debug.LogWarning("Switching role to Audience");
+                     IRtcEngine engine = IRtcEngine.QueryEngine();
+                     if (engine == null) return;
+                     if (engine != null)
+                     {
+                         engine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
+                     }
+                     AudienceMode = true;
+                     InfoText.text = "Audience";
+                     if (IsPublishing)
+                     {
+                         Button_CancelPublishFromChannel();
+                     }
+                     SetButtonsState(false, false, false, false);
+                 }
+                 );
+        }
+    }
+
     void SetButtonsState(bool publishButtonFlag, bool screenShareButtonFlag, bool muteAudioFlag, bool muteVideoFlag)
     {
         if (PublishButton)
@@ -181,10 +282,14 @@ public class AgoraChannelPanel : MonoBehaviour
         if (MuteAudioButton)
         {
             MuteAudioButton.gameObject.SetActive(muteAudioFlag);
+            MuteRemoteAudioButton.gameObject.SetActive(muteAudioFlag);
+            MuteAllRemoteAudioButton.gameObject.SetActive(muteAudioFlag);
         }
         if (MuteVideoButton)
         {
             MuteVideoButton.gameObject.SetActive(muteVideoFlag);
+            MuteRemoteVideoButton.gameObject.SetActive(muteVideoFlag);
+            MuteAllRemoteVideoButton.gameObject.SetActive(muteVideoFlag);
         }
     }
 
@@ -201,6 +306,18 @@ public class AgoraChannelPanel : MonoBehaviour
         foreach (var tog in ToggleCollection)
         {
             tog.interactable = on;
+        }
+    }
+
+    void deleteRemoteUserID(uint id)
+    {
+        for (int i = 0; i < remoteClientIDs.Count; i++)
+        {
+            if (id == remoteClientIDs[i])
+            {
+                remoteClientIDs.RemoveAt(i);
+                return;
+            }
         }
     }
     #region Buttons
@@ -232,6 +349,7 @@ public class AgoraChannelPanel : MonoBehaviour
         if (engine != null)
         {
             engine.OnVolumeIndication += OnVolumeIndicationHandler;
+            engine.OnClientRoleChanged += handleOnClientRoleChanged;
 
             if (mChannel != null)
             {
@@ -246,7 +364,7 @@ public class AgoraChannelPanel : MonoBehaviour
             mChannel.ChannelOnUserOffLine += OnUserLeftHandler;
             mChannel.ChannelOnRemoteVideoStats += OnRemoteVideoStatsHandler;
             mChannel.ChannelOnError += HandleChannelError;
-            mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
+            mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChanged;
         }
 
         if (AudienceMode)
@@ -277,12 +395,13 @@ public class AgoraChannelPanel : MonoBehaviour
             IsPublishing = false;
             var engine = IRtcEngine.QueryEngine();
             engine.OnVolumeIndication -= OnVolumeIndicationHandler;
+            engine.OnClientRoleChanged -= handleOnClientRoleChanged;
             mChannel.ChannelOnJoinChannelSuccess -= OnJoinChannelSuccessHandler;
             mChannel.ChannelOnUserJoined -= OnUserJoinedHandler;
             mChannel.ChannelOnUserOffLine -= OnUserLeftHandler;
             mChannel.ChannelOnRemoteVideoStats -= OnRemoteVideoStatsHandler;
             mChannel.ChannelOnError -= HandleChannelError;
-            mChannel.ChannelOnClientRoleChanged -= handleChannelOnClientRoleChangedHandler;
+            mChannel.ChannelOnClientRoleChanged -= handleChannelOnClientRoleChanged;
 
             mChannel.LeaveChannel();
             SetButtonsState(false, false, false, false);
@@ -355,6 +474,36 @@ public class AgoraChannelPanel : MonoBehaviour
         mChannel.MuteLocalVideoStream(!MuteVideoButton.OnOffState);
     }
 
+    public void Button_MuteRemoteAudio()
+    {
+        // mute the first one
+        if (remoteClientIDs.Count > 0)
+        {
+            mChannel.MuteRemoteAudioStream(remoteClientIDs[0], !MuteRemoteAudioButton.OnOffState);
+        }
+    }
+
+    public void Button_MuteRemoteVideo()
+    {
+        // mute the first one
+        if (remoteClientIDs.Count > 0)
+        {
+            mChannel.MuteRemoteVideoStream(remoteClientIDs[0], !MuteRemoteVideoButton.OnOffState);
+        }
+    }
+
+    public void Button_MuteAllRemoteAudio()
+    {
+        // on means muted
+        mChannel.MuteAllRemoteAudioStreams(!MuteAllRemoteAudioButton.OnOffState);
+    }
+
+    public void Button_MuteAllRemoteVideo()
+    {
+        // on means muted
+        mChannel.MuteAllRemoteVideoStreams(!MuteAllRemoteVideoButton.OnOffState);
+    }
+
     public void Button_ShareScreen()
     {
         if (ScreenShareButton.OnOffState)
@@ -395,6 +544,7 @@ public class AgoraChannelPanel : MonoBehaviour
     {
         Debug.Log("User: " + uid + "joined channel: + " + channelID);
         MakeImageSurface(channelID, uid);
+        remoteClientIDs.Add(uid);
     }
 
     void OnLeaveHandler(string channelID, RtcStats stats)
@@ -416,17 +566,22 @@ public class AgoraChannelPanel : MonoBehaviour
     {
         Debug.Log("User: " + uid + " left party - channel: + " + uid + "for reason: " + reason);
         RemoveUserVideoSurface(uid);
+        deleteRemoteUserID(uid);
     }
 
-
-    void handleChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
     {
-        //txtConState.text = "ChannelOnClientRoleChanged -> " + oldRole + " to " + newRole;
+        Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
+    }
+
+    void handleChannelOnClientRoleChanged(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    {
+        Debug.Log("ChannelOnClientRoleChanged: " + oldRole + " -> " + newRole);
     }
 
     void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
     {
-        return;
+#if DEBUG_VIDEO_STATS
         Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID
             + ", remoteStats.receivedBitrate: " + remoteStats.receivedBitrate
             + ", remoteStats.uid: " + remoteStats.uid);
@@ -468,6 +623,7 @@ public class AgoraChannelPanel : MonoBehaviour
                 RemoveUserVideoSurface(remoteStats.uid);
             }
         }
+#endif
     }
 
     void HandleChannelError(string channelId, int err, string message)

@@ -51,6 +51,12 @@ namespace agora_gaming_rtc
         public ChannelOnAudioSubscribeStateChangedHandler ChannelOnAudioSubscribeStateChanged;
         public ChannelOnVideoSubscribeStateChangedHandler ChannelOnVideoSubscribeStateChanged;
         public ChannelOnUserSuperResolutionEnabledHandler ChannelOnUserSuperResolutionEnabled;
+        public ChannelOnClientRoleChangeFailedHandler ChannelOnClientRoleChangeFailed;
+        public ChannelOnFirstRemoteVideoFrameHandler ChannelOnFirstRemoteVideoFrame;
+        public ChannelOnChannelProxyConnectedHandler ChannelOnChannelProxyConnected;
+        public OnChannelScreenShareStarted ChannelOnScreenShareStarted;
+        public OnChannelScreenShareStopped ChannelOnScreenShareStopped;
+        public OnChannelScreenShareCanceled ChannelOnScreenShareCanceled;
 
         /** Creates and gets an `AgoraChannel` object.
          *
@@ -58,7 +64,7 @@ namespace agora_gaming_rtc
          * call the {@link agora_gaming_rtc.AgoraChannel.JoinChannel JoinChannel} method of each created `AgoraChannel` object.
          *
          * After joining multiple channels, you can simultaneously subscribe to streams of all the channels, but publish a stream in only one channel at one time.
-         * 
+         *
          * @param rtcEngine IRtcEngine.
          * @param channelId The unique channel name for an Agora RTC session. It must be in the string format and not exceed 64 bytes in length. Supported character scopes are:
          * - All lowercase English letters: a to z.
@@ -130,13 +136,12 @@ namespace agora_gaming_rtc
             return (int)ERROR_CODE.ERROR_OK;
         }
         /** Releases all AgoraChannel resources.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
          *    - `ERR_NOT_INITIALIZED(7)`: The SDK is not initialized before calling this method.
          */
-
         public int ReleaseChannel()
         {
             if (_rtcEngine == null)
@@ -204,41 +209,39 @@ namespace agora_gaming_rtc
             return 0;
         }
 
-        /** Joins the channel with a user ID.
-        *
-        * This method differs from the `JoinChannel` method in the `IRtcEngine` class in the following aspects:
-        *
-        * | AgoraChannel::JoinChannel                                                                                                                    | IRtcEngine::JoinChannel                                                                                      |
-        * |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-        * | Does not contain the `channelName` parameter, because the channel name is specified when creating the `AgoraChannel` object.                              | Contains the `channelName` parameter, which specifies the channel to join.                                       |
-        * | Contains the `channelMediaOptions` parameter, which decide whether to subscribe to audio or video streams before joining the channel.                            | Does not contain the `channelMediaOptions` parameter. By default, users subscribe to all streams when joining the channel. |
-        * | Users can join multiple channels simultaneously by creating multiple `AgoraChannel` objects and calling the `JoinChannel` method of each object. | Users can join only one channel.                                                                             |
-        * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the {@link agora_gaming_rtc.AgoraChannel.Publish Publish} method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
-        *
-        * Once the user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
-        *
-        * @note
-        * - If you are already in a channel, you cannot rejoin it with the same `uid`.
-        * - We recommend using different UIDs for different channels.
-        * - If you want to join the same channel from different devices, ensure that the UIDs in all devices are different.
-        * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
-        *
-        * @param token The token for authentication:
-        * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
-        * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
-        * @param info (Optional) Additional information about the channel. This parameter can be set as null. Other users in the channel do not receive this information.
-        * @param uid The user ID. A 32-bit unsigned integer with a value ranging from 1 to (2<sup>32</sup>-1). This parameter must be unique. If `uid` is not assigned (or set as `0`), the SDK assigns a `uid` and reports it in the {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler} callback. The app must maintain this user ID.
-        * @param channelMediaOptions The channel media options: ChannelMediaOptions.
-        *
-        * @return
-        * - 0(ERR_OK): Success.
-        * - < 0: Failure.
-        *    - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
-        *    - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
-        *    - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
-        *       - You have created an `AgoraChannel` object with the same channel name.
-        *       - You have joined and published a stream in a channel created by the `AgoraChannel` object.
-        */
+        /** Joins a channel with the user ID, and configures whether to publish or automatically subscribe to the audio or video streams.
+         *
+         * Users in the same channel can talk to each other, and multiple users in the same channel can start a group chat. Users with different App IDs cannot call each other.
+         *
+         * You must call the {@link agora_gaming_rtc.IRtcEngine.LeaveChannel LeaveChannel} method to exit the current call before entering another channel.
+         *
+         * A successful `JoinChannel` method call triggers the following callbacks:
+         * - The local client: {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler}.
+         * - The remote client: {@link agora_gaming_rtc.OnUserJoinedHandler OnUserJoinedHandler}, if the user joining the channel is in the `COMMUNICATION` profile, or is a host in the `LIVE_BROADCASTING` profile.
+         *
+         * When the connection between the client and the Agora server is interrupted due to poor network conditions, the SDK tries reconnecting to the server. When the local client successfully rejoins the channel, the SDK triggers the {@link agora_gaming_rtc.OnReJoinChannelSuccessHandler OnReJoinChannelSuccessHandler} callback on the local client.
+         *
+         * @note
+         * - Compared with the `JoinChannel` method in the IRtcEngine class, this method has the `options` parameter, which configures whether the user publishes or automatically subscribes to the audio and video streams in the channel when joining the channel. By default, the user publishes the local audio and video streams and automatically subscribes to the audio and video streams of all the other users in the channel. Subscribing incurs all associated usage costs. To unsubscribe, set the options `parameter` or call the `Mute` methods accordingly.
+         * - Ensure that the App ID used for generating the token is the same App ID used in the {@link agora_gaming_rtc.IRtcEngine.GetEngine GetEngine} method for creating an `IRtcEngine` object.
+         *
+         * @param token The token generated at your server. See [Authenticate Your Users with Tokens](https://docs.agora.io/en/Interactive%20Broadcast/token_server?platform=All%20Platforms).
+         * @param info (Optional) Reserved for future use.
+         * @param uid The user ID. A 32-bit unsigned integer with a value ranging from 1 to 2<sup>32</sup>-1. The `uid` must be unique. If a `uid` is not assigned (or set to 0), the SDK assigns and returns a uid in the {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler} callback. Your application must record and maintain the returned `uid`, because the SDK does not do so.
+         * - Note: The ID of each user in the channel should be unique. If you want to join the same channel from different devices, ensure that the user IDs in all devices are different.
+         * @param channelMediaOptions The channel media options: {@link agora_gaming_rtc.ChannelMediaOptions ChannelMediaOptions}.
+         *
+         * @return
+         * - 0(ERR_OK): Success.
+         * - < 0: Failure.
+         *    - -2(ERR_INALID_ARGUMENT): The parameter is invalid.
+         *    - -3(ERR_NOT_READY): The SDK fails to be initialized. You can try re-initializing the SDK.
+         *    - -5(ERR_REFUSED): The request is rejected. This may be caused by the following:
+         *       - You have created an AgoraChannel object with the same channel name.
+         *       - You have joined and published a stream in a channel created by the AgoraChannel object. When you join a channel created by the IRtcEngine object, the SDK publishes the local audio and video streams to that channel by default. Because the SDK does not support publishing a local stream to more than one channel simultaneously, an error occurs in this occasion.
+         *    - -7(ERR_NOT_INITIALIZED): The SDK is not initialized before calling this method.
+         *    - -17(ERR_JOIN_CHANNEL_REJECTED): The request to join the channel is rejected. The SDK supports joining only one channel at a time. Therefore, the SDK returns this error code when a user who has already joined a channel.
+         */
         public int JoinChannel(string token, string info, uint uid, ChannelMediaOptions channelMediaOptions)
         {
             if (_rtcEngine == null)
@@ -252,43 +255,36 @@ namespace agora_gaming_rtc
 #endif
         }
 
-        /** Joins the channel with a user account.
-        *
-        * This method differs from the `JoinChannelWithUserAccount` method in the `IRtcEngine` class in the following aspects:
-        *
-        * | AgoraChannel::JoinChannelWithUserAccount                                                                                                                    | IRtcEngine::JoinChannelWithUserAccount                                                                                      |
-        * |------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-        * | Does not contain the `channelId` parameter, because the channel name is specified when creating the `AgoraChannel` object.                              | Contains the `channelId` parameter, which specifies the channel to join.                                       |
-        * | Contains the `autoSubscribeAudio` and `autoSubscribeVideo` parameters, which decide whether to subscribe to audio or video streams before joining the channel.                            | Does not contain the `autoSubscribeAudio` or `autoSubscribeVideo` parameter. By default, users subscribe to all streams when joining the channel. |
-        * | Users can join multiple channels simultaneously by creating multiple `AgoraChannel` objects and calling the `JoinChannelWithUserAccount` method of each object. | Users can join only one channel.                                                                             |
-        * | By default, the SDK does not publish any stream after the user joins the channel. You need to call the {@link agora_gaming_rtc.AgoraChannel.Publish Publish} method to do that.        | By default, the SDK publishes streams once the user joins the channel.                                       |
-        *
-        * Once the user joins the channel, the user subscribes to the audio and video streams of all the other users in the channel by default, giving rise to usage and billing calculation. If you do not want to subscribe to a specified stream or all remote streams, call the `mute` methods accordingly.
-        *
-        * @note
-        * - If you are already in a channel, you cannot rejoin it with the same `uid`.
-        * - We recommend using different userAccount for different channels.
-        * - If you want to join the same channel from different devices, ensure that the userAccount in all devices are different.
-        * - Ensure that the app ID you use to generate the token is the same with the app ID used when creating the `IRtcEngine` object.
-        *
-        * @param token The token for authentication:
-        * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
-        * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
-        * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported character scopes are:
-        * - All lowercase English letters: a to z.
-        * - All uppercase English letters: A to Z.
-        * - All numeric characters: 0 to 9.
-        * - The space character.
-        * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
-        * @param channelMediaOptions The channel media options: ChannelMediaOptions.
-        *
-        * @return
-        * - 0: Success.
-        * - < 0: Failure.
-        *    - `ERR_INVALID_ARGUMENT(-2)`
-        *    - `ERR_NOT_READY(-3)`
-        *    - `ERR_REFUSED(-5)`
-        */
+        /** Joins the channel with a user account, and configures whether to publish or automatically subscribe to the audio or video streams.
+         *
+         * This method differs from the `JoinChannelWithUserAccount` method in the `IRtcEngine` class in the following aspects:
+         *
+         * - The local client: {@link agora_gaming_rtc.OnLocalUserRegisteredHandler OnLocalUserRegisteredHandler} and {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler}.
+         * - The remote client: {@link agora_gaming_rtc.OnUserJoinedHandler OnUserJoinedHandler} and {@link agora_gaming_rtc.OnUserInfoUpdatedHandler OnUserInfoUpdatedHandler}, if the user joining the channel is in the `COMMUNICATION` profile, or is a host in the `LIVE_BROADCASTING` profile.
+         *
+         * @note
+         * - Compared with {@link agora_gaming_rtc.IRtcEngine.JoinChannelWithUserAccount(string token, string channelId, string userAccount) JoinChannelWithUserAccount}, this method has the options parameter, which configures whether the user publishes or automatically subscribes to the audio and video streams in the channel when joining the channel. By default, the user publishes the local audio and video streams and automatically subscribes to the audio and video streams of all the other users in the channel. Subscribing incurs all associated usage costs. To unsubscribe, set the options parameter or call the mute methods accordingly.
+         * - To ensure smooth communication, use the same parameter type to identify the user. For example, if a user joins the channel with a user ID, then ensure all the other users use the user ID too. The same applies to the user account. If a user joins the channel with the Agora Web SDK, ensure that the uid of the user is set to the same parameter type.
+         * - Before using a String user name, ensure that you read [How can I use string user names](https://docs.agora.io/en/Interactive%20Broadcast/faq/string) for details about the limitations and implementation steps.
+         *
+         * @param token The token for authentication:
+         * - In situations not requiring high security: You can use the temporary token generated at Console. For details, see [Get a temporary token](https://docs.agora.io/en/Agora%20Platform/token?platfor%20*%20m=All%20Platforms#get-a-temporary-token).
+         * - In situations requiring high security: Set it as the token generated at your server. For details, see [Generate a token](https://docs.agora.io/en/Interactive%20Broadcast/token_server).
+         * @param userAccount The user account. The maximum length of this parameter is 255 bytes. Ensure that you set this parameter and do not set it as null. Supported character scopes are:
+         * - All lowercase English letters: a to z.
+         * - All uppercase English letters: A to Z.
+         * - All numeric characters: 0 to 9.
+         * - The space character.
+         * - Punctuation characters and other symbols, including: "!", "#", "$", "%", "&", "(", ")", "+", "-", ":", ";", "<", "=", ".", ">", "?", "@", "[", "]", "^", "_", " {", "}", "|", "~", ",".
+         * @param channelMediaOptions The channel media options: ChannelMediaOptions.
+         *
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         *    - `ERR_INVALID_ARGUMENT(-2)`
+         *    - `ERR_NOT_READY(-3)`
+         *    - `ERR_REFUSED(-5)`
+         */
         public int JoinChannelWithUserAccount(string token, string userAccount, ChannelMediaOptions channelMediaOptions)
         {
             if (_rtcEngine == null)
@@ -339,6 +335,25 @@ namespace agora_gaming_rtc
 #endif
 
         }
+
+        /// @cond
+
+        /** Bind local user and a remote user as an audio&video sync group. The remote user is defined by cid and uid.
+        There’s a usage limit that local user must be a video stream sender. On the receiver side, media streams from same sync group will be time-synced
+        @param channelId The channel id.
+        @param uid The user ID of the remote user to be bound with (local user)
+        @return
+        - 0: Success.
+        - < 0: Failure.
+        */
+        public int SetAVSyncSource(string channelId, uint uid)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+            return IRtcEngineNative.setAVSyncSource2(_channelHandler, channelId, uid);
+        }
+        /// @endcond
 
         /** Publishes the local stream to the channel.
          *
@@ -408,12 +423,12 @@ namespace agora_gaming_rtc
         }
 
         /** Retrieves the current call ID.
-         * 
+         *
          *  When a user joins a channel on a client, a call ID is generated to identify the call from the client.
          *  Feedback methods, such as {@link agora_gaming_rtc.IRtcEngine.Rate Rate} and {@link agora_gaming_rtc.IRtcEngine.Complain Complain}, must be called after the call ends to submit feedback to the SDK.
-         * 
+         *
          *  The `Rate` and `Complain` methods require the call ID retrieved from the `GetCallId` method during a call. The call ID is passed as an argument into the `Rate` and `Complain` methods after the call ends.
-         * 
+         *
          *  @return
          *  - &ge; 0: The current call ID, if this method call succeeds.
          *  - < 0: Failure.
@@ -466,19 +481,19 @@ namespace agora_gaming_rtc
         }
 
         /** Enables built-in encryption with an encryption password before users join a channel.
-         * 
+         *
          * @deprecated Deprecated as of v3.2.0. Use the {@link agora_gaming_rtc.AgoraChannel.EnableEncryption EnableEncryption} instead.
-         * 
+         *
          * All users in a channel must use the same encryption password. The encryption password is automatically cleared once a user leaves the channel.
-         * 
+         *
          * If an encryption password is not specified, the encryption functionality will be disabled.
-         * 
-         * @note 
+         *
+         * @note
          * - Do not use this method for CDN live streaming.
          * - For optimal transmission, ensure that the encrypted data size does not exceed the original data size + 16 bytes. 16 bytes is the maximum padding size for AES encryption.
-         * 
+         *
          * @param secret The encryption password.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -497,23 +512,23 @@ namespace agora_gaming_rtc
         }
 
         /** Sets the built-in encryption mode.
-         * 
+         *
          * @deprecated Deprecated as of v3.2.0. Use the {@link agora_gaming_rtc.AgoraChannel.EnableEncryption EnableEncryption} instead.
          *
          * The Agora Unity SDK supports built-in encryption, which is set to the `aes-128-xts` mode by default. Call this method to use other encryption modes.
-         * 
+         *
          * All users in the same channel must use the same encryption mode and password.
-         * 
+         *
          * Refer to the information related to the AES encryption algorithm on the differences between the encryption modes.
-         * 
+         *
          * @note Call the {@link agora_gaming_rtc.AgoraChannel.SetEncryptionSecret SetEncryptionSecret} method to enable the built-in encryption function before calling this method.
-         * 
+         *
          * @param encryptionMode The set encryption mode:
          * - "aes-128-xts": (Default) 128-bit AES encryption, XTS mode.
          * - "aes-128-ecb": 128-bit AES encryption, ECB mode.
          * - "aes-256-xts": 256-bit AES encryption, XTS mode.
          * - "": When encryptionMode is set as `null`, the encryption mode is set as "aes-128-xts" by default.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -531,17 +546,17 @@ namespace agora_gaming_rtc
         }
 
         /** Sets the role of the user, such as a host or an audience (default), before joining a channel in an interactive live streaming.
-         * 
+         *
          * This method can be used to switch the user role in the interactive live streaming after the user joins a channel.
-         * 
+         *
          * In the Live Broadcast profile, when a user switches user roles after joining a channel, a successful `SetClientRole` method call triggers the following callbacks:
          * - The local client: {@link agora_gaming_rtc.ChannelOnClientRoleChangedHandler ChannelOnClientRoleChangedHandler}
          * - The remote client: {@link agora_gaming_rtc.ChannelOnUserJoinedHandler ChannelOnUserJoinedHandler} or {@link agora_gaming_rtc.ChannelOnUserOffLineHandler ChannelOnUserOffLineHandler} (BECOME_AUDIENCE)
-         * 
+         *
          * @note This method applies only to the Live-broadcast profile.
-         * 
+         *
          * @param role Sets the role of the user. See {@link agora_gaming_rtc.CLIENT_ROLE_TYPE CLIENT_ROLE_TYPE}.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -559,17 +574,17 @@ namespace agora_gaming_rtc
         }
 
         /** Prioritizes a remote user's stream.
-         * 
+         *
          * Use this method with the {@link agora_gaming_rtc.IRtcEngine.SetRemoteSubscribeFallbackOption SetRemoteSubscribeFallbackOption} method. If the fallback function is enabled for a subscribed stream, the SDK ensures the high-priority user gets the best possible stream quality.
-         * 
+         *
          * @note
-         * 
+         *
          * - The Agora RTC SDK supports setting `userPriority` as high for one user only.
          * - Ensure that you call this method before joining a channel.
-         * 
+         *
          * @param uid The ID of the remote user.
          * @param userPriority Sets the priority of the remote user. See #PRIORITY_TYPE.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -589,20 +604,20 @@ namespace agora_gaming_rtc
         }
 
         /** Sets the sound position and gain of a remote user.
-         * 
+         *
          * When the local user calls this method to set the sound position of a remote user, the sound difference between the left and right channels allows the local user to track the real-time position of the remote user, creating a real sense of space. This method applies to massively multiplayer online games, such as Battle Royale games.
-         * 
+         *
          * @note
          * - For this method to work, enable stereo panning for remote users by calling the {@link agora_gaming_rtc.IRtcEngine.EnableSoundPositionIndication EnableSoundPositionIndication} method before joining a channel.
-         * - This method requires hardware support. For the best sound positioning, we recommend using a stereo speaker.
-         * 
+         * - This method requires hardware support. For the best sound positioning, we recommend using a wired headset.
+         *
          * @param uid The ID of the remote user.
          * @param pan The sound position of the remote user. The value ranges from -1.0 to 1.0:
          * - 0.0: the remote sound comes from the front.
          * - -1.0: the remote sound comes from the left.
          * - 1.0: the remote sound comes from the right.
          * @param gain Gain of the remote user. The value ranges from 0.0 to 100.0. The default value is 100.0 (the original gain of the remote user). The smaller the value, the less the gain.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -615,6 +630,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setRemoteVoicePosition2(_channelHandler, uid, pan, gain);
         }
 
+        /// @cond
         public int SetRemoteRenderMode(uint userId, int renderMode, int mirrorMode)
         {
             if (_rtcEngine == null)
@@ -622,19 +638,20 @@ namespace agora_gaming_rtc
 
             return IRtcEngineNative.setRemoteRenderMode2(_channelHandler, userId, renderMode, mirrorMode);
         }
+        /// @endcond
 
         /** Stops or resumes subscribing to the audio streams of all remote users by default.
-         * 
+         *
          * @deprecated This method is deprecated from v3.3.1.
          *
-         * Call this method after joining a channel. After successfully calling this method, the local user stops or 
+         * Call this method after joining a channel. After successfully calling this method, the local user stops or
          * resumes subscribing to the audio streams of all subsequent users.
-         * 
-         * @note If you need to resume subscribing to the audio streams of remote users in the channel after 
+         *
+         * @note If you need to resume subscribing to the audio streams of remote users in the channel after
          * calling `SetDefaultMuteAllRemoteAudioStreams(true)`, do the following.
-         * - If you need to resume subscribing to the audio stream of a specified user, call 
+         * - If you need to resume subscribing to the audio stream of a specified user, call
          * {@link agora_gaming_rtc.AgoraChannel.MuteRemoteAudioStream MuteRemoteAudioStream(false)}, and specify the user ID.
-         * - If you need to resume subscribing to the audio stream of multiple remote users, call 
+         * - If you need to resume subscribing to the audio stream of multiple remote users, call
          * {@link agora_gaming_rtc.AgoraChannel.MuteRemoteAudioStream MuteRemoteAudioStream(false)} multiple times.
          *
          * @param mute Sets whether to stop subscribing to the audio streams of all remote users by default.
@@ -654,17 +671,17 @@ namespace agora_gaming_rtc
         }
 
         /** Stops or resumes subscribing to the video streams of all remote users by default.
-         * 
+         *
          * @deprecated This method is deprecated from v3.3.1.
          *
-         * Call this method after joining a channel. After successfully calling this method, the local user stops or 
+         * Call this method after joining a channel. After successfully calling this method, the local user stops or
          * resumes subscribing to the video streams of all subsequent users.
-         * 
-         * @note If you need to resume subscribing to the video streams of remote users in the channel after 
+         *
+         * @note If you need to resume subscribing to the video streams of remote users in the channel after
          * calling `SetDefaultMuteAllRemoteVideoStreams(true)`, do the following.
-         * - If you need to resume subscribing to the video stream of a specified user, call 
+         * - If you need to resume subscribing to the video stream of a specified user, call
          * {@link agora_gaming_rtc.AgoraChannel.MuteRemoteVideoStream MuteRemoteVideoStream(false)}, and specify the user ID.
-         * - If you need to resume subscribing to the video stream of multiple remote users, call 
+         * - If you need to resume subscribing to the video stream of multiple remote users, call
          * {@link agora_gaming_rtc.AgoraChannel.MuteRemoteVideoStream MuteRemoteVideoStream(false)} multiple times.
          *
          * @param mute Sets whether to stop subscribing to the video streams of all remote users by default.
@@ -684,8 +701,8 @@ namespace agora_gaming_rtc
         }
 
         /** Stops or resumes subscribing to the audio streams of all remote users.
-         * 
-         * As of v3.3.1, after successfully calling this method, the local user stops or resumes subscribing to the 
+         *
+         * As of v3.3.1, after successfully calling this method, the local user stops or resumes subscribing to the
          * audio streams of all remote users, including all subsequent users.
          *
          * @note
@@ -695,7 +712,7 @@ namespace agora_gaming_rtc
          * @param mute Sets whether to stop subscribing to the audio streams of all remote users.
          * - true: Stop subscribing to the audio streams of all remote users.
          * - false: (Default) Resume subscribing to the audio streams of all remote users.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -711,19 +728,19 @@ namespace agora_gaming_rtc
         }
 
         /** Adjusts the playback signal volume of a specified remote user.
-         * 
+         *
          * You can call this method as many times as necessary to adjust the playback signal volume of different remote users, or to repeatedly adjust the playback signal volume of the same remote user.
-         * 
+         *
          * @note
          * - Call this method after joining a channel.
          * - The playback signal volume here refers to the mixed volume of a specified remote user.
          * - This method can only adjust the playback signal volume of one specified remote user at a time. To adjust the playback signal volume of different remote users, call the method as many times, once for each remote user.
-         * 
+         *
          * @param userId The ID of the remote user.
          * @param volume The playback signal volume of the specified remote user. The value ranges from 0 to 100:
          * - 0: Mute.
          * - 100: Original volume.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -742,16 +759,16 @@ namespace agora_gaming_rtc
         }
 
         /** Stops or resumes subscribing to the audio stream of a specified user.
-         * 
+         *
          * @note
          * - Call this method after joining a channel.
          * - See recommended settings in *Set the Subscribing State*.
-         * 
+         *
          * @param userId The user ID of the specified remote user.
          * @param mute Sets whether to stop subscribing to the audio stream of a specified user.
          * - true: Stop subscribing to the audio stream of a specified user.
          * - false: (Default) Resume subscribing to the audio stream of a specified user.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -772,8 +789,8 @@ namespace agora_gaming_rtc
         }
 
         /** Stops or resumes subscribing to the video streams of all remote users.
-         * 
-         * As of v3.3.1, after successfully calling this method, the local user stops or resumes subscribing to the 
+         *
+         * As of v3.3.1, after successfully calling this method, the local user stops or resumes subscribing to the
          * video streams of all remote users, including all subsequent users.
          *
          * @note
@@ -783,7 +800,7 @@ namespace agora_gaming_rtc
          * @param mute Sets whether to stop subscribing to the video streams of all remote users.
          * - true: Stop subscribing to the video streams of all remote users.
          * - false: (Default) Resume subscribing to the video streams of all remote users.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -799,16 +816,16 @@ namespace agora_gaming_rtc
         }
 
         /** Stops or resumes subscribing to the video stream of a specified user.
-         * 
+         *
          * @note
          * - Call this method after joining a channel.
          * - See recommended settings in *Set the Subscribing State*.
-         * 
+         *
          * @param userId The user ID of the specified remote user.
          * @param mute Sets whether to stop subscribing to the video stream of a specified user.
          * - true: Stop subscribing to the video stream of a specified user.
          * - false: (Default) Resume subscribing to the video stream of a specified user.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -827,15 +844,15 @@ namespace agora_gaming_rtc
         }
 
         /** Sets the stream type of the remote video.
-         * 
+         *
          * Under limited network conditions, if the publisher has not disabled the dual-stream mode using {@link agora_gaming_rtc.IRtcEngine.EnableDualStreamMode EnableDualStreamMode(false)}, the receiver can choose to receive either the high-quality video stream (the high resolution, and high bitrate video stream) or the low-video stream (the low resolution, and low bitrate video stream).
-         * 
+         *
          * By default, users receive the high-quality video stream. Call this method if you want to switch to the low-video stream. This method allows the app to adjust the corresponding video stream type based on the size of the video window to reduce the bandwidth and resources.
-         * 
+         *
          * The aspect ratio of the low-video stream is the same as the high-quality video stream. Once the resolution of the high-quality video stream is set, the system automatically sets the resolution, frame rate, and bitrate of the low-video stream.
-         * 
+         *
          * The method result returns in the {@link agora_gaming_rtc.OnApiExecutedHandler OnApiExecutedHandler} callback.
-         * 
+         *
          * @note You can call this method either before or after joining a channel. If you call both `SetRemoteVideoStreamType` and
          * {@link agora_gaming_rtc.AgoraChannel.SetRemoteDefaultVideoStreamType SetRemoteDefaultVideoStreamType}, the SDK applies the settings in
          * the `SetRemoteVideoStreamType`.
@@ -861,18 +878,18 @@ namespace agora_gaming_rtc
         }
 
         /** Sets the default video-stream type for the video received by the local user when the remote user sends dual streams.
-         * 
+         *
          * - If the dual-stream mode is enabled by calling the {@link agora_gaming_rtc.IRtcEngine.EnableDualStreamMode EnableDualStreamMode} method, the user receives the high-stream video by default. The `SetRemoteDefaultVideoStreamType` method allows the application to adjust the corresponding video-stream type according to the size of the video window, reducing the bandwidth and resources.
          * - If the dual-stream mode is not enabled, the user receives the high-stream video by default.
-         * 
+         *
          * The result after calling this method is returned in the {@link agora_gaming_rtc.OnApiExecutedHandler OnApiExecutedHandler} callback. The Agora RTC SDK receives the high-stream video by default to reduce the bandwidth. If needed, users can switch to the low-stream video through this method.
-         * 
+         *
          * @note You can call this method either before or after joining a channel. If you call both `SetRemoteDefaultVideoStreamType` and
          * {@link agora_gaming_rtc.AgoraChannel.SetRemoteVideoStreamType SetRemoteVideoStreamType}, the SDK applies the settings in
          * the `SetRemoteVideoStreamType`.
          *
          * @param streamType Sets the default video stream type. See #REMOTE_VIDEO_STREAM_TYPE.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -888,24 +905,24 @@ namespace agora_gaming_rtc
         }
 
         /** Creates a data stream.
-         * 
-         * @deprecated This method is deprecated from v3.3.1. Use the 
-         * {@link agora_gaming_rtc.AgoraChannel.CreateDataStream(DataStreamConfig config) CreateDataStream}2 
+         *
+         * @deprecated This method is deprecated from v3.3.1. Use the
+         * {@link agora_gaming_rtc.AgoraChannel.CreateDataStream(DataStreamConfig config) CreateDataStream}2
          * method instead.
-         * 
+         *
          * Each user can create up to five data streams during the lifecycle of the AgoraChannel.
-         * 
+         *
          * @note
          * - Do not set `reliable` as `true` while setting `ordered` as `false`.
          * - Ensure that you call this method after joining a channel.
-         * 
+         *
          * @param reliable Sets whether or not the recipients are guaranteed to receive the data stream from the sender within five seconds:
          * - true: The recipients receive the data stream from the sender within five seconds. If the recipient does not receive the data stream within five seconds, an error is reported to the application.
          * - false: There is no guarantee that the recipients receive the data stream within five seconds and no error message is reported for any delay or missing data stream.
          * @param ordered Sets whether or not the recipients receive the data stream in the sent order:
          * - true: The recipients receive the data stream in the sent order.
          * - false: The recipients do not receive the data stream in the sent order.
-         * 
+         *
          * @return
          * - &ge; 0: The ID of the data stream, if this method call succeeds.
          * - < 0: Failure.
@@ -927,7 +944,7 @@ namespace agora_gaming_rtc
          * This method does not support data reliability. If the receiver receives a data packet five
          * seconds or more after it was sent, the SDK directly discards the data.
          *
-         * @param config The configurations for the data stream: 
+         * @param config The configurations for the data stream:
          * {@link agora_gaming_rtc.DataStreamConfig DataStreamConfig}.
          *
          * @return
@@ -943,24 +960,24 @@ namespace agora_gaming_rtc
         }
 
         /** Sends data stream messages to all users in a channel.
-         * 
+         *
          * The SDK has the following restrictions on this method:
          * - Up to 30 packets can be sent per second in a channel with each packet having a maximum size of 1 kB.
          * - Each client can send up to 6 KB of data per second.
          * - Each user can have up to five data streams simultaneously.
-         * 
+         *
          * A successful `SendStreamMessage` method call triggers the {@link agora_gaming_rtc.ChannelOnStreamMessageHandler ChannelOnStreamMessageHandler} callback on the remote client, from which the remote user gets the stream message.
-         * 
+         *
          * A failed `SendStreamMessage` method call triggers the `ChannelOnStreamMessageHandler` callback on the remote client.
-         * 
-         * @note 
+         *
+         * @note
          * - This method applies only to the Communication profile or to the hosts in the Live-broadcast profile. If an audience in the Live-broadcast profile calls this method, the audience may be switched to a host.
          * - Ensure that you have created the data stream using {@link agora_gaming_rtc.AgoraChannel.CreateDataStream CreateDataStream} before calling this method.
          *
          * @param streamId The ID of the sent data stream, returned in the `CreateDataStream` method.
          * @param data The sent data.
          * @param length The data length.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -974,22 +991,24 @@ namespace agora_gaming_rtc
         }
 
         /** Publishes the local stream to a specified CDN streaming URL. (CDN live only.)
-         * 
+         *
+         * @deprecated This method is deprecated as of v3.6.1.1. See *Release Notes* for an alternative solution.
+         *
          * The SDK returns the result of this method call in the {@link agora_gaming_rtc.OnStreamPublishedHandler OnStreamPublishedHandler} callback.
-         * 
+         *
          * The `AddPublishStreamUrl` method call triggers the {@link agora_gaming_rtc.ChannelOnRtmpStreamingStateChangedHandler ChannelOnRtmpStreamingStateChangedHandler} callback on the local client to report the state of adding a local stream to the CDN.
-         * 
+         *
          * @note
          * - Ensure that the user joins the channel before calling this method.
          * - Ensure that you enable the RTMP Converter service before using this function.
          * - This method adds only one stream CDN streaming URL each time it is called.
          * - This method applies to Live Broadcast only.
-         * 
+         *
          * @param url The CDN streaming URL in the RTMP or RTMPS format. The maximum length of this parameter is 1024 bytes. The CDN streaming URL must not contain special characters, such as Chinese language characters.
          * @param transcodingEnabled Sets whether transcoding is enabled or disabled:
          * - true: Enable transcoding. To [transcode](https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#transcoding) the audio or video streams when publishing them to CDN live, often used for combining the audio and video streams of multiple hosts in CDN live. If you set this parameter as `true`, ensure that you call the {@link agora_gaming_rtc.AgoraChannel.SetLiveTranscoding SetLiveTranscoding} method before this method.
          * - false: Disable transcoding.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1007,18 +1026,20 @@ namespace agora_gaming_rtc
         }
 
         /** Removes an RTMP or RTMPS stream from the CDN. (CDN live only.)
-         * 
+         *
+         * @deprecated This method is deprecated as of v3.6.1.1. See *Release Notes* for an alternative solution.
+         *
          * This method removes the CDN streaming URL (added by the {@link agora_gaming_rtc.AgoraChannel.AddPublishStreamUrl AddPublishStreamUrl} method) from a CDN live stream. The SDK returns the result of this method call in the {@link agora_gaming_rtc.OnStreamUnpublishedHandler OnStreamUnpublishedHandler} callback.
-         * 
+         *
          * The `RemovePublishStreamUrl` method call triggers the {@link agora_gaming_rtc.ChannelOnRtmpStreamingStateChangedHandler ChannelOnRtmpStreamingStateChangedHandler} callback on the local client to report the state of removing an RTMP or RTMPS stream from the CDN.
-         * 
+         *
          * @note
          * - This method removes only one CDN streaming URL each time it is called.
          * - The CDN streaming URL must not contain special characters, such as Chinese language characters.
          * - This method applies to Live Broadcast only.
-         * 
+         *
          * @param url The CDN streaming URL to be removed. The maximum length of this parameter is 1024 bytes.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1034,9 +1055,11 @@ namespace agora_gaming_rtc
         }
 
         /** Sets the video layout and audio settings for CDN live. (CDN live only.)
-         * 
+         *
+         * @deprecated This method is deprecated as of v3.6.1.1. See *Release Notes* for an alternative solution.
+         *
          * The SDK triggers the {@link agora_gaming_rtc.ChannelOnTranscodingUpdatedHandler ChannelOnTranscodingUpdatedHandler} callback when you call the `SetLiveTranscoding` method to update the transcoding setting.
-         * 
+         *
          * @note
          * - Ensure that you enable the RTMP Converter service before using this function.
          * - If you call the `SetLiveTranscoding` method to update the transcoding setting for the first time, the SDK does not trigger the `ChannelOnTranscodingUpdatedHandler` callback.
@@ -1044,7 +1067,7 @@ namespace agora_gaming_rtc
          * - Agora supports pushing media streams in RTMPS protocol to the CDN only when you enable transcoding.
          *
          * @param liveTranscoding Sets the CDN live audio or video transcoding settings. See LiveTranscoding.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1093,32 +1116,194 @@ namespace agora_gaming_rtc
                     liveStreamAdvancedFeaturesStr += "\t";
                 }
             }
-            return IRtcEngineNative.setLiveTranscoding2(_channelHandler, liveTranscoding.width, liveTranscoding.height, liveTranscoding.videoBitrate, liveTranscoding.videoFramerate, liveTranscoding.lowLatency, liveTranscoding.videoGop, (int)liveTranscoding.videoCodecProfile, liveTranscoding.backgroundColor, liveTranscoding.userCount, transcodingUserInfo.ToString(), liveTranscoding.transcodingExtraInfo, liveTranscoding.metadata, liveTranscoding.watermark.url, liveTranscoding.watermark.x, liveTranscoding.watermark.y, liveTranscoding.watermark.width, liveTranscoding.watermark.height, liveTranscoding.backgroundImage.url, liveTranscoding.backgroundImage.x, liveTranscoding.backgroundImage.y, liveTranscoding.backgroundImage.width, liveTranscoding.backgroundImage.height, (int)liveTranscoding.audioSampleRate, liveTranscoding.audioBitrate, liveTranscoding.audioChannels, (int)liveTranscoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)liveTranscoding.liveStreamAdvancedFeatures.Length);
+            return IRtcEngineNative.setLiveTranscoding2(_channelHandler, liveTranscoding.width, liveTranscoding.height, liveTranscoding.videoBitrate, liveTranscoding.videoFramerate, liveTranscoding.lowLatency, liveTranscoding.videoGop, (int)liveTranscoding.videoCodecProfile, liveTranscoding.backgroundColor, liveTranscoding.userCount, transcodingUserInfo, liveTranscoding.transcodingExtraInfo, liveTranscoding.metadata, liveTranscoding.watermark.url, liveTranscoding.watermark.x, liveTranscoding.watermark.y, liveTranscoding.watermark.width, liveTranscoding.watermark.height, liveTranscoding.watermark.zOrder, liveTranscoding.watermark.alpha, liveTranscoding.watermarkCount, liveTranscoding.backgroundImage.url, liveTranscoding.backgroundImage.x, liveTranscoding.backgroundImage.y, liveTranscoding.backgroundImage.width, liveTranscoding.backgroundImage.height, liveTranscoding.backgroundImage.zOrder, liveTranscoding.backgroundImage.alpha, liveTranscoding.backgroundImageCount, (int)liveTranscoding.audioSampleRate, liveTranscoding.audioBitrate, liveTranscoding.audioChannels, (int)liveTranscoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)liveTranscoding.liveStreamAdvancedFeatures.Length);
+        }
+
+
+        /** Starts pushing media streams to a CDN without transcoding.
+        *
+        * @since v3.6.1.1
+        *
+        * You can call this method to push a live audio-and-video stream to the specified CDN address. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times.
+        *
+        * After you call this method, the SDK triggers the {@link agora_gaming_rtc.OnRtmpStreamingStateChangedHandler OnRtmpStreamingStateChangedHandler} callback on the local client to report the state of the streaming.
+        *
+        * @note
+        * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+        * - Call this method after joining a channel.
+        * - Only hosts in the `LIVE_BROADCASTING profile` can call this method.
+        * - If you want to retry pushing streams after a failed push, make sure to call {@link agora_gaming_rtc.AgoraChannel.StopRtmpStream StopRtmpStream} first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+        * - If you want to push media streams in the RTMPS protocol to CDN, call {@link agora_gaming_rtc.AgoraChannel.StartRtmpStreamWithTranscoding StartRtmpStreamWithTranscoding} instead of {@link agora_gaming_rtc.AgoraChannel.StartRtmpStreamWithoutTranscoding StartRtmpStreamWithoutTranscoding}.
+        *
+        * @param url The address of the CDN live streaming. The format is RTMP. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        *   - `ERR_INVALID_ARGUMENT (2)`: The RTMP URL address is NULL or the string length is 0.
+        *   - `ERR_NOT_INITIALIZED (7)`: The SDK is not initialized before calling this method.
+        */
+        public int StartRtmpStreamWithoutTranscoding(string url)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+            return IRtcEngineNative.startRtmpStreamWithoutTranscoding2(_channelHandler, url);
+        }
+
+        /** Starts pushing media streams to a CDN and sets the transcoding configuration.
+        *
+        * @since v3.6.1.1
+        *
+        * You can call this method to push a live audio-and-video stream to the specified CDN address and set the transcoding configuration. This method can push media streams to only one CDN address at a time, so if you need to push streams to multiple addresses, call this method multiple times.
+        *
+        * After you call this method, the SDK triggers the {@link agora_gaming_rtc.OnRtmpStreamingStateChangedHandler OnRtmpStreamingStateChangedHandler} callback on the local client to report the state of the streaming.
+        *
+        * @note
+        * - Ensure that you enable the RTMP Converter service before using this function. See Prerequisites in *Push Streams to CDN*.
+        * - Call this method after joining a channel.
+        * - Only hosts in the `LIVE_BROADCASTING profile` can call this method.
+        * - If you want to retry pushing streams after a failed push, make sure to call {@link agora_gaming_rtc.AgoraChannel.StopRtmpStream StopRtmpStream} first, then call this method to retry pushing streams; otherwise, the SDK returns the same error code as the last failed push.
+        * - If you want to push media streams in the RTMPS protocol to CDN, call {@link agora_gaming_rtc.AgoraChannel.StartRtmpStreamWithTranscoding StartRtmpStreamWithTranscoding} instead of {@link agora_gaming_rtc.AgoraChannel.StartRtmpStreamWithoutTranscoding StartRtmpStreamWithoutTranscoding}.
+        *
+        * @param url The address of the CDN live streaming. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+        * @param liveTranscoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        */
+        public int StartRtmpStreamWithTranscoding(string url, LiveTranscoding liveTranscoding)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+            String transcodingUserInfo = "";
+            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null) {
+                for (int i = 0; i < liveTranscoding.userCount; i ++) {
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].uid;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].x;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].y;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].width;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].height;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].zOrder;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].alpha;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].audioChannel;
+                    transcodingUserInfo += "\t";
+                }
+            }
+
+            String liveStreamAdvancedFeaturesStr = "";
+            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0) {
+                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++) {
+                    liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].featureName;
+                    liveStreamAdvancedFeaturesStr += "\t";
+                    liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].opened;
+                    liveStreamAdvancedFeaturesStr += "\t";
+                }
+            }
+            return IRtcEngineNative.startRtmpStreamWithTranscoding2(_channelHandler, url, liveTranscoding.width, liveTranscoding.height, liveTranscoding.videoBitrate, liveTranscoding.videoFramerate, liveTranscoding.lowLatency, liveTranscoding.videoGop, (int)liveTranscoding.videoCodecProfile, liveTranscoding.backgroundColor, liveTranscoding.userCount, transcodingUserInfo, liveTranscoding.transcodingExtraInfo, liveTranscoding.metadata, liveTranscoding.watermark.url, liveTranscoding.watermark.x, liveTranscoding.watermark.y, liveTranscoding.watermark.width, liveTranscoding.watermark.height, liveTranscoding.watermark.zOrder, liveTranscoding.watermark.alpha, liveTranscoding.watermarkCount, liveTranscoding.backgroundImage.url, liveTranscoding.backgroundImage.x, liveTranscoding.backgroundImage.y, liveTranscoding.backgroundImage.width, liveTranscoding.backgroundImage.height, liveTranscoding.backgroundImage.zOrder, liveTranscoding.backgroundImage.alpha, liveTranscoding.backgroundImageCount, (int)liveTranscoding.audioSampleRate, liveTranscoding.audioBitrate, liveTranscoding.audioChannels, (int)liveTranscoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)liveTranscoding.liveStreamAdvancedFeatures.Length);
+        }
+
+        /** Updates the transcoding configuration.
+        *
+        * @since v3.6.1.1
+        *
+        * After you start pushing media streams to CDN with transcoding, you can dynamically update the transcoding configuration according to the scenario. The SDK triggers the {@link agora_gaming_rtc.OnTranscodingUpdatedHandler OnTranscodingUpdatedHandler} callback after the transcoding configuration is updated.
+        *
+        * @param liveTranscoding The transcoding configuration for CDN live streaming. See LiveTranscoding.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        */
+        public int UpdateRtmpTranscoding(LiveTranscoding liveTranscoding)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+            String transcodingUserInfo = "";
+            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null) {
+                for (int i = 0; i < liveTranscoding.userCount; i ++) {
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].uid;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].x;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].y;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].width;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].height;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].zOrder;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].alpha;
+                    transcodingUserInfo += "\t";
+                    transcodingUserInfo += liveTranscoding.transcodingUsers[i].audioChannel;
+                    transcodingUserInfo += "\t";
+                }
+            }
+
+            String liveStreamAdvancedFeaturesStr = "";
+            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0) {
+                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++) {
+                    liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].featureName;
+                    liveStreamAdvancedFeaturesStr += "\t";
+                    liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].opened;
+                    liveStreamAdvancedFeaturesStr += "\t";
+                }
+            }
+            return IRtcEngineNative.updateRtmpTranscoding2(_channelHandler, liveTranscoding.width, liveTranscoding.height, liveTranscoding.videoBitrate, liveTranscoding.videoFramerate, liveTranscoding.lowLatency, liveTranscoding.videoGop, (int)liveTranscoding.videoCodecProfile, liveTranscoding.backgroundColor, liveTranscoding.userCount, transcodingUserInfo, liveTranscoding.transcodingExtraInfo, liveTranscoding.metadata, liveTranscoding.watermark.url, liveTranscoding.watermark.x, liveTranscoding.watermark.y, liveTranscoding.watermark.width, liveTranscoding.watermark.height, liveTranscoding.watermark.zOrder, liveTranscoding.watermark.alpha, liveTranscoding.watermarkCount, liveTranscoding.backgroundImage.url, liveTranscoding.backgroundImage.x, liveTranscoding.backgroundImage.y, liveTranscoding.backgroundImage.width, liveTranscoding.backgroundImage.height, liveTranscoding.backgroundImage.zOrder, liveTranscoding.backgroundImage.alpha, liveTranscoding.backgroundImageCount, (int)liveTranscoding.audioSampleRate, liveTranscoding.audioBitrate, liveTranscoding.audioChannels, (int)liveTranscoding.audioCodecProfile, liveStreamAdvancedFeaturesStr, (uint)liveTranscoding.liveStreamAdvancedFeatures.Length);
+        }
+
+        /** Stops pushing media streams to a CDN.
+        *
+        * @since v3.6.1.1
+        *
+        * You can call this method to stop the live stream on the specified CDN address. This method can stop pushing media streams to only one CDN address at a time, so if you need to stop pushing streams to multiple addresses, call this method multiple times.
+        *
+        * After you call this method, the SDK triggers the {@link agora_gaming_rtc.OnRtmpStreamingStateChangedHandler OnRtmpStreamingStateChangedHandler} callback on the local client to report the state of the streaming.
+        *
+        * @param url The address of the CDN live streaming. The format is RTMP or RTMPS. The character length cannot exceed 1024 bytes. Special characters such as Chinese characters are not supported.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        */
+        public int StopRtmpStream(string url)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+            return IRtcEngineNative.stopRtmpStream2(_channelHandler, url);
         }
 
         /** Adds a voice or video stream URL address to the interactive live streaming.
-         * 
+         *
          * The {@link agora_gaming_rtc.OnStreamPublishedHandler OnStreamPublishedHandler} callback returns the inject status. If this method call is successful, the server pulls the voice or video stream and injects it into a live channel. This is applicable to scenarios where all audience members in the channel can watch a live show and interact with each other.
-         * 
+         *
          * The `AddInjectStreamUrl` method call triggers the following callbacks:
          * - The local client:
          *     - {@link agora_gaming_rtc.ChannelOnStreamInjectedStatusHandler ChannelOnStreamInjectedStatusHandler} , with the state of the injecting the online stream.
          *     - {@link agora_gaming_rtc.ChannelOnUserJoinedHandler ChannelOnUserJoinedHandler} (uid: 666), if the method call is successful and the online media stream is injected into the channel.
          * - The remote client:
          *     - `ChannelOnUserJoinedHandler` (uid: 666), if the method call is successful and the online media stream is injected into the channel.
-         * 
+         *
          * @warning Agora will soon stop the service for injecting online media streams on the client. If you have not implemented this service, Agora recommends that you do not use it.
          *
-         * @note 
+         * @note
          * - Ensure that you enable the RTMP Converter service before using this function.
          * - This method applies to the Live-Broadcast profile only.
          * - You can inject only one media stream into the channel at the same time.
-         * 
+         *
          * @param url The URL address which is added to the ongoing interactive live streaming. Valid protocols are RTMP, HLS, and FLV.
          * - Supported FLV audio codec type: AAC.
          * - Supported FLV video codec type: H264 (AVC).
          * @param config The InjectStreamConfig object that contains the configuration of the added voice or video stream.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1136,15 +1321,15 @@ namespace agora_gaming_rtc
         }
 
         /** Removes the voice or video stream URL address from the interactive live streaming.
-         * 
+         *
          * This method removes the URL address (added by the {@link agora_gaming_rtc.AgoraChannel.AddInjectStreamUrl AddInjectStreamUrl} method) from the interactive live streaming.
-         * 
+         *
          * @warning Agora will soon stop the service for injecting online media streams on the client. If you have not implemented this service, Agora recommends that you do not use it.
          *
          * @note If this method is called successfully, the SDK triggers the {@link agora_gaming_rtc.ChannelOnUserOffLineHandler ChannelOnUserOffLineHandler} callback and returns a stream uid of 666.
-         * 
+         *
          * @param url The URL address of the added stream to be removed.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1158,18 +1343,18 @@ namespace agora_gaming_rtc
         }
 
         /** Starts to relay media streams across channels.
-         * 
+         *
          * After a successful method call, the SDK triggers the {@link agora_gaming_rtc.ChannelOnMediaRelayStateChangedHandler ChannelOnMediaRelayStateChangedHandler} and {@link agora_gaming_rtc.ChannelOnMediaRelayEventHandler ChannelOnMediaRelayEventHandler} callbacks, and these callbacks return the state and events of the media stream relay.
          * - If the `ChannelOnMediaRelayStateChangedHandler` callback returns {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_STATE#RELAY_STATE_RUNNING RELAY_STATE_RUNNING(2)} and {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_ERROR#RELAY_OK RELAY_OK(0)}, and the `ChannelOnMediaRelayEventHandler` callback returns {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_EVENT#RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL RELAY_EVENT_PACKET_SENT_TO_DEST_CHANNEL(4)}, the host starts sending data to the destination channel.
          * - If the `ChannelOnMediaRelayStateChangedHandler` callback returns {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_STATE#RELAY_STATE_FAILURE RELAY_STATE_FAILURE(3)}, an exception occurs during the media stream relay.
-         * 
+         *
          * @note
          * - Call this method after the {@link agora_gaming_rtc.AgoraChannel.JoinChannel JoinChannel} method.
          * - This method takes effect only when you are a host in a Live-broadcast channel.
          * - After a successful method call, if you want to call this method again, ensure that you call the {@link agora_gaming_rtc.AgoraChannel.StopChannelMediaRelay StopChannelMediaRelay} method to quit the current relay.
-         * 
+         *
          * @param channelMediaRelayConfiguration The configuration of the media stream relay: ChannelMediaRelayConfiguration.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1188,13 +1373,13 @@ namespace agora_gaming_rtc
         }
 
         /** Updates the channels for media stream relay. After a successful {@link agora_gaming_rtc.AgoraChannel.StartChannelMediaRelay StartChannelMediaRelay} method call, if you want to relay the media stream to more channels, or leave the current relay channel, you can call the `UpdateChannelMediaRelay` method.
-         * 
+         *
          * After a successful method call, the SDK triggers the {@link agora_gaming_rtc.ChannelOnMediaRelayEventHandler ChannelOnMediaRelayEventHandler} callback with the {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_EVENT#RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL RELAY_EVENT_PACKET_UPDATE_DEST_CHANNEL(7)} state code.
-         * 
+         *
          * @note Call this method after the `StartChannelMediaRelay` method to update the destination channel.
-         * 
+         *
          * @param channelMediaRelayConfiguration The media stream relay configuration: ChannelMediaRelayConfiguration.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1216,13 +1401,13 @@ namespace agora_gaming_rtc
         }
 
         /** Stops the media stream relay.
-         * 
+         *
          * Once the relay stops, the host quits all the destination channels.
-         * 
+         *
          * After a successful method call, the SDK triggers the {@link agora_gaming_rtc.ChannelOnMediaRelayStateChangedHandler ChannelOnMediaRelayStateChangedHandler} callback. If the callback returns {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_STATE#RELAY_STATE_IDLE RELAY_STATE_IDLE(0)} and {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_ERROR#RELAY_OK RELAY_OK(0)}, the host successfully stops the relay.
-         * 
+         *
          * @note If the method call fails, the SDK triggers the `ChannelOnMediaRelayStateChangedHandler` callback with the {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_ERROR#RELAY_ERROR_SERVER_NO_RESPONSE RELAY_ERROR_SERVER_NO_RESPONSE(2)} or {@link agora_gaming_rtc.CHANNEL_MEDIA_RELAY_ERROR#RELAY_ERROR_SERVER_CONNECTION_LOST RELAY_ERROR_SERVER_CONNECTION_LOST(8)} state code. You can leave the channel by calling the {@link agora_gaming_rtc.AgoraChannel.LeaveChannel LeaveChannel} method, and the media stream relay automatically stops.
-         * 
+         *
          * @return
          * - 0: Success.
          * - < 0: Failure.
@@ -1239,7 +1424,7 @@ namespace agora_gaming_rtc
         }
 
         /** Retrieves the connection state of the SDK.
-         * 
+         *
          * @note You can call this method either before or after joining a channel.
          *
          * @return #CONNECTION_STATE_TYPE.
@@ -1260,7 +1445,7 @@ namespace agora_gaming_rtc
          * You can call this method either before or after joining the channel to set the user role as audience or host. If
          * you call this method to switch the user role after joining the channel, the SDK triggers the following callbacks:
          * - The local client: {@link agora_gaming_rtc.ChannelOnClientRoleChangedHandler ChannelOnClientRoleChangedHandler}.
-         * - The remote client: {@link agora_gaming_rtc.ChannelOnUserJoinedHandler ChannelOnUserJoinedHandler} 
+         * - The remote client: {@link agora_gaming_rtc.ChannelOnUserJoinedHandler ChannelOnUserJoinedHandler}
          * or {@link agora_gaming_rtc.ChannelOnUserOffLineHandler ChannelOnUserOffLineHandler}.
          *
          * @note
@@ -1297,12 +1482,12 @@ namespace agora_gaming_rtc
 
         /** Enables/Disables the built-in encryption.
          *
-         * @since v3.2.0
+         * @since v3.2.1
          *
          * In scenarios requiring high security, Agora recommends calling this method to enable the built-in encryption before joining a channel.
          *
-         * All users in the same channel must use the same encryption mode and encryption key. After a user leaves the 
-         * channel, the SDK automatically disables the built-in encryption. To enable the built-in encryption, call 
+         * All users in the same channel must use the same encryption mode and encryption key. After a user leaves the
+         * channel, the SDK automatically disables the built-in encryption. To enable the built-in encryption, call
          * this method before the user joins the channel again.
          *
          * @note If you enable the built-in encryption, you cannot use the RTMP or RTMPS streaming function.
@@ -1331,15 +1516,82 @@ namespace agora_gaming_rtc
 #endif
         }
 
-        /// <summary>
-        ///   Invoke Web's screen sharing capability. Note that the browser can only have one sharing
-        /// instance.  Your channels cannot share different contents.
-        /// </summary>
-        public void StartScreenCaptureForWeb()
+        /* 
+        * Invoke Web's screen sharing capability. Note that the browser can only have one sharing
+        * instance.  Your channels cannot share different contents.
+        *
+        *@notes
+        * - This method is WebGL only.
+        * - Ensure that you call this method only after joining a channel.
+        * 
+        * @param 'enableAudio' enable loopback audio for the shared content. 
+        * setting to 'true' will publish
+        * the direct audio source of the shared content for remote users, 
+        * along with it's video source. 'false' won't publish any audio source
+        * of the shared content and only publish the video source for remote users.
+        * 
+        * Only remote users will hear the loopback audio, and not the local user broadcasting
+        * the shared content. This is to prevent overlapping audio streams for the 
+        * local user.
+        */
+        public void StartScreenCaptureForWeb(bool audioEnabled = false)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startScreenCaptureForWeb2();
+            IRtcEngineNative.startScreenCaptureForWeb2(audioEnabled);
+#else
+            Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
+#endif
+        }
+
+
+        /** Shares the screen using a seperate client so it doesn't
+         * interfere with the current webcam stream for the user.
+         * 
+         * Only one new Screen Share can be used for a client. If a user tries
+         * to start a second Screen Share an alert window will appear telling the
+         * user that they need to stop the current screen share before starting
+         * another one.
+         * 
+         * 
+         * @notes
+         * - This method is WebGL only.
+         * - Ensure you only call this method after joining a channel.
+         * 
+         * @param 'enableAudio' enable loopback audio for the shared content. 
+         * setting to 'true' will publish
+         * the direct audio source of the shared content for remote users, 
+         * along with it's video source. 'false' won't publish any audio source
+         * of the shared content and only publish the video source for remote users.
+         * 
+         * Only remote users will hear the loopback audio, and not the local user broadcasting
+         * the shared content. This is to prevent overlapping audio streams for the 
+         * local user.
+         * 
+         * @Event Callbacks
+         * -    OnScreenShareStarted
+         * -    OnScreenShareStopped
+         * -    OnScreenShareCanceled
+         * 
+         */
+        public void StartNewScreenCaptureForWeb2(uint uid, bool audioEnabled = false)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.startNewScreenCaptureForWeb2(uid, audioEnabled);
+#else
+            Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
+#endif
+        }
+
+        /** Stops the new screen share client that was created with 
+         * StartNewScreenCaptureForWeb(uint uid).
+         * */
+        public void StopNewScreenCaptureForWeb2()
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            IRtcEngineNative.stopNewScreenCaptureForWeb2();
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
@@ -1358,11 +1610,23 @@ namespace agora_gaming_rtc
 #endif
         }
 
-        /// <summary>
-        ///   Mute the Camera video stream. Does not affect share screen
-        /// </summary>
-        /// <param name="mute"></param>
-        /// <returns></returns>
+        /** Stops or resumes publishing the local video stream.
+        *
+        * This method only sets the publishing state of the video stream in the channel of `AgoraChannel`.
+        * A successful method call triggers the `OnRemoteVideoStateChangedHandler` callback on the remote client.
+        *
+        * You can only publish the local stream in one channel at a time. If you create multiple channels, ensure that you only call `MuteLocalVideoStream(false)` in one channel; otherwise, the method call fails, and the SDK returns `-5(ERR_REFUSED)`.
+        *
+        * @note
+        * - This method does not change the usage state of the video-capturing device.
+        * - Whether this method call takes effect is affected by the `JoinChannel` and `SetClientRole` methods.
+        * @param mute Whether to stop publishing the local video stream.
+        * - true: Stop publishing the local video stream.
+        * - false: Resume publishing the local video stream.
+        * @return
+        * - 0: Success.
+        * - &lt; 0: Failure.
+        */
         public int MuteLocalVideoStream(bool mute)
         {
             if (_rtcEngine == null)
@@ -1376,11 +1640,23 @@ namespace agora_gaming_rtc
 
         }
 
-        /// <summary>
-        ///   Mute the mic input 
-        /// </summary>
-        /// <param name="mute"></param>
-        /// <returns></returns>
+        /** Stops or resumes publishing the local audio stream.
+        *
+        * This method only sets the publishing state of the audio stream in the channel of `AgoraChannel`.
+        * A successful method call triggers the `OnRemoteAudioStateChangedHandler` callback on the remote client.
+        *
+        * You can only publish the local stream in one channel at a time. If you create multiple channels, ensure that you only call `MuteLocalAudioStream(false)` in one channel; otherwise, the method call fails, and the SDK returns `-5(ERR_REFUSED)`.
+        *
+        * @note
+        * - This method does not change the usage state of the audio-capturing device.
+        * - Whether this method call takes effect is affected by the `JoinChannel` and `SetClientRole` methods.
+        * @param mute Whether to stop publishing the local audio stream.
+        * - true: Stop publishing the local video stream.
+        * - false: Resume publishing the local video stream.
+        * @return        
+        * - 0: Success.
+        * - &lt; 0: Failure.
+        */
         public int MuteLocalAudioStream(bool mute)
         {
             if (_rtcEngine == null)
@@ -1393,60 +1669,63 @@ namespace agora_gaming_rtc
 #endif
         }
 
-        /// @cond
         /** Enables/Disables the super-resolution algorithm for a remote user's video stream.
          *
-         * @since v3.2.0
+         * @since v3.6.1.1
          *
-         * The algorithm effectively improves the resolution of the specified remote user's video stream. When the original
-         * resolution of the remote video stream is a × b pixels, you can receive and render the stream at a higher
-         * resolution (2a × 2b pixels) by enabling the algorithm.
+         * This feature effectively boosts the resolution of a remote user's video seen by the local user. If the original resolution of a remote user's video is a × b, the local user's device can render the remote video at a resolution of 2a × 2b after you enable this feature.
          *
-         * After calling this method, the SDK triggers the 
+         * After calling this method, the SDK triggers the
          * {@link agora_gaming_rtc.ChannelOnUserSuperResolutionEnabledHandler ChannelOnUserSuperResolutionEnabledHandler} callback to report
-         * whether you have successfully enabled the super-resolution algorithm.
+         * whether you have successfully enabled super resolution.
          *
-         * @warning The super-resolution algorithm requires extra system resources.
-         * To balance the visual experience and system usage, the SDK poses the following restrictions:
-         * - The algorithm can only be used for a single user at a time.
-         * - On the Android platform, the original resolution of the remote video must not exceed 640 × 360 pixels.
-         * - On the iOS platform, the original resolution of the remote video must not exceed 640 × 480 pixels.
+         * @warning The super resolution feature requires extra system resources. To balance the visual experience and system consumption, the SDK poses the following restrictions:
+         * - This feature can only be enabled for a single remote user.
+         * - The original resolution of the remote user's video cannot exceed 640 × 360 pixels.
          * If you exceed these limitations, the SDK triggers the {@link agora_gaming_rtc.ChannelOnWarningHandler ChannelOnWarningHandler}
          * callback with the corresponding warning codes:
-         * - `WARN_SUPER_RESOLUTION_STREAM_OVER_LIMITATION (1610)`: The origin resolution of the remote video is beyond the range where the super-resolution algorithm can be applied.
-         * - `WARN_SUPER_RESOLUTION_USER_COUNT_OVER_LIMITATION (1611)`: Another user is already using the super-resolution algorithm.
-         * - `WARN_SUPER_RESOLUTION_DEVICE_NOT_SUPPORTED (1612)`: The device does not support the super-resolution algorithm.
+         * - `WARN_SUPER_RESOLUTION_STREAM_OVER_LIMITATION (1610)`: The original resolution of the remote user's video is beyond the range where super resolution can be applied.
+         * - `WARN_SUPER_RESOLUTION_USER_COUNT_OVER_LIMITATION (1611)`: Super resolution is already being used to boost another remote user's video.
+         * - `WARN_SUPER_RESOLUTION_DEVICE_NOT_SUPPORTED (1612)`: The device does not support using super resolution.
          *
          * @note
-         * - This method applies to Android and iOS only.
-         * - Requirements for the user's device:
-         *  - Android: The following devices are known to support the method:
-         *    - VIVO: V1821A, NEX S, 1914A, 1916A, and 1824BA
-         *    - OPPO: PCCM00
-         *    - OnePlus: A6000
-         *    - Xiaomi: Mi 8, Mi 9, MIX3, and Redmi K20 Pro
-         *    - SAMSUNG: SM-G9600, SM-G9650, SM-N9600, SM-G9708, SM-G960U, and SM-G9750
-         *    - HUAWEI: SEA-AL00, ELE-AL00, VOG-AL00, YAL-AL10, HMA-AL00, and EVR-AN00
-         *  - iOS: This method is supported on devices running iOS 12.0 or later. The following
-         * device models are known to support the method:
-         *      - iPhone XR
-         *      - iPhone XS
-         *      - iPhone XS Max
-         *      - iPhone 11
-         *      - iPhone 11 Pro
-         *      - iPhone 11 Pro Max
-         *      - iPad Pro 11-inch (3rd Generation)
-         *      - iPad Pro 12.9-inch (3rd Generation)
-         *      - iPad Air 3 (3rd Generation)
+         * - This method is for Android and iOS only.
+         * - Before calling this method, ensure that you have integrated the following dynamic library into your project:
+         *   - Android: `libagora_super_resolution_extension.so`
+         *   - iOS: `AgoraSuperResolutionExtension.xcframework`
+         * - As this method has certain system performance requirements, Agora recommends that you use the following devices or better:
+         *   - VIVO: V1821A, NEX S, 1914A, 1916A, 1962A, 1824BA, X60, X60 Pro
+         *   - OPPO: PCCM00, Find X3
+         *   - OnePlus: A6000
+         *   - Xiaomi: Mi 8, Mi 9, Mi 10, Mi 11, MIX3, Redmi K20 Pro
+         *   - SAMSUNG: SM-G9600, SM-G9650, SM-N9600, SM-G9708, SM-G960U, SM-G9750, S20, S21
+         *   - HUAWEI: SEA-AL00, ELE-AL00, VOG-AL00, YAL-AL10, HMA-AL00, EVR-AN00, nova 4, nova 5 Pro, nova 6 5G, nova 7 5G, Mate 30, Mate 30 Pro, Mate 40, Mate 40 Pro, P40 P40 Pro, HUAWEI MediaPad M6, MatePad 10.8
+         *   - iOS (iOS 12.0 or later):
+         *     - iPhone XR
+         *     - iPhone XS
+         *     - iPhone XS Max
+         *     - iPhone 11
+         *     - iPhone 11 Pro
+         *     - iPhone 11 Pro Max
+         *     - iPhone 12
+         *     - iPhone 12 mini
+         *     - iPhone 12 Pro
+         *     - iPhone 12 Pro Max
+         *     - iPhone 12 SE (2nd generation)
+         *     - iPad Pro 11-inch (3rd generation)
+         *     - iPad Pro 12.9-inch (3rd generation)
+         *     - iPad Air (3rd generation)
+         *     - iPad Air (4th generation)
          *
          * @param userId The ID of the remote user.
-         * @param enable Whether to enable the super-resolution algorithm:
-         * - true: Enable the super-resolution algorithm.
-         * - false: Disable the super-resolution algorithm.
+         * @param enable Determines whether to enable super resolution for the remote user's video:
+         * - true: Enable super resolution.
+         * - false: Do not enable super resolution.
          *
          * @return
          * - 0: Success.
          * - < 0: Failure.
+         *  - `-157 (ERR_MODULE_NOT_FOUND)`: The dynamic library for super resolution is not integrated.
          */
         public int EnableRemoteSuperResolution(uint userId, bool enable)
         {
@@ -1454,6 +1733,52 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
             return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
+        }
+
+
+        /// @cond
+        /** Sets the spatial audio effect parameters of the remote user.
+         * @since 3.7.0
+         *
+         * After calling `EnableSpatialAudio` and setting the spatial audio effect parameters of a remote user successfully, the local user can hear the remote user with a real sense of space.
+         * @note Call this method after calling `EnableSpatialAudio`.
+         * @param uid The user ID of the remote user.
+         * @param speaker_azimuth The azimuthal angle in degrees of the remote user relative to the local user in the spherical
+         * coordinate system (taking the position of the local user as its origin). The value range is [0,360], as defined by
+         * the following main directions:
+         * - `0`: (Default) 0 degrees, which means the remote user is directly in front of the local user.
+         * - `90`: 90 degrees, which means the remote user is directly to the left of the local user.
+         * - `180`: 180 degrees, which means the remote user is directly behind the local user.
+         * - `270`: 270 degrees, which means the remote user is directly to the right of the local user.
+         * @param speaker_elevation The elevation angle in degrees of the remote user relative to the local user
+         * in the spherical coordinate system (taking the position of the local user as its origin). The value
+         * range is [-90,90], as defined by the following main directions:
+         * - `0`: (Default) 0 degrees, which means the remote user is at the same horizontal level as the local user.
+         * - `-90`: -90 degrees, which means the remote user is directly above the local user.
+         * - `90`: 90 degrees, which means the remote user is directly below the local user.
+         * @param speaker_distance The distance in meters of the remote user relative to the local user in the spherical
+         * coordinate system (taking the position of the local user as its origin). The value range is [1,50]. The default
+         * value is 1.
+         * @param speaker_orientation The orientation in degrees of the remote user's head relative to the local user's
+         * head in a spherical coordinate system (taking the position of the local user as its origin). The value range
+         * is [0,180], as defined by the following main directions:
+         * - `0`: (Default) 0 degrees, which means the remote user's head and the local user's head face the same direction.
+         * - `180`: 180 degrees, which means the remote user's head and the local user's head face opposite directions. 
+         * @param enable_blur Whether to enable audio blurring:
+         * - `true`: Enable blurring.
+         * - `false`: (Default) Disable blurring.
+         * @param enable_air_absorb Whether to enable air absorption. This function simulates the energy attenuation of audio when the audio transmits in the air:
+         * - `true`: (Default) Enable air absorption.
+         * - `false`: Disable air absorption.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
         }
         /// @endcond
 
@@ -2198,7 +2523,7 @@ namespace agora_gaming_rtc
         }
 
         [MonoPInvokeCallback(typeof(ChannelOnRtmpStreamingStateChangedHandler))]
-        private static void OnRtmpStreamingStateChangedCallback(string channelId, string url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR errCode)
+        private static void OnRtmpStreamingStateChangedCallback(string channelId, string url, RTMP_STREAM_PUBLISH_STATE state, RTMP_STREAM_PUBLISH_ERROR_TYPE errCode)
         {
             AgoraChannel channel = null;
             if (_channelDictionary.ContainsKey(channelId))
@@ -2533,6 +2858,87 @@ namespace agora_gaming_rtc
             }
         }
 
+        [MonoPInvokeCallback(typeof(ChannelOnClientRoleChangeFailedHandler))]
+        private static void OnClientRoleChangeFailedCallback(string channelId, CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
+        {
+            AgoraChannel channel = null;
+            if (_channelDictionary.ContainsKey(channelId))
+            {
+                channel = _channelDictionary[channelId];
+                if (channel != null && channel.ChannelOnClientRoleChangeFailed != null && _AgoraCallbackObjectDictionary[channelId] != null)
+                {
+                    AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
+                    if (queue != null)
+                    {
+                        queue.EnQueue(()=> {
+                            if (_channelDictionary.ContainsKey(channelId))
+                            {
+                                AgoraChannel ch = _channelDictionary[channelId];
+                                if (ch != null && channel.ChannelOnClientRoleChangeFailed != null)
+                                {
+                                    ch.ChannelOnClientRoleChangeFailed(channelId, reason, currentRole);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(ChannelOnFirstRemoteVideoFrameHandler))]
+        private static void OnFirstRemoteVideoFrameHandlerCallback(string channelId, uint uid, int width, int height, int elapsed)
+        {
+            AgoraChannel channel = null;
+            if (_channelDictionary.ContainsKey(channelId))
+            {
+                channel = _channelDictionary[channelId];
+                if (channel != null && channel.ChannelOnFirstRemoteVideoFrame != null && _AgoraCallbackObjectDictionary[channelId] != null)
+                {
+                    AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
+                    if (queue != null)
+                    {
+                        queue.EnQueue(()=> {
+                            if (_channelDictionary.ContainsKey(channelId))
+                            {
+                                AgoraChannel ch = _channelDictionary[channelId];
+                                if (ch != null && channel.ChannelOnFirstRemoteVideoFrame != null)
+                                {
+                                    ch.ChannelOnFirstRemoteVideoFrame(channelId, uid, width, height, elapsed);
+                                }
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
+        [MonoPInvokeCallback(typeof(ChannelOnChannelProxyConnectedHandler))]
+        private static void OnChannelProxyConnectedCallback(string channelId, uint uid, PROXY_TYPE proxyType, string localProxyIp, int elapsed)
+        {
+            AgoraChannel channel = null;
+            if (_channelDictionary.ContainsKey(channelId))
+            {
+                channel = _channelDictionary[channelId];
+                if (channel != null && channel.ChannelOnChannelProxyConnected != null && _AgoraCallbackObjectDictionary[channelId] != null)
+                {
+                    AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
+                    if (queue != null)
+                    {
+                        queue.EnQueue(()=> {
+                            if (_channelDictionary.ContainsKey(channelId))
+                            {
+                                AgoraChannel ch = _channelDictionary[channelId];
+                                if (ch != null && channel.ChannelOnChannelProxyConnected != null)
+                                {
+                                    ch.ChannelOnChannelProxyConnected(channelId, uid, proxyType, localProxyIp, elapsed);
+                                }  
+                            }
+                        });
+                    }
+                }
+            }
+        }
+
         private void initChannelEvent()
         {
             IRtcEngineNative.initChannelEventCallback(_channelHandler, OnWarningCallback,
@@ -2569,7 +2975,10 @@ namespace agora_gaming_rtc
                                                     OnVideoPublishStateChangedCallback,
                                                     OnAudioSubscribeStateChangedCallback,
                                                     OnVideoSubscribeStateChangedCallback,
-                                                    OnUserSuperResolutionEnabledCallback);
+                                                    OnUserSuperResolutionEnabledCallback,
+                                                    OnClientRoleChangeFailedCallback,
+                                                    OnFirstRemoteVideoFrameHandlerCallback,
+                                                    OnChannelProxyConnectedCallback);
         }
     }
 }

@@ -48,9 +48,7 @@ echo "
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
 <dict>
-	<key>com.apple.security.cs.disable-library-validation</key>
-	<true/>
-	<key>com.apple.security.cs.disable-executable-page-protection</key>
+	<key>com.apple.security.cs.allow-unsigned-executable-memory</key>
 	<true/>
 	<key>com.apple.security.device.audio-input</key>
 	<true/>
@@ -88,17 +86,20 @@ function signhelp {
 echo ""
 echo "Make sure you code sign the following items in addition to the App itself:"
 echo "        $AGORA_CLIB"
-for framework in $AGORA_FRAMEWORKS/*; do
+for framework in "$AGORA_FRAMEWORKS/*"; do
     echo "        $framework" 
 done
-
+echo "Or use the signcode.sh script to help your code-signing"
 }
 
 # remove all meta files
-find $APP -type f -name "*.meta" -delete
+find "$APP" -type f -name "*.meta" -delete
 
 # There are both .framework in Frameworks folder and Resources folder, need only one
-rm -r $APP/Contents/PlugIns/agoraSdkCWrapper.bundle/Contents/Frameworks
+EXTRA_FRAMEWORKS="$APP/Contents/PlugIns/agoraSdkCWrapper.bundle/Contents/Frameworks"
+if [ -e "$EXTRA_FRAMEWORKS" ]; then
+    rm -r "$EXTRA_FRAMEWORKS"
+fi
 
 # re-estasbish version symlinks inside the frameworks
 for framework in $AGORA_FRAMEWORKS/*; do
