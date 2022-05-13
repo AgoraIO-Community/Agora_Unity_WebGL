@@ -92,9 +92,8 @@ public class TestHelloUnityVideo
             Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
         };
         mRtcEngine.OnError = HandleError;
-
-
-        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
+        mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
@@ -132,7 +131,9 @@ public class TestHelloUnityVideo
 
         mRtcEngine.OnUserMutedAudio = OnUserMutedAudio;
         mRtcEngine.OnUserMuteVideo = OnUserMutedVideo;
-        mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
+        //   mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
+        mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
+        mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
 
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -362,7 +363,14 @@ public class TestHelloUnityVideo
 
         }
     }
-
+    void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    {
+        Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
+    }
+    void OnClientRoleChangeFailedHandler(CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
+    {
+        Debug.Log("Engine OnClientRoleChangeFaile: " + reason + " c-> " + currentRole);
+    }
     private void OnUserMutedAudio(uint uid, bool muted)
     {
         Debug.LogFormat("user {0} muted audio:{1}", uid, muted);
