@@ -16,11 +16,15 @@ public class AgoraMultiChannel2 : MonoBehaviour
     [SerializeField] private string TOKEN_2 = "";
 
     [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
+    [SerializeField] private string CHANNEL_NAME_3 = "YOUR_CHANNEL_NAME_3";
+    [SerializeField] private string CHANNEL_NAME_4 = "YOUR_CHANNEL_NAME_4";
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private AgoraChannel channel1 = null;
     private AgoraChannel channel2 = null;
+    private AgoraChannel channel3 = null;
+    private AgoraChannel channel4 = null;
     private const float Offset = 100;
 
     public Button startScreenShareButton, stopScreenShareButton;
@@ -148,17 +152,81 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
 
-        
 
+        channel2 = mRtcEngine.CreateChannel(CHANNEL_NAME_2);
+        channel2.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
+        channel2.ChannelOnJoinChannelSuccess = Channel2OnJoinChannelSuccessHandler;
+        channel2.ChannelOnLeaveChannel = Channel2OnLeaveChannelHandler;
+        channel2.ChannelOnUserJoined = Channel2OnUserJoinedHandler;
+        channel2.ChannelOnError = Channel2OnErrorHandler;
+        channel2.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        channel2.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
+        channel2.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
+        channel2.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+
+        channel3 = mRtcEngine.CreateChannel(CHANNEL_NAME_3);
+        channel3.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        channel3.ChannelOnJoinChannelSuccess = Channel2OnJoinChannelSuccessHandler;
+        channel3.ChannelOnLeaveChannel = Channel2OnLeaveChannelHandler;
+        channel3.ChannelOnUserJoined = Channel2OnUserJoinedHandler;
+        channel3.ChannelOnError = Channel2OnErrorHandler;
+        channel3.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        channel3.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
+        channel3.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
+        channel3.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+
+        channel4 = mRtcEngine.CreateChannel(CHANNEL_NAME_4);
+        channel4.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        channel4.ChannelOnJoinChannelSuccess = Channel2OnJoinChannelSuccessHandler;
+        channel4.ChannelOnLeaveChannel = Channel2OnLeaveChannelHandler;
+        channel4.ChannelOnUserJoined = Channel2OnUserJoinedHandler;
+        channel4.ChannelOnError = Channel2OnErrorHandler;
+        channel4.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        channel4.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
+        channel4.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
+        channel4.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+
+    }
+
+    public void JoinChannel4()
+    {
+        channel4.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+    }
+
+    public void LeaveChannel4()
+    {
+        channel4.LeaveChannel();
+    }
+
+    public void JoinChannel3()
+    {
+        channel3.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+    }
+
+    public void LeaveChannel3()
+    {
+        channel3.LeaveChannel();
     }
 
     public void JoinChannel2()
     {
-        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        channel2.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
     }
 
     public void LeaveChannel2()
+    {
+        channel2.LeaveChannel();
+    }
+
+    public void JoinChannel1()
+    {
+        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+    }
+
+    public void LeaveChannel1()
     {
         channel1.LeaveChannel();
     }
@@ -249,12 +317,12 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     void Channel2OnLeaveChannelHandler(string channelId, RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", channelId));
+        logger.UpdateLog(string.Format("Channel2OnLeaveChannelHandler channelId: {0}", channelId));
     }
 
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("Channel1OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
+        logger.UpdateLog(string.Format("EngineOnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
     }
 
     void Channel1OnErrorHandler(string channelId, int err, string message)
@@ -271,7 +339,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     void EngineOnErrorHandler(int err, string message)
     {
-        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", CHANNEL_NAME_1, err,
+        logger.UpdateLog(string.Format("EngineOnErrorHandler channelId: {0}, err: {1}, message: {2}", CHANNEL_NAME_1, err,
             message));
     }
 
@@ -285,7 +353,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+        logger.UpdateLog(string.Format("EngineOnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
             uid, elapsed));
         makeVideoView(CHANNEL_NAME_1, uid);
     }
