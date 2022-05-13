@@ -153,9 +153,14 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     }
 
-    void JoinChannel2()
+    public void JoinChannel2()
     {
         channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+    }
+
+    public void LeaveChannel2()
+    {
+        channel1.LeaveChannel();
     }
 
     void JoinChannel()

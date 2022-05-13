@@ -28,6 +28,14 @@ class AgoraChannel {
     this.liveTranscodingConfig = null;
     this.volumeIndicationOn = false;
     this.tempLocalTracks = null;
+    this.userJoinedHandle = this.handleUserJoined.bind(this);
+    this.userPublishedHandle = this.handleUserPublished.bind(this);
+    this.userUnpublishedHandle = this.handleUserUnpublished.bind(this);
+    this.userLeftHandle = this.handleUserLeft.bind(this);
+    this.userExceptionHandle = this.handleException.bind(this);
+    this.userErrorHandle = this.handleError.bind(this);
+    this.userVolumeHandle = this.handleVolumeIndicator.bind(this);
+    this.userStreamHandle = this.handleStreamMessage.bind(this);
   }
 
   setOptions(channelkey, channelName, uid) {
@@ -240,15 +248,25 @@ class AgoraChannel {
     this.options.channel = channel_str;
     this.channelId = channel_str;
 
+    //reset event listeners.
+    // this.client.removeAllListeners("user-joined");
+    // this.client.removeAllListeners("user-published");
+    // this.client.removeAllListeners("user-unpublished");
+    // this.client.removeAllListeners("user-left");
+    // this.client.removeAllListeners("exception");
+    // this.client.removeAllListeners("error");
+    // this.client.removeAllListeners("volume-indicator");
+    // this.client.removeAllListeners("stream-message");
+
     // add event listener to play remote tracks when remote user publishs.
-    this.client.on("user-joined", this.handleUserJoined.bind(this));
-    this.client.on("user-published", this.handleUserPublished.bind(this));
-    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
-    this.client.on("user-left", this.handleUserLeft.bind(this));
-    this.client.on("exception", this.handleException.bind(this));
-    this.client.on("error", this.handleError.bind(this));
-    this.client.on("volume-indicator", this.handleVolumeIndicator.bind(this));
-    this.client.on("stream-message", this.handleStreamMessage.bind(this));
+    this.client.on("user-joined", this.userJoinedHandle);
+    this.client.on("user-published", this.userPublishedHandle);
+    this.client.on("user-unpublished", this.userUnpublishedHandle);
+    this.client.on("user-left", this.userLeftHandle);
+    this.client.on("exception", this.userExceptionHandle);
+    this.client.on("error", this.userErrorHandle);
+    this.client.on("volume-indicator", this.userVolumeHandle);
+    this.client.on("stream-message", this.userStreamHandle);
 
     [this.options.uid] = await Promise.all([
       this.client.join(
@@ -293,9 +311,19 @@ class AgoraChannel {
         localTracks.videoTrack = undefined;
       }
       if (localTracks.audioTrack != undefined) {
+        if(!Array.isArray(localTracks.audioTrack)){
+        console.log(localTracks.audioTrack);
         localTracks.audioTrack.stop();
         localTracks.audioTrack.close();
         localTracks.audioTrack = undefined;
+        } else {
+          console.log("Track is array");
+          localTracks.audioTrack[0].stop();
+          localTracks.audioTrack[0].close();
+          localTracks.audioTrack[1].stop();
+          localTracks.audioTrack[1].close();
+          localTracks.audioTrack = undefined;
+        }
       }
     }
 
@@ -303,7 +331,16 @@ class AgoraChannel {
     // remove remote users and player views
     this.remoteUsers = {};
     multiclient_connections--;
-    await this.client.leave();
+    this.client.leave();
+    this.client.off("user-joined", this.userJoinedHandle);
+    console.log(this.client.getListeners("user-joined"));
+    this.client.off("user-published", this.userPublishedHandle);
+    this.client.off("user-unpublished", this.userUnpublishedHandle);
+    this.client.off("user-left", this.userLeftHandle);
+    this.client.off("exception", this.userExceptionHandle);
+    this.client.off("error", this.userErrorHandle);
+    this.client.off("volume-indicator", this.userVolumeHandle);
+    this.client.off("stream-message", this.userStreamHandle);
     _logger("leave successfull");
     event_manager.raiseOnLeaveChannel_MC(this.options.channel);
     //event_manager.raiseCustomMsg("Channel Left");
