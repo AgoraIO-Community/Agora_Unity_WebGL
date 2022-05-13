@@ -11,8 +11,8 @@ class AgoraChannel {
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
     this.audioEnabled = false; // if true then mic access is created, if false then not
-    this.videoSubscribing = true; 
-    this.audioSubscribing = true; 
+    this.videoSubscribing = true;
+    this.audioSubscribing = true;
 
     this.is_publishing = false;
     this.is_screensharing = false;
@@ -43,7 +43,7 @@ class AgoraChannel {
     this.options.channel = channelName;
     this.options.uid = uid;
   }
-  
+
   setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
     this.audioEnabled = pubAudio;
     this.videoEnabled = pubVideo;
@@ -92,11 +92,11 @@ class AgoraChannel {
     const id = user.uid;
     this.remoteUsers[id] = user;
 
-    if(this.muteAllAudio){
+    if (this.muteAllAudio) {
       this.remoteUsersAudioMuted[id] = true;
     }
 
-    if(this.muteAllVideo){
+    if (this.muteAllVideo) {
       this.remoteUsersVideoMuted[id] = true;
     }
 
@@ -205,7 +205,7 @@ class AgoraChannel {
     var info = "";
     const vad = 0;
     const channel_str = this.channelId;
-    result.forEach(function(volume, index){
+    result.forEach(function (volume, index) {
       console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
 
       if (volume.level > total) {
@@ -229,16 +229,16 @@ class AgoraChannel {
     console.log(e);
   }
 
-  async handleStopScreenShare(){
+  async handleStopScreenShare() {
     console.log("Stopping Screen Share");
     stopScreenCapture2();
   }
 
-  async handleStopNewScreenShare(){
+  async handleStopNewScreenShare() {
     console.log("Stopping New Screen Share");
     stopNewScreenCaptureForWeb2();
   }
-   //============================================================================== 
+  //============================================================================== 
   async joinChannel2(
     channel_str,
     token_str,
@@ -311,17 +311,17 @@ class AgoraChannel {
         localTracks.videoTrack = undefined;
       }
       if (localTracks.audioTrack != undefined) {
-        if(!Array.isArray(localTracks.audioTrack)){
-        console.log(localTracks.audioTrack);
-        localTracks.audioTrack.stop();
-        localTracks.audioTrack.close();
-        localTracks.audioTrack = undefined;
+        if (!Array.isArray(localTracks.audioTrack)) {
+          console.log(localTracks.audioTrack);
+          localTracks.audioTrack.stop();
+          localTracks.audioTrack.close();
+          localTracks.audioTrack = undefined;
         } else {
           console.log("Track is array");
-          localTracks.audioTrack[0].stop();
-          localTracks.audioTrack[0].close();
-          localTracks.audioTrack[1].stop();
-          localTracks.audioTrack[1].close();
+          for (var i = 0; i < localTracks.audioTrack.length; i++) {
+            localTracks.audioTrack[i].stop();
+            localTracks.audioTrack[i].close();
+          }
           localTracks.audioTrack = undefined;
         }
       }
@@ -601,45 +601,44 @@ class AgoraChannel {
     this.muteAllVideo = mute;
   }
 
-// Must/Unmute local audio (mic)
-async muteLocalAudioStream(mute) {
-  if (mute) {
-    if (localTracks.audioTrack) {
-      await this.client.unpublish(localTracks.audioTrack);
-    }
-  } else {
-    if (localTracks.audioTrack) {
-      await this.client.publish(localTracks.audioTrack);
-    }
-  }
-  this.audioEnabled = !mute;
-}
-
-// Stops/Resumes sending the local video stream.
-async muteLocalVideoStream(mute) {
-  if (this.client && !this.is_screensharing) {
+  // Must/Unmute local audio (mic)
+  async muteLocalAudioStream(mute) {
     if (mute) {
-      if (localTracks.videoTrack)
-      {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
-        await this.client.unpublish(localTracks.videoTrack);
+      if (localTracks.audioTrack) {
+        await this.client.unpublish(localTracks.audioTrack);
       }
     } else {
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
-      ]);
-      localTracks.videoTrack.play("local-player");
-      if (this.is_publishing) {
-        await this.client.publish(localTracks.videoTrack);
+      if (localTracks.audioTrack) {
+        await this.client.publish(localTracks.audioTrack);
       }
     }
-    this.videoEnabled = !mute;
+    this.audioEnabled = !mute;
   }
-}
+
+  // Stops/Resumes sending the local video stream.
+  async muteLocalVideoStream(mute) {
+    if (this.client && !this.is_screensharing) {
+      if (mute) {
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.stop();
+          localTracks.videoTrack.close();
+          await this.client.unpublish(localTracks.videoTrack);
+        }
+      } else {
+        [localTracks.videoTrack] = await Promise.all([
+          AgoraRTC.createCameraVideoTrack(),
+        ]);
+        localTracks.videoTrack.play("local-player");
+        if (this.is_publishing) {
+          await this.client.publish(localTracks.videoTrack);
+        }
+      }
+      this.videoEnabled = !mute;
+    }
+  }
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
-      
+
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "audio");
@@ -787,7 +786,7 @@ async muteLocalVideoStream(mute) {
     if (this.is_screensharing) {
       this.screenShareClient.leave();
       this.is_screensharing = false;
-      if(localTracks.audioTrack) {
+      if (localTracks.audioTrack) {
         this.client.publish(localTracks.audioTrack);
       }
       event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
@@ -841,7 +840,7 @@ async muteLocalVideoStream(mute) {
       // host
       if (role === 1) {
         await this.client.setClientRole("host", optionLevel);
-        if (this.channelId === "" ) {
+        if (this.channelId === "") {
           // called before join channel
           // do nothing, just mark it at the end
         } else {
@@ -853,9 +852,8 @@ async muteLocalVideoStream(mute) {
           }
         }
       } else if (role === 2) {
-      // audience
-        if (this.client_role != role)
-        {
+        // audience
+        if (this.client_role != role) {
           await this.unpublish();
         }
         await this.client.setClientRole("audience", optionLevel);
