@@ -33,6 +33,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public Toggle loopbackAudioToggle, newScreenShareToggle;
 
+    public Button[] joinChannelButtons, leaveChannelButtons;
+
     // Use this for initialization
     void Start()
     {
@@ -193,41 +195,83 @@ public class AgoraMultiChannel2 : MonoBehaviour
     public void JoinChannel4()
     {
         channel4.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        if (joinChannelButtons.Length > 3 && joinChannelButtons[3])
+        {
+            joinChannelButtons[3].interactable = false;
+            leaveChannelButtons[3].interactable = true;
+        }
     }
 
     public void LeaveChannel4()
     {
         channel4.LeaveChannel();
+        if (joinChannelButtons.Length > 3 && joinChannelButtons[3])
+        {
+            joinChannelButtons[3].interactable = true;
+            leaveChannelButtons[3].interactable = false;
+        }
+
     }
 
     public void JoinChannel3()
     {
         channel3.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        if (joinChannelButtons.Length > 2 && joinChannelButtons[2])
+        {
+            joinChannelButtons[2].interactable = false;
+            leaveChannelButtons[2].interactable = true;
+        }
     }
 
     public void LeaveChannel3()
     {
         channel3.LeaveChannel();
+        if (joinChannelButtons.Length > 2 && joinChannelButtons[2])
+        {
+            joinChannelButtons[2].interactable = true;
+            leaveChannelButtons[2].interactable = false;
+        }
+
     }
 
     public void JoinChannel2()
     {
         channel2.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        if (joinChannelButtons.Length > 1 && joinChannelButtons[1])
+        {
+            joinChannelButtons[1].interactable = false;
+            leaveChannelButtons[1].interactable = true;
+        }
     }
 
     public void LeaveChannel2()
     {
         channel2.LeaveChannel();
+        if (joinChannelButtons.Length > 1 && joinChannelButtons[1])
+        {
+            joinChannelButtons[1].interactable = true;
+            leaveChannelButtons[1].interactable = false;
+        }
     }
 
     public void JoinChannel1()
     {
         channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
+        {
+            joinChannelButtons[0].interactable = false;
+            leaveChannelButtons[0].interactable = true;
+        }
     }
 
     public void LeaveChannel1()
     {
         channel1.LeaveChannel();
+        if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
+        {
+            joinChannelButtons[0].interactable = true;
+            leaveChannelButtons[0].interactable = false;
+        }
     }
 
     void JoinChannel()

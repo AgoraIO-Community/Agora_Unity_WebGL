@@ -510,7 +510,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 284721713}
   m_OnClick:
     m_PersistentCalls:
@@ -993,7 +993,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 497364596}
   m_OnClick:
     m_PersistentCalls:
@@ -1295,7 +1295,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 753734141}
   m_OnClick:
     m_PersistentCalls:
@@ -2034,7 +2034,7 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 1338097254}
   m_OnClick:
     m_PersistentCalls:
@@ -2293,6 +2293,16 @@ MonoBehaviour:
   useScreenShareAudio: 1
   loopbackAudioToggle: {fileID: 924186053}
   newScreenShareToggle: {fileID: 1970231432}
+  joinChannelButtons:
+  - {fileID: 1102350104}
+  - {fileID: 1874028887}
+  - {fileID: 1398369967}
+  - {fileID: 14386384}
+  leaveChannelButtons:
+  - {fileID: 1338097253}
+  - {fileID: 497364595}
+  - {fileID: 284721712}
+  - {fileID: 753734140}
 --- !u!1 &1398369965
 GameObject:
   m_ObjectHideFlags: 0
