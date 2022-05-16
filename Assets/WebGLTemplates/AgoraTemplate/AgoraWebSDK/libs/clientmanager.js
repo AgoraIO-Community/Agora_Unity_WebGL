@@ -26,6 +26,15 @@ class ClientManager {
       width:undefined,
       height:undefined
     };
+    this.userJoinedHandle = this.handleUserJoined.bind(this);
+    this.userPublishedHandle = this.handleUserPublished.bind(this);
+    this.userUnpublishedHandle = this.handleUserUnpublished.bind(this);
+    this.userLeftHandle = this.handleUserLeft.bind(this);
+    this.userExceptionHandle = this.handleException.bind(this);
+    this.userErrorHandle = this.handleError.bind(this);
+    this.userVolumeHandle = this.handleVolumeIndicator.bind(this);
+    this.userStreamHandle = this.handleStreamMessage.bind(this);
+    this.userInfoUpdateHandler = this.handleUserInfoUpdate.bind(this);
   }
 
   manipulate() {}
@@ -259,9 +268,17 @@ class ClientManager {
     for (var trackName in localTracks) {
       var track = localTracks[trackName];
       if (track) {
-        track.stop();
-        track.close();
-        localTracks[trackName] = null;
+        if(!Array.isArray(track)){
+          track.stop();
+          track.close();
+          localTracks[trackName] = null;
+        } else {
+          for(var i = 0; i < track.length; i++){
+            track[i].stop();
+            track[i].close();
+          }
+          localTracks[trackName] = null;
+        }
       }
     }
 
@@ -300,6 +317,16 @@ class ClientManager {
 
     // leave the channel
     await this.client.leave();
+    this.client.off("user-published", this.userPublishedHandle);
+    this.client.off("user-joined", this.userJoinedHandle);
+    this.client.off("user-left", this.userLeftHandle);
+    //unpublish is used to track mute/unmute, it is recommended to use UserInfoUpdate instead
+    this.client.off("user-unpublished", this.userUnpublishedHandle);
+    this.client.off("exception", this.userExceptionHandle);
+    this.client.off("error", this.userErrorHandle);
+    this.client.off("user-info-updated", this.userInfoUpdateHandler);
+    this.client.off("volume-indicator", this.userVolumeHandle);
+    this.client.off("stream-message", this.userStreamHandle);
     event_manager.raiseOnLeaveChannel();
 
     this._inChannel = false;
@@ -365,16 +392,16 @@ class ClientManager {
   //============================================================================== 
   async joinAgoraChannel(user)
   {
-    this.client.on("user-published", this.handleUserPublished.bind(this));
-    this.client.on("user-joined", this.handleUserJoined.bind(this));
-    this.client.on("user-left", this.handleUserLeft.bind(this));
+    this.client.on("user-published", this.userPublishedHandle);
+    this.client.on("user-joined", this.userJoinedHandle);
+    this.client.on("user-left", this.userLeftHandle);
     //unpublish is used to track mute/unmute, it is recommended to use UserInfoUpdate instead
-    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
-    this.client.on("exception", this.handleException.bind(this));
-    this.client.on("error", this.handleError.bind(this));
-    this.client.on("user-info-updated", this.handleUserInfoUpdate.bind(this));
-    this.client.on("volume-indicator", this.handleVolumeIndicator.bind(this));
-    this.client.on("stream-message", this.handleStreamMessage.bind(this));
+    this.client.on("user-unpublished", this.userUnpublishedHandle);
+    this.client.on("exception", this.userExceptionHandle);
+    this.client.on("error", this.userErrorHandle);
+    this.client.on("user-info-updated", this.userInfoUpdateHandler);
+    this.client.on("volume-indicator", this.userVolumeHandle);
+    this.client.on("stream-message", this.userStreamHandle);
 
     if (typeof(user) == "string") {
 	    user = 0; // let system assign uid

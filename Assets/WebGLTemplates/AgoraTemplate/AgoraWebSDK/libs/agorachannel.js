@@ -11,8 +11,8 @@ class AgoraChannel {
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
     this.audioEnabled = false; // if true then mic access is created, if false then not
-    this.videoSubscribing = true; 
-    this.audioSubscribing = true; 
+    this.videoSubscribing = true;
+    this.audioSubscribing = true;
 
     this.is_publishing = false;
     this.is_screensharing = false;
@@ -28,6 +28,14 @@ class AgoraChannel {
     this.liveTranscodingConfig = null;
     this.volumeIndicationOn = false;
     this.tempLocalTracks = null;
+    this.userJoinedHandle = this.handleUserJoined.bind(this);
+    this.userPublishedHandle = this.handleUserPublished.bind(this);
+    this.userUnpublishedHandle = this.handleUserUnpublished.bind(this);
+    this.userLeftHandle = this.handleUserLeft.bind(this);
+    this.userExceptionHandle = this.handleException.bind(this);
+    this.userErrorHandle = this.handleError.bind(this);
+    this.userVolumeHandle = this.handleVolumeIndicator.bind(this);
+    this.userStreamHandle = this.handleStreamMessage.bind(this);
   }
 
   setOptions(channelkey, channelName, uid) {
@@ -35,7 +43,7 @@ class AgoraChannel {
     this.options.channel = channelName;
     this.options.uid = uid;
   }
-  
+
   setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
     this.audioEnabled = pubAudio;
     this.videoEnabled = pubVideo;
@@ -84,11 +92,11 @@ class AgoraChannel {
     const id = user.uid;
     this.remoteUsers[id] = user;
 
-    if(this.muteAllAudio){
+    if (this.muteAllAudio) {
       this.remoteUsersAudioMuted[id] = true;
     }
 
-    if(this.muteAllVideo){
+    if (this.muteAllVideo) {
       this.remoteUsersVideoMuted[id] = true;
     }
 
@@ -197,7 +205,7 @@ class AgoraChannel {
     var info = "";
     const vad = 0;
     const channel_str = this.channelId;
-    result.forEach(function(volume, index){
+    result.forEach(function (volume, index) {
       console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
 
       if (volume.level > total) {
@@ -221,16 +229,16 @@ class AgoraChannel {
     console.log(e);
   }
 
-  async handleStopScreenShare(){
+  async handleStopScreenShare() {
     console.log("Stopping Screen Share");
     stopScreenCapture2();
   }
 
-  async handleStopNewScreenShare(){
+  async handleStopNewScreenShare() {
     console.log("Stopping New Screen Share");
     stopNewScreenCaptureForWeb2();
   }
-   //============================================================================== 
+  //============================================================================== 
   async joinChannel2(
     channel_str,
     token_str,
@@ -240,15 +248,25 @@ class AgoraChannel {
     this.options.channel = channel_str;
     this.channelId = channel_str;
 
+    //reset event listeners.
+    // this.client.removeAllListeners("user-joined");
+    // this.client.removeAllListeners("user-published");
+    // this.client.removeAllListeners("user-unpublished");
+    // this.client.removeAllListeners("user-left");
+    // this.client.removeAllListeners("exception");
+    // this.client.removeAllListeners("error");
+    // this.client.removeAllListeners("volume-indicator");
+    // this.client.removeAllListeners("stream-message");
+
     // add event listener to play remote tracks when remote user publishs.
-    this.client.on("user-joined", this.handleUserJoined.bind(this));
-    this.client.on("user-published", this.handleUserPublished.bind(this));
-    this.client.on("user-unpublished", this.handleUserUnpublished.bind(this));
-    this.client.on("user-left", this.handleUserLeft.bind(this));
-    this.client.on("exception", this.handleException.bind(this));
-    this.client.on("error", this.handleError.bind(this));
-    this.client.on("volume-indicator", this.handleVolumeIndicator.bind(this));
-    this.client.on("stream-message", this.handleStreamMessage.bind(this));
+    this.client.on("user-joined", this.userJoinedHandle);
+    this.client.on("user-published", this.userPublishedHandle);
+    this.client.on("user-unpublished", this.userUnpublishedHandle);
+    this.client.on("user-left", this.userLeftHandle);
+    this.client.on("exception", this.userExceptionHandle);
+    this.client.on("error", this.userErrorHandle);
+    this.client.on("volume-indicator", this.userVolumeHandle);
+    this.client.on("stream-message", this.userStreamHandle);
 
     [this.options.uid] = await Promise.all([
       this.client.join(
@@ -293,9 +311,19 @@ class AgoraChannel {
         localTracks.videoTrack = undefined;
       }
       if (localTracks.audioTrack != undefined) {
-        localTracks.audioTrack.stop();
-        localTracks.audioTrack.close();
-        localTracks.audioTrack = undefined;
+        if (!Array.isArray(localTracks.audioTrack)) {
+          console.log(localTracks.audioTrack);
+          localTracks.audioTrack.stop();
+          localTracks.audioTrack.close();
+          localTracks.audioTrack = undefined;
+        } else {
+          console.log("Track is array");
+          for (var i = 0; i < localTracks.audioTrack.length; i++) {
+            localTracks.audioTrack[i].stop();
+            localTracks.audioTrack[i].close();
+          }
+          localTracks.audioTrack = undefined;
+        }
       }
     }
 
@@ -303,7 +331,16 @@ class AgoraChannel {
     // remove remote users and player views
     this.remoteUsers = {};
     multiclient_connections--;
-    await this.client.leave();
+    this.client.leave();
+    this.client.off("user-joined", this.userJoinedHandle);
+    console.log(this.client.getListeners("user-joined"));
+    this.client.off("user-published", this.userPublishedHandle);
+    this.client.off("user-unpublished", this.userUnpublishedHandle);
+    this.client.off("user-left", this.userLeftHandle);
+    this.client.off("exception", this.userExceptionHandle);
+    this.client.off("error", this.userErrorHandle);
+    this.client.off("volume-indicator", this.userVolumeHandle);
+    this.client.off("stream-message", this.userStreamHandle);
     _logger("leave successfull");
     event_manager.raiseOnLeaveChannel_MC(this.options.channel);
     //event_manager.raiseCustomMsg("Channel Left");
@@ -564,45 +601,44 @@ class AgoraChannel {
     this.muteAllVideo = mute;
   }
 
-// Must/Unmute local audio (mic)
-async muteLocalAudioStream(mute) {
-  if (mute) {
-    if (localTracks.audioTrack) {
-      await this.client.unpublish(localTracks.audioTrack);
-    }
-  } else {
-    if (localTracks.audioTrack) {
-      await this.client.publish(localTracks.audioTrack);
-    }
-  }
-  this.audioEnabled = !mute;
-}
-
-// Stops/Resumes sending the local video stream.
-async muteLocalVideoStream(mute) {
-  if (this.client && !this.is_screensharing) {
+  // Must/Unmute local audio (mic)
+  async muteLocalAudioStream(mute) {
     if (mute) {
-      if (localTracks.videoTrack)
-      {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
-        await this.client.unpublish(localTracks.videoTrack);
+      if (localTracks.audioTrack) {
+        await this.client.unpublish(localTracks.audioTrack);
       }
     } else {
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
-      ]);
-      localTracks.videoTrack.play("local-player");
-      if (this.is_publishing) {
-        await this.client.publish(localTracks.videoTrack);
+      if (localTracks.audioTrack) {
+        await this.client.publish(localTracks.audioTrack);
       }
     }
-    this.videoEnabled = !mute;
+    this.audioEnabled = !mute;
   }
-}
+
+  // Stops/Resumes sending the local video stream.
+  async muteLocalVideoStream(mute) {
+    if (this.client && !this.is_screensharing) {
+      if (mute) {
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.stop();
+          localTracks.videoTrack.close();
+          await this.client.unpublish(localTracks.videoTrack);
+        }
+      } else {
+        [localTracks.videoTrack] = await Promise.all([
+          AgoraRTC.createCameraVideoTrack(),
+        ]);
+        localTracks.videoTrack.play("local-player");
+        if (this.is_publishing) {
+          await this.client.publish(localTracks.videoTrack);
+        }
+      }
+      this.videoEnabled = !mute;
+    }
+  }
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
-      
+
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "audio");
@@ -750,7 +786,7 @@ async muteLocalVideoStream(mute) {
     if (this.is_screensharing) {
       this.screenShareClient.leave();
       this.is_screensharing = false;
-      if(localTracks.audioTrack) {
+      if (localTracks.audioTrack) {
         this.client.publish(localTracks.audioTrack);
       }
       event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
@@ -804,7 +840,7 @@ async muteLocalVideoStream(mute) {
       // host
       if (role === 1) {
         await this.client.setClientRole("host", optionLevel);
-        if (this.channelId === "" ) {
+        if (this.channelId === "") {
           // called before join channel
           // do nothing, just mark it at the end
         } else {
@@ -816,9 +852,8 @@ async muteLocalVideoStream(mute) {
           }
         }
       } else if (role === 2) {
-      // audience
-        if (this.client_role != role)
-        {
+        // audience
+        if (this.client_role != role) {
           await this.unpublish();
         }
         await this.client.setClientRole("audience", optionLevel);
