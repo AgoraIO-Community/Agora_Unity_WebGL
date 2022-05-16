@@ -44,7 +44,6 @@ public class AgoraMultiChannel2 : MonoBehaviour
         InitEngine();
         
         //channel setup.
-        JoinChannel2();
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
