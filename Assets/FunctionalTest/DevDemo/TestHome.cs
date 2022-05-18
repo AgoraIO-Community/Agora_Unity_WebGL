@@ -108,6 +108,7 @@ namespace agora_gs_test
 
         public void onLeaveButtonClicked()
         {
+            Debug.Log("Leave Button Clicked " + app);
             if (!ReferenceEquals(app, null))
             {
                 app.leave(); // leave channel
