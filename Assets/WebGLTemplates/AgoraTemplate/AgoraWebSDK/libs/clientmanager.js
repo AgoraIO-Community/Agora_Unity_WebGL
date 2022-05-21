@@ -392,6 +392,13 @@ class ClientManager {
   //============================================================================== 
   async joinAgoraChannel(user)
   {
+    
+    if(localTracks.videoTrack != null){
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      localTracks.videoTrack = null;
+    }
+
     this.client.on("user-published", this.userPublishedHandle);
     this.client.on("user-joined", this.userJoinedHandle);
     this.client.on("user-left", this.userLeftHandle);
@@ -429,7 +436,7 @@ class ClientManager {
   async processJoinChannelAVTrack() {  
     if (this.videoEnabled && this.isHosting()) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack()
+        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
       ]);
       currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
         localTracks.videoTrack._deviceName

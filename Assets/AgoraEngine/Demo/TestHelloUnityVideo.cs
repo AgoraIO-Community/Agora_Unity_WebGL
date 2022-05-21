@@ -153,7 +153,7 @@ public class TestHelloUnityVideo
             mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_DISABLED
             // note: mirrorMode is not effective for WebGL
         };
-        //mRtcEngine.SetVideoEncoderConfiguration(config);
+        mRtcEngine.SetVideoEncoderConfiguration(config);
 
         // enable video
         if (enableVideoOrNot)
