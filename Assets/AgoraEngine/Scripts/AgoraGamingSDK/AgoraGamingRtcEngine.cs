@@ -2139,6 +2139,17 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setVideoEncoderConfiguration(configuration.dimensions.width, configuration.dimensions.height, (int)configuration.frameRate, configuration.minFrameRate, configuration.bitrate, configuration.minBitrate, (int)configuration.orientationMode, (int)configuration.degradationPreference, (int)configuration.mirrorMode);
         }
 
+
+        /**
+        *  Gets remote video's stats to trigger OnVideoSizeChanged
+        */
+        public void GetRemoteVideoStats()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            IRtcEngineNative.getRemoteVideoStats_WGL();
+#endif
+        }
+
         /** Adjusts the audio mixing volume for local playback.
          *
          * @note Ensure that this method is called after {@link agora_gaming_rtc.IRtcEngine.StartAudioMixing StartAudioMixing}.

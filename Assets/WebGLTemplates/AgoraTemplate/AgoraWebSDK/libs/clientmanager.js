@@ -980,7 +980,7 @@ class ClientManager {
     try {
         this.client.sendStreamMessage(data, this._streamMessageRetry);
     } catch(e) {
-        event_manager.raise
+        // event_manager.raiseError
         return -1;
     }
     return 0;
@@ -992,5 +992,15 @@ class ClientManager {
     if (config.frameRate) this._customVideoConfiguration.frameRate = config.frameRate;
     if (config.bitrateMin) this._customVideoConfiguration.bitrateMin = config.bitrateMin;
     if (config.bitrateMax) this._customVideoConfiguration.bitrateMax = config.bitrateMax;
+  }
+
+  getRemoteVideoStats() {
+    var stats = this.client.getRemoteVideoStats();
+    Object.keys(stats).forEach((uid) => {
+      const width = stats[uid].receiveResolutionWidth;
+      const height = stats[uid].receiveResolutionHeight;
+      // UnityHooks.InvokeVideoSizeChangedCallback(uid, width, height);
+      event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
+    });
   }
 }

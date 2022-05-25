@@ -895,3 +895,7 @@ function setWebParametersBool(key, value) {
 function setWebParametersString(key, value) {
   AgoraRTC.setParameter(key, value);
 }
+
+function getRemoteVideoStats() {
+  client_manager.getRemoteVideoStats();
+}
