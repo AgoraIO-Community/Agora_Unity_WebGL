@@ -771,6 +771,8 @@ namespace agora_gaming_rtc
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern IntPtr getUserInfoByUid_WGL(string uid);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void getRemoteVideoStats_WGL();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

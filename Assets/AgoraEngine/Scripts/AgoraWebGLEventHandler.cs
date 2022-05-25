@@ -899,6 +899,30 @@ namespace agora_gaming_rtc
 
         }
 
+        public void ClientOnVideoSizeChanged(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            try
+            {
+                uint uid = uint.Parse(events[0]);
+                int width = int.Parse(events[1]);
+                int height = int.Parse(events[2]);
+
+                IRtcEngine engine = IRtcEngine.QueryEngine();
+                if (engine == null) return;
+                if (engine.OnVideoSizeChanged != null)
+                {
+                    engine.OnVideoSizeChanged(uid, width, height, 0);
+                }
+
+            }
+            catch
+            {
+                Debug.LogWarning("Error processing ClientOnVideoSizeChanged:" + eventData);
+            }
+        }
+
         #region Testing functions, remove later
 
         public void CustomMsg(string msg)
