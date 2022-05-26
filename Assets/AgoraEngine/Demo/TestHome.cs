@@ -70,6 +70,36 @@ public class TestHome : MonoBehaviour
         CheckPermissions();
     }
 
+    bool _showAppIdPopup = false;
+
+    string newAppID = "";
+    private void OnGUI()
+    {
+        if (_showAppIdPopup)
+        {
+            GUI.skin.textField.fontSize = 30;
+            GUI.skin.button.fontSize = 30;
+            int ypos = Screen.height - 80;
+            newAppID = GUI.TextField(new Rect(300, ypos, 500, 50), newAppID);
+            if (GUI.Button(new Rect(10, ypos, 100, 50), "OK"))
+            {
+                AppID = newAppID;
+                CheckAppId();
+                _showAppIdPopup = false;
+                newAppID = "";
+            }
+            if (GUI.Button(new Rect(130, ypos, 150, 50), "Cancel"))
+            {
+                _showAppIdPopup = false;
+            }
+        }
+    }
+
+    public void NewAppIDPopup()
+    {
+        _showAppIdPopup = true;
+    }
+
     private void CheckAppId()
     {
         Debug.Assert(AppID.Length > 10, "Please fill in your AppId first on Game Controller object.");
