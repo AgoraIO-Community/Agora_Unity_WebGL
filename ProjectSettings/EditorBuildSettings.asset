@@ -35,3 +35,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/API-Example/app-screenshare-sample/MainScene.unity
     guid: c57883c4b54ea4984b722542d3f4a76f
+  - enabled: 0
+    path: Assets/FunctionalTest/DevDemo/SceneHome2.unity
+    guid: 11e44933caff747879b06a78a609ddfe
+  - enabled: 0
+    path: Assets/FunctionalTest/DevDemo/SceneFuncTests.unity
+    guid: 38239e0a3e78848d8a1e3b083920e199

@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections;
 using System.Collections.Generic;
 
 using agora_gaming_rtc;
@@ -30,7 +31,7 @@ public class TestHelloUnityVideo
     private ToggleStateButton MuteVideoButton { get; set; }
     private ToggleStateButton RoleButton { get; set; }
     private ToggleStateButton ChannelButton { get; set; }
-
+    protected Dictionary<uint, VideoSurface> UserVideoDict = new Dictionary<uint, VideoSurface>();
     // Testing Volume Indication
     private bool TestVolumeIndication = false;
 
@@ -92,9 +93,8 @@ public class TestHelloUnityVideo
             Debug.LogWarningFormat("Warning code:{0} msg:{1}", warn, IRtcEngine.GetErrorDescription(warn));
         };
         mRtcEngine.OnError = HandleError;
-
-
-        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
+        mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
@@ -132,7 +132,10 @@ public class TestHelloUnityVideo
 
         mRtcEngine.OnUserMutedAudio = OnUserMutedAudio;
         mRtcEngine.OnUserMuteVideo = OnUserMutedVideo;
-        mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
+        //   mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
+        mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
+        mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
+        mRtcEngine.OnVideoSizeChanged += OnVideoSizeChangedHandler;
 
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -362,7 +365,14 @@ public class TestHelloUnityVideo
 
         }
     }
-
+    void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+    {
+        Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
+    }
+    void OnClientRoleChangeFailedHandler(CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
+    {
+        Debug.Log("Engine OnClientRoleChangeFaile: " + reason + " c-> " + currentRole);
+    }
     private void OnUserMutedAudio(uint uid, bool muted)
     {
         Debug.LogFormat("user {0} muted audio:{1}", uid, muted);
@@ -430,6 +440,36 @@ public class TestHelloUnityVideo
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
 
             remoteUserDisplays.Add(videoSurface.gameObject);
+            UserVideoDict[uid] = videoSurface;
+
+            videoSurface.StartCoroutine(CoGetVideoStats());
+        }
+    }
+
+    IEnumerator CoGetVideoStats()
+    {
+        // give a little head time to allow Web engine gather enough stats
+        // TODO: it could be faster, do more test with different value to find out
+        yield return new WaitForSeconds(2);
+        mRtcEngine.GetRemoteVideoStats();
+    }
+
+    float EnforcingViewLength = 360f;
+    void OnVideoSizeChangedHandler(uint uid, int width, int height, int rotation)
+    {
+        Debug.LogWarning(string.Format("OnVideoSizeChangedHandler, uid:{0}, width:{1}, height:{2}, rotation:{3}", uid, width, height, rotation));
+        if (UserVideoDict.ContainsKey(uid))
+        {
+            GameObject go = UserVideoDict[uid].gameObject;
+            Vector2 v2 = new Vector2(width, height);
+            RawImage image = go.GetComponent<RawImage>();
+            v2 = AgoraUIUtils.GetScaledDimension(width, height, EnforcingViewLength);
+
+            if (rotation == 90 || rotation == 270)
+            {
+                v2 = new Vector2(v2.y, v2.x);
+            }
+            image.rectTransform.sizeDelta = v2;
         }
     }
 
@@ -481,7 +521,6 @@ public class TestHelloUnityVideo
         float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
         float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(5 * 1.6666f, 5f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();

@@ -539,11 +539,11 @@ async function SetVideoEncoderConfiguration(
     //degradationPreference: DegradationPreference,
     //videoMirrorMode: VideoMirrorMode,
   };
-  if (localTracks.videoTrack == null) {
-    AgoraRTC.createCameraVideoTrack({ encoderConfig: updatedConfig });
-  } else if (!localTracks.videoTrack.customVideoEnabled) {
+
+  if (localTracks.videoTrack &&!localTracks.videoTrack.customVideoEnabled) {
     localTracks.videoTrack && await localTracks.videoTrack.setEncoderConfiguration(updatedConfig);
   }
+  
   client_manager.setVideoConfiguration(updatedConfig);
 }
 
@@ -894,4 +894,8 @@ function setWebParametersBool(key, value) {
 }
 function setWebParametersString(key, value) {
   AgoraRTC.setParameter(key, value);
+}
+
+function getRemoteVideoStats() {
+  client_manager.getRemoteVideoStats();
 }

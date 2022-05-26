@@ -1515,6 +1515,9 @@ muteLocalAudioStream_channel: function(channel, mute) {
     screenCaptureBitrate,
     screenCaptureCaptureMouseCursor
   ) {},
+  getRemoteVideoStats_WGL: function() {
+    getRemoteVideoStats();
+  },
   generateNativeTexture: function () {},
   setLocalVoicePitch: function (pitch) {},
   addInjectStreamUrl2: function (
@@ -1618,7 +1621,17 @@ muteLocalAudioStream_channel: function(channel, mute) {
                                       OnFirstLocalVideoFramePublishedCallback,
                                       OnUserSuperResolutionEnabledCallback,
                                       OnUploadLogResultCallback,
-                                      OnVirtualBackgroundSourceEnabledCallback
+                                      OnVirtualBackgroundSourceEnabledCallback,
+                                      OnRequestAudioFileInfo,
+                                      OnContentInspectResult,
+                                      OnSnapshotTaken,
+                                      OnClientRoleChangeFailed,
+                                      OnAudioDeviceTestVolumeIndication,
+                                      OnProxyConnected,
+                                      OnWlAccMessage,
+                                      OnWlAccStats,
+                                      OnScreenCaptureInfoUpdated
+
   ) {
     UnityHooks.OnStreamMessageCallback = OnStreamMessageCallback;
     UnityHooks.InvokeStreamMessageCallback = function(uid, bytes, length) {
@@ -1631,7 +1644,12 @@ muteLocalAudioStream_channel: function(channel, mute) {
       }
       UnityHooks.data = data;
       Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
-    }
+    };
+
+    UnityHooks.OnVideoSizeChangedCallback = OnVideoSizeChangedCallback;
+    UnityHooks.InvokeVideoSizeChangedCallback = function(uid, width, height) {
+      Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
+    };
 
     UnityHooks.isLoaded = true;
   },

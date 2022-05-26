@@ -870,34 +870,58 @@ namespace agora_gaming_rtc
             string oldRole_s = events[0];
             string newRole_s = events[1];
 
-            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            IRtcEngine engine = IRtcEngine.QueryEngine();
             if (engine == null) return;
 
             CLIENT_ROLE_TYPE oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE; // 2
-                CLIENT_ROLE_TYPE newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER; // 1
-                if (oldRole_s == "1")
-                {
-                    oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
-                }
-                else
-                {
-                    oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
-                }
+            CLIENT_ROLE_TYPE newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER; // 1
+            if (oldRole_s == "1")
+            {
+                oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
+            }
+            else
+            {
+                oldRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+            }
 
-                if (newRole_s == "1")
+            if (newRole_s == "1")
+            {
+                newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
+            }
+            else
+            {
+                newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
+            }
+            if (engine.OnClientRoleChanged != null)
+            {
+                engine.OnClientRoleChanged(oldRole, newRole);
+            }
+
+        }
+
+        public void ClientOnVideoSizeChanged(string eventData)
+        {
+            string[] events = eventData.Split('|');
+
+            try
+            {
+                uint uid = uint.Parse(events[0]);
+                int width = int.Parse(events[1]);
+                int height = int.Parse(events[2]);
+
+                IRtcEngine engine = IRtcEngine.QueryEngine();
+                if (engine == null) return;
+                if (engine.OnVideoSizeChanged != null)
                 {
-                    newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER;
-                }
-                else
-                {
-                    newRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
-                }
-                if (engine.OnClientRoleChanged != null)
-                {
-                    engine.OnClientRoleChanged(oldRole, newRole);
+                    engine.OnVideoSizeChanged(uid, width, height, 0);
                 }
 
             }
+            catch
+            {
+                Debug.LogWarning("Error processing ClientOnVideoSizeChanged:" + eventData);
+            }
+        }
 
         #region Testing functions, remove later
 

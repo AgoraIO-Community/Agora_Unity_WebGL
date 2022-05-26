@@ -219,6 +219,14 @@ class EventManager {
     );
   }
 
+  raiseOnClientVideoSizeChanged(uid, width, height) {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "ClientOnVideoSizeChanged",
+      uid + "|" + width + "|" + height
+    );
+  }
+
   // TEMP EVENTS, JUST FOR TESTING
   raiseCustomMsg(msg) {
     unityInstance.SendMessage("AgoraEventHandler", "CustomMsg", msg);

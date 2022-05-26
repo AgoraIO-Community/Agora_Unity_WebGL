@@ -118,9 +118,14 @@ public class AgoraClientManager : MonoBehaviour
         mRtcEngine.OnScreenShareCanceled += screenShareCanceledHandler;
     }
 
-    void JoinChannel()
+    public void JoinChannel()
     {
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+    }
+
+    public void LeaveChannel()
+    {
+        mRtcEngine.LeaveChannel();
     }
 
     void OnApplicationQuit()
