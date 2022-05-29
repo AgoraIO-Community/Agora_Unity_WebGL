@@ -152,7 +152,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel1.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
-
+        channel1.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
         channel2 = mRtcEngine.CreateChannel(CHANNEL_NAME_2);
         channel2.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -165,6 +165,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel2.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel2.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel2.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel2.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
         channel3 = mRtcEngine.CreateChannel(CHANNEL_NAME_3);
         channel3.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -177,6 +178,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel3.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel3.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel3.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel3.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
         channel4 = mRtcEngine.CreateChannel(CHANNEL_NAME_4);
         channel4.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -189,6 +191,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel4.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel4.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel4.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel4.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
     }
 
@@ -199,6 +202,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         {
             joinChannelButtons[3].interactable = false;
             leaveChannelButtons[3].interactable = true;
+            StartCoroutine(CoGetVideoStats(channel4));
         }
     }
 
@@ -220,6 +224,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         {
             joinChannelButtons[2].interactable = false;
             leaveChannelButtons[2].interactable = true;
+            StartCoroutine(CoGetVideoStats(channel3));
         }
     }
 
@@ -241,6 +246,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         {
             joinChannelButtons[1].interactable = false;
             leaveChannelButtons[1].interactable = true;
+            StartCoroutine(CoGetVideoStats(channel2));
         }
     }
 
@@ -261,6 +267,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         {
             joinChannelButtons[0].interactable = false;
             leaveChannelButtons[0].interactable = true;
+            StartCoroutine(CoGetVideoStats(channel1));
         }
     }
 
@@ -279,6 +286,15 @@ public class AgoraMultiChannel2 : MonoBehaviour
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
+    IEnumerator CoGetVideoStats(AgoraChannel channel)
+    {
+        // give a little head time to allow Web engine gather enough stats
+        // TODO: it could be faster, do more test with different value to find out
+        yield return new WaitForSeconds(3);
+        Debug.Log("Start Remote Video Stats");
+        channel.GetRemoteVideoStats();
+    }
+
     void OnApplicationQuit()
     {
         Debug.Log("OnApplicationQuit");
@@ -290,6 +306,13 @@ public class AgoraMultiChannel2 : MonoBehaviour
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
+    }
+
+    void onVideoSizeChanged_MCHandler(string channelID, uint uid, int width, int height, int rotation)
+    {
+        
+        logger.UpdateLog(string.Format("channelOnVideoSizeChanged channelID: {3}, uid: {0}, width: {1}, height: {2}", uid,
+            width, height, channelID));
     }
 
     void screenShareStartedHandler(string channelId, uint uid, int elapsed)

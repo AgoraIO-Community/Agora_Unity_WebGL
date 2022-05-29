@@ -1518,6 +1518,9 @@ muteLocalAudioStream_channel: function(channel, mute) {
   getRemoteVideoStats_WGL: function() {
     getRemoteVideoStats();
   },
+  getRemoteVideoStats_MC: function() {
+    getRemoteVideoStatsMC();
+  },
   generateNativeTexture: function () {},
   setLocalVoicePitch: function (pitch) {},
   addInjectStreamUrl2: function (

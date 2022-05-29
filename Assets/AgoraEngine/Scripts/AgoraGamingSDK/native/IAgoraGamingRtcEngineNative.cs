@@ -773,6 +773,8 @@ namespace agora_gaming_rtc
         protected static extern IntPtr getUserInfoByUid_WGL(string uid);
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern void getRemoteVideoStats_WGL();
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void getRemoteVideoStats_MC();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
