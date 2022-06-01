@@ -313,6 +313,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         
         logger.UpdateLog(string.Format("channelOnVideoSizeChanged channelID: {3}, uid: {0}, width: {1}, height: {2}", uid,
             width, height, channelID));
+        Debug.Log(channel1.ChannelOnVideoSizeChanged);
         if (UserVideoDict.ContainsKey(uid))
         {
             GameObject go = UserVideoDict[uid].gameObject;
@@ -477,7 +478,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
             LastRemote.name = "_Destroyer";
             Destroy(LastRemote);
             Debug.LogWarningFormat("Remaking video surface for  uid:{0} channel:{1}", uid, channel);
-            makeVideoView(channel, uid, true);
+            makeVideoView(channel, uid);
         }
     }
 
@@ -511,10 +512,11 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
             if (remote)
             {
+                Debug.Log("is remote " + uid.ToString() + remote.ToString());
                     remoteUserDisplays.Add(videoSurface.gameObject);
                     UserVideoDict[uid] = videoSurface;
 
-                    //videoSurface.StartCoroutine(CoGetVideoStats(channel1));
+                    videoSurface.StartCoroutine(CoGetVideoStats(channel1));
             }
 
 
