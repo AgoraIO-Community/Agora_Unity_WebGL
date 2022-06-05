@@ -105,8 +105,9 @@ class AgoraChannel {
     if ((mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted)) {
       if (mediaType == "video" || (mediaType == "audio" && this.screenShareClient == null
         || mediaType == "audio" && this.screenShareClient != null
-        && id != this.screenShareClient.uid) && (!this.is_screensharing || mediaType != "audio" && this.is_screensharing))
+        && id != this.screenShareClient.uid)) {
         await this.subscribe_remoteuser(user, mediaType);
+      }
     }
   }
 
