@@ -306,6 +306,12 @@ class AgoraChannel {
 
   async leave() {
     _logger("leaving in agorachannel");
+
+    if(this.screenShareClient != null){
+      this.handleUserLeft(this.screenShareClient);
+      await stopNewScreenCaptureForWeb2();
+    }
+
     if (multiclient_connections <= 1) {
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.stop();
@@ -327,6 +333,8 @@ class AgoraChannel {
           localTracks.audioTrack = undefined;
         }
       }
+
+      
     }
 
     this.is_publishing = false;

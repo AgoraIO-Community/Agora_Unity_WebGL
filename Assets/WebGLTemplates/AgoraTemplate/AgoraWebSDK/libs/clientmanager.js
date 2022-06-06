@@ -282,6 +282,11 @@ class ClientManager {
       }
     }
 
+    if(this.screenShareClient != null){
+      this.handleUserLeft(this.screenShareClient);
+      await stopNewScreenCaptureForWeb();
+    }
+
     this.videoEnabled = false; // set to default
     this.audioEnabled = false; // set to default
     localTracks.audioMixingTrack = null;
