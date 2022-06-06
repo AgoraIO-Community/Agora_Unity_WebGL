@@ -608,6 +608,7 @@ class AgoraChannel {
         await this.client.unpublish(localTracks.audioTrack);
       }
     } else {
+      await this.setupLocalAudioTrack();
       if (localTracks.audioTrack) {
         await this.client.publish(localTracks.audioTrack);
       }
@@ -625,10 +626,7 @@ class AgoraChannel {
           await this.client.unpublish(localTracks.videoTrack);
         }
       } else {
-        [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack(),
-        ]);
-        localTracks.videoTrack.play("local-player");
+        await this.setupLocalVideoTrack();
         if (this.is_publishing) {
           await this.client.publish(localTracks.videoTrack);
         }
