@@ -923,6 +923,32 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void ChannelOnVideoSizeChanged(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            
+            try
+            {
+                uint uid = uint.Parse(events[0]);
+
+                int width = int.Parse(events[1]);
+                int height = int.Parse(events[2]);
+                string channel = events[3];
+                AgoraChannel myChannel = GetInstance()._clientsList[channel];
+                
+                if (myChannel == null) return;
+                if (myChannel.ChannelOnVideoSizeChanged != null)
+                {
+                    myChannel.ChannelOnVideoSizeChanged(channel, uid, width, height, 0);
+                }
+
+            }
+            catch
+            {
+                Debug.LogWarning("Error processing ChannelOnVideoSizeChanged:" + eventData);
+            }
+        }
+
         #region Testing functions, remove later
 
         public void CustomMsg(string msg)

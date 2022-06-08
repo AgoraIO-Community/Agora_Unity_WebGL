@@ -35,6 +35,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public Button[] joinChannelButtons, leaveChannelButtons;
 
+    protected Dictionary<uint, VideoSurface> UserVideoDict = new Dictionary<uint, VideoSurface>();
+    private List<GameObject> remoteUserDisplays = new List<GameObject>();
+
     // Use this for initialization
     void Start()
     {
@@ -152,7 +155,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel1.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
-
+        channel1.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
         channel2 = mRtcEngine.CreateChannel(CHANNEL_NAME_2);
         channel2.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -165,6 +168,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel2.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel2.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel2.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel2.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
         channel3 = mRtcEngine.CreateChannel(CHANNEL_NAME_3);
         channel3.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -177,6 +181,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel3.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel3.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel3.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel3.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
         channel4 = mRtcEngine.CreateChannel(CHANNEL_NAME_4);
         channel4.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -189,6 +194,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         channel4.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
         channel4.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
         channel4.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel4.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
     }
 
@@ -279,6 +285,15 @@ public class AgoraMultiChannel2 : MonoBehaviour
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
+    IEnumerator CoGetVideoStats(AgoraChannel channel)
+    {
+        // give a little head time to allow Web engine gather enough stats
+        // TODO: it could be faster, do more test with different value to find out
+        yield return new WaitForSeconds(5);
+        Debug.Log("Start Remote Video Stats");
+        channel.GetRemoteVideoStats();
+    }
+
     void OnApplicationQuit()
     {
         Debug.Log("OnApplicationQuit");
@@ -289,6 +304,28 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
+        }
+    }
+
+    float EnforcingViewLength = 180f;
+    void onVideoSizeChanged_MCHandler(string channelID, uint uid, int width, int height, int rotation)
+    {
+        
+        logger.UpdateLog(string.Format("channelOnVideoSizeChanged channelID: {3}, uid: {0}, width: {1}, height: {2}", uid,
+            width, height, channelID));
+        Debug.Log(channel1.ChannelOnVideoSizeChanged);
+        if (UserVideoDict.ContainsKey(uid))
+        {
+            GameObject go = UserVideoDict[uid].gameObject;
+            Vector2 v2 = new Vector2(width, height);
+            RawImage image = go.GetComponent<RawImage>();
+            v2 = AgoraUIUtils.GetScaledDimension(width, height, EnforcingViewLength);
+
+            if (rotation == 90 || rotation == 270)
+            {
+                v2 = new Vector2(v2.y, v2.x);
+            }
+            image.rectTransform.sizeDelta = v2;
         }
     }
 
@@ -391,7 +428,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     {
         logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId,
             uid, elapsed));
-        makeVideoView(channelId, uid);
+        makeVideoView(channelId, uid, true);
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
@@ -405,7 +442,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     {
         logger.UpdateLog(string.Format("Channel2OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", channelId,
             uid, elapsed));
-        makeVideoView(channelId, uid);
+        makeVideoView(channelId, uid, true);
     }
 
     void ChannelOnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
@@ -447,7 +484,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     GameObject LastRemote = null;
 
-    private void makeVideoView(string channelId, uint uid)
+    private void makeVideoView(string channelId, uint uid, bool remote = false)
     {
         string objName = channelId + "_" + uid.ToString();
         GameObject go = GameObject.Find(objName);
@@ -472,6 +509,17 @@ public class AgoraMultiChannel2 : MonoBehaviour
             {
                 LastRemote = videoSurface.gameObject;
             }
+
+            if (remote)
+            {
+                Debug.Log("is remote " + uid.ToString() + remote.ToString());
+                    remoteUserDisplays.Add(videoSurface.gameObject);
+                    UserVideoDict[uid] = videoSurface;
+
+                    videoSurface.StartCoroutine(CoGetVideoStats(channel1));
+            }
+
+
         }
     }
 

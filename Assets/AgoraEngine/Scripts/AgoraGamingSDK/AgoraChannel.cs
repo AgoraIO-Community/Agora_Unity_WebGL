@@ -451,6 +451,16 @@ namespace agora_gaming_rtc
             return callIdString;
         }
 
+        /**
+        *  Gets remote video's stats to trigger OnVideoSizeChanged
+        */
+        public void GetRemoteVideoStats()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            IRtcEngineNative.getRemoteVideoStats_MC();
+#endif
+        }
+
         /** Gets a new token when the current token expires after a period of time.
          *
          * The `token` expires after a period of time once the token schema is enabled when:

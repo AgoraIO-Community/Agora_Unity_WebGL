@@ -436,4 +436,13 @@ function enableAudioVolumeIndicator2() {
     c.enableAudioVolumeIndicator2();
   }
 }
+
+function getRemoteVideoStatsMC() {
+  if (typeof clients[selectedCurrentChannel] === "undefined") {
+    return 0;
+  } else {
+    var c = clients[selectedCurrentChannel];
+    c.getRemoteVideoStatsMC();
+  }
+}
 // NEW MULTI CLIENT API's ENDS

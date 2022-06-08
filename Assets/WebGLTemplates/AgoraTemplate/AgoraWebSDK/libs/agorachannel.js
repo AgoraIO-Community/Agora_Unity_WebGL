@@ -112,6 +112,7 @@ class AgoraChannel {
 
   handleUserLeft(user) {
     const id = user.uid;
+    delete this.remoteUsers[id];
     event_manager.raiseChannelOnUserLeft_MC(id, this.options.channel);
     event_manager.raiseCustomMsg("User Left: " + id);
   }
@@ -869,5 +870,16 @@ class AgoraChannel {
     } else {
       this.volumeIndicationOn = true;
     }
+  }
+
+  getRemoteVideoStatsMC() {
+    console.log("agora channel remote video stats");
+    var stats = this.client.getRemoteVideoStats();
+    Object.keys(stats).forEach((uid) => {
+      const width = stats[uid].receiveResolutionWidth;
+      const height = stats[uid].receiveResolutionHeight;
+      // UnityHooks.InvokeVideoSizeChangedCallback(uid, width, height);
+      event_manager.raiseOnClientVideoSizeChanged_MC(this.options.channel, uid, width, height);
+    });
   }
 }

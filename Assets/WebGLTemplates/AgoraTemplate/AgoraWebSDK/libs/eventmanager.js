@@ -8,6 +8,14 @@ class EventManager {
     unityInstance.SendMessage("AgoraEventHandler", "LastMileQuality", quality);
   }
 
+  raiseOnClientVideoSizeChanged_MC(channelID ,uid, width, height){
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "ChannelOnVideoSizeChanged",
+      uid + "|" + width + "|" + height + "|" + channelID
+    );
+  }
+
   raiseonCamerasListing(fstr) {
     unityInstance.SendMessage("AgoraEventHandler", "onCamerasListing", fstr);
   }
