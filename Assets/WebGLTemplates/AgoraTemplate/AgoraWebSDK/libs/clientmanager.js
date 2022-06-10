@@ -167,7 +167,7 @@ class ClientManager {
     const id = user.uid;
     if (this.audioSubscribing && mediaType == "audio" && (mediaType == "audio" && this.screenShareClient == null
       || mediaType == "audio" && this.screenShareClient != null
-      && id != this.screenShareClient.uid) && (!this.is_screensharing || mediaType != "audio" && this.is_screensharing)) {
+      && id != this.screenShareClient.uid)) {
       await this.subscribe_remoteuser(user, mediaType);
     } else if(this.videoSubscribing && mediaType == "video") {
       await this.subscribe_remoteuser(user, mediaType);
@@ -280,6 +280,11 @@ class ClientManager {
           localTracks[trackName] = null;
         }
       }
+    }
+
+    if(this.screenShareClient != null){
+      this.handleUserLeft(this.screenShareClient);
+      await stopNewScreenCaptureForWeb();
     }
 
     this.videoEnabled = false; // set to default
@@ -996,6 +1001,7 @@ class ClientManager {
 
   getRemoteVideoStats() {
     var stats = this.client.getRemoteVideoStats();
+    console.log(stats);
     Object.keys(stats).forEach((uid) => {
       const width = stats[uid].receiveResolutionWidth;
       const height = stats[uid].receiveResolutionHeight;

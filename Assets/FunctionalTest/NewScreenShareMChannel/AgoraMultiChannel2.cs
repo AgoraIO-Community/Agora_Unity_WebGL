@@ -313,7 +313,6 @@ public class AgoraMultiChannel2 : MonoBehaviour
         
         logger.UpdateLog(string.Format("channelOnVideoSizeChanged channelID: {3}, uid: {0}, width: {1}, height: {2}", uid,
             width, height, channelID));
-        Debug.Log(channel1.ChannelOnVideoSizeChanged);
         if (UserVideoDict.ContainsKey(uid))
         {
             GameObject go = UserVideoDict[uid].gameObject;

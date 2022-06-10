@@ -105,8 +105,9 @@ class AgoraChannel {
     if ((mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted)) {
       if (mediaType == "video" || (mediaType == "audio" && this.screenShareClient == null
         || mediaType == "audio" && this.screenShareClient != null
-        && id != this.screenShareClient.uid) && (!this.is_screensharing || mediaType != "audio" && this.is_screensharing))
+        && id != this.screenShareClient.uid)) {
         await this.subscribe_remoteuser(user, mediaType);
+      }
     }
   }
 
@@ -305,6 +306,12 @@ class AgoraChannel {
 
   async leave() {
     _logger("leaving in agorachannel");
+
+    if(this.screenShareClient != null){
+      this.handleUserLeft(this.screenShareClient);
+      await stopNewScreenCaptureForWeb2();
+    }
+
     if (multiclient_connections <= 1) {
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.stop();
@@ -326,6 +333,8 @@ class AgoraChannel {
           localTracks.audioTrack = undefined;
         }
       }
+
+      
     }
 
     this.is_publishing = false;
