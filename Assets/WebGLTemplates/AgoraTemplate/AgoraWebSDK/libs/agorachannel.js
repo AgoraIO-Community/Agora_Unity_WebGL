@@ -206,7 +206,7 @@ class AgoraChannel {
     const vad = 0;
     const channel_str = this.channelId;
     result.forEach(function (volume, index) {
-      console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
+      //console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
 
       if (volume.level > total) {
         total = volume.level;
@@ -280,9 +280,8 @@ class AgoraChannel {
     if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
-        localTracks.videoTrack.play("local-player");
+        await this.client.publish(localTracks.videoTrack);
       }
-      await this.client.publish(localTracks.videoTrack);
       this.is_publishing = true;
     }
 
@@ -608,9 +607,14 @@ class AgoraChannel {
         await this.client.unpublish(localTracks.audioTrack);
       }
     } else {
-      await this.setupLocalAudioTrack();
-      if (localTracks.audioTrack) {
+      if(localTracks.audioTrack) {
         await this.client.publish(localTracks.audioTrack);
+      } else {
+        await this.setupLocalAudioTrack();
+        if (localTracks.audioTrack != undefined) {
+          await this.client.publish(localTracks.audioTrack);
+        }
+        this.is_publishing = true;
       }
     }
     this.audioEnabled = !mute;
@@ -626,17 +630,19 @@ class AgoraChannel {
           await this.client.unpublish(localTracks.videoTrack);
         }
       } else {
-        await this.setupLocalVideoTrack();
-        if (this.is_publishing) {
-          await this.client.publish(localTracks.videoTrack);
-        }
+        [localTracks.videoTrack] = await Promise.all([
+          AgoraRTC.createCameraVideoTrack(),
+        ]);
+        localTracks.videoTrack.play("local-player");
+        this.is_publishing = true;
+        await this.client.publish(localTracks.videoTrack);
       }
       this.videoEnabled = !mute;
     }
   }
+  
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
-
       if (uid2 == uid) {
         if (mute == true) {
           this.unsubscribe(this.remoteUsers[uid], "audio");
