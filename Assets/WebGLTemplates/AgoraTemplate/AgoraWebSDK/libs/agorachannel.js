@@ -11,6 +11,8 @@ class AgoraChannel {
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
     this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.videoMuted = false; //is the local video muted?
+    this.audioMuted = false; //is the local audio muted?
     this.videoSubscribing = true;
     this.audioSubscribing = true;
 
@@ -136,14 +138,18 @@ class AgoraChannel {
 
   async publish() {
     // parameter is not local track
-    if (this.is_publishing == false) {
-      await this.setupLocalVideoTrack();
-      if (localTracks.videoTrack != undefined) {
-        await this.client.publish(localTracks.videoTrack);
+    if (this.is_publishing == false && (this.videoEnabled || this.audioEnabled)) {
+      if (this.videoEnabled) {
+        await this.setupLocalVideoTrack();
+        if (localTracks.videoTrack != undefined) {
+          await this.client.publish(localTracks.videoTrack);
+        }
       }
-      await this.setupLocalAudioTrack();
-      if (localTracks.audioTrack != undefined) {
-        await this.client.publish(localTracks.audioTrack);
+      if (this.audioEnabled) {
+        await this.setupLocalAudioTrack();
+        if (localTracks.audioTrack != undefined) {
+          await this.client.publish(localTracks.audioTrack);
+        }
       }
       this.is_publishing = true;
       event_manager.raiseCustomMsg("Publish Success");
@@ -603,21 +609,24 @@ class AgoraChannel {
 
   // Must/Unmute local audio (mic)
   async muteLocalAudioStream(mute) {
-    if (mute) {
-      if (localTracks.audioTrack) {
-        await this.client.unpublish(localTracks.audioTrack);
-      }
-    } else {
-      if (localTracks.audioTrack) {
-        await this.client.publish(localTracks.audioTrack);
+    if (this.audioEnabled) {
+      if (mute) {
+        if (localTracks.audioTrack) {
+          await this.client.unpublish(localTracks.audioTrack);
+        }
+      } else {
+        if (localTracks.audioTrack) {
+          await this.client.publish(localTracks.audioTrack);
+        }
       }
     }
-    this.audioEnabled = !mute;
+    //this.audioEnabled = !mute;
+    this.audioMuted = mute;
   }
 
   // Stops/Resumes sending the local video stream.
   async muteLocalVideoStream(mute) {
-    if (this.client && !this.is_screensharing) {
+    if (this.client && !this.is_screensharing && this.videoEnabled) {
       if (mute) {
         if (localTracks.videoTrack) {
           localTracks.videoTrack.stop();
@@ -633,9 +642,11 @@ class AgoraChannel {
           await this.client.publish(localTracks.videoTrack);
         }
       }
-      this.videoEnabled = !mute;
+      //this.videoEnabled = !mute;
+      this.videoMuted = mute;
     }
   }
+
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
 
