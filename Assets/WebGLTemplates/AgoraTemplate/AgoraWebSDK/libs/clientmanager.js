@@ -435,16 +435,33 @@ class ClientManager {
   // Help function for JoinChannel
   async processJoinChannelAVTrack() {  
     if (this.videoEnabled && this.isHosting()) {
-      await this.setupLocalVideoTrack();
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
+      ]);
+      currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
+        localTracks.videoTrack._deviceName
+      );
     }
 
     if (this.audioEnabled && this.isHosting()) {
-      await this.setupLocalAudioTrack();
+      [localTracks.audioTrack] = await Promise.all([
+        AgoraRTC.createMicrophoneAudioTrack()
+      ]);
+      currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
+          localTracks.audioTrack._deviceName
+      );
     }
-
     event_manager.raiseGetCurrentVideoDevice();
     event_manager.raiseGetCurrentAudioDevice();
     event_manager.raiseGetCurrentPlayBackDevice();
+
+    // videoTrack exists implies videoEnabled
+    if (localTracks.videoTrack) {
+      localTracks.videoTrack.play("local-player", {
+        fit: "cover",
+        mirror: mlocal,
+      });
+    }
 
     $("#local-player-name").text(`localVideo(${this.options.uid})`);
     if (this.isHosting() && this._inChannel) {
@@ -456,32 +473,6 @@ class ClientManager {
       }
     }
   } 
-
-  async setupLocalVideoTrack(){
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
-    ]);
-    currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
-      localTracks.videoTrack._deviceName
-    );
-
-    // videoTrack exists implies videoEnabled
-    if (localTracks.videoTrack) {
-      localTracks.videoTrack.play("local-player", {
-        fit: "cover",
-        mirror: mlocal,
-      });
-    }
-  }
-
-  async setupLocalAudioTrack(){
-    [localTracks.audioTrack] = await Promise.all([
-      AgoraRTC.createMicrophoneAudioTrack()
-    ]);
-    currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
-        localTracks.audioTrack._deviceName
-    );
-  }
 
   async setClientRole(role, optionLevel) {
     if (this.client) {
@@ -524,22 +515,12 @@ class ClientManager {
   // can still be on
   // if wanting both off, call disableLocalVideo
   async muteLocalVideoStream(mute) {
-    if (this.client && !this.is_screensharing) {
+    if (localTracks.videoTrack) {
       if (mute) {
-        if (localTracks.videoTrack) {
-          localTracks.videoTrack.stop();
-          localTracks.videoTrack.close();
-          await this.client.unpublish(localTracks.videoTrack);
-        }
+        await this.client.unpublish(localTracks.videoTrack);
       } else {
-        if (localTracks.videoTrack) {
-          await this.client.publish(localTracks.videoTrack);
-        } else {
-          await this.setupLocalVideoTrack();      
-          await this.client.publish(localTracks.videoTrack);
-        }
+        await this.client.publish(localTracks.videoTrack);
       }
-      this.videoEnabled = !mute;
     }
   }
 
@@ -551,12 +532,8 @@ class ClientManager {
     } else {
       if (localTracks.audioTrack) {
         await this.client.publish(localTracks.audioTrack);
-      } else {
-        await this.setupLocalAudioTrack();
-        await this.client.publish(localTracks.audioTrack);
       }
     }
-    this.audioEnabled = !mute;
   }
 
   async enableLocalVideo(enabled) {
