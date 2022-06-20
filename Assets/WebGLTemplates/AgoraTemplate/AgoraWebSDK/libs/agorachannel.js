@@ -639,7 +639,7 @@ class AgoraChannel {
           AgoraRTC.createCameraVideoTrack(),
         ]);
         localTracks.videoTrack.play("local-player");
-        if (this.is_publishing) {
+        if (!this.is_publishing) {
           await this.client.publish(localTracks.videoTrack);
         }
       }
