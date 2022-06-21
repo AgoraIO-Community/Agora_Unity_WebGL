@@ -161,7 +161,10 @@ class AgoraChannel {
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(),
-      ]);
+      ]).catch(err => {
+        console.log(err);
+        event_manager.raiseHandleChannelError(this.channelId, err.code, err.message);
+      });
     }
     localTracks.videoTrack.play("local-player");
   }
@@ -227,6 +230,7 @@ class AgoraChannel {
 
   handleError(e) {
     console.log(e);
+    event_manager.raiseHandleChannelError()
   }
 
   async handleStopScreenShare() {
@@ -627,7 +631,9 @@ class AgoraChannel {
       } else {
         [localTracks.videoTrack] = await Promise.all([
           AgoraRTC.createCameraVideoTrack(),
-        ]);
+        ]).catch(e => {
+          event_manager.raiseHandleChannelError()
+        });
         localTracks.videoTrack.play("local-player");
         if (!this.is_publishing) {
           await this.client.publish(localTracks.videoTrack);

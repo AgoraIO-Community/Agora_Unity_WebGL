@@ -813,14 +813,31 @@ namespace agora_gaming_rtc
             string channel = events[0];
             string errCode = events[1];
             string msg = events[2];
-
+            int result;
+            int.TryParse(errCode, out result);
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
                 if (ch.ChannelOnError != null)
                 {
-                    ch.ChannelOnError(channel, int.Parse(errCode), msg);
+                    ch.ChannelOnError(channel, result, msg);
                 }
+            }
+        }
+
+        public void HandleUserError(string eventData)
+        {
+
+            string[] events = eventData.Split('|');
+
+            string errCode = events[0];
+            string msg = events[1];
+            int result;
+            int.TryParse(errCode, out result);
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnError != null)
+            {
+                engine.OnError(result, msg);
             }
         }
 

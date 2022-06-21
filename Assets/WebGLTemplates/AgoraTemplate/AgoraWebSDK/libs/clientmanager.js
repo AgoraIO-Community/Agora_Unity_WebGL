@@ -437,7 +437,10 @@ class ClientManager {
     if (this.videoEnabled && this.isHosting()) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
-      ]);
+      ]).catch(err => {
+        console.log(err);
+        event_manager.raiseHandleUserError(err.code, err.message);
+      });
       currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
         localTracks.videoTrack._deviceName
       );

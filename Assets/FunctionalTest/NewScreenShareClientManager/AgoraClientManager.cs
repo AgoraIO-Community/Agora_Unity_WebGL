@@ -20,8 +20,11 @@ public class AgoraClientManager : MonoBehaviour
     private const float Offset = 100;
 
     public Button startScreenShareButton, stopScreenShareButton;
+    public Button muteVideoButton, muteAudioButton;
+    public Text muteVideoText, muteAudioText;
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
+    public bool localAudioMuted, localVideoMuted;
 
     public Toggle loopbackAudioToggle, newScreenShareToggle;
 
@@ -57,6 +60,8 @@ public class AgoraClientManager : MonoBehaviour
             startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare(useScreenShareAudio); });
             stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare(); });
         }
+
+
     }
 
     void Update()
@@ -65,6 +70,22 @@ public class AgoraClientManager : MonoBehaviour
         PermissionHelper.RequestCameraPermission();
 
         useScreenShareAudio = loopbackAudioToggle.isOn;
+
+        if(muteVideoText){
+            if(localVideoMuted){
+                muteVideoText.text = "Unmute Video";
+            } else {
+                muteVideoText.text = "Mute Video";
+            }
+        }
+
+        if(muteAudioText){
+            if(localAudioMuted){
+                muteAudioText.text = "Unmute Audio";
+            } else {
+                muteAudioText.text = "Mute Audio";
+            }
+        }
     }
 
     bool CheckAppId()
@@ -76,8 +97,15 @@ public class AgoraClientManager : MonoBehaviour
 
     
 
-    
+    public void muteLocalVideo(){
+        localVideoMuted = !localVideoMuted;
+        mRtcEngine.MuteLocalVideoStream(localVideoMuted);
+    }
 
+    public void muteLocalAudio(){
+        localAudioMuted = !localAudioMuted;
+        mRtcEngine.MuteLocalAudioStream(localAudioMuted);
+    }
 
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare(bool audioEnabled)
@@ -116,6 +144,8 @@ public class AgoraClientManager : MonoBehaviour
         mRtcEngine.OnScreenShareStarted += screenShareStartedHandler;
         mRtcEngine.OnScreenShareStopped += screenShareStoppedHandler;
         mRtcEngine.OnScreenShareCanceled += screenShareCanceledHandler;
+        mRtcEngine.OnUserMuteVideo += userVideoMutedHandler;
+        mRtcEngine.OnError += EngineOnErrorHandler;
     }
 
     public void JoinChannel()
@@ -137,6 +167,11 @@ public class AgoraClientManager : MonoBehaviour
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
+    }
+
+    void userVideoMutedHandler( uint uid, bool muted)
+    {
+        logger.UpdateLog(string.Format("onUserMuteHandler uid: {0}, muted: {1}", uid, muted));
     }
 
     void screenShareStartedHandler(string channelId, uint uid, int elapsed)
@@ -190,7 +225,7 @@ public class AgoraClientManager : MonoBehaviour
 
     void EngineOnErrorHandler(int err, string message)
     {
-        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", CHANNEL_NAME_1, err,
+        logger.UpdateLog(string.Format("Channel2OnErrorHandler err: {0}, message: {1}", err,
             message));
     }
 

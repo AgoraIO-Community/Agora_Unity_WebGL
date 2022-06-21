@@ -264,6 +264,15 @@ class EventManager {
     );
   }
 
+  raiseHandleUserError(err, message) {
+    console.log("raising error handler");
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "HandleUserError",
+      err + "|" + message
+    );
+  }
+
   raiseFrameHandler(data_chunk) {
     unityInstance.SendMessage(
       "AgoraEventHandler",
