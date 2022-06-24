@@ -589,6 +589,7 @@ class AgoraChannel {
       }
     } catch (error) {
       console.log("subscribe error ", error);
+      event_manager.raiseHandleChannelError(this.channelId, error.code, error.message);
     }
   }
 
@@ -621,23 +622,28 @@ class AgoraChannel {
 
   // Stops/Resumes sending the local video stream.
   async muteLocalVideoStream(mute) {
+    console.log(localTracks.videoTrack);
     if (this.client && !this.is_screensharing) {
       if (mute) {
         if (localTracks.videoTrack) {
-          localTracks.videoTrack.stop();
+          /*localTracks.videoTrack.stop();
           localTracks.videoTrack.close();
-          await this.client.unpublish(localTracks.videoTrack);
+          await this.client.unpublish(localTracks.videoTrack);*/
+          await localTracks.videoTrack.setMuted(true);
         }
       } else {
-        [localTracks.videoTrack] = await Promise.all([
+        /*[localTracks.videoTrack] = await Promise.all([
           AgoraRTC.createCameraVideoTrack(),
         ]).catch(e => {
           event_manager.raiseHandleChannelError()
         });
-        localTracks.videoTrack.play("local-player");
+        localTracks.videoTrack.play("local-player");*/
         if (!this.is_publishing) {
-          await this.client.publish(localTracks.videoTrack);
+          /*this.is_publishing = true;
+          await this.client.publish(localTracks.videoTrack);*/
         }
+        
+        await localTracks.videoTrack.setMuted(false);
       }
       this.videoEnabled = !mute;
     }
@@ -658,14 +664,16 @@ class AgoraChannel {
   }
 
   muteRemoteVideoStream(uid, mute) {
+    console.log(this.remoteUsers[uid]._video_muted);
     Object.keys(this.remoteUsers).forEach((uid2) => {
       if (uid2 == uid) {
+        console.log(this.remoteUsers[uid]);
         if (mute == true) {
-          this.unsubscribe(this.remoteUsers[uid], "video");
-          this.remoteUsersVideoMuted[uid] = true;
+            this.remoteUsersVideoMuted[uid] = true;
+            this.unsubscribe(this.remoteUsers[uid], "video");
         } else {
-          this.subscribe_mv(this.remoteUsers[uid], "video");
-          this.remoteUsersVideoMuted[uid] = false;
+            this.remoteUsersVideoMuted[uid] = false;
+            this.subscribe_mv(this.remoteUsers[uid], "video");
         }
       }
     });

@@ -809,7 +809,7 @@ namespace agora_gaming_rtc
         public void HandleChannelError(string eventData)
         {
             string[] events = eventData.Split('|');
-
+            Debug.Log(eventData);
             string channel = events[0];
             string errCode = events[1];
             string msg = events[2];

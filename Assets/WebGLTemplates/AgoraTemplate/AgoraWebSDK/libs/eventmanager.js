@@ -265,7 +265,6 @@ class EventManager {
   }
 
   raiseHandleUserError(err, message) {
-    console.log("raising error handler");
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "HandleUserError",
