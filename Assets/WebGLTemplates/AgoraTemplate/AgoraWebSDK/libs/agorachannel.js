@@ -160,10 +160,15 @@ class AgoraChannel {
   async setupLocalVideoTrack() {
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          console.log(e);
+          event_manager.raiseHandleChannelError(e.code, e.message);
+        }),
       ]);
     }
-    localTracks.videoTrack.play("local-player");
+    if (localTracks.videoTrack) {
+      localTracks.videoTrack.play("local-player");
+    }
   }
 
   async setupLocalAudioTrack() {
@@ -282,7 +287,9 @@ class AgoraChannel {
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
       }
-      await this.client.publish(localTracks.videoTrack);
+      if (localTracks.videoTrack) {
+        await this.client.publish(localTracks.videoTrack);
+      }
       this.is_publishing = true;
     }
 
@@ -594,7 +601,9 @@ class AgoraChannel {
         this.unsubscribe(this.remoteUsers[uid], "video");
         this.remoteUsersVideoMuted[uid] = true;
       } else {
-        this.subscribe_mv(this.remoteUsers[uid], "video");
+        if (this.remoteUsers[uid].hasVideo) {
+          this.subscribe_mv(this.remoteUsers[uid], "video");
+        }
         this.remoteUsersVideoMuted[uid] = false;
       }
     });
@@ -620,17 +629,13 @@ class AgoraChannel {
     if (this.client && !this.is_screensharing) {
       if (mute) {
         if (localTracks.videoTrack) {
-          localTracks.videoTrack.stop();
-          localTracks.videoTrack.close();
-          await this.client.unpublish(localTracks.videoTrack);
+         await localTracks.videoTrack.setMuted(true);
         }
+        
       } else {
-        [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack(),
-        ]);
-        localTracks.videoTrack.play("local-player");
-        if (!this.is_publishing) {
-          await this.client.publish(localTracks.videoTrack);
+        
+        if (localTracks.videoTrack) {
+          await localTracks.videoTrack.setMuted(false);
         }
       }
       this.videoEnabled = !mute;
@@ -658,8 +663,10 @@ class AgoraChannel {
           this.unsubscribe(this.remoteUsers[uid], "video");
           this.remoteUsersVideoMuted[uid] = true;
         } else {
-          this.subscribe_mv(this.remoteUsers[uid], "video");
-          this.remoteUsersVideoMuted[uid] = false;
+            this.remoteUsersVideoMuted[uid] = false;
+            if(this.remoteUsers[uid].hasVideo){
+              this.subscribe_mv(this.remoteUsers[uid], "video");
+            }
         }
       }
     });
