@@ -20,10 +20,18 @@ public class AgoraClientManager : MonoBehaviour
     private const float Offset = 100;
 
     public Button startScreenShareButton, stopScreenShareButton;
+    public Button muteLocalVideoButton, muteRemoteVideoButton;
+    public Button muteLocalAudioButton, muteRemoteAudioButton;
+    public Text muteLocalVideoText, muteRemoteVideoText;
+    public Text muteLocalAudioText, muteRemoteAudioText;
+    public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
 
     public Toggle loopbackAudioToggle, newScreenShareToggle;
+
+    
+    private List<uint> remoteClientIDs;
 
     // Use this for initialization
     void Start()
@@ -40,6 +48,7 @@ public class AgoraClientManager : MonoBehaviour
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
+        remoteClientIDs = new List<uint>();
     }
 
     public void updateScreenShareNew()
@@ -65,6 +74,11 @@ public class AgoraClientManager : MonoBehaviour
         PermissionHelper.RequestCameraPermission();
 
         useScreenShareAudio = loopbackAudioToggle.isOn;
+
+        muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
+        muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
+        muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
+        muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
     }
 
     bool CheckAppId()
@@ -76,8 +90,33 @@ public class AgoraClientManager : MonoBehaviour
 
     
 
-    
+    //for muting/unmuting local video through IRtcEngine class.
+    public void setLocalMuteVideo()
+    {
+        localVideoMuted = !localVideoMuted;
+        mRtcEngine.MuteLocalVideoStream(localVideoMuted);
+    }
 
+    //for muting/unmuting remote video through IRtcEngine class.
+    public void setRemoteMuteVideo()
+    {
+        remoteVideoMuted = !remoteVideoMuted;
+        mRtcEngine.MuteRemoteVideoStream(remoteClientIDs[0], remoteVideoMuted);
+    }
+
+    //for muting/unmuting local video through IRtcEngine class.
+    public void setLocalMuteAudio()
+    {
+        localAudioMuted = !localAudioMuted;
+        mRtcEngine.MuteLocalAudioStream(localAudioMuted);
+    }
+
+    //for muting/unmuting local video through IRtcEngine class.
+    public void setRemoteMuteAudio()
+    {
+        remoteAudioMuted = !remoteAudioMuted;
+        mRtcEngine.MuteRemoteAudioStream(remoteClientIDs[0], remoteAudioMuted);
+    }
 
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare(bool audioEnabled)
@@ -116,6 +155,9 @@ public class AgoraClientManager : MonoBehaviour
         mRtcEngine.OnScreenShareStarted += screenShareStartedHandler;
         mRtcEngine.OnScreenShareStopped += screenShareStoppedHandler;
         mRtcEngine.OnScreenShareCanceled += screenShareCanceledHandler;
+        mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
+        mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
+        mRtcEngine.OnError += EngineOnErrorHandler;
     }
 
     public void JoinChannel()
@@ -190,21 +232,23 @@ public class AgoraClientManager : MonoBehaviour
 
     void EngineOnErrorHandler(int err, string message)
     {
-        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", CHANNEL_NAME_1, err,
+        logger.UpdateLog(string.Format("UserErrorHandler err: {0}, message: {1}", err,
             message));
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
             uid, elapsed));
         makeVideoView(CHANNEL_NAME_1, uid);
+        remoteClientIDs.Add(uid);
     }
 
     void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
         logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(CHANNEL_NAME_1, uid);
+        remoteClientIDs.Remove(uid);
     }
 
     public void RespawnLocal(string channelName)
