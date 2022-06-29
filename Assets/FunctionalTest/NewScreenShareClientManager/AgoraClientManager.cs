@@ -27,7 +27,6 @@ public class AgoraClientManager : MonoBehaviour
     public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
-    public bool localAudioMuted, localVideoMuted;
 
     public Toggle loopbackAudioToggle, newScreenShareToggle;
 
