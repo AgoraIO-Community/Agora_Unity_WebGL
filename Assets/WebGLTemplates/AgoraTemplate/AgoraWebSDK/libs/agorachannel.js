@@ -232,6 +232,7 @@ class AgoraChannel {
 
   handleError(e) {
     console.log(e);
+    event_manager.raiseHandleChannelError()
   }
 
   async handleStopScreenShare() {
@@ -592,6 +593,7 @@ class AgoraChannel {
       }
     } catch (error) {
       console.log("subscribe error ", error);
+      event_manager.raiseHandleChannelError(this.channelId, error.code, error.message);
     }
   }
 
@@ -626,6 +628,7 @@ class AgoraChannel {
 
   // Stops/Resumes sending the local video stream.
   async muteLocalVideoStream(mute) {
+    console.log(localTracks.videoTrack);
     if (this.client && !this.is_screensharing) {
       if (mute) {
         if (localTracks.videoTrack) {
@@ -637,6 +640,8 @@ class AgoraChannel {
         if (localTracks.videoTrack) {
           await localTracks.videoTrack.setMuted(false);
         }
+        
+        await localTracks.videoTrack.setMuted(false);
       }
       this.videoEnabled = !mute;
     }
@@ -657,11 +662,13 @@ class AgoraChannel {
   }
 
   muteRemoteVideoStream(uid, mute) {
+    console.log(this.remoteUsers[uid]._video_muted);
     Object.keys(this.remoteUsers).forEach((uid2) => {
       if (uid2 == uid) {
+        console.log(this.remoteUsers[uid]);
         if (mute == true) {
-          this.unsubscribe(this.remoteUsers[uid], "video");
-          this.remoteUsersVideoMuted[uid] = true;
+            this.remoteUsersVideoMuted[uid] = true;
+            this.unsubscribe(this.remoteUsers[uid], "video");
         } else {
             this.remoteUsersVideoMuted[uid] = false;
             if(this.remoteUsers[uid].hasVideo){

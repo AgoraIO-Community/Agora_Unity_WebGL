@@ -809,7 +809,7 @@ namespace agora_gaming_rtc
         public void HandleChannelError(string eventData)
         {
             string[] events = eventData.Split('|');
-
+            Debug.Log(eventData);
             string channel = events[0];
             string errCode = events[1];
             string msg = events[2];
@@ -827,11 +827,11 @@ namespace agora_gaming_rtc
 
         public void HandleUserError(string eventData)
         {
+
             string[] events = eventData.Split('|');
 
-            string channel = events[0];
-            string errCode = events[1];
-            string msg = events[2];
+            string errCode = events[0];
+            string msg = events[1];
             int result;
             int.TryParse(errCode, out result);
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();

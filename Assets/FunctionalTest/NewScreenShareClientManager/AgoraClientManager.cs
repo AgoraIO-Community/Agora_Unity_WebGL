@@ -27,6 +27,7 @@ public class AgoraClientManager : MonoBehaviour
     public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
+    public bool localAudioMuted, localVideoMuted;
 
     public Toggle loopbackAudioToggle, newScreenShareToggle;
 
@@ -66,6 +67,8 @@ public class AgoraClientManager : MonoBehaviour
             startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare(useScreenShareAudio); });
             stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare(); });
         }
+
+
     }
 
     void Update()
@@ -179,6 +182,11 @@ public class AgoraClientManager : MonoBehaviour
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
+    }
+
+    void userVideoMutedHandler( uint uid, bool muted)
+    {
+        logger.UpdateLog(string.Format("onUserMuteHandler uid: {0}, muted: {1}", uid, muted));
     }
 
     void screenShareStartedHandler(string channelId, uint uid, int elapsed)
