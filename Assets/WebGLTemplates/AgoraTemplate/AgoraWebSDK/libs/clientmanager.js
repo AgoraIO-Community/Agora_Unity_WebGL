@@ -11,6 +11,8 @@ class ClientManager {
     this.audioEnabled = false; // if true then mic access is created, if false then not
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
+    this.remoteUserAudioMuted = {};
+    this.remoteUserVideoMuted = {};
     this.client_role = 1; // default is host, 2 is audience
     this._storedChannelProfile = 0; // channel profile saved before join is called
     this._inChannel = false;
@@ -142,15 +144,24 @@ class ClientManager {
   async subscribe_remoteuser(user, mediaType) {
     var strUID = user.uid.toString();
     // subscribe to a remote user
-    await this.client.subscribe(user, mediaType);
-    if (mediaType === "video") {
+    console.log(this.remoteUserVideoMuted[user.uid], user);
+    if (remoteUsers[user.uid] === null ||
+      user.hasVideo && mediaType === "video" && 
+      (this.remoteUserVideoMuted[user.uid] == null 
+        || this.remoteUserVideoMuted[user.uid] == false) ||
+      user.hasAudio && mediaType === "audio" && 
+      (this.remoteUserAudioMuted[user.uid] == null 
+        || this.remoteUserAudioMuted[user.uid] == false)) {
+      await this.client.subscribe(user, mediaType);
+    }
+    if (mediaType === "video" && user.hasVideo && user.videoTrack && !this.remoteUserVideoMuted[user.uid]) {
       user.videoTrack.play(`player-${strUID}`, { fit: "cover", mirror: mremote });
       if (remoteUsers[user.uid] == null)
       {
         event_manager.raiseOnRemoteUserJoined(strUID);
-      }
+      } 
     } else {
-      if (mediaType === "audio") {
+      if (mediaType === "audio" && user.hasAudio && user.audioTrack && !this.remoteUserAudioMuted[user.uid]) {
         user.audioTrack.play();
         // for Voice only subscription only, the raise won't happen above
         if (remoteUsers[user.uid] == null) {
@@ -169,7 +180,7 @@ class ClientManager {
       || mediaType == "audio" && this.screenShareClient != null
       && id != this.screenShareClient.uid) && (!this.is_screensharing || mediaType != "audio" && this.is_screensharing)) {
       await this.subscribe_remoteuser(user, mediaType);
-    } else if(this.videoSubscribing && mediaType == "video") {
+    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
     }
@@ -314,6 +325,8 @@ class ClientManager {
 
     // remove remote users and player views
     remoteUsers = {};
+    this.remoteUserAudioMuted = {};
+    this.remoteUserVideoMuted = {};
 
     // leave the channel
     await this.client.leave();
@@ -436,11 +449,16 @@ class ClientManager {
   async processJoinChannelAVTrack() {  
     if (this.videoEnabled && this.isHosting()) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
+        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration).catch(e => {
+          console.log(e);
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
       ]);
-      currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
-        localTracks.videoTrack._deviceName
-      );
+      if (localTracks.videoTrack) {
+        currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
+          localTracks.videoTrack._deviceName
+        );
+      }
     }
 
     if (this.audioEnabled && this.isHosting()) {
@@ -895,23 +913,29 @@ class ClientManager {
   }
 
   async subscribe_mv(user, mediaType) {
-    try {
-      await this.client.subscribe(user, mediaType);
-      if (mediaType === "video") {
-        user.videoTrack.play(`player-${user.uid}`);
-      } else if (mediaType === "audio") {
-        user.audioTrack.play();
+    if (mediaType === "video" && user.hasVideo ||
+      mediaType === "audio" && user.hasAudio) {
+      try {
+        await this.client.subscribe(user, mediaType);
+        if (mediaType === "video") {
+          user.videoTrack.play(`player-${user.uid}`);
+        } else if (mediaType === "audio") {
+          user.audioTrack.play();
+        }
+      } catch (error) {
+        console.log("subscribe error ", error);
       }
-    } catch (error) {
-      console.log("subscribe error ", error);
     }
   }
 
   async unsubscribe(user, mediaType) {
-    try {
-      await this.client.unsubscribe(user, mediaType);
-    } catch (error) {
-      console.log("unsubscribe error ", error);
+    if (mediaType === "video" && user.hasVideo ||
+      mediaType === "audio" && user.hasAudio) {
+      try {
+        await this.client.unsubscribe(user, mediaType);
+      } catch (error) {
+        console.log("unsubscribe error ", error);
+      }
     }
   }
 
