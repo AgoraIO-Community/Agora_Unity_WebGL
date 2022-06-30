@@ -109,6 +109,9 @@ class AgoraChannel {
         await this.subscribe_remoteuser(user, mediaType);
       }
     }
+    if (mediaType == "video") {
+      this.getRemoteVideoStatsMC(id);
+    }
   }
 
   handleUserLeft(user) {
@@ -895,14 +898,16 @@ class AgoraChannel {
     }
   }
 
-  getRemoteVideoStatsMC() {
-    console.log("agora channel remote video stats");
-    var stats = this.client.getRemoteVideoStats();
-    Object.keys(stats).forEach((uid) => {
-      const width = stats[uid].receiveResolutionWidth;
-      const height = stats[uid].receiveResolutionHeight;
-      // UnityHooks.InvokeVideoSizeChangedCallback(uid, width, height);
-      event_manager.raiseOnClientVideoSizeChanged_MC(this.options.channel, uid, width, height);
-    });
+  async getRemoteVideoStatsMC(uid) {
+    let Client = this.client;
+    setTimeout(function () {
+      var stats = Client.getRemoteVideoStats();
+      console.log("agora channel remote video: " + stats);
+      if (stats[uid]) {
+        const width = stats[uid].receiveResolutionWidth;
+        const height = stats[uid].receiveResolutionHeight;
+        event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
+      }
+    }, 2000);
   }
 }

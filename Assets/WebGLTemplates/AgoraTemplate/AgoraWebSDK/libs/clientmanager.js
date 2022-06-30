@@ -183,6 +183,7 @@ class ClientManager {
     } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
+      this.getRemoteVideoStats(id);
     }
     remoteUsers[id] = user;
   }
@@ -1024,14 +1025,17 @@ class ClientManager {
     if (config.bitrateMax) this._customVideoConfiguration.bitrateMax = config.bitrateMax;
   }
 
-  getRemoteVideoStats() {
-    var stats = this.client.getRemoteVideoStats();
-    console.log(stats);
-    Object.keys(stats).forEach((uid) => {
-      const width = stats[uid].receiveResolutionWidth;
-      const height = stats[uid].receiveResolutionHeight;
-      // UnityHooks.InvokeVideoSizeChangedCallback(uid, width, height);
-      event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
-    });
+
+  async getRemoteVideoStats(uid) {
+    let Client = this.client;
+    setTimeout(function () {
+      var stats = Client.getRemoteVideoStats();
+      console.log(stats);
+      if (stats[uid]) {
+        const width = stats[uid].receiveResolutionWidth;
+        const height = stats[uid].receiveResolutionHeight;
+        event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
+      }
+    }, 2000);
   }
 }

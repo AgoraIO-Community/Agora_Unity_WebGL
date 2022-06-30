@@ -47,7 +47,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         }
 
         InitEngine();
-        
+
         //channel setup.
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
@@ -86,7 +86,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         return (APP_ID.Length > 10);
     }
 
-    
+
 
     //for starting/stopping a new screen share through AgoraChannel class.
     public void startNewScreenShare2(bool audioEnabled)
@@ -285,14 +285,6 @@ public class AgoraMultiChannel2 : MonoBehaviour
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
-    IEnumerator CoGetVideoStats(AgoraChannel channel)
-    {
-        // give a little head time to allow Web engine gather enough stats
-        // TODO: it could be faster, do more test with different value to find out
-        yield return new WaitForSeconds(5);
-        Debug.Log("Start Remote Video Stats");
-        channel.GetRemoteVideoStats();
-    }
 
     void OnApplicationQuit()
     {
@@ -310,7 +302,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     float EnforcingViewLength = 180f;
     void onVideoSizeChanged_MCHandler(string channelID, uint uid, int width, int height, int rotation)
     {
-        
+
         logger.UpdateLog(string.Format("channelOnVideoSizeChanged channelID: {3}, uid: {0}, width: {1}, height: {2}", uid,
             width, height, channelID));
         if (UserVideoDict.ContainsKey(uid))
@@ -477,7 +469,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
             LastRemote.name = "_Destroyer";
             Destroy(LastRemote);
             Debug.LogWarningFormat("Remaking video surface for  uid:{0} channel:{1}", uid, channel);
-            makeVideoView(channel, uid);
+            remoteUserDisplays.Remove(LastRemote);
+            makeVideoView(channel, uid, true);
         }
     }
 
@@ -512,17 +505,17 @@ public class AgoraMultiChannel2 : MonoBehaviour
             if (remote)
             {
                 Debug.Log("is remote " + uid.ToString() + remote.ToString());
-                    remoteUserDisplays.Add(videoSurface.gameObject);
-                    UserVideoDict[uid] = videoSurface;
-
-                    videoSurface.StartCoroutine(CoGetVideoStats(channel1));
+                remoteUserDisplays.Add(videoSurface.gameObject);
+                UserVideoDict[uid] = videoSurface;
             }
-
-
+            else
+            {
+                Vector2 v2 = AgoraUIUtils.GetScaledDimension(640, 360, EnforcingViewLength);
+                videoSurface.GetComponent<RawImage>().rectTransform.sizeDelta = v2;
+            }
         }
     }
 
-    // Video TYPE 2: RawImage
     public VideoSurface makeImageSurface(string goName)
     {
         GameObject go = new GameObject();
@@ -533,29 +526,22 @@ public class AgoraMultiChannel2 : MonoBehaviour
         }
 
         go.name = goName;
-        // make the object draggable
-        go.AddComponent<UIElementDrag>();
+
         // to be renderered onto
         go.AddComponent<RawImage>();
 
+        // make the object draggable
+        go.AddComponent<UIElementDragger>();
         GameObject canvas = GameObject.Find("VideoCanvas");
         if (canvas != null)
         {
             go.transform.SetParent(canvas.transform);
-            Debug.Log("add video view");
         }
-        else
-        {
-            Debug.Log("Canvas is null video view");
-        }
-
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
-        Debug.Log("position x " + xPos + " y: " + yPos);
+        float xPos = Random.Range(-Screen.width / 5f, Screen.width / 5f);
+        float yPos = Random.Range(-Screen.height / 5f, Screen.height / 5f);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(1.5f, 1f, 1f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
