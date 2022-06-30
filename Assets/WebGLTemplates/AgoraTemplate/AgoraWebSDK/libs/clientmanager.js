@@ -787,6 +787,7 @@ class ClientManager {
         this.enableLoopbackAudio = true;
         event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
       } else {
+        this.tempLocalTracks = null;
         localTracks.videoTrack.stop();
         localTracks.videoTrack.close();
         await this.client.unpublish(localTracks.videoTrack);
@@ -835,7 +836,7 @@ class ClientManager {
       await this.client.unpublish(localTracks.videoTrack);
       this.is_screensharing = false;
       this.enableLoopbackAudio = false;
-      if (this.tempLocalTracks.audioTrack != null) {
+      if (this.tempLocalTracks != null) {
         await this.client.unpublish(this.tempLocalTracks.audioTrack);
         this.tempLocalTracks.audioTrack = null;
       }
