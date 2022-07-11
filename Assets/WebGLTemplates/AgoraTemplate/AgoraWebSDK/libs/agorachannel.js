@@ -160,10 +160,12 @@ class AgoraChannel {
   async setupLocalVideoTrack() {
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
-      ]);
+        AgoraRTC.createCameraVideoTrack().then(x => {localTracks.videoTrack.play("local-player");}, error => {
+          event_manager.raiseHandleChannelError(this.channelId, error.code, error.message);
+        }),
+      ])
+    
     }
-    localTracks.videoTrack.play("local-player");
   }
 
   async setupLocalAudioTrack() {
@@ -281,8 +283,8 @@ class AgoraChannel {
       await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
+        await this.client.publish(localTracks.videoTrack);
       }
-      await this.client.publish(localTracks.videoTrack);
       this.is_publishing = true;
     }
 
@@ -333,7 +335,6 @@ class AgoraChannel {
     multiclient_connections--;
     this.client.leave();
     this.client.off("user-joined", this.userJoinedHandle);
-    console.log(this.client.getListeners("user-joined"));
     this.client.off("user-published", this.userPublishedHandle);
     this.client.off("user-unpublished", this.userUnpublishedHandle);
     this.client.off("user-left", this.userLeftHandle);
@@ -730,9 +731,11 @@ class AgoraChannel {
   // Stop screen sharing.
   async stopScreenCapture() {
     if (this.is_screensharing) {
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      if (localTracks.videoTrack) {
+        localTracks.videoTrack.stop();
+        localTracks.videoTrack.close();
+        await this.client.unpublish(localTracks.videoTrack);
+      }
       this.is_screensharing = false;
       this.enableLoopbackAudio = false;
       if (this.tempLocalTracks.audioTrack != null) {
@@ -741,10 +744,15 @@ class AgoraChannel {
       }
       if (this.videoEnabled) {
         [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack(),
+          AgoraRTC.createCameraVideoTrack().catch(
+            async e => { 
+              event_manager.raiseHandleChannelError(this.options.channel, e.code, e.message); 
+            }),
         ]);
+      if (localTracks.videoTrack != null) {
         localTracks.videoTrack.play("local-player");
         await this.client.publish(localTracks.videoTrack);
+      }
       }
       event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
     }
@@ -781,7 +789,6 @@ class AgoraChannel {
         }
       }).catch(error => {
         event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
-        console.log(error);
       });
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");

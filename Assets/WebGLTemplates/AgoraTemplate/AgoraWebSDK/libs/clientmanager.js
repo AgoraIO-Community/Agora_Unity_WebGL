@@ -436,11 +436,17 @@ class ClientManager {
   async processJoinChannelAVTrack() {  
     if (this.videoEnabled && this.isHosting()) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
+        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration).catch(
+          e => {
+            event_manager.raiseHandleUserError(e.code, e.message);
+          }
+        )
       ]);
-      currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
-        localTracks.videoTrack._deviceName
-      );
+      if (localTracks.videoTrack) {
+        currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
+          localTracks.videoTrack._deviceName
+        );
+      }
     }
 
     if (this.audioEnabled && this.isHosting()) {
@@ -827,10 +833,15 @@ class ClientManager {
       }
       if (this.videoEnabled) {
         [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack(),
+          AgoraRTC.createCameraVideoTrack().catch(
+            async e => { 
+              event_manager.raiseHandleUserError(e.code, e.message); 
+            }),
         ]);
-        localTracks.videoTrack.play("local-player");
-        await this.client.publish(localTracks.videoTrack);
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.play("local-player");
+          await this.client.publish(localTracks.videoTrack);
+        }
       }
       event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
     }

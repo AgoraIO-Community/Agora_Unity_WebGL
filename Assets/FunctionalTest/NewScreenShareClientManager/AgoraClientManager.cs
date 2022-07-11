@@ -116,6 +116,7 @@ public class AgoraClientManager : MonoBehaviour
         mRtcEngine.OnScreenShareStarted += screenShareStartedHandler;
         mRtcEngine.OnScreenShareStopped += screenShareStoppedHandler;
         mRtcEngine.OnScreenShareCanceled += screenShareCanceledHandler;
+        mRtcEngine.OnError += EngineOnErrorHandler;
     }
 
     public void JoinChannel()

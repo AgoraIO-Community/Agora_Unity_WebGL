@@ -809,17 +809,40 @@ namespace agora_gaming_rtc
         public void HandleChannelError(string eventData)
         {
             string[] events = eventData.Split('|');
-
+            
             string channel = events[0];
             string errCode = events[1];
             string msg = events[2];
-
+            int results = 0;
+            int.TryParse(errCode, out results);
+            
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
                 if (ch.ChannelOnError != null)
                 {
-                    ch.ChannelOnError(channel, int.Parse(errCode), msg);
+                    ch.ChannelOnError(channel, results, msg);
+                }
+            }
+        }
+
+        public void HandleUserError(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            
+            string errCode = events[0];
+            string msg = events[1];
+            Debug.Log(errCode);
+            Debug.Log(msg);
+            int results = 0;
+            int.TryParse(errCode, out results);
+            agora_gaming_rtc.IRtcEngine engine = IRtcEngine.QueryEngine();
+            if (engine != null)
+            {
+                
+                if (engine.OnError != null)
+                {
+                    engine.OnError(results, msg);
                 }
             }
         }
