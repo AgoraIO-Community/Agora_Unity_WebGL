@@ -3862,9 +3862,9 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int EnableRemoteSuperResolution(uint userId, bool enable)
+        public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
         {
-            return IRtcEngineNative.enableRemoteSuperResolution(userId, enable);
+            return IRtcEngineNative.enableRemoteSuperResolution(enabled, (int)mode, userId);
         }
 
         /** Sets the role of a user in interactive live streaming.
@@ -5242,6 +5242,11 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setCameraAutoFocusFaceModeEnabled(enabled);
         }
 
+        public int SetCameraCaptureRotation(int rotation)
+        {
+            return IRtcEngineNative.setCameraCaptureRotation(rotation);
+        }
+
         /** Initializes an IRtcEngine instance.
          *
          * Unless otherwise specified, all the methods provided by the IRtcEngine class are executed asynchronously. Agora recommends calling these methods in the same thread.
@@ -5399,7 +5404,6 @@ namespace agora_gaming_rtc
             }
 
             instance = null;
-            GC.Collect();
         }
 
         // only query, do not create
@@ -5686,7 +5690,6 @@ namespace agora_gaming_rtc
             if (warn == 8 || warn == 16)
                 return;
 #endif
-
             if (instance != null && instance.OnWarning != null && instance._AgoraCallbackObject != null)
             {
                 AgoraCallbackQueue queue = instance._AgoraCallbackObject._CallbackQueue;

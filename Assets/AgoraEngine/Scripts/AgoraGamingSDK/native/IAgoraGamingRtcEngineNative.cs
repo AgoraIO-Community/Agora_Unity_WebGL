@@ -1320,7 +1320,7 @@ namespace agora_gaming_rtc
         protected static extern int enableEncryption(bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableRemoteSuperResolution(uint userId, bool enable);
+        protected static extern int enableRemoteSuperResolution(bool enabled, int mode, uint userId);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setClientRole_1(int role, int audienceLatencyLevel);
@@ -1352,7 +1352,7 @@ namespace agora_gaming_rtc
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableRemoteSuperResolution2(IntPtr channel, uint userId, bool enable);
+        protected static extern int enableRemoteSuperResolution2(IntPtr channel, bool enabled, int mode, uint userId);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int sendCustomReportMessage(string id, string category, string events, string label, int value);
@@ -1537,6 +1537,9 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraAutoFocusFaceModeEnabled(bool enabled);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setCameraCaptureRotation(int rotation);
 
         #endregion engine callbacks
     }

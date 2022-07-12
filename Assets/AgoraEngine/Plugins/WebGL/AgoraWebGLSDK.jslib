@@ -2019,6 +2019,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   startAudioRecordingWithConfig: function() {},
   switchChannel2: function() {},
   uploadLogFile: function() {},
+  setCameraCaptureRotation: function (rotation) {}
 };
 
 autoAddDeps(LibraryAgoraWebGLSDK, "$localVideo");
