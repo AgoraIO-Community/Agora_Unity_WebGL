@@ -849,22 +849,6 @@ namespace agora_gaming_rtc
             }
         }
 
-        public void HandleUserError(string eventData)
-        {
-
-            string[] events = eventData.Split('|');
-
-            string errCode = events[0];
-            string msg = events[1];
-            int result;
-            int.TryParse(errCode, out result);
-            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
-            if (engine.OnError != null)
-            {
-                engine.OnError(result, msg);
-            }
-        }
-
         public void ChannelOnClientRoleChanged(string eventData)
         {
             string[] events = eventData.Split('|');
