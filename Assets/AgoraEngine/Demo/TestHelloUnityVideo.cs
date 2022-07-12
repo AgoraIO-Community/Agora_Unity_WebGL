@@ -441,17 +441,7 @@ public class TestHelloUnityVideo
 
             remoteUserDisplays.Add(videoSurface.gameObject);
             UserVideoDict[uid] = videoSurface;
-
-            videoSurface.StartCoroutine(CoGetVideoStats());
         }
-    }
-
-    IEnumerator CoGetVideoStats()
-    {
-        // give a little head time to allow Web engine gather enough stats
-        // TODO: it could be faster, do more test with different value to find out
-        yield return new WaitForSeconds(2);
-        mRtcEngine.GetRemoteVideoStats();
     }
 
     float EnforcingViewLength = 360f;

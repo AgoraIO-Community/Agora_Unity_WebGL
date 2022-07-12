@@ -290,6 +290,7 @@
     <Compile Include="Assets\AgoraEngine\Scripts\AgoraGamingSDK\videoRender\VideoSurface.cs" />
     <Compile Include="Assets\AgoraEngine\Scripts\AgoraWebGLEventHandler.cs" />
     <Compile Include="Assets\AgoraEngine\Scripts\InSurfaceRenderer.cs" />
+    <Compile Include="Assets\AgoraEngine\Utils\AgoraUIUtils.cs" />
     <Compile Include="Assets\AgoraEngine\Utils\TokenClient.cs" />
     <Compile Include="Assets\AgoraEngine\Utils\TokenRequestHelper.cs" />
     <Compile Include="Assets\API-Example\app-screenshare-sample\AgoraScreenShare.cs" />

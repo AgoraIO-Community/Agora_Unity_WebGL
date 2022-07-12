@@ -809,6 +809,7 @@ namespace agora_gaming_rtc
         public void HandleChannelError(string eventData)
         {
             string[] events = eventData.Split('|');
+
             
             string channel = events[0];
             string errCode = events[1];
@@ -816,6 +817,7 @@ namespace agora_gaming_rtc
             int results = 0;
             int.TryParse(errCode, out results);
             
+
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
@@ -844,6 +846,22 @@ namespace agora_gaming_rtc
                 {
                     engine.OnError(results, msg);
                 }
+            }
+        }
+
+        public void HandleUserError(string eventData)
+        {
+
+            string[] events = eventData.Split('|');
+
+            string errCode = events[0];
+            string msg = events[1];
+            int result;
+            int.TryParse(errCode, out result);
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnError != null)
+            {
+                engine.OnError(result, msg);
             }
         }
 
@@ -943,6 +961,32 @@ namespace agora_gaming_rtc
             catch
             {
                 Debug.LogWarning("Error processing ClientOnVideoSizeChanged:" + eventData);
+            }
+        }
+
+        public void ChannelOnVideoSizeChanged(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            
+            try
+            {
+                uint uid = uint.Parse(events[0]);
+
+                int width = int.Parse(events[1]);
+                int height = int.Parse(events[2]);
+                string channel = events[3];
+                AgoraChannel myChannel = GetInstance()._clientsList[channel];
+                
+                if (myChannel == null) return;
+                if (myChannel.ChannelOnVideoSizeChanged != null)
+                {
+                    myChannel.ChannelOnVideoSizeChanged(channel, uid, width, height, 0);
+                }
+
+            }
+            catch
+            {
+                Debug.LogWarning("Error processing ChannelOnVideoSizeChanged:" + eventData);
             }
         }
 
