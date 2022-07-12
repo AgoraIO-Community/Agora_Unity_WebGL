@@ -164,14 +164,13 @@ class AgoraChannel {
   async setupLocalVideoTrack() {
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack().catch(e => {
-          event_manager.raiseHandleChannelError(e.code, e.message);
+        AgoraRTC.createCameraVideoTrack().then(x => {localTracks.videoTrack.play("local-player");}, error => {
+          event_manager.raiseHandleChannelError(this.channelId, error.code, error.message);
         }),
-      ]);
+      ])
+    
     }
-    if (localTracks.videoTrack) {
-      localTracks.videoTrack.play("local-player");
-    }
+
   }
 
   async setupLocalAudioTrack() {
@@ -289,10 +288,8 @@ class AgoraChannel {
       await this.setupLocalVideoTrack();
       if (localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
-      }
-      if (localTracks.videoTrack) {
         await this.client.publish(localTracks.videoTrack);
-      }
+      } 
       this.is_publishing = true;
     }
 
@@ -717,9 +714,11 @@ class AgoraChannel {
     });
     if (this.is_screensharing) {
       if (Array.isArray(screenShareTrack)) {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.stop();
+          localTracks.videoTrack.close();
+          await this.client.unpublish(localTracks.videoTrack);
+        }
         [localTracks.videoTrack] = screenShareTrack;
         localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
         localTracks.videoTrack.play("local-player");
@@ -729,9 +728,11 @@ class AgoraChannel {
         this.enableLoopbackAudio = true;
         event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
       } else {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.stop();
+          localTracks.videoTrack.close();
+          await this.client.unpublish(localTracks.videoTrack);
+        }
         localTracks.videoTrack = screenShareTrack;
         localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
         localTracks.videoTrack.play("local-player");
@@ -744,22 +745,30 @@ class AgoraChannel {
   // Stop screen sharing.
   async stopScreenCapture() {
     if (this.is_screensharing) {
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      if (localTracks.videoTrack) {
+        localTracks.videoTrack.stop();
+        localTracks.videoTrack.close();
+        await this.client.unpublish(localTracks.videoTrack);
+      }
       this.is_screensharing = false;
       this.enableLoopbackAudio = false;
       if (this.tempLocalTracks.audioTrack != null) {
         await this.client.unpublish(this.tempLocalTracks.audioTrack);
         this.tempLocalTracks.audioTrack = null;
       }
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack().catch(e => {
-          event_manager.raiseHandleChannelError(e.code, e.message);
-        }),
-      ]);
-      localTracks.videoTrack.play("local-player");
-      await this.client.publish(localTracks.videoTrack);
+
+      if (this.videoEnabled) {
+        [localTracks.videoTrack] = await Promise.all([
+          AgoraRTC.createCameraVideoTrack().catch(
+            async e => { 
+              event_manager.raiseHandleChannelError(this.options.channel, e.code, e.message); 
+            }),
+        ]);
+      if (localTracks.videoTrack != null) {
+        localTracks.videoTrack.play("local-player");
+        await this.client.publish(localTracks.videoTrack);
+      }
+      }
       event_manager.raiseScreenShareStopped_MC(this.options.channel, this.options.uid);
     }
   }
