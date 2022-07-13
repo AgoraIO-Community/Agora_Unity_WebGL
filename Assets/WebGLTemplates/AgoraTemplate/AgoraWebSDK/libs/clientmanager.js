@@ -431,8 +431,10 @@ class ClientManager {
         this.options.channel,
         this.options.token || null,
         user || null
-      ),
-    ]);
+      ).catch(error => {
+        event_manager.raiseHandleUserError(error.code, error.message);
+      }),
+    ])
 
     this._inChannel = true;
     await this.processJoinChannelAVTrack();

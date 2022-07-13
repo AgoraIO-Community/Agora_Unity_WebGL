@@ -1728,6 +1728,8 @@ MonoBehaviour:
   CHANNEL_NAME_1: unity3d
   TOKEN_2: 
   logText: {fileID: 1416670727}
+  joinButton: {fileID: 288453850}
+  leaveButton: {fileID: 1622896537}
   startScreenShareButton: {fileID: 1632797613}
   stopScreenShareButton: {fileID: 630712822}
   muteLocalVideoButton: {fileID: 1000064399}
@@ -1744,6 +1746,7 @@ MonoBehaviour:
   remoteAudioMuted: 0
   useNewScreenShare: 0
   useScreenShareAudio: 0
+  joinedChannel: 0
   loopbackAudioToggle: {fileID: 924186053}
   newScreenShareToggle: {fileID: 1970231432}
 --- !u!114 &1348336706
