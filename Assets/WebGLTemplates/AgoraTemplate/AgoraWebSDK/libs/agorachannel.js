@@ -314,7 +314,7 @@ class AgoraChannel {
   async leave() {
     _logger("leaving in agorachannel");
 
-    if(this.screenShareClient != null){
+    if(this.screenShareClient.id != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb2();
     }

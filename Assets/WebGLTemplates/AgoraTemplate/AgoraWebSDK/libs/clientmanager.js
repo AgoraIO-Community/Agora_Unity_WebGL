@@ -291,7 +291,7 @@ class ClientManager {
       }
     }
 
-    if(this.screenShareClient != null){
+    if(this.screenShareClient.id != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb();
     }
