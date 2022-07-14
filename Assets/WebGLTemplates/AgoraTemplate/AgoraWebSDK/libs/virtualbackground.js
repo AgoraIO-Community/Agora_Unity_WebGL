@@ -38,7 +38,7 @@ async function setBackgroundColor(videoTrack, hexColor) {
     let processor = await getProcessorInstance(videoTrack);
 
     try {
-      processor.setOptions({type: 'color', color: '#00ff00'});
+      processor.setOptions({type: 'color', color: hexColor});
       await processor.enable();
     } finally {
     }
