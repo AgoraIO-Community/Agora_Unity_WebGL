@@ -4477,9 +4477,19 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - &lt; 0: Failure.
          */
-        public int EnableVirtualBackground(bool enabled, VirtualBackgroundSource source)
+        public int enableVirtualBackground(bool enabled, VirtualBackgroundSource source)
         {
             return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
+        }
+
+        public int SetVirtualBackgroundBlur(int blurDegrees)
+        {
+            return IRtcEngineNative.setVirtualBackgroundBlur(blurDegrees);
+        }
+
+        public int SetVirtualBackgroundColor(string hexColor)
+        {
+            return IRtcEngineNative.setVirtualBackgroundColor(hexColor);
         }
 
         /**

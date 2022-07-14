@@ -992,6 +992,18 @@ class ClientManager {
     }
   }
 
+async enableVirtualBackground(){
+  getProcessorInstance(localTracks.videoTrack);
+}
+
+async setVirtualBackgroundBlur(blurDegree){
+  setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+}
+
+async setVirtualBackgroundColor(hexColor){
+  setBackgroundColor(localTracks.videoTrack, hexColor);
+}
+
   SetRemoteUserPriority(uid, userPriority) {
     if (userPriority == 50 || userPriority == 0)
       this.client.setRemoteVideoStreamType(uid, 0);

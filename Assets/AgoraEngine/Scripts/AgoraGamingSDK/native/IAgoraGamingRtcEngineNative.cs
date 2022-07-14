@@ -1406,6 +1406,12 @@ namespace agora_gaming_rtc
         protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source, int blur_degree);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundBlur(int blur_degree);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundColor(string hexColor);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraTorchOn(bool on);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

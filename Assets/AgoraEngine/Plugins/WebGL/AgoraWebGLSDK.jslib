@@ -2003,7 +2003,15 @@ muteLocalAudioStream_channel: function(channel, mute) {
   createDataStream_channel: function(channel, syncWithAudio, ordered) {},
 
   enableDeepLearningDenoise: function() {},
-  enableVirtualBackground: function() {},
+  enableVirtualBackground: function() {
+    initVirtualBackground();
+  },
+  setVirtualBackgroundBlur: function(blurDegree) {
+    setVirtualBackgroundBlur(blurDegree);
+  },
+  setVirtualBackgroundColor: function(hexColor) {
+    setVirtualBackgroundColor(hexColor);
+  },
   getAudioMixingDuration2: function() {},
   getEffectCurrentPosition: function() {},
   getEffectDuration: function() {},

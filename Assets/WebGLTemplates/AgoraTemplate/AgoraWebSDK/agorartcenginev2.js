@@ -899,3 +899,15 @@ function setWebParametersString(key, value) {
 function getRemoteVideoStats() {
   client_manager.getRemoteVideoStats();
 }
+
+function initVirtualBackground(){
+  client_manager.enableVirtualBackground();
+}
+
+function setVirtualBackgroundBlur(blurDegree){
+  client_manager.setVirtualBackgroundBlur(blurDegree);
+}
+
+function setVirtualBackgroundColor(hexColor){
+  client_manager.setVirtualBackgroundColor(hexColor);
+}
