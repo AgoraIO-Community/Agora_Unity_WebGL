@@ -291,11 +291,14 @@ class ClientManager {
       }
     }
 
-    if(this.screenShareClient.id != null){
+
+
+    if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb();
     }
 
+    this.is_screensharing = false; // set to default
     this.videoEnabled = false; // set to default
     this.audioEnabled = false; // set to default
     localTracks.audioMixingTrack = null;
@@ -908,7 +911,10 @@ class ClientManager {
 
   async stopNewScreenCaptureForWeb() {
     if (this.is_screensharing) {
-      this.screenShareClient.leave();
+
+      if(this.screenShareClient)
+        this.screenShareClient.leave();
+
       this.is_screensharing = false;
       if(localTracks.audioTrack) {
         this.client.publish(localTracks.audioTrack);

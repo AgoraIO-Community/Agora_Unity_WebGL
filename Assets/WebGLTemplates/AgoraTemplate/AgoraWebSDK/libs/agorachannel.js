@@ -314,7 +314,7 @@ class AgoraChannel {
   async leave() {
     _logger("leaving in agorachannel");
 
-    if(this.screenShareClient.id != null){
+    if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb2();
     }
@@ -342,6 +342,7 @@ class AgoraChannel {
       
     }
 
+    this.is_screensharing = false;
     this.is_publishing = false;
     // remove remote users and player views
     this.remoteUsers = {};
