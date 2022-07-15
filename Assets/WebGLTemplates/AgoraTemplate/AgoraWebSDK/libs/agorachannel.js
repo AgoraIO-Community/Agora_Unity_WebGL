@@ -164,11 +164,13 @@ class AgoraChannel {
   async setupLocalVideoTrack() {
     if (localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack().then(x => {localTracks.videoTrack.play("local-player");}, error => {
+        AgoraRTC.createCameraVideoTrack().catch(error => {
           event_manager.raiseHandleChannelError(this.channelId, error.code, error.message);
         }),
-      ])
-    
+      ]);
+      if(localTracks.videoTrack){
+        localTracks.videoTrack.play("local-player");
+      }
     }
 
   }
@@ -312,7 +314,7 @@ class AgoraChannel {
   async leave() {
     _logger("leaving in agorachannel");
 
-    if(this.screenShareClient != null){
+    if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb2();
     }
@@ -340,6 +342,7 @@ class AgoraChannel {
       
     }
 
+    this.is_screensharing = false;
     this.is_publishing = false;
     // remove remote users and player views
     this.remoteUsers = {};
