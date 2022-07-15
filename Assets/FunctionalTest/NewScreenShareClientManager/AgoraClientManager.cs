@@ -19,6 +19,7 @@ public class AgoraClientManager : MonoBehaviour
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
 
+    public Button joinButton, leaveButton;
     public Button startScreenShareButton, stopScreenShareButton;
     public Button muteLocalVideoButton, muteRemoteVideoButton;
     public Button muteLocalAudioButton, muteRemoteAudioButton;
@@ -27,7 +28,7 @@ public class AgoraClientManager : MonoBehaviour
     public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
-
+    public bool joinedChannel = false;
     public Toggle loopbackAudioToggle, newScreenShareToggle;
 
     
@@ -81,6 +82,14 @@ public class AgoraClientManager : MonoBehaviour
         muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
         muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
         muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
+
+        if(joinedChannel){
+            joinButton.interactable = false;
+            leaveButton.interactable = true;
+        } else {
+            joinButton.interactable = true;
+            leaveButton.interactable = false;
+        }
     }
 
     bool CheckAppId()
@@ -167,11 +176,13 @@ public class AgoraClientManager : MonoBehaviour
     public void JoinChannel()
     {
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        joinedChannel = true;
     }
 
     public void LeaveChannel()
     {
         mRtcEngine.LeaveChannel();
+        joinedChannel = false;
     }
 
     void OnApplicationQuit()

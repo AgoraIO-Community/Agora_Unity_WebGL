@@ -1737,12 +1737,12 @@ namespace agora_gaming_rtc
          * - < 0: Failure.
          *  - `-157 (ERR_MODULE_NOT_FOUND)`: The dynamic library for super resolution is not integrated.
          */
-        public int EnableRemoteSuperResolution(uint userId, bool enable)
+        public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
+            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, enabled, (int)mode, userId);
         }
 
 
