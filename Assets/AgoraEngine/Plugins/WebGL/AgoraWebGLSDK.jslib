@@ -2010,7 +2010,16 @@ muteLocalAudioStream_channel: function(channel, mute) {
     setVirtualBackgroundBlur(blurDegree);
   },
   setVirtualBackgroundColor: function(hexColor) {
-    setVirtualBackgroundColor(hexColor);
+    var myColor = Pointer_stringify(hexColor);
+    setVirtualBackgroundColor(myColor);
+  },
+  setVirtualBackgroundImage: function(imageFile) {
+    var myImg = Pointer_stringify(imageFile);
+    setVirtualBackgroundImage(myImg);
+  },
+  setVirtualBackgroundVideo: function(videoFile) {
+    var myVideo = Pointer_stringify(videoFile);
+    setVirtualBackgroundVideo(myVideo);
   },
   getAudioMixingDuration2: function() {},
   getEffectCurrentPosition: function() {},

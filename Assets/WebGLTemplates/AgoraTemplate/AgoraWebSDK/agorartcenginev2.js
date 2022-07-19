@@ -911,3 +911,11 @@ function setVirtualBackgroundBlur(blurDegree){
 function setVirtualBackgroundColor(hexColor){
   client_manager.setVirtualBackgroundColor(hexColor);
 }
+
+function setVirtualBackgroundImage(imgFile){
+  client_manager.setVirtualBackgroundImage(imgFile);
+}
+
+function setVirtualBackgroundVideo(videoFile){
+  client_manager.setVirtualBackgroundVideo(videoFile);
+}

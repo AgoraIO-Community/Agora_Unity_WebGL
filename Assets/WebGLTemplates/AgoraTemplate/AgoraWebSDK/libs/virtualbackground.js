@@ -37,8 +37,10 @@ async function setBackgroundColor(videoTrack, hexColor) {
 
     let processor = await getProcessorInstance(videoTrack);
 
+    console.log(hexColor);
+
     try {
-      processor.setOptions({type: 'color', color: hexColor});
+      processor.setOptions({type: 'color', color: hexColor.toString()});
       await processor.enable();
     } finally {
     }
@@ -64,11 +66,10 @@ async function setBackgroundBlurring(videoTrack, myBlur) {
 }
 
 // Set an image as the background
-async function setBackgroundImage(videoTrack) {
+async function setBackgroundImage(videoTrack, imgFile) {
     const imgElement = document.createElement('img');
 
     imgElement.onload = async() => {
-      document.getElementById("loading").style.display = "block";
 
       let processor = await getProcessorInstance(videoTrack);
 
@@ -76,10 +77,35 @@ async function setBackgroundImage(videoTrack) {
         processor.setOptions({type: 'img', source: imgElement});
         await processor.enable();
       } finally {
-        document.getElementById("loading").style.display = "none";
       }
 
       virtualBackgroundEnabled = true;
     }
-    imgElement.src = '/images/background.png';
+    imgElement.src = './AgoraWebSDK/assets/images/' + imgFile;
+}
+
+async function setBackgroundVideo(videoTrack, videoFile) {
+  const videoElement = document.createElement('video');
+  
+  console.log('./AgoraWebSDK/assets/videos/' + videoFile);
+
+  videoElement.oncanplay = async() => {
+
+    let processor = await getProcessorInstance(videoTrack);
+
+    try {
+      processor.setOptions({type: 'video', source: videoElement});
+      await processor.enable();
+      console.log("processor enabled");
+    } catch(e) {
+    }
+
+    virtualBackgroundEnabled = true;
+  }
+  videoElement.src = 'AgoraWebSDK/assets/videos/' + videoFile;
+  videoElement.type = "video/mp4";
+  videoElement.width = 800;
+  videoElement.height = 600;
+  videoElement.play();
+  console.log(videoElement);
 }

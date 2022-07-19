@@ -4492,6 +4492,16 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setVirtualBackgroundColor(hexColor);
         }
 
+        public int SetVirtualBackgroundImage(string imgFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundImage(imgFile);
+        }
+
+        public int SetVirtualBackgroundVideo(string videoFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundVideo(videoFile);
+        }
+
         /**
         * Sets whether to enable the flash.
         *

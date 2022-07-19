@@ -36,6 +36,8 @@ public class AgoraClientManager : MonoBehaviour
 
     public int blurDegrees = 2;
     public string hexColor = "#00FF00";
+    public string imgFile = "seinfeld.png";
+    public string videoFile = "movie.mp4";
 
     // Use this for initialization
     void Start()
@@ -187,6 +189,14 @@ public class AgoraClientManager : MonoBehaviour
 
     public void setVirtualBackgroundColor(){
         mRtcEngine.SetVirtualBackgroundColor(hexColor);
+    }
+
+    public void setVirtualBackgroundImage(){
+        mRtcEngine.SetVirtualBackgroundImage(imgFile);
+    }
+
+     public void setVirtualBackgroundVideo(){
+        mRtcEngine.SetVirtualBackgroundVideo(videoFile);
     }
 
     public void JoinChannel()
