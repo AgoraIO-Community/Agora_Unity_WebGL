@@ -58,22 +58,7 @@ The difference of the templates: use AgoraTemplate2020 for Unity Editor 2020 and
 
 ## Resources
   
-
-Web Published README
-
-[https://docs.google.com/document/d/e/2PACX-1vSwUDoydPjdpCEFRS1UXZtUnKwrRifTvDxQHfyzerUNSs5U6YeWejLGys9GPQEmB6h6ax43VPFFVuG9/pub](https://docs.google.com/document/d/e/2PACX-1vSwUDoydPjdpCEFRS1UXZtUnKwrRifTvDxQHfyzerUNSs5U6YeWejLGys9GPQEmB6h6ax43VPFFVuG9/pub)
-
-  
-
-Programming Guide
-
-[https://docs.google.com/document/d/e/2PACX-1vSuO71snguUTLG58LcVHD71LKGI5sBtZZi12qRYbey7lNQm8Z7JAv8HKcGW0Fzz8-GXEeXedl0jhE0Y/pub](https://docs.google.com/document/d/e/2PACX-1vSuO71snguUTLG58LcVHD71LKGI5sBtZZi12qRYbey7lNQm8Z7JAv8HKcGW0Fzz8-GXEeXedl0jhE0Y/pub)
-
-  
-
-Build and Run
-
-[https://docs.google.com/document/d/e/2PACX-1vSnaMq_oIhzxnoKCwEi6WKvfx7-Wy3ujg_IXOOWDp9SSWMbO7cD6nV0cR9hpH5Xmg/pub](https://docs.google.com/document/d/e/2PACX-1vSnaMq_oIhzxnoKCwEi6WKvfx7-Wy3ujg_IXOOWDp9SSWMbO7cD6nV0cR9hpH5Xmg/pub)
+Please see [the Wiki page](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/wiki) for more information.
 
 ## License
 The MIT License (MIT).  [See doc.](LICENSE)
