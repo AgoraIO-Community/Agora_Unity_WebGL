@@ -11,6 +11,8 @@ class ClientManager {
     this.audioEnabled = false; // if true then mic access is created, if false then not
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
+    this.remoteUserAudioMuted = {};
+    this.remoteUserVideoMuted = {};
     this.client_role = 1; // default is host, 2 is audience
     this._storedChannelProfile = 0; // channel profile saved before join is called
     this._inChannel = false;
@@ -142,15 +144,23 @@ class ClientManager {
   async subscribe_remoteuser(user, mediaType) {
     var strUID = user.uid.toString();
     // subscribe to a remote user
-    await this.client.subscribe(user, mediaType);
-    if (mediaType === "video") {
+    if (remoteUsers[user.uid] === null ||
+      user.hasVideo && mediaType === "video" && 
+      (this.remoteUserVideoMuted[user.uid] == null 
+        || this.remoteUserVideoMuted[user.uid] == false) ||
+      user.hasAudio && mediaType === "audio" && 
+      (this.remoteUserAudioMuted[user.uid] == null 
+        || this.remoteUserAudioMuted[user.uid] == false)) {
+      await this.client.subscribe(user, mediaType);
+    }
+    if (mediaType === "video" && user.hasVideo && user.videoTrack && !this.remoteUserVideoMuted[user.uid]) {
       user.videoTrack.play(`player-${strUID}`, { fit: "cover", mirror: mremote });
       if (remoteUsers[user.uid] == null)
       {
         event_manager.raiseOnRemoteUserJoined(strUID);
-      }
+      } 
     } else {
-      if (mediaType === "audio") {
+      if (mediaType === "audio" && user.hasAudio && user.audioTrack && !this.remoteUserAudioMuted[user.uid]) {
         user.audioTrack.play();
         // for Voice only subscription only, the raise won't happen above
         if (remoteUsers[user.uid] == null) {
@@ -167,11 +177,12 @@ class ClientManager {
     const id = user.uid;
     if (this.audioSubscribing && mediaType == "audio" && (mediaType == "audio" && this.screenShareClient == null
       || mediaType == "audio" && this.screenShareClient != null
-      && id != this.screenShareClient.uid) && (!this.is_screensharing || mediaType != "audio" && this.is_screensharing)) {
+      && id != this.screenShareClient.uid)) {
       await this.subscribe_remoteuser(user, mediaType);
-    } else if(this.videoSubscribing && mediaType == "video") {
+    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
+      this.getRemoteVideoStats(id);
     }
     remoteUsers[id] = user;
   }
@@ -180,7 +191,6 @@ class ClientManager {
   // since it can called twice based on mediaType
   // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
-  	console.log("User has Joined");
     const id = user.uid;
   }
 
@@ -251,7 +261,6 @@ class ClientManager {
 
   async handleStreamMessage(uid, data) {
     // const str = utf8ArrayToString(data);
-    // console.log(str);
     UnityHooks.InvokeStreamMessageCallback(uid, data, data.length);
   }
 
@@ -282,6 +291,14 @@ class ClientManager {
       }
     }
 
+
+
+    if(this.screenShareClient && this.screenShareClient.uid != null){
+      this.handleUserLeft(this.screenShareClient);
+      await stopNewScreenCaptureForWeb();
+    }
+
+    this.is_screensharing = false; // set to default
     this.videoEnabled = false; // set to default
     this.audioEnabled = false; // set to default
     localTracks.audioMixingTrack = null;
@@ -314,6 +331,8 @@ class ClientManager {
 
     // remove remote users and player views
     remoteUsers = {};
+    this.remoteUserAudioMuted = {};
+    this.remoteUserVideoMuted = {};
 
     // leave the channel
     await this.client.leave();
@@ -362,27 +381,22 @@ class ClientManager {
   }
 
   async handleStopNewScreenShare(){
-    console.log("Stopping New Screen Share");
     stopNewScreenCaptureForWeb();
   }
 
   async handleStartNewScreenShare(){
-    console.log("Start New Screen Share");
     event_manager.raiseEngineScreenShareStarted(this.options.channel, this.options.uid);
   }
 
   async handleStartScreenShare(){
-    console.log("Starting Screen Share");
     event_manager.raiseEngineScreenShareStarted(this.options.channel, this.options.uid);
   }
 
   async handleStopScreenShare(){
-    console.log("Stopping Screen Share");
     stopScreenCapture();
   }
 
   async handleStopNewScreenShare(){
-    console.log("Stopping Screen Share");
     stopNewScreenCaptureForWeb();
   }
 
@@ -420,8 +434,10 @@ class ClientManager {
         this.options.channel,
         this.options.token || null,
         user || null
-      ),
-    ]);
+      ).catch(error => {
+        event_manager.raiseHandleUserError(error.code, error.message);
+      }),
+    ])
 
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
@@ -436,11 +452,17 @@ class ClientManager {
   async processJoinChannelAVTrack() {  
     if (this.videoEnabled && this.isHosting()) {
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration)
+        AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration).catch(
+          e => {
+            event_manager.raiseHandleUserError(e.code, e.message);
+          }
+        )
       ]);
-      currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
-        localTracks.videoTrack._deviceName
-      );
+      if (localTracks.videoTrack) {
+        currentVideoDevice = wrapper.getCameraDeviceIdFromDeviceName(
+          localTracks.videoTrack._deviceName
+        );
+      }
     }
 
     if (this.audioEnabled && this.isHosting()) {
@@ -545,7 +567,9 @@ class ClientManager {
         await this.client.unpublish(localTracks.videoTrack);
       } else {
         [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack(),
+          AgoraRTC.createCameraVideoTrack().catch(e => {
+            event_manager.raiseHandleUserError(e.code, e.msg);
+          }),
         ]);
 
         localTracks.videoTrack.play("local-player");
@@ -558,7 +582,9 @@ class ClientManager {
 
   async startPreview() {
     [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack(),
+      AgoraRTC.createCameraVideoTrack().catch(e => {
+        event_manager.raiseHandleUserError(e.code, e.msg);
+      }),
     ]);
     localTracks.videoTrack.play("local-player");
   }
@@ -672,7 +698,9 @@ class ClientManager {
       await this.client.unpublish(localTracks.videoTrack);
 
       [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
       ]);
 
       localTracks.videoTrack.play("local-player");
@@ -690,7 +718,9 @@ class ClientManager {
     await this.client.unpublish(localTracks.videoTrack);
 
     [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack(),
+      AgoraRTC.createCameraVideoTrack().catch(e => {
+        event_manager.raiseHandleUserError(e.code, e.msg);
+      }),
     ]);
     localTracks.videoTrack.play("local-player");
     await this.client.publish(localTracks.videoTrack);
@@ -713,7 +743,9 @@ class ClientManager {
       await this.client.unpublish(localTracks.videoTrack);
 
       [customVideoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
       ]);
       customVideoTrack.play("custom_track");
 
@@ -757,9 +789,11 @@ class ClientManager {
     });
     if (this.is_screensharing) {
       if (Array.isArray(screenShareTrack)) {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.stop();
+          localTracks.videoTrack.close();
+          await this.client.unpublish(localTracks.videoTrack);
+        }
         [localTracks.videoTrack] = screenShareTrack;
         localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
         localTracks.videoTrack.play("local-player");
@@ -769,9 +803,11 @@ class ClientManager {
         this.enableLoopbackAudio = true;
         event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
       } else {
-        localTracks.videoTrack.stop();
-        localTracks.videoTrack.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.stop();
+          localTracks.videoTrack.close();
+          await this.client.unpublish(localTracks.videoTrack);
+        }
         localTracks.videoTrack = screenShareTrack;
         localTracks.videoTrack.on("track-ended", this.handleStopScreenShare.bind());
         localTracks.videoTrack.play("local-player");
@@ -817,15 +853,22 @@ class ClientManager {
       await this.client.unpublish(localTracks.videoTrack);
       this.is_screensharing = false;
       this.enableLoopbackAudio = false;
-      if (this.tempLocalTracks.audioTrack != null) {
+      if (this.tempLocalTracks != null) {
         await this.client.unpublish(this.tempLocalTracks.audioTrack);
         this.tempLocalTracks.audioTrack = null;
       }
-      [localTracks.videoTrack] = await Promise.all([
-        AgoraRTC.createCameraVideoTrack(),
-      ]);
-      localTracks.videoTrack.play("local-player");
-      await this.client.publish(localTracks.videoTrack);
+      if (this.videoEnabled) {
+        [localTracks.videoTrack] = await Promise.all([
+          AgoraRTC.createCameraVideoTrack().catch(
+            async e => { 
+              event_manager.raiseHandleUserError(e.code, e.message); 
+            }),
+        ]);
+        if (localTracks.videoTrack) {
+          localTracks.videoTrack.play("local-player");
+          await this.client.publish(localTracks.videoTrack);
+        }
+      }
       event_manager.raiseScreenShareStopped(this.options.channel, this.options.uid);
     }
   }
@@ -842,7 +885,6 @@ class ClientManager {
         if(Array.isArray(localVideoTrack)){
         this.is_screensharing = true;
         screenShareTrack = localVideoTrack;
-        console.log("Screen Share Track " + screenShareTrack);
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
@@ -852,7 +894,6 @@ class ClientManager {
       } else {
         this.is_screensharing = true;
         screenShareTrack = localVideoTrack;
-        console.log("Screen Share Track " + screenShareTrack);
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
@@ -861,8 +902,7 @@ class ClientManager {
         });
       }
       }).catch(error => { 
-        event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid); 
-        console.log(error);
+        event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
     });
     } else {
       window.alert("SCREEN IS ALREADY BEING SHARED!\nPlease stop current ScreenShare before\nstarting a new one.");
@@ -871,7 +911,10 @@ class ClientManager {
 
   async stopNewScreenCaptureForWeb() {
     if (this.is_screensharing) {
-      this.screenShareClient.leave();
+
+      if(this.screenShareClient)
+        this.screenShareClient.leave();
+
       this.is_screensharing = false;
       if(localTracks.audioTrack) {
         this.client.publish(localTracks.audioTrack);
@@ -895,23 +938,29 @@ class ClientManager {
   }
 
   async subscribe_mv(user, mediaType) {
-    try {
-      await this.client.subscribe(user, mediaType);
-      if (mediaType === "video") {
-        user.videoTrack.play(`player-${user.uid}`);
-      } else if (mediaType === "audio") {
-        user.audioTrack.play();
+    if (mediaType === "video" && user.hasVideo ||
+      mediaType === "audio" && user.hasAudio) {
+      try {
+        await this.client.subscribe(user, mediaType);
+        if (mediaType === "video") {
+          user.videoTrack.play(`player-${user.uid}`);
+        } else if (mediaType === "audio") {
+          user.audioTrack.play();
+        }
+      } catch (error) {
+        console.log("subscribe error ", error);
       }
-    } catch (error) {
-      console.log("subscribe error ", error);
     }
   }
 
   async unsubscribe(user, mediaType) {
-    try {
-      await this.client.unsubscribe(user, mediaType);
-    } catch (error) {
-      console.log("unsubscribe error ", error);
+    if (mediaType === "video" && user.hasVideo ||
+      mediaType === "audio" && user.hasAudio) {
+      try {
+        await this.client.unsubscribe(user, mediaType);
+      } catch (error) {
+        console.log("unsubscribe error ", error);
+      }
     }
   }
 
@@ -994,13 +1043,17 @@ class ClientManager {
     if (config.bitrateMax) this._customVideoConfiguration.bitrateMax = config.bitrateMax;
   }
 
-  getRemoteVideoStats() {
-    var stats = this.client.getRemoteVideoStats();
-    Object.keys(stats).forEach((uid) => {
-      const width = stats[uid].receiveResolutionWidth;
-      const height = stats[uid].receiveResolutionHeight;
-      // UnityHooks.InvokeVideoSizeChangedCallback(uid, width, height);
-      event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
-    });
+
+  async getRemoteVideoStats(uid) {
+    let Client = this.client;
+    setTimeout(function () {
+      var stats = Client.getRemoteVideoStats();
+      console.log(stats);
+      if (stats[uid]) {
+        const width = stats[uid].receiveResolutionWidth;
+        const height = stats[uid].receiveResolutionHeight;
+        event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
+      }
+    }, 2000);
   }
 }

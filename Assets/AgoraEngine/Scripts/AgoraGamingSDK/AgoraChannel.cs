@@ -451,6 +451,16 @@ namespace agora_gaming_rtc
             return callIdString;
         }
 
+        /**
+        *  Gets remote video's stats to trigger OnVideoSizeChanged
+        */
+        public void GetRemoteVideoStats()
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            IRtcEngineNative.getRemoteVideoStats_MC();
+#endif
+        }
+
         /** Gets a new token when the current token expires after a period of time.
          *
          * The `token` expires after a period of time once the token schema is enabled when:
@@ -1727,12 +1737,12 @@ namespace agora_gaming_rtc
          * - < 0: Failure.
          *  - `-157 (ERR_MODULE_NOT_FOUND)`: The dynamic library for super resolution is not integrated.
          */
-        public int EnableRemoteSuperResolution(uint userId, bool enable)
+        public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
+            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, enabled, (int)mode, userId);
         }
 
 

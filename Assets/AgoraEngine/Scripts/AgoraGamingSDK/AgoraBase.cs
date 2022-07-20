@@ -3303,6 +3303,9 @@ namespace agora_gaming_rtc
         /** 3: The device does not support using super resolution.
          */
         SR_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
+        /** 4: Insufficient device performance，It is recommended to turn off super resolution.
+        */
+        SR_STATE_REASON_INSUFFICIENT_PERFORMANCE = 4,
     };
 
     /** The brightness level of the video image captured by the local camera.
@@ -3572,6 +3575,10 @@ namespace agora_gaming_rtc
          * 3: The device does not support using the virtual background.
          */
         VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
+        /**
+        * 4: Insufficient device performance，It is recommended to turn off virtual background.
+        */
+        VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_INSUFFICIENT_PERFORMANCE = 4,
     };
 
     /**
@@ -4261,6 +4268,14 @@ namespace agora_gaming_rtc
         public string graphicsCardType;
         /** The error code of the window blocking during screen sharing. See #EXCLUDE_WINDOW_ERROR. */
         public EXCLUDE_WINDOW_ERROR errCode;
+    };
+
+    /** Super Resolution modes. */
+    public enum SR_MODE {
+        /** 0: manual select uid to do super resolution */
+        SR_MODE_MANUAL = 0,
+        /** 1: auto select.*/
+        SR_MODE_AUTO,
     };
 
     #endregion some enum and struct types
