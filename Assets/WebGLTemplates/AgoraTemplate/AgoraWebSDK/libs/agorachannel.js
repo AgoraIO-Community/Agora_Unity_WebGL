@@ -913,4 +913,27 @@ class AgoraChannel {
       }
     }, 2000);
   }
+
+
+  async enableVirtualBackground(){
+    console.log("agora channel working");
+    getProcessorInstance(localTracks.videoTrack);
+  }
+  
+  async setVirtualBackgroundBlur(blurDegree){
+    setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  }
+  
+  async setVirtualBackgroundColor(hexColor){
+    setBackgroundColor(localTracks.videoTrack, hexColor);
+  }
+  
+  async setVirtualBackgroundImage(imgFile){
+    setBackgroundImage(localTracks.videoTrack, imgFile);
+  }
+  
+  async setVirtualBackgroundVideo(videoFile){
+    setBackgroundVideo(localTracks.videoTrack, videoFile);
+  }
+
 }

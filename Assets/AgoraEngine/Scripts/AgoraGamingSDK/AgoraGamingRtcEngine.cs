@@ -4502,6 +4502,31 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setVirtualBackgroundVideo(videoFile);
         }
 
+        public int initVirtualBackground_MC(bool enabled, VirtualBackgroundSource source)
+        {
+            return IRtcEngineNative.initVirtualBackground_MC(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
+        }
+
+        public int SetVirtualBackgroundBlur_MC(int blurDegrees)
+        {
+            return IRtcEngineNative.setVirtualBackgroundBlur_MC(blurDegrees);
+        }
+
+        public int SetVirtualBackgroundColor_MC(string hexColor)
+        {
+            return IRtcEngineNative.setVirtualBackgroundColor_MC(hexColor);
+        }
+
+        public int SetVirtualBackgroundImage_MC(string imgFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundImage_MC(imgFile);
+        }
+
+        public int SetVirtualBackgroundVideo_MC(string videoFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundVideo_MC(videoFile);
+        }
+
         /**
         * Sets whether to enable the flash.
         *

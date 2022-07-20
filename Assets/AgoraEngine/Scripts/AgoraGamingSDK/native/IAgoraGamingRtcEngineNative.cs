@@ -1418,6 +1418,21 @@ namespace agora_gaming_rtc
         protected static extern int setVirtualBackgroundVideo(string videoFile);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int initVirtualBackground_MC(bool enabled, int background_source_type, uint color, string source, int blur_degree);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundBlur_MC(int blur_degree);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundColor_MC(string hexColor);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundImage_MC(string imgFile);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundVideo_MC(string videoFile);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraTorchOn(bool on);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
