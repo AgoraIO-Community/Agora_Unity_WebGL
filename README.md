@@ -12,8 +12,7 @@ This project is the open source WebGL SDK for Unity, a wrapper to the Agora Web 
 
 ## Updated main Demo
 
-![Demo for WebGL](https://user-images.githubusercontent.com/1261195/130497083-45cc6d5e-fa1e-4581-8ea4-b93a27f2f6cf.png)
-
+![webgldemo](https://user-images.githubusercontent.com/1261195/180123220-ca7e96e2-bff5-48d7-b5bd-30a37003bdc9.png)
 
 
 ## Quick Start
