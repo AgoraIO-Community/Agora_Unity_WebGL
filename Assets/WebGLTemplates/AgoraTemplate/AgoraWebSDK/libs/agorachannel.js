@@ -776,6 +776,7 @@ class AgoraChannel {
   }
 
   async startNewScreenCaptureForWeb2(uid, enableAudio) {
+    console.log("Starting New Screen Share");
     var screenShareTrack = null;
     var enableAudioStr = enableAudio ? "auto" : "disable";
     if (!this.is_screensharing) {
@@ -789,9 +790,15 @@ class AgoraChannel {
           screenShareTrack = localVideoTrack;
           screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
+          var screenShareUID = uid + this.client.uid;
+            if(this.remoteUsers[screenShareUID] !== undefined){
+              screenShareTrack = null;
+              event_manager.raiseScreenShareCanceled_MC(this.options.channel, screenShareUID);
+              return;
+            }
           this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
             this.screenShareClient.publish(screenShareTrack);
-            event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+            event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
 
           });
         } else {
@@ -799,9 +806,15 @@ class AgoraChannel {
           screenShareTrack = localVideoTrack;
           screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
+          var screenShareUID = uid + this.client.uid;
+            if(this.remoteUsers[screenShareUID] !== undefined){
+              screenShareTrack = null;
+              event_manager.raiseScreenShareCanceled_MC(this.options.channel, screenShareUID);
+              return;
+            }
           this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
             this.screenShareClient.publish(screenShareTrack);
-            event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
+            event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
           });
         }
       }).catch(error => {

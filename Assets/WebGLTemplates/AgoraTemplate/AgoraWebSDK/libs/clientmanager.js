@@ -884,6 +884,11 @@ class ClientManager {
         screenShareTrack = localVideoTrack;
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
+        if(this.remoteUsers[screenShareUID] !== undefined){
+          screenShareTrack = null;
+          event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+          return;
+        }
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
@@ -893,6 +898,11 @@ class ClientManager {
         screenShareTrack = localVideoTrack;
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
+        if(this.remoteUsers[screenShareUID] !== undefined){
+          screenShareTrack = null;
+          event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+          return;
+        }
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
