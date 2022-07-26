@@ -336,6 +336,16 @@ namespace agora_gaming_rtc
 
         }
 
+        public static AgoraChannel GetChannel(string channelName)
+        {
+            if (_channelDictionary.ContainsKey(channelName))
+            {
+                return _channelDictionary[channelName];
+            }
+            return null;
+        }
+	
+
         /// @cond
 
         /** Bind local user and a remote user as an audio&video sync group. The remote user is defined by cid and uid.
