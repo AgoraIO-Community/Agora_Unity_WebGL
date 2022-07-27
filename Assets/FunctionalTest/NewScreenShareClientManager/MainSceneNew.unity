@@ -2462,7 +2462,7 @@ MonoBehaviour:
   blurDegrees: 2
   hexColor: '#00FF00'
   imgFile: seinfeld.jpg
-  videoFile: yakuzagame.mp4
+  videoFile: cliff.mp4
 --- !u!114 &1348336706
 MonoBehaviour:
   m_ObjectHideFlags: 0
