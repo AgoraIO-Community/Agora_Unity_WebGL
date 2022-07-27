@@ -2461,8 +2461,8 @@ MonoBehaviour:
   newScreenShareToggle: {fileID: 1970231432}
   blurDegrees: 2
   hexColor: '#00FF00'
-  imgFile: seinfeld.jpg
-  videoFile: cliff.mp4
+  imgFile: bedroom.jpg
+  videoFile: outside.mp4
 --- !u!114 &1348336706
 MonoBehaviour:
   m_ObjectHideFlags: 0

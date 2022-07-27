@@ -3020,8 +3020,8 @@ MonoBehaviour:
   - {fileID: 753734140}
   blurDegrees: 2
   hexColor: '#00FF00'
-  imgFile: seinfeld.jpg
-  videoFile: cliff.mp4
+  imgFile: bedroom.jpg
+  videoFile: outside.mp4
 --- !u!1 &1398369965
 GameObject:
   m_ObjectHideFlags: 0
