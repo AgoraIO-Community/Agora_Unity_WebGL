@@ -107,5 +107,4 @@ async function setBackgroundVideo(videoTrack, videoFile) {
   videoElement.width = 800;
   videoElement.height = 600;
   videoElement.play();
-  console.log(videoElement);
 }
