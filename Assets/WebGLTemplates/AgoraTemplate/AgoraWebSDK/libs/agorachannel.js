@@ -790,6 +790,7 @@ class AgoraChannel {
           screenShareTrack = localVideoTrack;
           screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
+          this.tempLocalTracks = screenShareTrack;
           var screenShareUID = uid + this.client.uid;
             if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
               screenShareTrack = null;
@@ -806,6 +807,7 @@ class AgoraChannel {
           screenShareTrack = localVideoTrack;
           screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
+          this.tempLocalTracks = screenShareTrack;
           var screenShareUID = uid + this.client.uid;
             if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
               screenShareTrack = null;
@@ -827,7 +829,21 @@ class AgoraChannel {
 
   async stopNewScreenCaptureForWeb2() {
     if (this.is_screensharing) {
-      console.log(this.screenShareClient);
+      if (this.tempLocalTracks !== null) {
+        if (Array.isArray(this.tempLocalTracks)) {
+          for (var i = 0; i < this.tempLocalTracks.length; i++) {
+            this.tempLocalTracks[i].stop();
+            this.tempLocalTracks[i].close();
+            this.screenShareClient.unpublish(this.tempLocalTracks[i]);
+          }
+        } else {
+          console.log(this.tempLocalTracks);
+          this.tempLocalTracks.stop();
+          this.tempLocalTracks.close();
+          this.screenShareClient.unpublish(this.tempLocalTracks);
+        }
+      }
+
       this.screenShareClient.leave();
       this.is_screensharing = false;
       if (localTracks.audioTrack) {

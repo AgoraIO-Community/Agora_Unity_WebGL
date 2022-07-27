@@ -898,15 +898,14 @@ class ClientManager {
           return;
         }
         this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
-          console.log(screenShareTrack);
           this.screenShareClient.publish(this.tempLocalTracks);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
       } else {
         this.is_screensharing = true;
         screenShareTrack = localVideoTrack;
-        this.tempLocalTracks = screenShareTrack;
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
+        this.tempLocalTracks = screenShareTrack;
         this.enableLoopbackAudio = enableAudio;
         if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
           screenShareTrack = null;
