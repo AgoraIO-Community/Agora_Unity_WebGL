@@ -37,6 +37,12 @@ async function getProcessorInstance(videoTrack) {
 async function setBackgroundColor(videoTrack, hexColor) {
   if (videoTrack) {
 
+    if(videoElement != null){
+      videoElement.pause();
+      videoElement.currentTime = 0;
+      videoElement = null;
+    }
+
     let processor = await getProcessorInstance(videoTrack);
 
     console.log(hexColor);
@@ -54,6 +60,12 @@ async function setBackgroundColor(videoTrack, hexColor) {
 // Blur the user's actual background
 async function setBackgroundBlurring(videoTrack, myBlur) {
   if (videoTrack) {
+
+    if(videoElement != null){
+      videoElement.pause();
+      videoElement.currentTime = 0;
+      videoElement = null;
+    }
 
     let processor = await getProcessorInstance(videoTrack);
 
