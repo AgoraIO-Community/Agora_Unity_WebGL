@@ -445,4 +445,31 @@ function getRemoteVideoStatsMC() {
     c.getRemoteVideoStatsMC();
   }
 }
+
+function initVirtualBackground_MC(){
+  console.log("multichannel working");
+  var c = clients[selectedCurrentChannel];
+  c.enableVirtualBackground();
+}
+
+function setVirtualBackgroundBlur_MC(blurDegree){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundBlur(blurDegree);
+}
+
+function setVirtualBackgroundColor_MC(hexColor){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundColor(hexColor);
+}
+
+function setVirtualBackgroundImage_MC(imgFile){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundImage(imgFile);
+}
+
+function setVirtualBackgroundVideo_MC(videoFile){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundVideo(videoFile);
+}
+
 // NEW MULTI CLIENT API's ENDS

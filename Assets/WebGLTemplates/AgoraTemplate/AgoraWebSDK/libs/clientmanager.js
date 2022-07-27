@@ -998,6 +998,26 @@ class ClientManager {
     }
   }
 
+async enableVirtualBackground(){
+  getProcessorInstance(localTracks.videoTrack);
+}
+
+async setVirtualBackgroundBlur(blurDegree){
+  setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+}
+
+async setVirtualBackgroundColor(hexColor){
+  setBackgroundColor(localTracks.videoTrack, hexColor);
+}
+
+async setVirtualBackgroundImage(imgFile){
+  setBackgroundImage(localTracks.videoTrack, imgFile);
+}
+
+async setVirtualBackgroundVideo(videoFile){
+  setBackgroundVideo(localTracks.videoTrack, videoFile);
+}
+
   SetRemoteUserPriority(uid, userPriority) {
     if (userPriority == 50 || userPriority == 0)
       this.client.setRemoteVideoStreamType(uid, 0);
