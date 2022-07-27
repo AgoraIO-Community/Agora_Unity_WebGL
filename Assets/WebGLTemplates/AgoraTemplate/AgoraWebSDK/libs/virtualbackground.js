@@ -1,5 +1,7 @@
 let processor = null;
 let extension = null;
+let imgElement = null;
+let videoElement = null;
 var localTracks = {
   videoTrack: null,
   audioTrack: null
@@ -67,7 +69,14 @@ async function setBackgroundBlurring(videoTrack, myBlur) {
 
 // Set an image as the background
 async function setBackgroundImage(videoTrack, imgFile) {
-    const imgElement = document.createElement('img');
+
+    if(videoElement != null){
+      videoElement.pause();
+      videoElement.currentTime = 0;
+      videoElement = null;
+    }
+
+    imgElement = document.createElement('img');
 
     imgElement.onload = async() => {
 
@@ -85,7 +94,7 @@ async function setBackgroundImage(videoTrack, imgFile) {
 }
 
 async function setBackgroundVideo(videoTrack, videoFile) {
-  const videoElement = document.createElement('video');
+  videoElement = document.createElement('video');
   
   console.log('./AgoraWebSDK/assets/videos/' + videoFile);
 
