@@ -33,6 +33,7 @@ namespace agora_utilities
         [SerializeField] int ExpirationSecs = 3600;
 
         IRtcEngine mRtcEngine;
+        AgoraChannel channel;
 
         // Caller class is responsible setting this property
         public IRtcEngine RtcEngine
@@ -156,12 +157,12 @@ namespace agora_utilities
         {
             Debug.Log("Channel Token will expire soon for " + channelId + ", renewing .... ");
             StartCoroutine(TokenRequestHelper.FetchToken(serverURL, channelId, UID, clientType.ToString(), ExpirationSecs,
-                        (token) =>
+                        (myToken) =>
                         {
                             var channel = AgoraChannel.GetChannel(channelId);
                             if (channel != null)
                             {
-                                channel.RenewToken(token.rtcToken);
+                                channel.RenewToken(myToken.rtcToken);
                             }
                         }));
         }

@@ -1031,6 +1031,44 @@ namespace agora_gaming_rtc
 
         }
 
+        // server expires token after some time
+        // you need to call setToken again otherwise server will disconnect
+        public void ChannelTokenPrivilegeWillExpire(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string token = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnTokenPrivilegeWillExpire != null)
+                {
+                    ch.ChannelOnTokenPrivilegeWillExpire(channel, token);
+                }
+            }
+
+        }
+
+        // server expires token after some time
+        // you need to call setToken again otherwise server will disconnect
+        public void ChannelTokenPrivilegeDidExpire(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string token = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnTokenPrivilegeDidExpire != null)
+                {
+                    ch.ChannelOnTokenPrivilegeDidExpire(channel, token);
+                }
+            }
+
+        }
+
         // sending to OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
         // volumn info is <uid volume vad channel>* 
         // in native, it seems the speaker number is always 1, even with multiple people in the channel
