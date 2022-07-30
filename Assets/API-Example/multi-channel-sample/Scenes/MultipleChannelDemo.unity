@@ -4109,7 +4109,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   channelName: unity3d
   ClientUID: 0
-  UseToken: 0
+  UseToken: 1
   videoSpawnPoint: {fileID: 1859537993}
   panelContentWindow: {fileID: 1531243673}
   AudienceMode: 0
@@ -4243,7 +4243,12 @@ Prefab:
     - target: {fileID: 114763651108330218, guid: bf1f86f0796c445879a608e99ae1de4a,
         type: 2}
       propertyPath: serverURL
-      value: http://localhost:8080
+      value: https://myappfortestingthisshit123.herokuapp.com/
+      objectReference: {fileID: 0}
+    - target: {fileID: 114763651108330218, guid: bf1f86f0796c445879a608e99ae1de4a,
+        type: 2}
+      propertyPath: ExpirationSecs
+      value: 60
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
@@ -4445,7 +4450,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   channelName: unity2d
   ClientUID: 3
-  UseToken: 0
+  UseToken: 1
   videoSpawnPoint: {fileID: 1679465262}
   panelContentWindow: {fileID: 1942410745}
   AudienceMode: 1
