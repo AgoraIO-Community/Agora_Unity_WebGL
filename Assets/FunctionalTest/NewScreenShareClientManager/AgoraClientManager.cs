@@ -29,6 +29,7 @@ public class AgoraClientManager : MonoBehaviour
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
     public bool joinedChannel = false;
+    public bool useToken = false;
     public Toggle loopbackAudioToggle, newScreenShareToggle;
 
     
@@ -45,7 +46,7 @@ public class AgoraClientManager : MonoBehaviour
         InitEngine();
         
         //channel setup.
-        JoinChannel();
+
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
@@ -171,11 +172,22 @@ public class AgoraClientManager : MonoBehaviour
         mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
 
         mRtcEngine.OnError += EngineOnErrorHandler;
+
     }
 
     public void JoinChannel()
     {
-        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        if(!useToken){
+            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        } else {
+            TokenClient.Instance.SetRtcEngineInstance(mRtcEngine);
+            TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
+            {
+                TOKEN_1 = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
+                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
+            });
+        }
         joinedChannel = true;
     }
 
