@@ -899,7 +899,7 @@ var LibraryAgoraWebGLSDK = {
     SendNotImplementedError()
   },
   enableSpatialAudio: function (enabled) {
-    SendNotImplementedError()
+    enableSpatialAudio(enabled);
   },
   enableWirelessAccelerate: function (enabled) {
     SendNotImplementedError()

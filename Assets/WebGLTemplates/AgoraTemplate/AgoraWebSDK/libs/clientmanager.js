@@ -1,4 +1,7 @@
+
+
 class ClientManager {
+
   constructor() {
     this.client = undefined; // first client
     this.options = {
@@ -38,6 +41,8 @@ class ClientManager {
     this.userStreamHandle = this.handleStreamMessage.bind(this);
     this.userInfoUpdateHandler = this.handleUserInfoUpdate.bind(this);
   }
+
+ 
 
   manipulate() {}
 
@@ -1055,5 +1060,9 @@ class ClientManager {
         event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
       }
     }, 2000);
+  }
+
+  async enableSpatialAudio(enabled){
+    getSpatialAudioProcessorInstance(enabled);
   }
 }

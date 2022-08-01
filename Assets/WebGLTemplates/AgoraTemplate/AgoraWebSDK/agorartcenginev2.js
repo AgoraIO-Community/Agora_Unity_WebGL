@@ -899,3 +899,7 @@ function setWebParametersString(key, value) {
 function getRemoteVideoStats() {
   client_manager.getRemoteVideoStats();
 }
+
+function enableSpatialAudio(enabled){
+  client_manager.enableSpatialAudio(enabled);
+}
