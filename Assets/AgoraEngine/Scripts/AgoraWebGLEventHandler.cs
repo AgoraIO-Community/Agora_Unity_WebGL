@@ -1067,7 +1067,7 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void raiseChannelTokenPrivilegeDidExpire(string eventData)
+        public void channelTokenPrivilegeDidExpire(string eventData)
         {
             string[] events = eventData.Split('|');
             string channel = events[0];
