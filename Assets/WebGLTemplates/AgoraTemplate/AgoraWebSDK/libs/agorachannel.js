@@ -36,6 +36,8 @@ class AgoraChannel {
     this.userErrorHandle = this.handleError.bind(this);
     this.userVolumeHandle = this.handleVolumeIndicator.bind(this);
     this.userStreamHandle = this.handleStreamMessage.bind(this);
+    this.userTokenWillExpireHandle = this.handleTokenPrivilegeWillExpire.bind(this);
+    this.userTokenDidExpireHandle = this.handleTokenPrivilegeDidExpire.bind(this);
   }
 
   setOptions(channelkey, channelName, uid) {
@@ -247,6 +249,16 @@ class AgoraChannel {
   async handleStopNewScreenShare() {
     stopNewScreenCaptureForWeb2();
   }
+
+  async handleTokenPrivilegeWillExpire(){
+    console.log("token will expire pretty soon...");
+    event_manager.raiseChannelOnTokenPrivilegeWillExpire(this.options.channel, this.options.token);
+  }
+
+  async handleTokenPrivilegeDidExpire(){
+    console.log("token has officially expired...");
+    event_manager.raiseChannelOnTokenPrivilegeDidExpire(this.options.channel, this.options.token);
+  }
   //============================================================================== 
   async joinChannel2(
     channel_str,
@@ -276,6 +288,8 @@ class AgoraChannel {
     this.client.on("error", this.userErrorHandle);
     this.client.on("volume-indicator", this.userVolumeHandle);
     this.client.on("stream-message", this.userStreamHandle);
+    this.client.on("token-privilege-will-expire", this.userTokenWillExpireHandle);
+    this.client.on("token-privilege-did-expire", this.userTokenDidExpireHandle);
 
     [this.options.uid] = await Promise.all([
       this.client.join(
