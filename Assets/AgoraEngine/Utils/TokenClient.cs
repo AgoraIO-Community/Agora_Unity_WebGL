@@ -119,6 +119,7 @@ namespace agora_utilities
         {
 			mRtcEngine = engine;
             mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
+            mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
             mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
         }
 
@@ -157,6 +158,13 @@ namespace agora_utilities
         void OnTokenPrivilegeWillExpireHandler(string token)
         {
             Debug.Log("Token will expire soon, renewing .... ");
+            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
+                        this.RenewToken));
+        }
+
+        void OnTokenPrivilegeDidExpireHandler(string token)
+        {
+            Debug.Log("Token has expired, please rejoin to get another token.... ");
             StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
                         this.RenewToken));
         }

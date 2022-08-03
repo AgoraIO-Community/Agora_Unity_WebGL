@@ -1033,6 +1033,18 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
+        public void TokenPrivilegeDidExpire(string token)
+        {
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnTokenPrivilegeDidExpire != null)
+            {
+                engine.OnTokenPrivilegeDidExpire(token);
+            }
+
+        }
+
+        // server expires token after some time
+        // you need to call setToken again otherwise server will disconnect
         public void channelTokenPrivilegeWillExpire(string eventData)
         {
             string[] events = eventData.Split('|');
