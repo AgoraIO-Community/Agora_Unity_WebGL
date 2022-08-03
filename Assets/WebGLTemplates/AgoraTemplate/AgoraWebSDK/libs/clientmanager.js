@@ -37,6 +37,8 @@ class ClientManager {
     this.userVolumeHandle = this.handleVolumeIndicator.bind(this);
     this.userStreamHandle = this.handleStreamMessage.bind(this);
     this.userInfoUpdateHandler = this.handleUserInfoUpdate.bind(this);
+    this.userTokenWillExpireHandle = this.handleTokenPrivilegeWillExpire.bind(this);
+    this.userTokenDidExpireHandle = this.handleTokenPrivilegeDidExpire.bind(this);
   }
 
   manipulate() {}
@@ -400,6 +402,14 @@ class ClientManager {
     stopNewScreenCaptureForWeb();
   }
 
+  async handleTokenPrivilegeWillExpire(){
+    event_manager.raiseOnTokenPrivilegeWillExpire(this.options.token)
+  }
+
+  async handleTokenPrivilegeDidExpire(){
+    event_manager.raiseOnTokenPrivilegeDidExpire(this.options.token)
+  }
+
   //============================================================================== 
   // . JOIN CHANNEL METHOD 
   // Params: user - can be either string or uint
@@ -423,6 +433,8 @@ class ClientManager {
     this.client.on("user-info-updated", this.userInfoUpdateHandler);
     this.client.on("volume-indicator", this.userVolumeHandle);
     this.client.on("stream-message", this.userStreamHandle);
+    this.client.on("token-privilege-will-expire", this.userTokenWillExpireHandle);
+    this.client.on("token-privilege-did-expire", this.userTokenDidExpireHandle);
 
     if (typeof(user) == "string") {
 	    user = 0; // let system assign uid
