@@ -130,7 +130,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clientType: 0
-  serverURL: https://thisismytestingapp123.herokuapp.com/
+  serverURL: https://agoraml2test.herokuapp.com/
   ExpirationSecs: 60
 --- !u!1 &273085862
 GameObject:
