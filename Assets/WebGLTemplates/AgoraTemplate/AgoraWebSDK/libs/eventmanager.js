@@ -306,28 +306,26 @@ class EventManager {
     );
   }
 
-  raiseOnTokenPrivilegeWillExpire(channelID, token)
+  raiseOnTokenPrivilegeWillExpire(token)
   {
-    console.log("token will expire pretty soon...");
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "tokenPrivilegeWillExpire",
-      channelID + "|" + token
+      token
     );
   }
 
-  raiseOnTokenPrivilegeDidExpire(channelID, token)
+  raiseOnTokenPrivilegeDidExpire(token)
   {
     unityInstance.SendMessage(
       "AgoraEventHandler",
-      "raiseChannelTokenPrivilegeDidExpire",
-      channelID + "|" + token
+      "tokenPrivilegeDidExpire",
+      token
     );
   }
 
   raiseChannelOnTokenPrivilegeWillExpire(channelID, token)
   {
-    console.log("token will expire pretty soon...");
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "channelTokenPrivilegeWillExpire",

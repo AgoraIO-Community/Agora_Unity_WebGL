@@ -1021,7 +1021,7 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void TokenPrivilegeWillExpire(string token)
+        public void tokenPrivilegeWillExpire(string token)
         {
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnTokenPrivilegeWillExpire != null)
@@ -1033,7 +1033,7 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void TokenPrivilegeDidExpire(string token)
+        public void tokenPrivilegeDidExpire(string token)
         {
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnTokenPrivilegeDidExpire != null)
