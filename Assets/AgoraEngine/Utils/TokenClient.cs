@@ -111,6 +111,7 @@ namespace agora_utilities
         public void SetMultiChannelInstance(AgoraChannel channel)
         {
             channel.ChannelOnTokenPrivilegeWillExpire = ChannelOnTokenPrivilegeWillExpireHandler;
+            channel.ChannelOnTokenPrivilegeDidExpire = ChannelOnTokenPrivilegeDidExpireHandler;
             channel.ChannelOnClientRoleChanged += ChannelOnClientRoleChangedHandler;
         }
 
@@ -172,6 +173,11 @@ namespace agora_utilities
                                 channel.RenewToken(myToken.rtcToken);
                             }
                         }));
+        }
+
+        void ChannelOnTokenPrivilegeDidExpireHandler(string channelId, string token)
+        {
+            Debug.Log("Channel Token has expired for " + channelId + ", join again to renew token");
         }
 
         void ChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)

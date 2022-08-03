@@ -1033,17 +1033,20 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void ChannelTokenPrivilegeWillExpire(string eventData)
+        public void channelTokenPrivilegeWillExpire(string eventData)
         {
             string[] events = eventData.Split('|');
             string channel = events[0];
             string token = events[1];
-
+           
+            Debug.Log(GetInstance()._clientsList.ContainsKey(channel));
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
+                
                 if (ch.ChannelOnTokenPrivilegeWillExpire != null)
                 {
+                    
                     ch.ChannelOnTokenPrivilegeWillExpire(channel, token);
                 }
             }
@@ -1052,7 +1055,7 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void ChannelTokenPrivilegeDidExpire(string eventData)
+        public void raiseChannelTokenPrivilegeDidExpire(string eventData)
         {
             string[] events = eventData.Split('|');
             string channel = events[0];
