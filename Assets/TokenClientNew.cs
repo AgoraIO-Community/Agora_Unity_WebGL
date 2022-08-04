@@ -1,29 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
-
+using UnityEngine.UI;
 using agora_gaming_rtc;
 //using agora_rtm;
 
 namespace agora_utilities
 {
-    /// <summary>
-    ///     publisher = BROADCASTER role in LiveStreaming mode, or a host in Communication mode
-    ///     subscriber = AUDIENCE role in LiveStreaming mode.
-    /// </summary>
-    public enum ClientType
-    {
-        publisher,
-        subscriber
-    }
-
-    public delegate void OnTokensReceivedHandler(string rtcToken, string rtmToken);
-
 
     /// <summary>
     ///    Token Client takes care of the token acquiry and renew the token when time expires
     ///     Caller must provide instance to Rtc and Rtm engine so the event can be handled.
     /// </summary>
-    public class TokenClient : MonoBehaviour
+    public class TokenClientNew : MonoBehaviour
     {
 
         [SerializeField] ClientType clientType;
@@ -34,6 +22,13 @@ namespace agora_utilities
 
         IRtcEngine mRtcEngine;
         AgoraChannel channel;
+
+		public bool renewToken;
+
+		public Logger log;
+		public Text logText;
+
+		public Toggle useTokenToggle;
 
         // Caller class is responsible setting this property
         public IRtcEngine RtcEngine
@@ -53,7 +48,7 @@ namespace agora_utilities
         uint UID { get; set; }
         string ChannelName { get; set; }
 
-        public static TokenClient Instance { get; protected set; }
+        public static TokenClientNew Instance { get; protected set; }
         public bool IsInitialized { get; protected set; }
 
         void Awake()
@@ -102,7 +97,12 @@ namespace agora_utilities
             }));
             */
             IsInitialized = true;
+			log = new Logger(logText);
         }
+
+		public void Update(){
+			renewToken = useTokenToggle.isOn;
+		}
 
         public void SetClient(ClientType type)
         {
@@ -158,22 +158,30 @@ namespace agora_utilities
 
         void OnTokenPrivilegeWillExpireHandler(string token)
         {
-            Debug.Log("Token will expire soon, renewing .... ");
-            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
-                        (myToken) =>
-                        {
-                            
-                            if (mRtcEngine != null)
-                            {
-                                mRtcEngine.RenewToken(myToken.rtcToken);
-                            }
-                        }));
+			
+			if(renewToken){
+				log.UpdateLog("Token will expire soon for: " + ChannelName + ", renewing ....");
+            	Debug.Log("Token will expire soon for " + ChannelName + ", renewing ....");
+				StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
+							(myToken) =>
+							{
+								
+								if (mRtcEngine != null)
+								{
+									mRtcEngine.RenewToken(myToken.rtcToken);
+								}
+							}));
+			} else {
+				log.UpdateLog("Token will expire soon for: " + ChannelName);
+            	Debug.Log("Token will expire soon for " + ChannelName);
+			}
         }
 
         void OnTokenPrivilegeDidExpireHandler(string token)
         {
-            Debug.Log("Token has expired, please rejoin to get another token.... ");
-            
+            Debug.Log("Token has expired for " + ChannelName + ", please rejoin to get another token.... ");
+            log.UpdateLog("Token has expired for " + ChannelName + ", please rejoin to get another token.... ");
+			ClientManagerTokenUse.instance.LeaveChannel();
         }
 
         void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token)
