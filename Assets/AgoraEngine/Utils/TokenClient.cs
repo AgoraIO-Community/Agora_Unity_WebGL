@@ -116,13 +116,7 @@ namespace agora_utilities
             channel.ChannelOnClientRoleChanged += ChannelOnClientRoleChangedHandler;
         }
 
-        public void SetRtcEngineInstance(IRtcEngine engine)
-        {
-			mRtcEngine = engine;
-            mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
-            mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
-            mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
-        }
+        
 
         public void GetTokens(string channelName, uint uid, OnTokensReceivedHandler handleTokens)
         {

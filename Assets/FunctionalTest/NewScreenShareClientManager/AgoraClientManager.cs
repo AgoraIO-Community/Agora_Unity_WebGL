@@ -206,7 +206,7 @@ public class AgoraClientManager : MonoBehaviour
         if(!useToken){
             mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         } else {
-            TokenClient.Instance.SetRtcEngineInstance(mRtcEngine);
+            TokenClient.Instance.RtcEngine = mRtcEngine;
             TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
             {
                 TOKEN_1 = token;
