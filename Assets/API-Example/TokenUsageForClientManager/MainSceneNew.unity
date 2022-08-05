@@ -118,7 +118,7 @@ GameObject:
   m_PrefabParentObject: {fileID: 1454514988387032, guid: bf1f86f0796c445879a608e99ae1de4a,
     type: 2}
   m_PrefabInternal: {fileID: 840026080}
---- !u!114 &198771244
+--- !u!114 &198771245
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -126,15 +126,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 198771243}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf521e7f39d33b34dba16388e436dea0, type: 3}
+  m_Script: {fileID: 11500000, guid: acf6806603dac4540b342bc5626f300d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   clientType: 0
   serverURL: https://agoraml2test.herokuapp.com/
   ExpirationSecs: 60
-  renewToken: 0
-  logText: {fileID: 1416670727}
-  useTokenToggle: {fileID: 924186053}
 --- !u!1 &273085862
 GameObject:
   m_ObjectHideFlags: 0
@@ -946,7 +943,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c38bde60d136d644490eaf7dae9c25fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: 
+  APP_ID: abc0a24c4983477bb500372a5bc3625d
   TOKEN_1: 
   CHANNEL_NAME_1: unity3d
   logText: {fileID: 1416670727}
