@@ -1063,6 +1063,15 @@ class ClientManager {
   }
 
   async enableSpatialAudio(enabled){
-    getSpatialAudioProcessorInstance(enabled);
+    this.client.processor = window.joinSpatialAudioChannel(enabled, this.options.appid, this.options.token, this.options.channel);
+  }
+
+  async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, blur, airAbsorb){
+    window.updateSpatialAzimuth(azimuth);
+    window.updateSpatialElevation(elevation);
+    window.updateSpatialDistance(distance);
+    window.updateSpatialOrientation(orientation);
+    //window.updateSpatialBlur(blur);
+    //window.updateSpatialAirAbsorb(airAbsorb);
   }
 }

@@ -12,15 +12,28 @@ public class SpatialAudioForClientManager : MonoBehaviour
     [SerializeField] private string TOKEN_1 = "";
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
-    public Text logText;
-    private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
 
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
-    public bool useToken = false;
 
+    public double azimuth = 0f;
+    public double elevation = 0f;
+    public double distance = 1f;
+    public int orientation = 0;
+    public double attenuation = 0f;
+
+    public bool spatialBlur = false;
+    public bool spatialAirAbsorb = false;
+
+    public Slider azimuthSlider, elevationSlider, distanceSlider,
+    orientationSlider, attenuationSlider;
+
+    public Toggle blurToggle, airAbsorbToggle;
+
+    public Text azimuthText, elevationText, 
+    distanceText, orientationText, attenuationText;
 
     // Use this for initialization
     void Start()
@@ -53,12 +66,15 @@ public class SpatialAudioForClientManager : MonoBehaviour
             joinButton.interactable = true;
             leaveButton.interactable = false;
         }
+
+        azimuthText.text = azimuthSlider.value.ToString("00");
+        elevationText.text = elevationSlider.value.ToString("00");
+        distanceText.text = distanceSlider.value.ToString("00");
+        orientationText.text = orientationSlider.value.ToString("00");
     }
 
     bool CheckAppId()
     {
-        logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
         return (APP_ID.Length > 10);
     }
 
@@ -75,24 +91,14 @@ public class SpatialAudioForClientManager : MonoBehaviour
         mRtcEngine.OnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
         mRtcEngine.OnLeaveChannel = EngineOnLeaveChannelHandler;
 
-
         mRtcEngine.OnError += EngineOnErrorHandler;
 
     }
 
     public void JoinChannel()
     {
-        if(!useToken){
-            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
-        } else {
-            TokenClient.Instance.SetRtcEngineInstance(mRtcEngine);
-            TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
-            {
-                TOKEN_1 = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
-            });
-        }
+        
+        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         joinedChannel = true;
         mRtcEngine.EnableSpatialAudio(true);
     }
@@ -114,33 +120,68 @@ public class SpatialAudioForClientManager : MonoBehaviour
         }
     }
 
+    public void updateAzimuth(){
+        azimuth = azimuthSlider.value;
+        updateSpatialAudio();
+    }
+
+    public void updateElevation(){
+        elevation = elevationSlider.value;
+        updateSpatialAudio();
+    }
+
+    public void updateDistance(){
+        distance = distanceSlider.value;
+        updateSpatialAudio();
+    }
+
+    public void updateOrientation(){
+        orientation = (int)orientationSlider.value;
+        updateSpatialAudio();
+    }
+
+    public void updateAtenuation(){
+        attenuation = attenuationSlider.value;
+        updateSpatialAudio();
+    }
+
+    public void updateBlur(){
+        spatialBlur = blurToggle.isOn;
+        updateSpatialAudio();
+    }
+
+    public void updateAirAbsorb(){
+        spatialAirAbsorb = airAbsorbToggle.isOn;
+        updateSpatialAudio();
+    }
+
+    public void updateSpatialAudio(){
+        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, spatialBlur, spatialAirAbsorb);
+    }
+
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
-            elapsed));
+        
     }
 
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
+       
     }
 
     void EngineOnErrorHandler(int err, string message)
     {
-        logger.UpdateLog(string.Format("UserErrorHandler err: {0}, message: {1}", err,
-            message));
+
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
-            uid, elapsed));
+        
     }
 
     void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
+
     }
 
     

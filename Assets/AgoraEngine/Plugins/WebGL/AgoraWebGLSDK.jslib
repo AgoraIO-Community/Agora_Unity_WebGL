@@ -1040,7 +1040,8 @@ var LibraryAgoraWebGLSDK = {
     SendNotImplementedError()
   },
   setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb) {
-    SendNotImplementedError()
+    console.log("the channel UID is....", uid);
+    setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
   },
   setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb) {
     SendNotImplementedError()
