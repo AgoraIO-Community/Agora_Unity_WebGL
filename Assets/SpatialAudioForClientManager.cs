@@ -35,6 +35,12 @@ public class SpatialAudioForClientManager : MonoBehaviour
     public Text azimuthText, elevationText, 
     distanceText, orientationText, attenuationText;
 
+    public InputField appIdText, tokenText, channelNameText;
+
+    void Awake(){
+        
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -44,15 +50,26 @@ public class SpatialAudioForClientManager : MonoBehaviour
         }
 
         InitEngine();
-        JoinChannel();
         
         
         //channel setup.
-
+        appIdText.text = APP_ID;
+        tokenText.text = TOKEN_1;
+        channelNameText.text = CHANNEL_NAME_1;
         
     }
 
-    
+    public void updateAppID(){
+        APP_ID = appIdText.text;
+    }
+
+    public void updateToken(){
+        TOKEN_1 = tokenText.text;
+    }
+
+    public void updateChannelName(){
+        CHANNEL_NAME_1 = channelNameText.text;
+    }
 
     void Update()
     {
@@ -62,15 +79,22 @@ public class SpatialAudioForClientManager : MonoBehaviour
         if(joinedChannel){
             joinButton.interactable = false;
             leaveButton.interactable = true;
+            appIdText.interactable = false;
+            tokenText.interactable = false;
+            channelNameText.interactable = false;
         } else {
             joinButton.interactable = true;
             leaveButton.interactable = false;
+            appIdText.interactable = true;
+            tokenText.interactable = true;
+            channelNameText.interactable = true;
         }
 
-        azimuthText.text = azimuthSlider.value.ToString("00");
-        elevationText.text = elevationSlider.value.ToString("00");
-        distanceText.text = distanceSlider.value.ToString("00");
-        orientationText.text = orientationSlider.value.ToString("00");
+        azimuthText.text = azimuthSlider.value.ToString("F2");
+        elevationText.text = elevationSlider.value.ToString("F2");
+        distanceText.text = distanceSlider.value.ToString("F2");
+        orientationText.text = orientationSlider.value.ToString();
+        attenuationText.text = attenuationSlider.value.ToString("F2");
     }
 
     bool CheckAppId()
@@ -106,6 +130,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
     public void LeaveChannel()
     {
         mRtcEngine.LeaveChannel();
+        mRtcEngine.EnableSpatialAudio(false);
         joinedChannel = false;
     }
 
@@ -140,7 +165,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
         updateSpatialAudio();
     }
 
-    public void updateAtenuation(){
+    public void updateAttenuation(){
         attenuation = attenuationSlider.value;
         updateSpatialAudio();
     }
@@ -156,7 +181,8 @@ public class SpatialAudioForClientManager : MonoBehaviour
     }
 
     public void updateSpatialAudio(){
-        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, spatialBlur, spatialAirAbsorb);
+        Debug.Log("Spatial Blur: " + spatialBlur.ToString());
+        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)

@@ -126,9 +126,14 @@ async function leave() {
       localUserTrack[trackName] = undefined;
     }
   }
+  for (var i = 0; i < remoteUsers.length; i++) {
+    if (remoteUsers[i].spatialAudioTrack !== undefined) {
+      remoteUsers[i].spatialAudioTrack.stop();
+      remoteUsers[i].spatialAudioTrack.close();
+    }
+  }
   remoteUsers = [];
   await client.leave();
-  await mockRemoteUserLeave();
   localPlayerStop();
 
   console.log("client leaves channel success");
@@ -137,17 +142,19 @@ async function leave() {
 async function subscribe(user, mediaType) {
   const uid = user.uid;
   await client.subscribe(user, mediaType);
-  console.log("subscribe success");
+  console.log("subscribe success", mediaType);
   
   if (mediaType === 'audio') {
     processor = extension.createProcessor();
     user.processor = processor;
-    remoteUsers.push(user);
-    console.log(remoteUsers);
     const track = await AgoraRTC.createBufferSourceAudioTrack({ source: remoteUsersSound[0] });
-
-    if(track.processorDestination != processor)
-      track.pipe(processor).pipe(track.processorDestination);
+    track.startProcessAudioBuffer({ loop: true });
+    user.spatialAudioTrack = track;
+    remoteUsers.push(user);
+    
+    if (track.processorDestination != user.processor) {
+      track.pipe(user.processor).pipe(track.processorDestination);
+    }
     
     track.play();
   }
@@ -235,45 +242,67 @@ function updateSpatialAttenuation(value) {
 function updateSpatialBlur(checked) {
   if (checked === true) {
     remoteUsers.forEach(e => {
-      e.processor.updateSpatialBlur(true);
+      if (e.processor != undefined) {
+        e.processor.updateSpatialBlur(true);
+      }
     });
     localPlayProcessors.forEach(e => {
-      e.updateSpatialBlur(true);
+      if (e != undefined) {
+        e.updateSpatialBlur(true);
+      }
     });
   } else {
     remoteUsers.forEach(e => {
-      e.processor.updateSpatialBlur(false);
+      if (e.processor != undefined) {
+        e.processor.updateSpatialBlur(false);
+      }
     });
     localPlayProcessors.forEach(e => {
-      e.updateSpatialBlur(false);
+      if (e != undefined) {
+        e.updateSpatialBlur(false);
+      }
     });
   }
 }
 
 function updateSpatialAirAbsorb(checked) {
+  console.log(checked);
   if (checked === true) {
     remoteUsers.forEach(e => {
-      e.processor.updateSpatialAirAbsorb(true);
+      if (e.processor != undefined) {
+        e.processor.updateSpatialAirAbsorb(true);
+      }
     });
     localPlayProcessors.forEach(e => {
-      e.updateSpatialAirAbsorb(true);
+      if (e != undefined) {
+        e.updateSpatialAirAbsorb(true);
+      }
     });
   } else {
     remoteUsers.forEach(e => {
-      e.processor.updateSpatialAirAbsorb(false);
+      if (e.processor != undefined) {
+        e.processor.updateSpatialAirAbsorb(false);
+      }
     });
     localPlayProcessors.forEach(e => {
-      e.updateSpatialAirAbsorb(false);
+      if (e != undefined) {
+        e.updateSpatialAirAbsorb(false);
+      }
     });
   }
 }
 
 async function joinSpatialAudioChannel(enabled, appid, apptoken, appchannel){
+  const isEnabled = enabled == 0 ? false : true;
+  if(isEnabled == true){
   options.appid = appid;
     options.token = apptoken;
     options.channel = appchannel;
-    await mockRemoteUserJoin();
+    //await mockRemoteUserJoin();
     await join();
     processor = await getSpatialAudioProcessorInstance(enabled);
     return processor;
+  } else {
+    await leave();
+  }
 }

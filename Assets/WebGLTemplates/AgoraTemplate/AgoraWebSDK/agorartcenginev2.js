@@ -339,8 +339,8 @@ function stopNewScreenCaptureForWeb(){
   client_manager.stopNewScreenCaptureForWeb();
 }
 
-function setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, blur, airAbsorb){
-  client_manager.setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, blur, airAbsorb);
+function setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+  client_manager.setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb);
 }
 
 async function startScreenCaptureByDisplayId(
