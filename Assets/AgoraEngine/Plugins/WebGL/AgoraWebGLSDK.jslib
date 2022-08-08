@@ -1039,8 +1039,10 @@ var LibraryAgoraWebGLSDK = {
   setLowlightEnhanceOptions : function (enabled, mode, level) {
     SendNotImplementedError()
   },
-  setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb) {
-    SendNotImplementedError()
+  setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
+    blur = enable_blur == 0 ? false : true;
+    airAbsorb = enable_air_absorb == 0 ? false : true;
+    setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb) {
     SendNotImplementedError()

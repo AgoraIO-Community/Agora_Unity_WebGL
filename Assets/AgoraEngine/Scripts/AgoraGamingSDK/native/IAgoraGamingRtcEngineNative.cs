@@ -1530,7 +1530,7 @@ namespace agora_gaming_rtc
         protected static extern int enableSpatialAudio(bool enabled);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setScreenCaptureScenario(int screenScenario);
