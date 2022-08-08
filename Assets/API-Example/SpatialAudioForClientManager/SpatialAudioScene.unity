@@ -3916,7 +3916,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97e6ba23288256a40ad0fe7d4e38f826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: d2c9420f5ea0498abd30eabac50b33ed
+  APP_ID: 
   TOKEN_1: 
   CHANNEL_NAME_1: unity3d
   joinButton: {fileID: 288453850}
