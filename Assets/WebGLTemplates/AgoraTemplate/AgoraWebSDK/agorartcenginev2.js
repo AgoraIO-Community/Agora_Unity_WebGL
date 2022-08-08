@@ -923,3 +923,7 @@ function setVirtualBackgroundImage(imgFile){
 function setVirtualBackgroundVideo(videoFile){
   client_manager.setVirtualBackgroundVideo(videoFile);
 }
+
+function enableSpatialAudio(enabled){
+  client_manager.enableSpatialAudio(enabled);
+}
