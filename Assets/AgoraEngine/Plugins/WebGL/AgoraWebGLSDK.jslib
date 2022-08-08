@@ -1854,12 +1854,14 @@ muteLocalAudioStream_channel: function(channel, mute) {
         HEAPU8[data+i] = bytes[i];
       }
       UnityHooks.data = data;
-      Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
+      //Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
+      Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
     };
 
     UnityHooks.OnVideoSizeChangedCallback = OnVideoSizeChangedCallback;
     UnityHooks.InvokeVideoSizeChangedCallback = function(uid, width, height) {
-      Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
+      //Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
+      Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
     };
 
     UnityHooks.isLoaded = true;
@@ -2006,7 +2008,43 @@ muteLocalAudioStream_channel: function(channel, mute) {
   createDataStream_channel: function(channel, syncWithAudio, ordered) {},
 
   enableDeepLearningDenoise: function() {},
-  enableVirtualBackground: function() {},
+  enableVirtualBackground: function() {
+    initVirtualBackground();
+  },
+  setVirtualBackgroundBlur: function(blurDegree) {
+    setVirtualBackgroundBlur(blurDegree);
+  },
+  setVirtualBackgroundColor: function(hexColor) {
+    var myColor = Pointer_stringify(hexColor);
+    setVirtualBackgroundColor(myColor);
+  },
+  setVirtualBackgroundImage: function(imageFile) {
+    var myImg = Pointer_stringify(imageFile);
+    setVirtualBackgroundImage(myImg);
+  },
+  setVirtualBackgroundVideo: function(videoFile) {
+    var myVideo = Pointer_stringify(videoFile);
+    setVirtualBackgroundVideo(myVideo);
+  },
+  initVirtualBackground_MC: function() {
+    console.log('this is working');
+    initVirtualBackground_MC();
+  },
+  setVirtualBackgroundBlur_MC: function(blurDegree) {
+    setVirtualBackgroundBlur_MC(blurDegree);
+  },
+  setVirtualBackgroundColor_MC: function(hexColor) {
+    var myColor = Pointer_stringify(hexColor);
+    setVirtualBackgroundColor_MC(myColor);
+  },
+  setVirtualBackgroundImage_MC: function(imageFile) {
+    var myImg = Pointer_stringify(imageFile);
+    setVirtualBackgroundImage_MC(myImg);
+  },
+  setVirtualBackgroundVideo_MC: function(videoFile) {
+    var myVideo = Pointer_stringify(videoFile);
+    setVirtualBackgroundVideo_MC(myVideo);
+  },
   getAudioMixingDuration2: function() {},
   getEffectCurrentPosition: function() {},
   getEffectDuration: function() {},

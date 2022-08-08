@@ -904,6 +904,28 @@ function getRemoteVideoStats() {
   client_manager.getRemoteVideoStats();
 }
 
+
 function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
 }
+
+function initVirtualBackground(){
+  client_manager.enableVirtualBackground();
+}
+
+function setVirtualBackgroundBlur(blurDegree){
+  client_manager.setVirtualBackgroundBlur(blurDegree);
+}
+
+function setVirtualBackgroundColor(hexColor){
+  client_manager.setVirtualBackgroundColor(hexColor);
+}
+
+function setVirtualBackgroundImage(imgFile){
+  client_manager.setVirtualBackgroundImage(imgFile);
+}
+
+function setVirtualBackgroundVideo(videoFile){
+  client_manager.setVirtualBackgroundVideo(videoFile);
+}
+
