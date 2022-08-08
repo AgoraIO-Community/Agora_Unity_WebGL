@@ -74,20 +74,37 @@ public class SpatialAudioForClientManager : MonoBehaviour
     void Update()
     {
         PermissionHelper.RequestMicrophontPermission();
-        PermissionHelper.RequestCameraPermission();
 
         if(joinedChannel){
+
             joinButton.interactable = false;
             leaveButton.interactable = true;
             appIdText.interactable = false;
             tokenText.interactable = false;
             channelNameText.interactable = false;
+
+            azimuthSlider.interactable = true;
+            elevationSlider.interactable = true;
+            distanceSlider.interactable = true;
+            orientationSlider.interactable = true;
+            attenuationSlider.interactable = true;
+            blurToggle.interactable = true;
+            airAbsorbToggle.interactable = true;
         } else {
+
             joinButton.interactable = true;
             leaveButton.interactable = false;
             appIdText.interactable = true;
             tokenText.interactable = true;
             channelNameText.interactable = true;
+
+            azimuthSlider.interactable = false;
+            elevationSlider.interactable = false;
+            distanceSlider.interactable = false;
+            orientationSlider.interactable = false;
+            attenuationSlider.interactable = false;
+            blurToggle.interactable = false;
+            airAbsorbToggle.interactable = false;
         }
 
         azimuthText.text = azimuthSlider.value.ToString("F2");
@@ -108,14 +125,9 @@ public class SpatialAudioForClientManager : MonoBehaviour
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
-        mRtcEngine.EnableVideo();
-        mRtcEngine.EnableVideoObserver();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        mRtcEngine.OnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
-        mRtcEngine.OnLeaveChannel = EngineOnLeaveChannelHandler;
-
-        mRtcEngine.OnError += EngineOnErrorHandler;
+        
 
     }
 
@@ -181,34 +193,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
     }
 
     public void updateSpatialAudio(){
-        Debug.Log("Spatial Blur: " + spatialBlur.ToString());
         mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
-
-    void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
-    {
-        
-    }
-
-    void EngineOnLeaveChannelHandler(RtcStats rtcStats)
-    {
-       
-    }
-
-    void EngineOnErrorHandler(int err, string message)
-    {
-
-    }
-
-    void EngineOnUserJoinedHandler(uint uid, int elapsed)
-    {
-        
-    }
-
-    void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
-    {
-
-    }
-
     
 }
