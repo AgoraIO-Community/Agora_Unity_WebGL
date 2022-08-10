@@ -14,6 +14,15 @@ var options = {
   uid: null,
   token: null
 };
+var spatialAudioSettings = {
+  azimuth: 0,
+  elevation: 0,
+  distance: 1,
+  orientation: 0,
+  attenuation: 0,
+  blur: false,
+  airAbsorb: false
+};
 var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
 var localUserTrack = {
   videoTrack: null,
@@ -57,7 +66,7 @@ function getSpatialAudioProcessorInstance(enabled) {
       setTimeout(async () => {
         try {
           track = await AgoraRTC.createBufferSourceAudioTrack({ source: localPlayerSound[i] });
-          localPlayTracks.push(track);
+          client.spatialAudioTrack = track;
           track.startProcessAudioBuffer({ loop: true });
           processor = extension.createProcessor();
           localPlayProcessors.push(processor);
@@ -75,46 +84,43 @@ function getSpatialAudioProcessorInstance(enabled) {
 
 
 function localPlayerStop() {
-  for (let i = 0; i < localPlayerSound.length; i++) {
+  for (let i = 0; i < localPlayTracks.length; i++) {
     localPlayTracks[i].stop();
   }
   localPlayTracks = [];
 }
 
-async function mockRemoteUserJoin() {
-  for (let i = 0; i < remoteUsersSound.length; i++) {
-    setTimeout(async () => {
-      try {
-        const track = await AgoraRTC.createBufferSourceAudioTrack({ source: remoteUsersSound[i] });
-        track.startProcessAudioBuffer({ loop: true });
-        const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-        remoteUsers[i] = client;
-        await client.join(options.appid, options.channel, options.token || null);
-        await client.publish(track);
-      } catch (error) {
-        console.error(`remoteUsersSound[${i}] with buffersource track ${remoteUsersSound[i]} join and publish fail: ${error}`);
-      }
-    }, 500 * i);
-  }
-}
-async function mockRemoteUserLeave() {
-  for (let i = 0; i < remoteUsersSound.length; i++) {
-    try {
-      await remoteUsers[i].leave();
-      console.log(`speaker[${i}] with buffersource track ${remoteUsersSound[i]} leave success`);
-    } catch (error) {
-      console.error(`speaker[${i}] with buffersource track ${remoteUsersSound[i]} leave fail: ${error}`);
-    }
-  }
-}
-
 async function join() {
-  client.on("user-published", handleUserPublished);
-  client.on("user-unpublished", handleUserUnpublished);
+  client.on("user-joined", handleUserJoined);
+  client.on("user-left", handleUserLeft);
 
-  [options.uid,] = await Promise.all([
+  options.uid = await Promise.all([
     client.join(options.appid, options.channel, options.token || null),
   ]);
+
+  for(var i = 0; i < remoteUsers.length; i++){
+    if (remoteUsers[i].spatialAudioTrack !== undefined) {
+      remoteUsers[i].spatialAudioTrack.play();
+    }
+  }
+
+  console.log("remoteUsers", remoteUsers);
+
+}
+
+async function handleUserJoined(user){
+    processor = extension.createProcessor();
+    user.processor = processor;
+    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: remoteUsersSound[0] });
+    track.startProcessAudioBuffer({ loop: true });
+    user.spatialAudioTrack = track;
+    remoteUsers.push(user);
+    if (track.processorDestination != user.processor) {
+      track.pipe(user.processor).pipe(track.processorDestination);
+    }
+    
+    track.play();
+  console.log("remoteUsers", remoteUsers);
 }
 
 async function leave() {
@@ -129,51 +135,29 @@ async function leave() {
   for (var i = 0; i < remoteUsers.length; i++) {
     if (remoteUsers[i].spatialAudioTrack !== undefined) {
       remoteUsers[i].spatialAudioTrack.stop();
-      remoteUsers[i].spatialAudioTrack.close();
     }
+
   }
   remoteUsers = [];
+  await client.spatialAudioTrack.stop();
   await client.leave();
-  localPlayerStop();
 
+  
+  
   console.log("client leaves channel success");
 }
 
-async function subscribe(user, mediaType) {
-  const uid = user.uid;
-  await client.subscribe(user, mediaType);
-  console.log("subscribe success", mediaType);
-  
-  if (mediaType === 'audio') {
-    processor = extension.createProcessor();
-    user.processor = processor;
-    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: remoteUsersSound[0] });
-    track.startProcessAudioBuffer({ loop: true });
-    user.spatialAudioTrack = track;
-    remoteUsers.push(user);
-    
-    if (track.processorDestination != user.processor) {
-      track.pipe(user.processor).pipe(track.processorDestination);
-    }
-    
-    track.play();
-  }
-}
-
-function handleUserPublished(user, mediaType) {
-  const id = user.uid;
-  subscribe(user, mediaType);
-}
-
-function handleUserUnpublished(user) {
+function handleUserLeft(user) {
   const id = user.uid;
   for(var i = 0; i < remoteUsers.length; i++){
+    console.log("remoteUsers", remoteUsers);
+    client.unsubscribe(remoteUsers[i]);
     remoteUsers[i] = null;
   }
 }
 
 function  updateSpatialAzimuth(value) {
-  console.log("play processors...", localPlayProcessors, remoteUsers);
+  spatialAudioSettings.azimuth = value;
   remoteUsers.forEach(e => {
     console.log(e.processor);
     if(e.processor != undefined){
@@ -188,6 +172,7 @@ function  updateSpatialAzimuth(value) {
 }
 
 function updateSpatialElevation(value) {
+  spatialAudioSettings.elevation = value;
   remoteUsers.forEach(e => {
     if (e.processor != undefined) {
       e.processor.updateSpatialElevation(value);
@@ -201,6 +186,7 @@ function updateSpatialElevation(value) {
 }
 
 function updateSpatialDistance(value) {
+  spatialAudioSettings.distance = value;
   remoteUsers.forEach(e => {
     if (e.processor != undefined) {
       e.processor.updateSpatialDistance(value);
@@ -214,6 +200,7 @@ function updateSpatialDistance(value) {
 }
 
 function updateSpatialOrientation(value) {
+  spatialAudioSettings.orientation = value;
   remoteUsers.forEach(e => {
     if (e.processor != undefined) {
       e.processor.updateSpatialOrientation(value);
@@ -227,6 +214,7 @@ function updateSpatialOrientation(value) {
 }
 
 function updateSpatialAttenuation(value) {
+  spatialAudioSettings.attenuation = value;
   remoteUsers.forEach(e => {
     if (e.processor != undefined) {
       e.processor.updateSpatialAttenuation(value);
@@ -240,6 +228,7 @@ function updateSpatialAttenuation(value) {
 }
 
 function updateSpatialBlur(checked) {
+  spatialAudioSettings.blur = checked;
   if (checked === true) {
     remoteUsers.forEach(e => {
       if (e.processor != undefined) {
@@ -266,7 +255,7 @@ function updateSpatialBlur(checked) {
 }
 
 function updateSpatialAirAbsorb(checked) {
-  console.log(checked);
+  spatialAudioSettings.airAbsorb = checked;
   if (checked === true) {
     remoteUsers.forEach(e => {
       if (e.processor != undefined) {
@@ -294,13 +283,19 @@ function updateSpatialAirAbsorb(checked) {
 
 async function joinSpatialAudioChannel(enabled, appid, apptoken, appchannel){
   const isEnabled = enabled == 0 ? false : true;
+  console.log("join spatial audio channel", enabled, isEnabled, appid, apptoken, appchannel);
   if(isEnabled == true){
-  options.appid = appid;
+    options.appid = appid;
     options.token = apptoken;
     options.channel = appchannel;
     //await mockRemoteUserJoin();
+    
     await join();
+
+    
     processor = await getSpatialAudioProcessorInstance(enabled);
+    
+
     return processor;
   } else {
     await leave();

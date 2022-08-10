@@ -162,7 +162,7 @@ class AgoraChannel {
   }
 
   async setupLocalVideoTrack() {
-    if (localTracks.videoTrack == undefined) {
+    if (localTracks != undefined && localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack().catch(error => {
           event_manager.raiseHandleChannelError(this.channelId, error.code, error.message);
@@ -176,7 +176,7 @@ class AgoraChannel {
   }
 
   async setupLocalAudioTrack() {
-    if (localTracks.audioTrack == undefined) {
+    if (localTracks != undefined && localTracks.audioTrack == undefined) {
       [localTracks.audioTrack] = await Promise.all([
         AgoraRTC.createMicrophoneAudioTrack().catch(e => {
           event_manager.raiseHandleChannelError(e.code, e.message);
@@ -288,7 +288,7 @@ class AgoraChannel {
 
     if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
-      if (localTracks.videoTrack != undefined) {
+      if (localTracks != undefined && localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
         await this.client.publish(localTracks.videoTrack);
       } 
@@ -297,7 +297,7 @@ class AgoraChannel {
 
     if (this.client_role === 1 && this.audioEnabled) {
       await this.setupLocalAudioTrack();
-      if (localTracks.audioTrack != undefined) {
+      if (localTracks != undefined && localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);
       }
       this.is_publishing = true;
@@ -320,7 +320,7 @@ class AgoraChannel {
     }
 
     if (multiclient_connections <= 1) {
-      if (localTracks.videoTrack != undefined) {
+      if (localTracks != undefined && localTracks.videoTrack != undefined) {
         localTracks.videoTrack.stop();
         localTracks.videoTrack.close();
         this.client.unpublish(localTracks.videoTrack);
@@ -965,6 +965,20 @@ class AgoraChannel {
   
   async setVirtualBackgroundVideo(videoFile){
     setBackgroundVideo(localTracks.videoTrack, videoFile);
+  }
+
+  async enableSpatialAudio(enabled){
+    this.client.processor = window.joinSpatialAudioChannel(enabled, this.options.appid, this.options.token, this.options.channel);
+  }
+
+  async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+    window.updateSpatialAzimuth(azimuth);
+    window.updateSpatialElevation(elevation);
+    window.updateSpatialDistance(distance);
+    window.updateSpatialOrientation(orientation);
+    window.updateSpatialAttenuation(attenuation);
+    window.updateSpatialBlur(blur);
+    window.updateSpatialAirAbsorb(airAbsorb);
   }
 
 }

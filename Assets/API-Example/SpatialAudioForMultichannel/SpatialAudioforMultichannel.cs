@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
 
-public class SpatialAudioForClientManager : MonoBehaviour
+public class SpatialAudioforMultichannel : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
 
@@ -36,6 +36,8 @@ public class SpatialAudioForClientManager : MonoBehaviour
     distanceText, orientationText, attenuationText;
 
     public InputField appIdText, tokenText, channelNameText;
+
+	AgoraChannel spatialAudioChannel;
 
     void Awake(){
         
@@ -126,24 +128,34 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
         mRtcEngine.EnableAudio();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+		mRtcEngine.SetMultiChannelWant(true);
 
-        
-
+		spatialAudioChannel = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
+        spatialAudioChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
     }
 
     public void JoinChannel()
     {
         
-        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        spatialAudioChannel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, false, true, false));
         joinedChannel = true;
-        mRtcEngine.EnableSpatialAudio(true);
+        spatialAudioChannel.EnableSpatialAudio_MC(true);
     }
 
     public void LeaveChannel()
     {
-        mRtcEngine.LeaveChannel();
-        mRtcEngine.EnableSpatialAudio(false);
+        
+        spatialAudioChannel.EnableSpatialAudio_MC(false);
+        spatialAudioChannel.LeaveChannel();
         joinedChannel = false;
+
+        azimuthSlider.value = 0f;
+        elevationSlider.value = 0f;
+        distanceSlider.value = 1f;
+        orientationSlider.value = 0f;
+        attenuationSlider.value = .5f;
+        blurToggle.isOn = false;
+        airAbsorbToggle.isOn = false;
     }
 
     void OnApplicationQuit()
@@ -193,7 +205,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
     }
 
     public void updateSpatialAudio(){
-        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        spatialAudioChannel.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
     
 }

@@ -5360,6 +5360,8 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableSpatialAudio(enabled);
         }
 
+        
+
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
          *

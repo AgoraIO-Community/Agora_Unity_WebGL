@@ -1745,6 +1745,25 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, enabled, (int)mode, userId);
         }
 
+        /// @cond
+        /** Enables or disables the spatial audio effect with agoraChannel.js
+         * @since 3.7.0
+         *
+         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams2` to set the spatial
+         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
+         * with a real sense of space.
+         * @note Call this method before joining a channel.
+         * @param enabled Whether to enable the spatial audio effect:
+         * - `true`: Yes.
+         * - `false`: No.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int EnableSpatialAudio_MC(bool enabled)
+        {
+            return IRtcEngineNative.enableSpatialAudio_MC(enabled);
+        }
 
         /// @cond
         /** Sets the spatial audio effect parameters of the remote user.
@@ -1784,11 +1803,11 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb)
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
-            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb);
         }
         /// @endcond
 
