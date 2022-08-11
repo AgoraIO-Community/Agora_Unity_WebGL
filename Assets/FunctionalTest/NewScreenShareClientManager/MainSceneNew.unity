@@ -113,6 +113,7 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+<<<<<<< HEAD
 --- !u!1 &154101823
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,10 +152,19 @@ RectTransform:
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &154101825
+=======
+--- !u!1 &198771243 stripped
+GameObject:
+  m_PrefabParentObject: {fileID: 1454514988387032, guid: bf1f86f0796c445879a608e99ae1de4a,
+    type: 2}
+  m_PrefabInternal: {fileID: 840026080}
+--- !u!114 &198771244
+>>>>>>> 1e6b9b5 (token client updates for clientManager)
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
+<<<<<<< HEAD
   m_GameObject: {fileID: 154101823}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -203,10 +213,23 @@ MonoBehaviour:
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
 --- !u!114 &154101826
+=======
+  m_GameObject: {fileID: 198771243}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf521e7f39d33b34dba16388e436dea0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clientType: 0
+  serverURL: https://thisismytestingapp123.herokuapp.com/
+  ExpirationSecs: 60
+--- !u!114 &198771245
+>>>>>>> 1e6b9b5 (token client updates for clientManager)
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
+<<<<<<< HEAD
   m_GameObject: {fileID: 154101823}
   m_Enabled: 1
   m_EditorHideFlags: 0
@@ -357,6 +380,17 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 244162438}
+=======
+  m_GameObject: {fileID: 198771243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acf6806603dac4540b342bc5626f300d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clientType: 0
+  serverURL: https://thisismytestingapp123.herokuapp.com/
+  ExpirationSecs: 60
+>>>>>>> 1e6b9b5 (token client updates for clientManager)
 --- !u!1 &273085862
 GameObject:
   m_ObjectHideFlags: 0
@@ -1470,6 +1504,7 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 785028658}
+<<<<<<< HEAD
 --- !u!1 &797614234
 GameObject:
   m_ObjectHideFlags: 0
@@ -1544,6 +1579,51 @@ CanvasRenderer:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 797614234}
+=======
+--- !u!1001 &840026080
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4320298425237218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    m_RemovedComponents:
+    - {fileID: 114763651108330218, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+  m_ParentPrefab: {fileID: 100100000, guid: bf1f86f0796c445879a608e99ae1de4a, type: 2}
+  m_IsPrefabParent: 0
+>>>>>>> 1e6b9b5 (token client updates for clientManager)
 --- !u!1 &903586023
 GameObject:
   m_ObjectHideFlags: 0
@@ -2457,6 +2537,7 @@ MonoBehaviour:
   useNewScreenShare: 0
   useScreenShareAudio: 0
   joinedChannel: 0
+  useToken: 1
   loopbackAudioToggle: {fileID: 924186053}
   newScreenShareToggle: {fileID: 1970231432}
   blurDegrees: 2

@@ -409,6 +409,14 @@ namespace agora_gaming_rtc
          */
         public delegate void OnTokenPrivilegeWillExpireHandler(string token);
 
+        /** Occurs when the token has expired.
+         *
+         * The user becomes offline if the token used in the {@link agora_gaming_rtc.IRtcEngine.JoinChannelByKey JoinChannelByKey} method expires.
+         *
+         * @param token The token that expires in 30 seconds.
+         */
+        public delegate void OnTokenPrivilegeDidExpireHandler(string token);
+
         /** Occurs when the most active speaker is detected.
          *
          * After a successful call of {@link agora_gaming_rtc.IRtcEngine.EnableAudioVolumeIndication EnableAudioVolumeIndication},

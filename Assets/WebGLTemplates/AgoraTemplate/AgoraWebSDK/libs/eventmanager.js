@@ -296,4 +296,49 @@ class EventManager {
       volumeInfo + "|" + speakers + "|" + total
     );
   }
+
+  raiseVolumeIndicator(volumeInfo, speakers, total)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "OnVolumeIndication",
+      volumeInfo + "|" + speakers + "|" + total
+    );
+  }
+
+  raiseOnTokenPrivilegeWillExpire(token)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "tokenPrivilegeWillExpire",
+      token
+    );
+  }
+
+  raiseOnTokenPrivilegeDidExpire(token)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "tokenPrivilegeDidExpire",
+      token
+    );
+  }
+
+  raiseChannelOnTokenPrivilegeWillExpire(channelID, token)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "channelTokenPrivilegeWillExpire",
+      channelID + "|" + token
+    );
+  }
+
+  raiseChannelOnTokenPrivilegeDidExpire(channelID, token)
+  {
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "channelTokenPrivilegeDidExpire",
+      channelID + "|" + token
+    );
+  }
 }

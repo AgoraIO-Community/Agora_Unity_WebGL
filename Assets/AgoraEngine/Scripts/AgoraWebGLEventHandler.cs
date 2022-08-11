@@ -1021,12 +1021,65 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void TokenPrivilegeWillExpire(string token)
+        public void tokenPrivilegeWillExpire(string token)
         {
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
             if (engine.OnTokenPrivilegeWillExpire != null)
             {
                 engine.OnTokenPrivilegeWillExpire(token);
+            }
+
+        }
+
+        // server expires token after some time
+        // you need to call setToken again otherwise server will disconnect
+        public void tokenPrivilegeDidExpire(string token)
+        {
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnTokenPrivilegeDidExpire != null)
+            {
+                engine.OnTokenPrivilegeDidExpire(token);
+            }
+
+        }
+
+        // server expires token after some time
+        // you need to call setToken again otherwise server will disconnect
+        public void channelTokenPrivilegeWillExpire(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string token = events[1];
+           
+            Debug.Log(GetInstance()._clientsList.ContainsKey(channel));
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                
+                if (ch.ChannelOnTokenPrivilegeWillExpire != null)
+                {
+                    
+                    ch.ChannelOnTokenPrivilegeWillExpire(channel, token);
+                }
+            }
+
+        }
+
+        // server expires token after some time
+        // you need to call setToken again otherwise server will disconnect
+        public void channelTokenPrivilegeDidExpire(string eventData)
+        {
+            string[] events = eventData.Split('|');
+            string channel = events[0];
+            string token = events[1];
+
+            if (GetInstance()._clientsList.ContainsKey(channel))
+            {
+                AgoraChannel ch = GetInstance()._clientsList[channel];
+                if (ch.ChannelOnTokenPrivilegeDidExpire != null)
+                {
+                    ch.ChannelOnTokenPrivilegeDidExpire(channel, token);
+                }
             }
 
         }

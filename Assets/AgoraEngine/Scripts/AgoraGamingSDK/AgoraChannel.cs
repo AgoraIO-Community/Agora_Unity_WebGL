@@ -27,6 +27,7 @@ namespace agora_gaming_rtc
         public ChannelOnConnectionLostHandler ChannelOnConnectionLost;
         public ChannelOnRequestTokenHandler ChannelOnRequestToken;
         public ChannelOnTokenPrivilegeWillExpireHandler ChannelOnTokenPrivilegeWillExpire;
+        public ChannelOnTokenPrivilegeDidExpireHandler ChannelOnTokenPrivilegeDidExpire;
         public ChannelOnRtcStatsHandler ChannelOnRtcStats;
         public ChannelOnNetworkQualityHandler ChannelOnNetworkQuality;
         public ChannelOnRemoteVideoStatsHandler ChannelOnRemoteVideoStats;
@@ -335,6 +336,16 @@ namespace agora_gaming_rtc
 #endif
 
         }
+
+        public static AgoraChannel GetChannel(string channelName)
+        {
+            if (_channelDictionary.ContainsKey(channelName))
+            {
+                return _channelDictionary[channelName];
+            }
+            return null;
+        }
+	
 
         /// @cond
 

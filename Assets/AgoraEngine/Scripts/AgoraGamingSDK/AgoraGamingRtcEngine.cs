@@ -91,6 +91,8 @@ namespace agora_gaming_rtc
 
         public OnTokenPrivilegeWillExpireHandler OnTokenPrivilegeWillExpire;
 
+        public OnTokenPrivilegeDidExpireHandler OnTokenPrivilegeDidExpire;
+
         public OnActiveSpeakerHandler OnActiveSpeaker;
 
         public OnVideoStoppedHandler OnVideoStopped;

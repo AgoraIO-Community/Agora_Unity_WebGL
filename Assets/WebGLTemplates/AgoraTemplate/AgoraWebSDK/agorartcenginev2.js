@@ -127,7 +127,7 @@ function stopPreview() {
 
 // Gets a new token when the current token expires after a period of time.
 async function renewToken(token) {
-  client_manager.renewToken();
+  client_manager.renewToken(token);
 }
 
 //enables the audio volume indicator so now we are geting event of volume indications
