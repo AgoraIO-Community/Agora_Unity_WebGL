@@ -1,17 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
 
+/// <summary>
+///   This demo shows the use of token and TokenClient prefab
+/// to renew tokens.  Please make sure to fill in your token server's
+/// URL address in the TokenClient's Inspector field. 
+/// </summary>
 public class ClientManagerTokenUse : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
 
-    [SerializeField] private string TOKEN_1 = "";
+    [SerializeField] private string RTC_TOKEN = "";
 
-    [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
+    [SerializeField] private string CHANNEL_NAME = "YOUR_CHANNEL_NAME_1";
 
     public Text logText;
     private Logger logger;
@@ -21,10 +25,10 @@ public class ClientManagerTokenUse : MonoBehaviour
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
     public bool useToken = false;
-    
+
     private List<uint> remoteClientIDs;
 
-	public static ClientManagerTokenUse instance;
+    public static ClientManagerTokenUse instance;
 
     // Use this for initialization
     void Start()
@@ -38,7 +42,9 @@ public class ClientManagerTokenUse : MonoBehaviour
         logger = new Logger(logText);
         //channel setup.
         remoteClientIDs = new List<uint>();
-		instance = this;
+        instance = this;
+
+        SetupToggle();
     }
 
     void Update()
@@ -46,10 +52,13 @@ public class ClientManagerTokenUse : MonoBehaviour
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
 
-        if(joinedChannel){
+        if (joinedChannel)
+        {
             joinButton.interactable = false;
             leaveButton.interactable = true;
-        } else {
+        }
+        else
+        {
             joinButton.interactable = true;
             leaveButton.interactable = false;
         }
@@ -60,6 +69,32 @@ public class ClientManagerTokenUse : MonoBehaviour
         logger = new Logger(logText);
         logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
         return (APP_ID.Length > 10);
+    }
+
+    /// <summary>
+    ///   Set up the functionality of the toggle.  The purpose of the toggle
+    /// is to demonstrate OnTokenPrivilegeDidExpire will happen if no renewal is in place.
+    /// </summary>
+    void SetupToggle()
+    {
+        GameObject go = GameObject.Find("Toggle");
+        if (go != null)
+        {
+            var toggle = go.GetComponent<Toggle>();
+            if (toggle != null)
+            {
+                toggle.onValueChanged.AddListener((toggled) =>
+                {
+                    if (!toggled)
+                    {
+                        // throw away the handler so token will expire without renewal
+                        logger.UpdateLog("OnTokenPrivilegeWillExpire will be off for now.");
+                        mRtcEngine.OnTokenPrivilegeWillExpire = null;
+                        toggle.interactable = false;
+                    }
+                });
+            }
+        }
     }
 
     void InitEngine()
@@ -84,15 +119,21 @@ public class ClientManagerTokenUse : MonoBehaviour
 
     public void JoinChannel()
     {
-        if(!useToken){
-            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
-        } else {
-            TokenClient.Instance.RtcEngine = mRtcEngine;
-            TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
+        ChannelMediaOptions options = new ChannelMediaOptions(true, true, true, true);
+
+        if (!useToken)
+        {
+            mRtcEngine.JoinChannel(RTC_TOKEN, CHANNEL_NAME, "", 0, options);
+        }
+        else
+        {
+            /* <--------------------- Token client usage here ------------------------> */
+            TokenClient.Instance.SetRtcEngineInstance(mRtcEngine);
+            TokenClient.Instance.GetTokens(CHANNEL_NAME, 0, (token, _) =>
             {
-                TOKEN_1 = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
+                RTC_TOKEN = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + RTC_TOKEN);
+                mRtcEngine.JoinChannel(RTC_TOKEN, CHANNEL_NAME, "", 0, options);
             });
         }
         joinedChannel = true;
@@ -115,18 +156,20 @@ public class ClientManagerTokenUse : MonoBehaviour
         }
     }
 
+    #region -- EVENT HANDLERS --
+
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
+        logger.UpdateLog(string.Format("sdk version: {0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME, uid,
             elapsed));
-        RespawnLocal(CHANNEL_NAME_1);
+        RespawnLocal(CHANNEL_NAME);
     }
 
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
-		DestroyVideoView(CHANNEL_NAME_1, 0);
+        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME));
+        DestroyVideoView(CHANNEL_NAME, 0);
     }
 
     void EngineOnErrorHandler(int err, string message)
@@ -137,19 +180,22 @@ public class ClientManagerTokenUse : MonoBehaviour
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME,
             uid, elapsed));
-        makeVideoView(CHANNEL_NAME_1, uid);
+        makeVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Add(uid);
     }
 
     void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
         logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
-        DestroyVideoView(CHANNEL_NAME_1, uid);
+        DestroyVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Remove(uid);
     }
 
+    #endregion
+
+    #region -- USER VIEWS --
     public void RespawnLocal(string channelName)
     {
         GameObject go = GameObject.Find(channelName + "_0");
@@ -158,26 +204,13 @@ public class ClientManagerTokenUse : MonoBehaviour
             go.name = "Destroying";
             Destroy(go);
             makeVideoView(channelName, 0);
-        }  else {
-			makeVideoView(channelName, 0);
-		}
-    }
-
-    public void RespawnRemote()
-    {
-        if (LastRemote != null)
+        }
+        else
         {
-            string[] strs = LastRemote.name.Split('_');
-            string channel = strs[0];
-            uint uid = uint.Parse(strs[1]);
-            LastRemote.name = "_Destroyer";
-            Destroy(LastRemote);
-            Debug.LogWarningFormat("Remaking video surface for  uid:{0} channel:{1}", uid, channel);
-            makeVideoView(channel, uid);
+            makeVideoView(channelName, 0);
         }
     }
 
-    GameObject LastRemote = null;
 
     private void makeVideoView(string channelId, uint uid)
     {
@@ -193,19 +226,14 @@ public class ClientManagerTokenUse : MonoBehaviour
         VideoSurface videoSurface = makeImageSurface(objName);
         if (!ReferenceEquals(videoSurface, null))
         {
-			
-		
+
+
             // configure videoSurface
             videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
             // make the object draggable
             videoSurface.gameObject.AddComponent<UIElementDragger>();
-
-            if (uid != 0)
-            {
-                LastRemote = videoSurface.gameObject;
-            }
         }
     }
 
@@ -258,4 +286,5 @@ public class ClientManagerTokenUse : MonoBehaviour
             Object.Destroy(go);
         }
     }
+    #endregion
 }

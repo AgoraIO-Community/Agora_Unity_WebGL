@@ -33,7 +33,6 @@ namespace agora_utilities
         [SerializeField] int ExpirationSecs = 3600;
 
         IRtcEngine mRtcEngine;
-        AgoraChannel channel;
 
         // Caller class is responsible setting this property
         public IRtcEngine RtcEngine
@@ -116,7 +115,18 @@ namespace agora_utilities
             channel.ChannelOnClientRoleChanged += ChannelOnClientRoleChangedHandler;
         }
 
-        
+        public void SetExpirationSecs(int secs)
+        {
+            ExpirationSecs = secs;
+        }
+
+        public void SetRtcEngineInstance(IRtcEngine engine)
+        {
+            mRtcEngine = engine;
+            mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
+            mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
+            mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
+        }
 
         public void GetTokens(string channelName, uint uid, OnTokensReceivedHandler handleTokens)
         {
@@ -156,7 +166,7 @@ namespace agora_utilities
             StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
                         (myToken) =>
                         {
-                            
+
                             if (mRtcEngine != null)
                             {
                                 mRtcEngine.RenewToken(myToken.rtcToken);
@@ -167,7 +177,7 @@ namespace agora_utilities
         void OnTokenPrivilegeDidExpireHandler(string token)
         {
             Debug.Log("Token has expired, please rejoin to get another token.... ");
-            
+
         }
 
         void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token)
