@@ -711,7 +711,9 @@ namespace agora_gaming_rtc
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
                 uint uid = uint.Parse(userId);
-                ch.ChannelOnUserJoined(channel, uid, 0);
+                if(ch.ChannelOnUserJoined != null) {
+                    ch.ChannelOnUserJoined(channel, uid, 0);
+                }
             }
         }
 

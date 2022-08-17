@@ -339,6 +339,10 @@ function stopNewScreenCaptureForWeb(){
   client_manager.stopNewScreenCaptureForWeb();
 }
 
+function setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+  client_manager.setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb);
+}
+
 async function startScreenCaptureByDisplayId(
   displayId,
   x,
@@ -918,4 +922,8 @@ function setVirtualBackgroundImage(imgFile){
 
 function setVirtualBackgroundVideo(videoFile){
   client_manager.setVirtualBackgroundVideo(videoFile);
+}
+
+function enableSpatialAudio(enabled){
+  client_manager.enableSpatialAudio(enabled);
 }
