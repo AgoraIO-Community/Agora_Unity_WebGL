@@ -898,9 +898,9 @@ class AgoraChannel {
   base64ToUint8Array(base64Str){
     console.log("base string is....", base64Str);
     const raw = window.atob(base64Str);
-    const result = new Uint8Array(new ArrayBuffer(raw.length));
+    const result = new Uint8Array(new ArrayBuffer(32));
   
-    for (let i = 0; i < raw.length; i += 1) {
+    for (let i = 0; i < 32; i += 1) {
       result[i] = raw.charCodeAt(i);
     }
   
@@ -920,7 +920,6 @@ class AgoraChannel {
     var modestr = "none";
     var saltResult = this.base64ToUint8Array(encryptionSalt);
     var encryptAscii = this.hex2ascii(encryptionKey);
-    console.log("salt result is....", saltResult);
     if (enable) {
       if (encryptionMode == 1) {
         modestr = "aes-128-xts";

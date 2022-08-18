@@ -190,9 +190,9 @@ public class EncryptionForMultichannel : MonoBehaviour
     void ChannelOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
+        logger.UpdateLog(string.Format("ChannelOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
             elapsed));
-        makeVideoView(channelId, 0);
+        makeVideoView(CHANNEL_NAME_1, 0);
     }
 
     void ChannelOnLeaveChannelHandler(string channelId, RtcStats rtcStats)
@@ -210,7 +210,7 @@ public class EncryptionForMultichannel : MonoBehaviour
     {
         logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
             uid, elapsed));
-        makeVideoView(channelId, uid);
+        makeVideoView(CHANNEL_NAME_1, uid);
     }
 
     void ChannelOnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
@@ -262,7 +262,6 @@ public class EncryptionForMultichannel : MonoBehaviour
         {
             // configure videoSurface
             videoSurface.SetForMultiChannelUser(channelId, uid);
-            videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
 
