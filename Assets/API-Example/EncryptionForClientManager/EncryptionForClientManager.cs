@@ -116,6 +116,8 @@ public class EncryptionForClientManager : MonoBehaviour
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
         mRtcEngine.OnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
+        mRtcEngine.OnUserJoined = EngineOnUserJoinedHandler;
+        mRtcEngine.OnUserOffline = EngineOnUserOfflineHandler;
         mRtcEngine.OnLeaveChannel = EngineOnLeaveChannelHandler;
         mRtcEngine.OnScreenShareStarted += screenShareStartedHandler;
         mRtcEngine.OnScreenShareStopped += screenShareStoppedHandler;

@@ -515,7 +515,7 @@ MonoBehaviour:
   logText: {fileID: 1416670727}
   SECRET: dba643c8ba6b6dc738df43d9fd624293b4b12d87a60f518253bd10ba98c48453
   SALT: X5w9T+50kzxVOnkJKiY/lUk82/bES2kATOt3vBuGEDw=
-  ENCRYPTION_MODE: 7
+  ENCRYPTION_MODE: 1
 --- !u!114 &1348336706
 MonoBehaviour:
   m_ObjectHideFlags: 0
