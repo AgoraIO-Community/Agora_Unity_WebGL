@@ -1539,7 +1539,7 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            return IRtcEngineNative.enableEncryption2(_channelId, enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode);
+            return IRtcEngineNative.enableEncryption2(_channelId, enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode, encryptionConfig.encryptionKdfSalt);
 #else
             return IRtcEngineNative.enableEncryption2(_channelHandler, enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode, encryptionConfig.encryptionKdfSalt);
 #endif

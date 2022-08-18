@@ -6,7 +6,7 @@ using agora_gaming_rtc;
 using agora_utilities;
 using System.Text;
 
-public class AgoraClientManager : MonoBehaviour
+public class EncryptionForMultichannel : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
 
@@ -15,31 +15,16 @@ public class AgoraClientManager : MonoBehaviour
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
     [SerializeField] private string TOKEN_2 = "";
-
-    [SerializeField] private uint SCREEN_SHARE_ID = 1000;
-
     public Text logText;
-    public Text screenShareIDText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
+    private AgoraChannel channel1 = null;
 
-    public Button joinButton, leaveButton;
-    public Button startScreenShareButton, stopScreenShareButton;
-    public Button muteLocalVideoButton, muteRemoteVideoButton;
-    public Button muteLocalAudioButton, muteRemoteAudioButton;
-    public Text muteLocalVideoText, muteRemoteVideoText;
-    public Text muteLocalAudioText, muteRemoteAudioText;
-    public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
-    public bool useNewScreenShare = false;
-    public bool useScreenShareAudio = false;
-    public bool joinedChannel = false;
-    public bool useToken = false;
-    public Toggle loopbackAudioToggle, newScreenShareToggle;
+    public string SECRET = "";
+    public string SALT = "";
 
-    private List<uint> remoteClientIDs;
-
-    public InputField screenShareIDInput;
+    public ENCRYPTION_MODE ENCRYPTION_MODE = ENCRYPTION_MODE.AES_128_GCM2;
 
     // Use this for initialization
     void Start()
@@ -50,34 +35,14 @@ public class AgoraClientManager : MonoBehaviour
         }
 
         InitEngine();
-
+        
         //channel setup.
-
-        newScreenShareToggle.isOn = useNewScreenShare;
-        loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
-        remoteClientIDs = new List<uint>();
-        Debug.Log(SCREEN_SHARE_ID.ToString());
-        screenShareIDInput.text = SCREEN_SHARE_ID.ToString();
     }
 
     public void updateScreenShareNew()
     {
-        useNewScreenShare = newScreenShareToggle.isOn;
-        startScreenShareButton.onClick.RemoveAllListeners();
-        stopScreenShareButton.onClick.RemoveAllListeners();
-        if (!useNewScreenShare)
-        {
-            startScreenShareButton.onClick.AddListener(delegate { startScreenShare(useScreenShareAudio); });
-            stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare(); });
-        }
-        else
-        {
-            startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare(useScreenShareAudio); });
-            stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare(); });
-        }
-
-
+        
     }
 
     void Update()
@@ -85,23 +50,6 @@ public class AgoraClientManager : MonoBehaviour
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
 
-        useScreenShareAudio = loopbackAudioToggle.isOn;
-
-        //muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
-        //muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
-        //muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
-        //muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
-
-        if (joinedChannel)
-        {
-            joinButton.interactable = false;
-            leaveButton.interactable = true;
-        }
-        else
-        {
-            joinButton.interactable = true;
-            leaveButton.interactable = false;
-        }
     }
 
     bool CheckAppId()
@@ -111,49 +59,35 @@ public class AgoraClientManager : MonoBehaviour
         return (APP_ID.Length > 10);
     }
 
-    public void updateScreenShareID()
-    {
-        uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
-    }
-
-    //for muting/unmuting local video through IRtcEngine class.
-    public void setLocalMuteVideo()
-    {
-        localVideoMuted = !localVideoMuted;
-        mRtcEngine.MuteLocalVideoStream(localVideoMuted);
-    }
     byte[] GetEncryptionSaltFromServer()
     {
         return Encoding.UTF8.GetBytes("EncryptionKdfSaltInBase64Strings");
     }
     
-
-    //for muting/unmuting remote video through IRtcEngine class.
-    public void setRemoteMuteVideo()
+    public bool SetEncryption()
     {
-        remoteVideoMuted = !remoteVideoMuted;
-        mRtcEngine.MuteRemoteVideoStream(remoteClientIDs[0], remoteVideoMuted);
-    }
 
-    //for muting/unmuting local video through IRtcEngine class.
-    public void setLocalMuteAudio()
-    {
-        localAudioMuted = !localAudioMuted;
-        mRtcEngine.MuteLocalAudioStream(localAudioMuted);
+        var config = new EncryptionConfig
+        {
+            encryptionMode = ENCRYPTION_MODE,
+            encryptionKey = SECRET,
+            encryptionKdfSalt = GetEncryptionSaltFromServer()
+        };
+        logger.UpdateLog(string.Format("encryption mode: {0} secret: {1} salt: {2}", ENCRYPTION_MODE, SECRET, config.encryptionKdfSalt.ToString()));
+        try {
+        channel1.EnableEncryption(true, config);
+        } catch {
+            return false;
+        }
+        return true;
     }
+    
 
-    //for muting/unmuting local video through IRtcEngine class.
-    public void setRemoteMuteAudio()
-    {
-        remoteAudioMuted = !remoteAudioMuted;
-        mRtcEngine.MuteRemoteAudioStream(remoteClientIDs[0], remoteAudioMuted);
-    }
 
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare(bool audioEnabled)
     {
-        updateScreenShareID();
-        mRtcEngine.StartNewScreenCaptureForWeb(SCREEN_SHARE_ID, audioEnabled);
+        mRtcEngine.StartNewScreenCaptureForWeb(1000, audioEnabled);
     }
 
     public void stopNewScreenShare()
@@ -176,48 +110,34 @@ public class AgoraClientManager : MonoBehaviour
     {
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-
+        mRtcEngine.SetMultiChannelWant(true);
         mRtcEngine.EnableAudio();
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        mRtcEngine.OnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
-        mRtcEngine.OnLeaveChannel = EngineOnLeaveChannelHandler;
-        mRtcEngine.OnScreenShareStarted += screenShareStartedHandler;
-        mRtcEngine.OnScreenShareStopped += screenShareStoppedHandler;
-        mRtcEngine.OnScreenShareCanceled += screenShareCanceledHandler;
+        channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
+        channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
-        mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
-
-        mRtcEngine.OnError += EngineOnErrorHandler;
-
+        channel1.ChannelOnJoinChannelSuccess = ChannelOnJoinChannelSuccessHandler;
+        channel1.ChannelOnLeaveChannel = ChannelOnLeaveChannelHandler;
+        channel1.ChannelOnUserJoined = ChannelOnUserJoinedHandler;
+        channel1.ChannelOnError = ChannelOnErrorHandler;
+        channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        channel1.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
+        channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
+        channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
     }
 
     public void JoinChannel()
     {
-        if (!useToken)
-        {
-            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
-        }
-        else
-        {
-            TokenClient.Instance.RtcEngine = mRtcEngine;
-            TokenClient.Instance.GetRtcToken(CHANNEL_NAME_1, 0, (token) =>
-            {
-                TOKEN_1 = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
-            });
-        }
-        joinedChannel = true;
+        SetEncryption();
+        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
     public void LeaveChannel()
     {
-        mRtcEngine.LeaveChannel();
-        joinedChannel = false;
+        channel1.LeaveChannel();
     }
 
     void OnApplicationQuit()
@@ -229,11 +149,6 @@ public class AgoraClientManager : MonoBehaviour
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
-    }
-
-    void userVideoMutedHandler(uint uid, bool muted)
-    {
-        logger.UpdateLog(string.Format("onUserMuteHandler uid: {0}, muted: {1}", uid, muted));
     }
 
     void screenShareStartedHandler(string channelId, uint uid, int elapsed)
@@ -264,7 +179,6 @@ public class AgoraClientManager : MonoBehaviour
     {
         logger.UpdateLog(string.Format("onScreenShareStoppedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
             elapsed));
-
     }
 
     void screenShareCanceledHandler_MC(string channelId, uint uid, int elapsed)
@@ -273,7 +187,7 @@ public class AgoraClientManager : MonoBehaviour
             elapsed));
     }
 
-    void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
+    void ChannelOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
         logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
@@ -281,30 +195,28 @@ public class AgoraClientManager : MonoBehaviour
         makeVideoView(channelId, 0);
     }
 
-    void EngineOnLeaveChannelHandler(RtcStats rtcStats)
+    void ChannelOnLeaveChannelHandler(string channelId, RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
+        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", channelId));
     }
 
-    void EngineOnErrorHandler(int err, string message)
+    void ChannelOnErrorHandler(string channelId, int err, string message)
     {
-        logger.UpdateLog(string.Format("UserErrorHandler err: {0}, message: {1}", err,
+        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", channelId, err,
             message));
     }
 
-    void EngineOnUserJoinedHandler(uint uid, int elapsed)
+    void ChannelOnUserJoinedHandler(string channelId, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+        logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
             uid, elapsed));
-        makeVideoView(CHANNEL_NAME_1, uid);
-        remoteClientIDs.Add(uid);
+        makeVideoView(channelId, uid);
     }
 
-    void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
+    void ChannelOnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
     {
         logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(CHANNEL_NAME_1, uid);
-        remoteClientIDs.Remove(uid);
     }
 
     public void RespawnLocal(string channelName)
@@ -349,9 +261,11 @@ public class AgoraClientManager : MonoBehaviour
         if (!ReferenceEquals(videoSurface, null))
         {
             // configure videoSurface
+            videoSurface.SetForMultiChannelUser(channelId, uid);
             videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+
             // make the object draggable
             videoSurface.gameObject.AddComponent<UIElementDragger>();
 

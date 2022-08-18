@@ -1345,10 +1345,10 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableEncryption2(string channel, bool enabled, string encryptionKey, int encryptionMode);
+        protected static extern int enableEncryption2(string channelId, bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
 #else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableEncryption2(IntPtr channel, bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
+        protected static extern int enableEncryption2(IntPtr channelId, bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
