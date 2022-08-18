@@ -91,6 +91,8 @@ namespace agora_gaming_rtc
 
         public OnTokenPrivilegeWillExpireHandler OnTokenPrivilegeWillExpire;
 
+        public OnTokenPrivilegeDidExpireHandler OnTokenPrivilegeDidExpire;
+
         public OnActiveSpeakerHandler OnActiveSpeaker;
 
         public OnVideoStoppedHandler OnVideoStopped;
@@ -4441,7 +4443,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setLocalAccessPoint(ipsStr.ToString(), config.ipList.Length, domainStr.ToString(), config.domainList.Length, config.verifyDomainName, (int)config.mode);
         }
 
-        /** Enables/Disables the virtual background.
+        /** Enables/Disables the virtual background for the clientManager.
          * 
          * After enabling the virtual background feature, you can replace the original background image of the local user with a custom background image.
          * After the replacement, all users in the channel can see the custom background image. You can find out from the {@link agora_gaming_rtc.OnVirtualBackgroundSourceEnabledHandler OnVirtualBackgroundSourceEnabledHandler}
@@ -4477,9 +4479,315 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - &lt; 0: Failure.
          */
-        public int EnableVirtualBackground(bool enabled, VirtualBackgroundSource source)
+        public int enableVirtualBackground(bool enabled, VirtualBackgroundSource source)
         {
             return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
+        }
+
+        /** Enables blur for the virtual background being used by clientManager.
+         * 
+         * This function will add a blur effect to the virtual background.
+         * The strength of the blur can be adjusted with the blurDegrees parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param blurDegrees Sets the strength of the blur effect on the virtual background:
+         * - blurDegrees must be an integer.
+         */
+        public int SetVirtualBackgroundBlur(int blurDegrees)
+        {
+            return IRtcEngineNative.setVirtualBackgroundBlur(blurDegrees);
+        }
+
+
+        /** Enables color background for the virtual background being used by clientManager.
+         * 
+         * This function will add a solid color to the virtual background.
+         * The color of the effect can be set with the hexColor parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param hexColor Sets the color on the virtual background:
+         * - hexColor must be a hexidecimal value.
+         */
+        public int SetVirtualBackgroundColor(string hexColor)
+        {
+            return IRtcEngineNative.setVirtualBackgroundColor(hexColor);
+        }
+
+
+        /** Enables the image background for the virtual background being used by clientManager.
+         * 
+         * This function will add a image to the virtual background.
+         * The image for the virtual background can be selected with the imgFile parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param imgFile the string that represents the full file name of the image:
+         * - imgFile must include both file name and format/type, such as: "moon.png" or "sky.jpg".
+         */
+        public int SetVirtualBackgroundImage(string imgFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundImage(imgFile);
+        }
+
+
+        /** Enables the video background for the virtual background being used by clientManager.
+         * 
+         * This function will add a video to the virtual background.
+         * The video for the virtual background can be selected with the imgFile parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param videoFile the string that represents the full file name of the image:
+         * - videoFile must include both file name and format/type, such as: "movie.mp4" or "funny.avi".
+         */
+        public int SetVirtualBackgroundVideo(string videoFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundVideo(videoFile);
+        }
+
+
+        /** Enables/Disables the virtual background for the agoraChannel.
+         * 
+         * After enabling the virtual background feature, you can replace the original background image of the local user with a custom background image.
+         * After the replacement, all users in the channel can see the custom background image. You can find out from the {@link agora_gaming_rtc.OnVirtualBackgroundSourceEnabledHandler OnVirtualBackgroundSourceEnabledHandler}
+         * callback whether the virtual background is successfully enabled or the cause of any errors.
+         * 
+         * @note
+         * - Call this method after `EnableVideo`.
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param enabled Sets whether to enable the virtual background:
+         * - `true`: Enable.
+         * - `false`: Disable.
+         * @param source The custom background image. See {@link agora_gaming_rtc.VirtualBackgroundSource VirtualBackgroundSource}. 
+         * Note: To adapt the resolution of the custom background image to the resolution of the SDK capturing video, the SDK scales and crops
+         * the custom background image while ensuring that the content of the custom background image is not distorted.
+         * @return
+         * - 0: Success.
+         * - &lt; 0: Failure.
+         */
+        public int initVirtualBackground_MC(bool enabled, VirtualBackgroundSource source)
+        {
+            return IRtcEngineNative.initVirtualBackground_MC(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
+        }
+
+
+
+        /** Enables blur for the virtual background being used by agoraChannel.
+         * 
+         * This function will add a blur effect to the virtual background.
+         * The strength of the blur can be adjusted with the blurDegrees parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param blurDegrees Sets the strength of the blur effect on the virtual background:
+         * - blurDegrees must be an integer.
+         */
+        public int SetVirtualBackgroundBlur_MC(int blurDegrees)
+        {
+            return IRtcEngineNative.setVirtualBackgroundBlur_MC(blurDegrees);
+        }
+
+
+        /** Enables color background for the virtual background being used by agoraChannel.
+         * 
+         * This function will add a solid color to the virtual background.
+         * The color of the effect can be set with the hexColor parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param hexColor Sets the color on the virtual background:
+         * - hexColor must be a hexidecimal value.
+         */
+        public int SetVirtualBackgroundColor_MC(string hexColor)
+        {
+            return IRtcEngineNative.setVirtualBackgroundColor_MC(hexColor);
+        }
+
+
+        /** Enables the image background for the virtual background being used by agoraChannel.
+         * 
+         * This function will add a image to the virtual background.
+         * The image for the virtual background can be selected with the imgFile parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param imgFile the string that represents the full file name of the image:
+         * - imgFile must include both file name and format/type, such as: "moon.png" or "sky.jpg".
+         */
+        public int SetVirtualBackgroundImage_MC(string imgFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundImage_MC(imgFile);
+        }
+
+
+        /** Enables the video background for the virtual background being used by agoraChannel.
+         * 
+         * This function will add a video to the virtual background.
+         * The video for the virtual background can be selected with the imgFile parameter.
+         * 
+         * @note
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param videoFile the string that represents the full file name of the image:
+         * - videoFile must include both file name and format/type, such as: "movie.mp4" or "funny.avi".
+         */
+        public int SetVirtualBackgroundVideo_MC(string videoFile)
+        {
+            return IRtcEngineNative.setVirtualBackgroundVideo_MC(videoFile);
         }
 
         /**
@@ -5054,6 +5362,8 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableSpatialAudio(enabled);
         }
 
+        
+
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
          *
@@ -5091,9 +5401,9 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb)
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb)
         {
-            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb);
         }
         /// @endcond
         /**

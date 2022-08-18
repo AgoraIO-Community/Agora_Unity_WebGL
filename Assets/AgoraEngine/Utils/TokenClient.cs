@@ -41,7 +41,9 @@ namespace agora_utilities
             set
             {
                 mRtcEngine = value;
-                mRtcEngine.OnTokenPrivilegeWillExpire += OnTokenPrivilegeWillExpireHandler;
+                mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
+                mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
+                mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
             }
         }
 
@@ -106,6 +108,26 @@ namespace agora_utilities
             clientType = type;
         }
 
+        public void SetMultiChannelInstance(AgoraChannel channel)
+        {
+            channel.ChannelOnTokenPrivilegeWillExpire = ChannelOnTokenPrivilegeWillExpireHandler;
+            channel.ChannelOnTokenPrivilegeDidExpire = ChannelOnTokenPrivilegeDidExpireHandler;
+            channel.ChannelOnClientRoleChanged += ChannelOnClientRoleChangedHandler;
+        }
+
+        public void SetExpirationSecs(int secs)
+        {
+            ExpirationSecs = secs;
+        }
+
+        public void SetRtcEngineInstance(IRtcEngine engine)
+        {
+            mRtcEngine = engine;
+            mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
+            mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
+            mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
+        }
+
         public void GetTokens(string channelName, uint uid, OnTokensReceivedHandler handleTokens)
         {
             if (!serverURL.StartsWith("http"))
@@ -142,11 +164,67 @@ namespace agora_utilities
         {
             Debug.Log("Token will expire soon, renewing .... ");
             StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
-                        this.RenewToken));
+                        (myToken) =>
+                        {
+
+                            if (mRtcEngine != null)
+                            {
+                                mRtcEngine.RenewToken(myToken.rtcToken);
+                            }
+                        }));
+        }
+
+        void OnTokenPrivilegeDidExpireHandler(string token)
+        {
+            Debug.Log("Token has expired, please rejoin to get another token.... ");
+
+        }
+
+        void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token)
+        {
+            Debug.Log("Channel Token will expire soon for " + channelId + ", renewing .... ");
+            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, channelId, UID, clientType.ToString(), ExpirationSecs,
+                        (myToken) =>
+                        {
+                            var channel = AgoraChannel.GetChannel(channelId);
+                            if (channel != null)
+                            {
+                                channel.RenewToken(myToken.rtcToken);
+                            }
+                        }));
+        }
+
+        void ChannelOnTokenPrivilegeDidExpireHandler(string channelId, string token)
+        {
+            Debug.Log("Channel Token has expired for " + channelId + ", join again to renew token");
+        }
+
+        void ChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+        {
+            ClientType client_type = newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER ? ClientType.publisher : ClientType.subscriber;
+            Debug.Log("Channel Token will change for " + channelId + ", renewing from " + oldRole + " to " + newRole);
+            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, channelId, UID, client_type.ToString(), ExpirationSecs,
+                        (token) =>
+                        {
+                            var channel = AgoraChannel.GetChannel(channelId);
+                            if (channel != null)
+                            {
+                                channel.RenewToken(token.rtcToken);
+                            }
+                        }));
+        }
+
+        void OnClientRoleChangedHandler(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
+        {
+            clientType = newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER ? ClientType.publisher : ClientType.subscriber;
+            Debug.Log("Client Token will change for " + ChannelName + ", renewing from " + oldRole + " to " + newRole);
+            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
+                        this.RenewToken)); ;
         }
 
         void RenewToken(TokenObject token)
         {
+
             if (RtcEngine != null) RtcEngine.RenewToken(token.rtcToken);
             //if (RtmClient != null) RtmClient.RenewToken(token.rtmToken);
             Debug.Log("RTC token has been renewed.");

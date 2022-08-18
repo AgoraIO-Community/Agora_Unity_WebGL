@@ -104,14 +104,6 @@ public class AgoraChannelPanel : MonoBehaviour
         SetupRoleButton(isHost: !AudienceMode);
 
         SetButtonsState(false, false, false, false);
-        if (UseToken)
-        {
-            TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
-        {
-            channelToken = token;
-            Debug.Log(gameObject.name + " Got rtc token:" + token);
-        });
-        }
 
         InfoText.text = AudienceMode ? "Audience" : "Broadcaster";
 
@@ -247,7 +239,18 @@ public class AgoraChannelPanel : MonoBehaviour
             mChannel.ChannelOnRemoteVideoStats += OnRemoteVideoStatsHandler;
             mChannel.ChannelOnError += HandleChannelError;
             mChannel.ChannelOnClientRoleChanged += handleChannelOnClientRoleChangedHandler;
+
+
+
         }
+
+
+        ChannelMediaOptions channelMediaOptions = new ChannelMediaOptions(
+            subscribeAudio == null ? true : subscribeAudio.isOn,
+            subscribeVideo == null ? true : subscribeVideo.isOn,
+            publishAudio == null ? false : publishAudio.isOn,
+            publishVideo == null ? false : publishVideo.isOn
+        );
 
         if (AudienceMode)
         {
@@ -257,13 +260,21 @@ public class AgoraChannelPanel : MonoBehaviour
         {
             mChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         }
-        ChannelMediaOptions channelMediaOptions = new ChannelMediaOptions(
-            subscribeAudio == null ? true : subscribeAudio.isOn,
-            subscribeVideo == null ? true : subscribeVideo.isOn,
-            publishAudio == null ? false : publishAudio.isOn,
-            publishVideo == null ? false : publishVideo.isOn
-        );
-        mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, channelMediaOptions);
+        if (UseToken)
+        {
+            TokenClient.Instance.SetMultiChannelInstance(mChannel);
+            TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
+            {
+                channelToken = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + token);
+                mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, channelMediaOptions);
+            });
+        }
+        else
+        {
+            channelToken = null;
+            mChannel.JoinChannel(channelToken, gameObject.name, ClientUID, channelMediaOptions);
+        }
 
         Debug.Log("Joining channel: " + channelName);
     }

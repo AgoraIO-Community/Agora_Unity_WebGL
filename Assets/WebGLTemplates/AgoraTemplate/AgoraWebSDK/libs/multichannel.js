@@ -445,4 +445,40 @@ function getRemoteVideoStatsMC() {
     c.getRemoteVideoStatsMC();
   }
 }
+
+function initVirtualBackground_MC(){
+  console.log("multichannel working");
+  var c = clients[selectedCurrentChannel];
+  c.enableVirtualBackground();
+}
+
+function setVirtualBackgroundBlur_MC(blurDegree){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundBlur(blurDegree);
+}
+
+function setVirtualBackgroundColor_MC(hexColor){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundColor(hexColor);
+}
+
+function setVirtualBackgroundImage_MC(imgFile){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundImage(imgFile);
+}
+
+function setVirtualBackgroundVideo_MC(videoFile){
+  var c = clients[selectedCurrentChannel];
+  c.setVirtualBackgroundVideo(videoFile);
+}
+
+function enableSpatialAudio_MC(enabled){
+  var c = clients[selectedCurrentChannel];
+  c.enableSpatialAudio(enabled);
+}
+
+function setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb){
+  var c = clients[selectedCurrentChannel];
+  c.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+}
 // NEW MULTI CLIENT API's ENDS

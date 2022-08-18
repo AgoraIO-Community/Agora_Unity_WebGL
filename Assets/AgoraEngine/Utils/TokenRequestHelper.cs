@@ -35,9 +35,10 @@ namespace agora_utilities
             string url, string channel, uint userId, string role, int expireSecs, Action<TokenObject> callback = null
         )
         {
-            UnityWebRequest request = UnityWebRequest.Get(string.Format(
-              RteTokenEndPointFormatter, url, channel, role, userId, expireSecs
-            ));
+            var query_url = string.Format(RteTokenEndPointFormatter, url, channel, role, userId, expireSecs);
+            Debug.Log("Query:" + query_url);
+            UnityWebRequest request = UnityWebRequest.Get(query_url);
+
             yield return request.SendWebRequest();
 
             if (request.isNetworkError || request.isHttpError)

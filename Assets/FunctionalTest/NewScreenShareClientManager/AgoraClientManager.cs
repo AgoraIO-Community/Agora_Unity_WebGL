@@ -29,10 +29,16 @@ public class AgoraClientManager : MonoBehaviour
     public bool useNewScreenShare = false;
     public bool useScreenShareAudio = false;
     public bool joinedChannel = false;
+    public bool useToken = false;
     public Toggle loopbackAudioToggle, newScreenShareToggle;
+    public VirtualBackgroundSource myVirtualBackground;
 
-    
     private List<uint> remoteClientIDs;
+
+    public int blurDegrees = 2;
+    public string hexColor = "#00FF00";
+    public string imgFile = "seinfeld.png";
+    public string videoFile = "movie.mp4";
 
     // Use this for initialization
     void Start()
@@ -43,13 +49,14 @@ public class AgoraClientManager : MonoBehaviour
         }
 
         InitEngine();
-        
+
         //channel setup.
-        JoinChannel();
+
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
         remoteClientIDs = new List<uint>();
+        myVirtualBackground = new VirtualBackgroundSource();
     }
 
     public void updateScreenShareNew()
@@ -78,15 +85,18 @@ public class AgoraClientManager : MonoBehaviour
 
         useScreenShareAudio = loopbackAudioToggle.isOn;
 
-        muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
-        muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
-        muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
-        muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
+        //muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
+        //muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
+        //muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
+        //muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
 
-        if(joinedChannel){
+        if (joinedChannel)
+        {
             joinButton.interactable = false;
             leaveButton.interactable = true;
-        } else {
+        }
+        else
+        {
             joinButton.interactable = true;
             leaveButton.interactable = false;
         }
@@ -99,7 +109,7 @@ public class AgoraClientManager : MonoBehaviour
         return (APP_ID.Length > 10);
     }
 
-    
+
 
     //for muting/unmuting local video through IRtcEngine class.
     public void setLocalMuteVideo()
@@ -171,11 +181,50 @@ public class AgoraClientManager : MonoBehaviour
         mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
 
         mRtcEngine.OnError += EngineOnErrorHandler;
+
+    }
+
+    public void enableVirtualBackground(bool onoff)
+    {
+        mRtcEngine.enableVirtualBackground(onoff, myVirtualBackground);
+    }
+
+    public void setVirtualBackgroundBlur()
+    {
+        mRtcEngine.SetVirtualBackgroundBlur(blurDegrees);
+    }
+
+    public void setVirtualBackgroundColor()
+    {
+        mRtcEngine.SetVirtualBackgroundColor(hexColor);
+    }
+
+    public void setVirtualBackgroundImage()
+    {
+        mRtcEngine.SetVirtualBackgroundImage(imgFile);
+    }
+
+    public void setVirtualBackgroundVideo()
+    {
+        mRtcEngine.SetVirtualBackgroundVideo(videoFile);
     }
 
     public void JoinChannel()
     {
-        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        if (!useToken)
+        {
+            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        }
+        else
+        {
+            TokenClient.Instance.RtcEngine = mRtcEngine;
+            TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
+            {
+                TOKEN_1 = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
+                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
+            });
+        }
         joinedChannel = true;
     }
 
@@ -196,7 +245,7 @@ public class AgoraClientManager : MonoBehaviour
         }
     }
 
-    void userVideoMutedHandler( uint uid, bool muted)
+    void userVideoMutedHandler(uint uid, bool muted)
     {
         logger.UpdateLog(string.Format("onUserMuteHandler uid: {0}, muted: {1}", uid, muted));
     }

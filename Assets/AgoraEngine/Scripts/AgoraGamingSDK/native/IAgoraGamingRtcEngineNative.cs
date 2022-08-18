@@ -1406,6 +1406,33 @@ namespace agora_gaming_rtc
         protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source, int blur_degree);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundBlur(int blur_degree);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundColor(string hexColor);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundImage(string imgFile);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundVideo(string videoFile);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int initVirtualBackground_MC(bool enabled, int background_source_type, uint color, string source, int blur_degree);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundBlur_MC(int blur_degree);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundColor_MC(string hexColor);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundImage_MC(string imgFile);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setVirtualBackgroundVideo_MC(string videoFile);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraTorchOn(bool on);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1503,13 +1530,16 @@ namespace agora_gaming_rtc
         protected static extern int enableSpatialAudio(bool enabled);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+        protected static extern int enableSpatialAudio_MC(bool enabled);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setScreenCaptureScenario(int screenScenario);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioParams2(IntPtr channel, uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+        protected static extern int setRemoteUserSpatialAudioParams2(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraZoomFactor(float factor);

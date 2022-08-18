@@ -899,7 +899,10 @@ var LibraryAgoraWebGLSDK = {
     SendNotImplementedError()
   },
   enableSpatialAudio: function (enabled) {
-    SendNotImplementedError()
+    enableSpatialAudio(enabled);
+  },
+  enableSpatialAudio_MC: function (enabled) {
+    enableSpatialAudio_MC(enabled);
   },
   enableWirelessAccelerate: function (enabled) {
     SendNotImplementedError()
@@ -1039,11 +1042,15 @@ var LibraryAgoraWebGLSDK = {
   setLowlightEnhanceOptions : function (enabled, mode, level) {
     SendNotImplementedError()
   },
-  setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb) {
-    SendNotImplementedError()
+  setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
+    blur = enable_blur == 0 ? false : true;
+    airAbsorb = enable_air_absorb == 0 ? false : true;
+    setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
-  setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb) {
-    SendNotImplementedError()
+  setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
+    blur = enable_blur == 0 ? false : true;
+    airAbsorb = enable_air_absorb == 0 ? false : true;
+    setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError()
@@ -1851,12 +1858,14 @@ muteLocalAudioStream_channel: function(channel, mute) {
         HEAPU8[data+i] = bytes[i];
       }
       UnityHooks.data = data;
-      Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
+      //Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
+      Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
     };
 
     UnityHooks.OnVideoSizeChangedCallback = OnVideoSizeChangedCallback;
     UnityHooks.InvokeVideoSizeChangedCallback = function(uid, width, height) {
-      Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
+      //Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
+      Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
     };
 
     UnityHooks.isLoaded = true;
@@ -2003,7 +2012,43 @@ muteLocalAudioStream_channel: function(channel, mute) {
   createDataStream_channel: function(channel, syncWithAudio, ordered) {},
 
   enableDeepLearningDenoise: function() {},
-  enableVirtualBackground: function() {},
+  enableVirtualBackground: function() {
+    initVirtualBackground();
+  },
+  setVirtualBackgroundBlur: function(blurDegree) {
+    setVirtualBackgroundBlur(blurDegree);
+  },
+  setVirtualBackgroundColor: function(hexColor) {
+    var myColor = Pointer_stringify(hexColor);
+    setVirtualBackgroundColor(myColor);
+  },
+  setVirtualBackgroundImage: function(imageFile) {
+    var myImg = Pointer_stringify(imageFile);
+    setVirtualBackgroundImage(myImg);
+  },
+  setVirtualBackgroundVideo: function(videoFile) {
+    var myVideo = Pointer_stringify(videoFile);
+    setVirtualBackgroundVideo(myVideo);
+  },
+  initVirtualBackground_MC: function() {
+    console.log('this is working');
+    initVirtualBackground_MC();
+  },
+  setVirtualBackgroundBlur_MC: function(blurDegree) {
+    setVirtualBackgroundBlur_MC(blurDegree);
+  },
+  setVirtualBackgroundColor_MC: function(hexColor) {
+    var myColor = Pointer_stringify(hexColor);
+    setVirtualBackgroundColor_MC(myColor);
+  },
+  setVirtualBackgroundImage_MC: function(imageFile) {
+    var myImg = Pointer_stringify(imageFile);
+    setVirtualBackgroundImage_MC(myImg);
+  },
+  setVirtualBackgroundVideo_MC: function(videoFile) {
+    var myVideo = Pointer_stringify(videoFile);
+    setVirtualBackgroundVideo_MC(myVideo);
+  },
   getAudioMixingDuration2: function() {},
   getEffectCurrentPosition: function() {},
   getEffectDuration: function() {},

@@ -137,6 +137,14 @@ namespace agora_gaming_rtc {
          */
         public delegate void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token);
 
+        /** Occurs when the token expires.
+         *
+         *
+         * @param channelId The name of the channel that you joined.
+         * @param token The token that expired.
+         */
+        public delegate void ChannelOnTokenPrivilegeDidExpireHandler(string channelId, string token);
+
         /** Reports the statistics of the current call session once every two seconds.
         *
         * @param channelId The name of the channel that you join.

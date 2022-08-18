@@ -127,7 +127,7 @@ function stopPreview() {
 
 // Gets a new token when the current token expires after a period of time.
 async function renewToken(token) {
-  client_manager.renewToken();
+  client_manager.renewToken(token);
 }
 
 //enables the audio volume indicator so now we are geting event of volume indications
@@ -337,6 +337,10 @@ function startNewScreenCaptureForWeb(uid, enableAudio) {
 function stopNewScreenCaptureForWeb(){
   console.log("agora engine stopNewScreenCaptureForWeb");
   client_manager.stopNewScreenCaptureForWeb();
+}
+
+function setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+  client_manager.setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb);
 }
 
 async function startScreenCaptureByDisplayId(
@@ -898,4 +902,28 @@ function setWebParametersString(key, value) {
 
 function getRemoteVideoStats() {
   client_manager.getRemoteVideoStats();
+}
+
+function initVirtualBackground(){
+  client_manager.enableVirtualBackground();
+}
+
+function setVirtualBackgroundBlur(blurDegree){
+  client_manager.setVirtualBackgroundBlur(blurDegree);
+}
+
+function setVirtualBackgroundColor(hexColor){
+  client_manager.setVirtualBackgroundColor(hexColor);
+}
+
+function setVirtualBackgroundImage(imgFile){
+  client_manager.setVirtualBackgroundImage(imgFile);
+}
+
+function setVirtualBackgroundVideo(videoFile){
+  client_manager.setVirtualBackgroundVideo(videoFile);
+}
+
+function enableSpatialAudio(enabled){
+  client_manager.enableSpatialAudio(enabled);
 }
