@@ -8,7 +8,9 @@ var localTracks = {
 };
 
 // Initialization
-async function getProcessorInstance(videoTrack) {
+async function getProcessorInstance(videoTrack, enabled, backgroundSourceType, color, source, blurDegree) {
+
+  console.log("background source type", backgroundSourceType);
 
   if (extension == null) {
     // Create a VirtualBackgroundExtension instance
@@ -30,6 +32,23 @@ async function getProcessorInstance(videoTrack) {
     // Inject the extension into the video processing pipeline in the SDK
     videoTrack.pipe(processor).pipe(videoTrack.processorDestination);
   }
+
+  if(backgroundSourceType == 3){
+    setBackgroundBlurring(videoTrack, blurDegree);
+  } else if(backgroundSourceType == 1){
+    setBackgroundColor(videoTrack, color);
+  } else if(backgroundSourceType == 2){
+    setBackgroundImage(videoTrack, source);
+  } else if(backgroundSourceType == 4){
+    setBackgroundVideo(videoTrack, source);
+  }
+
+  if(enabled){
+    processor.enable();
+  } else {
+    processor.disable();
+  }
+
   return processor;
 }
 
@@ -43,13 +62,10 @@ async function setBackgroundColor(videoTrack, hexColor) {
       videoElement = null;
     }
 
-    let processor = await getProcessorInstance(videoTrack);
-
     console.log(hexColor);
 
     try {
-      processor.setOptions({type: 'color', color: hexColor.toString()});
-      await processor.enable();
+      processor.setOptions({type: 'color', color: '#' + Math.abs(hexColor).toString(16)});
     } finally {
     }
 
@@ -67,11 +83,10 @@ async function setBackgroundBlurring(videoTrack, myBlur) {
       videoElement = null;
     }
 
-    let processor = await getProcessorInstance(videoTrack);
+    console.log(myBlur);
 
     try {
       processor.setOptions({type: 'blur', blurDegree: myBlur});
-      await processor.enable();
     } finally {
     }
 
@@ -92,11 +107,8 @@ async function setBackgroundImage(videoTrack, imgFile) {
 
     imgElement.onload = async() => {
 
-      let processor = await getProcessorInstance(videoTrack);
-
       try {
         processor.setOptions({type: 'img', source: imgElement});
-        await processor.enable();
       } finally {
       }
 
@@ -112,11 +124,8 @@ async function setBackgroundVideo(videoTrack, videoFile) {
 
   videoElement.oncanplay = async() => {
 
-    let processor = await getProcessorInstance(videoTrack);
-
     try {
       processor.setOptions({type: 'video', source: videoElement});
-      await processor.enable();
       console.log("processor enabled");
     } catch(e) {
     }

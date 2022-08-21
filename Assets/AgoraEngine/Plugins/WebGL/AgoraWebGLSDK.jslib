@@ -2012,8 +2012,10 @@ muteLocalAudioStream_channel: function(channel, mute) {
   createDataStream_channel: function(channel, syncWithAudio, ordered) {},
 
   enableDeepLearningDenoise: function() {},
-  enableVirtualBackground: function() {
-    initVirtualBackground();
+  enableVirtualBackground: function(enabled, backgroundSourceType, color, source, blurDegree) {
+    console.log(color);
+    source_Str = Pointer_stringify(source);
+    initVirtualBackground(enabled, backgroundSourceType, color, source_Str, blurDegree);
   },
   setVirtualBackgroundBlur: function(blurDegree) {
     setVirtualBackgroundBlur(blurDegree);

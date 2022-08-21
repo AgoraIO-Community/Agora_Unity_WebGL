@@ -3499,6 +3499,12 @@ namespace agora_gaming_rtc
         * @since v3.6.1.1
         */
         BACKGROUND_BLUR,
+        /**
+        * The background image is a mp4 or avi file.
+        *
+        * @since v3.6.1.1
+        */
+        BACKGROUND_VIDEO
     };
 
     /**

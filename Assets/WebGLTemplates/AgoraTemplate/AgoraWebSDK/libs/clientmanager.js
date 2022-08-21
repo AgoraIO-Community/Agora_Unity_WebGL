@@ -1045,8 +1045,8 @@ class ClientManager {
     }
   }
 
-async enableVirtualBackground(){
-  getProcessorInstance(localTracks.videoTrack);
+async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree){
+  getProcessorInstance(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree);
 }
 
 async setVirtualBackgroundBlur(blurDegree){
