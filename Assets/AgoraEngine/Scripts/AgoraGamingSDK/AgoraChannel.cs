@@ -1537,6 +1537,47 @@ namespace agora_gaming_rtc
 #endif
         }
 
+        /** Enables/Disables the virtual background for the agoraChannel.
+         * 
+         * After enabling the virtual background feature, you can replace the original background image of the local user with a custom background image.
+         * After the replacement, all users in the channel can see the custom background image. You can find out from the {@link agora_gaming_rtc.OnVirtualBackgroundSourceEnabledHandler OnVirtualBackgroundSourceEnabledHandler}
+         * callback whether the virtual background is successfully enabled or the cause of any errors.
+         * 
+         * @note
+         * - Call this method after `EnableVideo`.
+         * - This functions requires a high-performance device. Agora recommends that you use this function on the following devices:
+         *   - Android: Devices with the following chips:
+         *     - Snapdragon 700 series 750G and later
+         *     - Snapdragon 800 series 835 and later
+         *     - Dimensity 700 series 720 and later
+         *     - Kirin 800 series 810 and later
+         *     - Kirin 900 series 980 and later
+         *   - iOS: Devices with an A9 chip and better, as follows:
+         *     - iPhone 6S and later
+         *     - iPad Air (3rd generation) and later
+         *     - iPad (5th generation) and later
+         *     - iPad Pro (1st generation) and later
+         *     - iPad mini (5th generation) and later
+         *   - macOS and Windows: Devices with an i5 CPU and better
+         * - Agora recommends that you use this function in scenarios that meet the following conditions:
+         *   - A high-definition camera device is used, and the environment is uniformly lit.
+         *   - The captured video image is uncluttered, the user's portrait is half-length and largely unobstructed, and the background is a single color that differs from the color of the user's clothing.
+         * - The virtual background feature does not support video in the Texture format or video obtained from custom video capture by the Push method.
+         * @param enabled Sets whether to enable the virtual background:
+         * - `true`: Enable.
+         * - `false`: Disable.
+         * @param source The custom background image. See {@link agora_gaming_rtc.VirtualBackgroundSource VirtualBackgroundSource}. 
+         * Note: To adapt the resolution of the custom background image to the resolution of the SDK capturing video, the SDK scales and crops
+         * the custom background image while ensuring that the content of the custom background image is not distorted.
+         * @return
+         * - 0: Success.
+         * - &lt; 0: Failure.
+         */
+        public int enableVirtualBackground(bool enabled, VirtualBackgroundSource source)
+        {
+            return IRtcEngineNative.initVirtualBackground_MC(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree, source.mute, source.loop);
+        }
+
         /* 
         * Invoke Web's screen sharing capability. Note that the browser can only have one sharing
         * instance.  Your channels cannot share different contents.

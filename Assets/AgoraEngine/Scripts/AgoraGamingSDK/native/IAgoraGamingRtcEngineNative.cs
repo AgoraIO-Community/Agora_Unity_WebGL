@@ -1418,7 +1418,7 @@ namespace agora_gaming_rtc
         protected static extern int setVirtualBackgroundVideo(string videoFile);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int initVirtualBackground_MC(bool enabled, int background_source_type, uint color, string source, int blur_degree);
+        protected static extern int initVirtualBackground_MC(bool enabled, int background_source_type, uint color, string source, int blur_degree, bool mute, bool loop);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setVirtualBackgroundBlur_MC(int blur_degree);

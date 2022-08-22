@@ -483,7 +483,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: setVirtualBackgroundVideo
         m_Mode: 1
         m_Arguments:
@@ -1060,7 +1060,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: enableVirtualBackground
         m_Mode: 6
         m_Arguments:
@@ -1431,7 +1431,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: setVirtualBackgroundImage
         m_Mode: 1
         m_Arguments:
@@ -1553,7 +1553,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: setVirtualBackgroundBlur
         m_Mode: 1
         m_Arguments:
@@ -2301,8 +2301,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
-        m_MethodName: setVirtualBackgroundColor
+      - m_Target: {fileID: 1348336710}
+        m_MethodName: setBackgroundColor
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2535,7 +2535,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: setVirtualBackgroundVideo
         m_Mode: 1
         m_Arguments:
@@ -2727,7 +2727,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: JoinChannel
         m_Mode: 1
         m_Arguments:
@@ -2923,7 +2923,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: setVirtualBackgroundVideo
         m_Mode: 1
         m_Arguments:
@@ -3195,7 +3195,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: LeaveChannel
         m_Mode: 1
         m_Arguments:
@@ -3252,7 +3252,7 @@ GameObject:
   - component: {fileID: 1348336708}
   - component: {fileID: 1348336707}
   - component: {fileID: 1348336706}
-  - component: {fileID: 1348336705}
+  - component: {fileID: 1348336710}
   m_Layer: 5
   m_Name: VideoCanvas
   m_TagString: Untagged
@@ -3260,49 +3260,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1348336705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1348336704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0086b7a878502154b8da4e6aa05c465a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  APP_ID: d2c9420f5ea0498abd30eabac50b33ed
-  TOKEN_1: 
-  CHANNEL_NAME_1: unity3d
-  TOKEN_2: 
-  logText: {fileID: 1416670727}
-  joinButton: {fileID: 1102350104}
-  leaveButton: {fileID: 1338097253}
-  blurButton: {fileID: 508673108}
-  colorButton: {fileID: 936795416}
-  imageButton: {fileID: 442201895}
-  videoButton: {fileID: 1203901608}
-  enableButton: {fileID: 1764019172}
-  disableButton: {fileID: 397878220}
-  joinedChannel: 0
-  virtualBackgroundOn: 0
-  useToken: 0
-  mute: 0
-  loop: 0
-  background: 3
-  blur: 1
-  blurDegrees: 2
-  hexIndex: 0
-  hexColors:
-  - 
-  - 
-  - 
-  hexDropdown: {fileID: 2097859348}
-  blurDropdown: {fileID: 311557006}
-  muteToggle: {fileID: 231672356}
-  loopToggle: {fileID: 1037289746}
-  imgFile: bedroom.jpg
-  videoFile: outside.mp4
 --- !u!114 &1348336706
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3391,6 +3348,49 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1348336710
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1348336704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 421b2472e3ef7e145bfbef131f01e8c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  APP_ID: d2c9420f5ea0498abd30eabac50b33ed
+  TOKEN_1: 
+  CHANNEL_NAME_1: unity3d
+  TOKEN_2: 
+  logText: {fileID: 1416670727}
+  joinButton: {fileID: 1102350104}
+  leaveButton: {fileID: 1338097253}
+  blurButton: {fileID: 508673108}
+  colorButton: {fileID: 936795416}
+  imageButton: {fileID: 442201895}
+  videoButton: {fileID: 1203901608}
+  enableButton: {fileID: 1764019172}
+  disableButton: {fileID: 397878220}
+  joinedChannel: 0
+  virtualBackgroundOn: 0
+  useToken: 0
+  mute: 0
+  loop: 0
+  background: 3
+  blur: 1
+  blurDegrees: 2
+  hexIndex: 0
+  hexColors:
+  - '#FF1111'
+  - '#11FF11'
+  - '#1111FF'
+  hexDropdown: {fileID: 2097859348}
+  blurDropdown: {fileID: 311557006}
+  muteToggle: {fileID: 231672356}
+  loopToggle: {fileID: 1037289746}
+  imgFile: bedroom.jpg
+  videoFile: outside.mp4
 --- !u!1 &1404540726
 GameObject:
   m_ObjectHideFlags: 0
@@ -4202,7 +4202,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 1348336710}
         m_MethodName: enableVirtualBackground
         m_Mode: 6
         m_Arguments:

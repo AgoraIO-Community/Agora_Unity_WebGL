@@ -2017,7 +2017,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
     muted = mute == 0 ? false : true;
     looped = loop == 0 ? false : true;
     source_Str = Pointer_stringify(source);
-    console.log("muted and looping", muted, looped);
     initVirtualBackground(enable, backgroundSourceType, color, source_Str, blurDegree, muted, looped);
   },
   setVirtualBackgroundBlur: function(blurDegree) {
@@ -2035,8 +2034,11 @@ muteLocalAudioStream_channel: function(channel, mute) {
     var myVideo = Pointer_stringify(videoFile);
     setVirtualBackgroundVideo(myVideo);
   },
-  initVirtualBackground_MC: function() {
-    console.log('this is working');
+  initVirtualBackground_MC: function(enabled, backgroundSourceType, color, source, blurDegree, mute, loop) {
+    enable = enabled == 0 ? false : true;
+    muted = mute == 0 ? false : true;
+    looped = loop == 0 ? false : true;
+    source_Str = Pointer_stringify(source);
     initVirtualBackground_MC();
   },
   setVirtualBackgroundBlur_MC: function(blurDegree) {
