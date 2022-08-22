@@ -81,7 +81,6 @@ async function setBackgroundColor(processor, videoTrack, hexColor) {
       videoElement = null;
     }
 
-    console.log(hexColor);
 
     try {
       processor.setOptions({type: 'color', color: '#' + Math.abs(hexColor).toString(16)});

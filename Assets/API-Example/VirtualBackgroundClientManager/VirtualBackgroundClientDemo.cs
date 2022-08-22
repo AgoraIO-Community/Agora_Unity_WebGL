@@ -279,24 +279,6 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
             elapsed));
     }
 
-    void screenShareStartedHandler_MC(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("onScreenShareStartedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-    }
-
-    void screenShareStoppedHandler_MC(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("onScreenShareStoppedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-    }
-
-    void screenShareCanceledHandler_MC(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("onScreenShareCanceledMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-    }
-
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
