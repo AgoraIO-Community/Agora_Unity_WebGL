@@ -904,8 +904,8 @@ function getRemoteVideoStats() {
   client_manager.getRemoteVideoStats();
 }
 
-function initVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree){
-  client_manager.enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree);
+function initVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
+  client_manager.enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
 }
 
 function setVirtualBackgroundBlur(blurDegree){

@@ -20,6 +20,7 @@ class ClientManager {
     this.is_screensharing = false;
     this.tempLocalTracks = null;
     this.enableLoopbackAudio = false;
+    this.virtualBackgroundProcessor = null;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -1045,8 +1046,16 @@ class ClientManager {
     }
   }
 
-async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree){
-  getProcessorInstance(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree);
+async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
+  if(this.virtualBackgroundProcessor == null && localTracks.videoTrack){
+    console.log("getting virtual background", localTracks.videoTrack);
+   this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
+    console.log("got virtual background", this.virtualBackgroundProcessor);
+  } else if(this.virtualBackgroundProcessor != null) {
+    console.log("setting virtual background", localTracks.videoTrack);
+   this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
+   console.log("set virtual background", this.virtualBackgroundProcessor);
+  }
 }
 
 async setVirtualBackgroundBlur(blurDegree){

@@ -3560,6 +3560,12 @@ namespace agora_gaming_rtc
          * @note This parameter takes effect only when the type of the custom background image is `BACKGROUND_BLUR`.
          */
         public BACKGROUND_BLUR_DEGREE  blur_degree;
+
+        /** Boolean settings for muting or looping the video virtual background.
+         *
+         * @note These parameters take effect only when the type of the custom background image is `BACKGROUND_VIDEO`.
+         */
+        public bool loop, mute;
     };
 
     /** The reason why the virtual background is not successfully enabled or the message that confirms success.

@@ -4481,7 +4481,7 @@ namespace agora_gaming_rtc
          */
         public int enableVirtualBackground(bool enabled, VirtualBackgroundSource source)
         {
-            return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
+            return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree, source.mute, source.loop);
         }
 
         /** Enables blur for the virtual background being used by clientManager.

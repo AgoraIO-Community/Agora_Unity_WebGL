@@ -24,15 +24,18 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     public bool joinedChannel = false;
 	public bool virtualBackgroundOn = false;
 	public bool useToken= false;
+    public bool mute, loop;
     public VirtualBackgroundSource myVirtualBackground;
 	public BACKGROUND_SOURCE_TYPE background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
+    public BACKGROUND_BLUR_DEGREE blur;
 
     private List<uint> remoteClientIDs;
 
     public int blurDegrees = 2;
 	public int hexIndex = 0;
-    public uint[] hexColors = {0xFF0000, 0xFFFF00, 0xFFFFFF};
-	public Dropdown hexDropdown;
+    public string[] hexColors = {"#FF1111", "#11FF11", "#1111FF"};
+	public Dropdown hexDropdown, blurDropdown;
+    public Toggle muteToggle, loopToggle;
     public string imgFile = "bedroom.png";
     public string videoFile = "outside.mp4";
 	
@@ -50,12 +53,17 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         //channel setup.
         remoteClientIDs = new List<uint>();
         myVirtualBackground = new VirtualBackgroundSource();
-		hexColors[0] = 0xFF0000;
-		hexColors[1] = 0xF0F000;
-		hexColors[2] = 0x0000FF;
+		hexColors[0] = "FF1111";
+		hexColors[1] = "11FF11";
+		hexColors[2] = "1111FF";
 		myVirtualBackground.background_source_type = background;
 		myVirtualBackground.blur_degree = (BACKGROUND_BLUR_DEGREE)blurDegrees;
-		myVirtualBackground.color = hexColors[hexIndex];
+        blurDropdown.value = blurDegrees;
+        uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
+        myVirtualBackground.color = colorValue;
+        blurDropdown.onValueChanged.AddListener(delegate{updateBlur();});
+        hexDropdown.onValueChanged.AddListener(delegate{updateHex();});
+		uint.TryParse(hexColors[hexIndex], out myVirtualBackground.color);
 		myVirtualBackground.source = imgFile;
 		Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
     }
@@ -85,6 +93,9 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
 			enableButton.interactable = true;
 			disableButton.interactable = false;
 		}
+
+        mute = muteToggle.isOn;
+        loop = loopToggle.isOn;
 
 		if(background == BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR){
 			blurButton.interactable = false;
@@ -156,10 +167,13 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     }
 
 	public void updateHex(){
-		Debug.Log(hexDropdown.value);
 		hexIndex = hexDropdown.value;
-		Debug.Log(hexIndex);
 		setVirtualBackgroundColor();
+	}
+
+    public void updateBlur(){
+		blur = (BACKGROUND_BLUR_DEGREE)blurDropdown.value+1;
+		setVirtualBackgroundBlur();
 	}
 
     public void enableVirtualBackground(bool onoff)
@@ -175,7 +189,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     {
 		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
 		myVirtualBackground.background_source_type = background;
-		myVirtualBackground.blur_degree = BACKGROUND_BLUR_DEGREE.BLUR_DEGREE_HIGH;
+		myVirtualBackground.blur_degree = blur;
         mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
@@ -183,7 +197,8 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     {
 		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR;
 		myVirtualBackground.background_source_type = background;
-		myVirtualBackground.color = hexColors[hexIndex];
+		uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
+        myVirtualBackground.color = colorValue;
         mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
@@ -200,6 +215,8 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
 		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO;
 		myVirtualBackground.background_source_type = background;
 		myVirtualBackground.source = videoFile;
+        myVirtualBackground.mute = mute;
+        myVirtualBackground.loop = loop;
         mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 

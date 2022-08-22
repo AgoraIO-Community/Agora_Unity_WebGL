@@ -2012,10 +2012,13 @@ muteLocalAudioStream_channel: function(channel, mute) {
   createDataStream_channel: function(channel, syncWithAudio, ordered) {},
 
   enableDeepLearningDenoise: function() {},
-  enableVirtualBackground: function(enabled, backgroundSourceType, color, source, blurDegree) {
-    console.log(color);
+  enableVirtualBackground: function(enabled, backgroundSourceType, color, source, blurDegree, mute, loop) {
+    enable = enabled == 0 ? false : true;
+    muted = mute == 0 ? false : true;
+    looped = loop == 0 ? false : true;
     source_Str = Pointer_stringify(source);
-    initVirtualBackground(enabled, backgroundSourceType, color, source_Str, blurDegree);
+    console.log("muted and looping", muted, looped);
+    initVirtualBackground(enable, backgroundSourceType, color, source_Str, blurDegree, muted, looped);
   },
   setVirtualBackgroundBlur: function(blurDegree) {
     setVirtualBackgroundBlur(blurDegree);
