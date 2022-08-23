@@ -36,7 +36,7 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
     public string[] hexColors = {"#FF1111", "#11FF11", "#1111FF"};
 	public Dropdown hexDropdown, blurDropdown;
     public Toggle muteToggle, loopToggle;
-    public string imgFile = "bedroom.png";
+    public string imgFile = "bedroom.jpg";
     public string videoFile = "outside.mp4";
 	
     public AgoraChannel channel;
@@ -54,9 +54,6 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         //channel setup.
         remoteClientIDs = new List<uint>();
         myVirtualBackground = new VirtualBackgroundSource();
-		hexColors[0] = "FF1111";
-		hexColors[1] = "11FF11";
-		hexColors[2] = "1111FF";
 		myVirtualBackground.background_source_type = background;
 		myVirtualBackground.blur_degree = (BACKGROUND_BLUR_DEGREE)blurDegrees;
         blurDropdown.value = blurDegrees;
@@ -64,7 +61,6 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         myVirtualBackground.color = colorValue;
         blurDropdown.onValueChanged.AddListener(delegate{updateBlur();});
         hexDropdown.onValueChanged.AddListener(delegate{updateHex();});
-		uint.TryParse(hexColors[hexIndex], out myVirtualBackground.color);
 		myVirtualBackground.source = imgFile;
 		Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
     }
@@ -127,22 +123,6 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
         return (APP_ID.Length > 10);
     }
-
-	public void setBackgroundBlur(){
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
-	}
-
-	public void setBackgroundColor(){
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR;
-	}
-
-	public void setBackgroundImage(){
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
-	}
-
-	public void setBackgroundVideo(){
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO;
-	}
 
     void InitEngine()
     {
@@ -232,7 +212,7 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
             {
                 TOKEN_1 = token;
                 Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
+                channel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true, true, true));
             });
         }
         joinedChannel = true;

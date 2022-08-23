@@ -2039,7 +2039,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
     muted = mute == 0 ? false : true;
     looped = loop == 0 ? false : true;
     source_Str = Pointer_stringify(source);
-    initVirtualBackground_MC();
+    initVirtualBackground_MC(enabled, backgroundSourceType, color, source_Str, blurDegree, mute, loop);
   },
   setVirtualBackgroundBlur_MC: function(blurDegree) {
     setVirtualBackgroundBlur_MC(blurDegree);

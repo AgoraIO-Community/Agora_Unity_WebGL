@@ -2302,7 +2302,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1348336710}
-        m_MethodName: setBackgroundColor
+        m_MethodName: setVirtualBackgroundColor
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -3359,7 +3359,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421b2472e3ef7e145bfbef131f01e8c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: d2c9420f5ea0498abd30eabac50b33ed
+  APP_ID: 
   TOKEN_1: 
   CHANNEL_NAME_1: unity3d
   TOKEN_2: 
@@ -3382,9 +3382,9 @@ MonoBehaviour:
   blurDegrees: 2
   hexIndex: 0
   hexColors:
-  - '#FF1111'
-  - '#11FF11'
-  - '#1111FF'
+  - FF1111
+  - 11FF11
+  - 1111FF
   hexDropdown: {fileID: 2097859348}
   blurDropdown: {fileID: 311557006}
   muteToggle: {fileID: 231672356}
