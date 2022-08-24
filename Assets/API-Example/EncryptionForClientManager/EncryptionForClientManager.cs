@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
@@ -25,6 +26,8 @@ public class EncryptionForClientManager : MonoBehaviour
 
     public ENCRYPTION_MODE ENCRYPTION_MODE = ENCRYPTION_MODE.AES_128_GCM2;
 
+    public Dropdown stateDropdown, typeDropdown;
+
     // Use this for initialization
     void Start()
     {
@@ -34,13 +37,7 @@ public class EncryptionForClientManager : MonoBehaviour
         }
 
         InitEngine();
-        
-        //channel setup.
-        updateScreenShareNew();
-    }
-
-    public void updateScreenShareNew()
-    {
+        SetEncryption();
         
     }
 
@@ -60,12 +57,13 @@ public class EncryptionForClientManager : MonoBehaviour
 
     byte[] GetEncryptionSaltFromServer()
     {
-        return Encoding.UTF8.GetBytes("EncryptionKdfSaltInBase64Strings");
+        return Encoding.UTF8.GetBytes(SALT);
     }
     
-    public bool SetEncryption()
+    public void SetEncryption()
     {
-
+        ENCRYPTION_MODE = (ENCRYPTION_MODE)typeDropdown.value+1;
+        bool state = stateDropdown.value == 0 ? true : false;
         var config = new EncryptionConfig
         {
             encryptionMode = ENCRYPTION_MODE,
@@ -74,11 +72,11 @@ public class EncryptionForClientManager : MonoBehaviour
         };
         logger.UpdateLog(string.Format("encryption mode: {0} secret: {1} salt: {2}", ENCRYPTION_MODE, SECRET, config.encryptionKdfSalt.ToString()));
         try {
-        mRtcEngine.EnableEncryption(true, config);
-        } catch {
-            return false;
+        mRtcEngine.EnableEncryption(state, config);
+        } catch (Exception e){
+            Debug.Log(e);
         }
-        return true;
+        
     }
     
 
@@ -126,7 +124,6 @@ public class EncryptionForClientManager : MonoBehaviour
 
     public void JoinChannel()
     {
-        SetEncryption();
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
@@ -298,8 +295,8 @@ public class EncryptionForClientManager : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+        float xPos = UnityEngine.Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
+        float yPos = UnityEngine.Random.Range(Offset, Screen.height / 2f - Offset);
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
@@ -315,7 +312,7 @@ public class EncryptionForClientManager : MonoBehaviour
         GameObject go = GameObject.Find(objName);
         if (!ReferenceEquals(go, null))
         {
-            Object.Destroy(go);
+            UnityEngine.Object.Destroy(go);
         }
     }
 }

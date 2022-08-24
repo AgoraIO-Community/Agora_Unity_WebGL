@@ -924,11 +924,11 @@ class AgoraChannel {
       if (encryptionMode == 1) {
         modestr = "aes-128-xts";
       } else if (encryptionMode == 2) {
-        modestr = "aes-256-ecb";
+        modestr = "aes-128-ecb";
       } else if (encryptionMode == 3) {
-        modestr = "aes-128-xts";
+        modestr = "aes-256-xts";
       } else if (encryptionMode == 4) {
-        modestr = "sm4-256-ecb";
+        modestr = "sm4-128-ecb";
       } else if (encryptionMode == 5) {
         modestr = "aes-128-gcm";
       } else if (encryptionMode == 6) {
