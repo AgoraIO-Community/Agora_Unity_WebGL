@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
@@ -19,12 +20,15 @@ public class EncryptionForMultichannel : MonoBehaviour
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
-    private AgoraChannel channel1 = null;
 
     public string SECRET = "";
     public string SALT = "";
 
     public ENCRYPTION_MODE ENCRYPTION_MODE = ENCRYPTION_MODE.AES_128_GCM2;
+
+    public Dropdown stateDropdown, typeDropdown;
+
+    public AgoraChannel channel;
 
     // Use this for initialization
     void Start()
@@ -35,13 +39,7 @@ public class EncryptionForMultichannel : MonoBehaviour
         }
 
         InitEngine();
-        
-        //channel setup.
-        updateScreenShareNew();
-    }
-
-    public void updateScreenShareNew()
-    {
+        SetEncryption();
         
     }
 
@@ -61,12 +59,13 @@ public class EncryptionForMultichannel : MonoBehaviour
 
     byte[] GetEncryptionSaltFromServer()
     {
-        return Encoding.UTF8.GetBytes("EncryptionKdfSaltInBase64Strings");
+        return Encoding.UTF8.GetBytes(SALT);
     }
     
-    public bool SetEncryption()
+    public void SetEncryption()
     {
-
+        ENCRYPTION_MODE = (ENCRYPTION_MODE)typeDropdown.value+1;
+        bool state = stateDropdown.value == 0 ? true : false;
         var config = new EncryptionConfig
         {
             encryptionMode = ENCRYPTION_MODE,
@@ -75,11 +74,11 @@ public class EncryptionForMultichannel : MonoBehaviour
         };
         logger.UpdateLog(string.Format("encryption mode: {0} secret: {1} salt: {2}", ENCRYPTION_MODE, SECRET, config.encryptionKdfSalt.ToString()));
         try {
-        channel1.EnableEncryption(true, config);
-        } catch {
-            return false;
+        mRtcEngine.EnableEncryption(state, config);
+        } catch (Exception e){
+            Debug.Log(e);
         }
-        return true;
+        
     }
     
 
@@ -110,34 +109,33 @@ public class EncryptionForMultichannel : MonoBehaviour
     {
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-        mRtcEngine.SetMultiChannelWant(true);
+
         mRtcEngine.EnableAudio();
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        mRtcEngine.SetMultiChannelWant(true);
 
-        channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
-        channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        channel = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
+        channel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        channel1.ChannelOnJoinChannelSuccess = ChannelOnJoinChannelSuccessHandler;
-        channel1.ChannelOnLeaveChannel = ChannelOnLeaveChannelHandler;
-        channel1.ChannelOnUserJoined = ChannelOnUserJoinedHandler;
-        channel1.ChannelOnError = ChannelOnErrorHandler;
-        channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
-        channel1.ChannelOnScreenShareStarted = screenShareStartedHandler_MC;
-        channel1.ChannelOnScreenShareStopped = screenShareStoppedHandler_MC;
-        channel1.ChannelOnScreenShareCanceled = screenShareCanceledHandler_MC;
+        channel.ChannelOnJoinChannelSuccess = EngineOnJoinChannelSuccessHandler;
+        channel.ChannelOnUserJoined = EngineOnUserJoinedHandler;
+        channel.ChannelOnUserOffLine = EngineOnUserOfflineHandler;
+        channel.ChannelOnLeaveChannel = EngineOnLeaveChannelHandler;
+        channel.ChannelOnScreenShareStarted += screenShareStartedHandler_MC;
+        channel.ChannelOnScreenShareStopped += screenShareStoppedHandler_MC;
+        channel.ChannelOnScreenShareCanceled += screenShareCanceledHandler_MC;
     }
 
     public void JoinChannel()
     {
-        SetEncryption();
-        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        channel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
     public void LeaveChannel()
     {
-        channel1.LeaveChannel();
+        channel.LeaveChannel();
     }
 
     void OnApplicationQuit()
@@ -187,33 +185,33 @@ public class EncryptionForMultichannel : MonoBehaviour
             elapsed));
     }
 
-    void ChannelOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
+    void EngineOnJoinChannelSuccessHandler(string channelID, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
         logger.UpdateLog(string.Format("ChannelOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
             elapsed));
-        makeVideoView(CHANNEL_NAME_1, 0);
+        makeVideoView(channelID, 0);
     }
 
-    void ChannelOnLeaveChannelHandler(string channelId, RtcStats rtcStats)
+    void EngineOnLeaveChannelHandler(string channelID, RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", channelId));
+        logger.UpdateLog(string.Format("ChannelOnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
     }
 
-    void ChannelOnErrorHandler(string channelId, int err, string message)
+    void EngineOnErrorHandler(string channelID, int err, string message)
     {
-        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", channelId, err,
+        logger.UpdateLog(string.Format("Channel2OnErrorHandler channelId: {0}, err: {1}, message: {2}", channelID, err,
             message));
     }
 
-    void ChannelOnUserJoinedHandler(string channelId, uint uid, int elapsed)
+    void EngineOnUserJoinedHandler(string channelID, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("Channel1OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
             uid, elapsed));
-        makeVideoView(CHANNEL_NAME_1, uid);
+        makeVideoView(channelID, uid);
     }
 
-    void ChannelOnUserOfflineHandler(string channelId, uint uid, USER_OFFLINE_REASON reason)
+    void EngineOnUserOfflineHandler(string channelID, uint uid, USER_OFFLINE_REASON reason)
     {
         logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(CHANNEL_NAME_1, uid);
@@ -261,10 +259,9 @@ public class EncryptionForMultichannel : MonoBehaviour
         if (!ReferenceEquals(videoSurface, null))
         {
             // configure videoSurface
-            videoSurface.SetForMultiChannelUser(channelId, uid);
+            videoSurface.SetForUser(uid);
             videoSurface.SetEnable(true);
             videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-
             // make the object draggable
             videoSurface.gameObject.AddComponent<UIElementDragger>();
 
@@ -304,8 +301,8 @@ public class EncryptionForMultichannel : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+        float xPos = UnityEngine.Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
+        float yPos = UnityEngine.Random.Range(Offset, Screen.height / 2f - Offset);
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
@@ -321,7 +318,7 @@ public class EncryptionForMultichannel : MonoBehaviour
         GameObject go = GameObject.Find(objName);
         if (!ReferenceEquals(go, null))
         {
-            Object.Destroy(go);
+            UnityEngine.Object.Destroy(go);
         }
     }
 }
