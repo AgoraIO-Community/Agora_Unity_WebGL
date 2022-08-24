@@ -44,7 +44,8 @@ class ClientManager {
   manipulate() {}
 
   setVideoEnabled(enabled) {
-    this.videoEnabled = enabled;
+    // not publishing if it is Live Audience
+    this.videoEnabled = this.client_role == 2 ? false : enabled;
     this.videoSubscribing = enabled;
   }
 
