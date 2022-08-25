@@ -118,7 +118,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
 
     public void enableVirtualBackground(){
-        mRtcEngine.initVirtualBackground_MC(true, myVirtualBackground);
+        channel1.enableVirtualBackground(true, myVirtualBackground);
     }
 
     public void setVirtualBackgroundBlur(){

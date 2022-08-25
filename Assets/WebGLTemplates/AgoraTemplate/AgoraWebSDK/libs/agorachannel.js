@@ -28,6 +28,7 @@ class AgoraChannel {
     this.liveTranscodingConfig = null;
     this.volumeIndicationOn = false;
     this.tempLocalTracks = null;
+    this.virtualBackgroundProcessor = null;
     this.userJoinedHandle = this.handleUserJoined.bind(this);
     this.userPublishedHandle = this.handleUserPublished.bind(this);
     this.userUnpublishedHandle = this.handleUserUnpublished.bind(this);
@@ -960,9 +961,12 @@ class AgoraChannel {
   }
 
 
-  async enableVirtualBackground(){
-    console.log("agora channel working");
-    getProcessorInstance(localTracks.videoTrack);
+  async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
+    if(this.virtualBackgroundProcessor == null && localTracks.videoTrack){
+     this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
+    } else if(this.virtualBackgroundProcessor != null) {
+     this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
+    }
   }
   
   async setVirtualBackgroundBlur(blurDegree){
