@@ -118,9 +118,7 @@ public class AgoraClientManager : MonoBehaviour
     }
 
     public void updateScreenShareID(){
-        int parseValue;
-        int.TryParse(screenShareIDInput.text, out parseValue);
-        SCREEN_SHARE_ID = (uint)parseValue;
+        uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
     }
 
     //for muting/unmuting local video through IRtcEngine class.

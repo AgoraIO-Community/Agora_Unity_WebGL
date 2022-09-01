@@ -90,9 +90,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
     public void updateScreenShareID(){
-        int parseValue;
-        int.TryParse(screenShareIDInput.text, out parseValue);
-        SCREEN_SHARE_ID = (uint)parseValue;
+        uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
     }
 
     bool CheckAppId()
