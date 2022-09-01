@@ -14,7 +14,11 @@ public class AgoraClientManager : MonoBehaviour
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
     [SerializeField] private string TOKEN_2 = "";
+
+    [SerializeField] private uint SCREEN_SHARE_ID = 1000;
+
     public Text logText;
+    public Text screenShareIDText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
@@ -40,6 +44,8 @@ public class AgoraClientManager : MonoBehaviour
     public string imgFile = "seinfeld.png";
     public string videoFile = "movie.mp4";
 
+    public InputField screenShareIDInput;
+
     // Use this for initialization
     void Start()
     {
@@ -57,6 +63,8 @@ public class AgoraClientManager : MonoBehaviour
         updateScreenShareNew();
         remoteClientIDs = new List<uint>();
         myVirtualBackground = new VirtualBackgroundSource();
+        Debug.Log(SCREEN_SHARE_ID.ToString());
+        screenShareIDInput.text = SCREEN_SHARE_ID.ToString();
     }
 
     public void updateScreenShareNew()
@@ -109,7 +117,9 @@ public class AgoraClientManager : MonoBehaviour
         return (APP_ID.Length > 10);
     }
 
-
+    public void updateScreenShareID(){
+        uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
+    }
 
     //for muting/unmuting local video through IRtcEngine class.
     public void setLocalMuteVideo()
@@ -142,7 +152,8 @@ public class AgoraClientManager : MonoBehaviour
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare(bool audioEnabled)
     {
-        mRtcEngine.StartNewScreenCaptureForWeb(1000, audioEnabled);
+        updateScreenShareID();
+        mRtcEngine.StartNewScreenCaptureForWeb(SCREEN_SHARE_ID, audioEnabled);
     }
 
     public void stopNewScreenShare()
@@ -278,6 +289,7 @@ public class AgoraClientManager : MonoBehaviour
     {
         logger.UpdateLog(string.Format("onScreenShareStoppedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
             elapsed));
+
     }
 
     void screenShareCanceledHandler_MC(string channelId, uint uid, int elapsed)
