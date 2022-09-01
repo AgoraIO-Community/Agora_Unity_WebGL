@@ -896,7 +896,12 @@ class ClientManager {
   async startNewScreenCaptureForWeb(uid, enableAudio) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
-    var screenShareUID = uid + this.client.uid;
+    var screenShareUID = uid;
+    if(remoteUsers[screenShareUID] !== undefined){
+      screenShareTrack = null;
+      event_manager.raiseHandleUserError(-1, "Screen Share Client Error: ID is already in use!");
+      return;
+    }
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       AgoraRTC.createScreenVideoTrack({
@@ -909,13 +914,8 @@ class ClientManager {
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.tempLocalTracks = screenShareTrack;
-        if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
-          screenShareTrack = null;
-          event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
-          return;
-        }
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
-          this.screenShareClient.publish(this.tempLocalTracks);
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+          this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
       } else {
@@ -924,12 +924,7 @@ class ClientManager {
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.tempLocalTracks = screenShareTrack;
         this.enableLoopbackAudio = enableAudio;
-        if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
-          screenShareTrack = null;
-          event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
-          return;
-        }
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });

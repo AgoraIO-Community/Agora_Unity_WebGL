@@ -18,6 +18,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
     [SerializeField] private string CHANNEL_NAME_3 = "YOUR_CHANNEL_NAME_3";
     [SerializeField] private string CHANNEL_NAME_4 = "YOUR_CHANNEL_NAME_4";
+    [SerializeField] private int SCREEN_SHARE_ID = 1000;
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
@@ -43,6 +44,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
     public string hexColor = "#00FF00";
     public string imgFile = "seinfeld.jpg";
     public string videoFile = "movie.mp4";
+    public InputField screenShareIDInput; 
+    
 
     // Use this for initialization
     void Start()
@@ -58,6 +61,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
+        screenShareIDInput.text = SCREEN_SHARE_ID.ToString();
     }
 
     public void updateScreenShareNew()
@@ -85,6 +89,10 @@ public class AgoraMultiChannel2 : MonoBehaviour
         useScreenShareAudio = loopbackAudioToggle.isOn;
     }
 
+    public void updateScreenShareID(){
+        int.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
+    }
+
     bool CheckAppId()
     {
         logger = new Logger(logText);
@@ -97,7 +105,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     //for starting/stopping a new screen share through AgoraChannel class.
     public void startNewScreenShare2(bool audioEnabled)
     {
-        channel1.StartNewScreenCaptureForWeb2(1000, audioEnabled);
+        channel1.StartNewScreenCaptureForWeb2((uint)SCREEN_SHARE_ID, audioEnabled);
     }
 
     public void stopNewScreenShare2()
