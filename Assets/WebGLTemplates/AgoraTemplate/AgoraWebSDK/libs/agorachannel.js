@@ -348,7 +348,7 @@ class AgoraChannel {
           localTracks[i].close();
           this.client.unpublish(localTracks[i])
         }
-        localTracks = undefined;
+        //localTracks = undefined;
       }
 
       
