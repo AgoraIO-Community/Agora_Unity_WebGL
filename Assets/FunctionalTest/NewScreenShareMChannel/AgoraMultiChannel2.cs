@@ -18,7 +18,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
     [SerializeField] private string CHANNEL_NAME_3 = "YOUR_CHANNEL_NAME_3";
     [SerializeField] private string CHANNEL_NAME_4 = "YOUR_CHANNEL_NAME_4";
-    [SerializeField] private int SCREEN_SHARE_ID = 1000;
+    [SerializeField] private uint SCREEN_SHARE_ID = 1000;
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
@@ -90,7 +90,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
     public void updateScreenShareID(){
-        int.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
+        int parseValue;
+        int.TryParse(screenShareIDInput.text, out parseValue);
+        SCREEN_SHARE_ID = (uint)parseValue;
     }
 
     bool CheckAppId()
@@ -105,7 +107,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
     //for starting/stopping a new screen share through AgoraChannel class.
     public void startNewScreenShare2(bool audioEnabled)
     {
-        channel1.StartNewScreenCaptureForWeb2((uint)SCREEN_SHARE_ID, audioEnabled);
+        updateScreenShareID();
+        channel1.StartNewScreenCaptureForWeb2(SCREEN_SHARE_ID, audioEnabled);
     }
 
     public void stopNewScreenShare2()
@@ -143,28 +146,6 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
      public void setVirtualBackgroundVideo(){
         mRtcEngine.SetVirtualBackgroundVideo_MC(videoFile);
-    }
-
-    //for starting/stopping a new screen share through IRtcEngine class.
-    public void startNewScreenShare()
-    {
-        mRtcEngine.StartNewScreenCaptureForWeb(1000, false);
-    }
-
-    public void stopNewScreenShare()
-    {
-        mRtcEngine.StopNewScreenCaptureForWeb();
-    }
-
-    //for starting/stopping a screen share through IRtcEngine class.
-    public void startScreenShare()
-    {
-        mRtcEngine.StartScreenCaptureForWeb(false);
-    }
-
-    public void stopScreenShare()
-    {
-        mRtcEngine.StopScreenCapture();
     }
 
     void InitEngine()

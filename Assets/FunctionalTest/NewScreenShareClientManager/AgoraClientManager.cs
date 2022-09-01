@@ -15,7 +15,7 @@ public class AgoraClientManager : MonoBehaviour
 
     [SerializeField] private string TOKEN_2 = "";
 
-    [SerializeField] private int SCREEN_SHARE_ID = 1000;
+    [SerializeField] private uint SCREEN_SHARE_ID = 1000;
 
     public Text logText;
     public Text screenShareIDText;
@@ -118,8 +118,9 @@ public class AgoraClientManager : MonoBehaviour
     }
 
     public void updateScreenShareID(){
-        int.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
-        Debug.Log(SCREEN_SHARE_ID);
+        int parseValue;
+        int.TryParse(screenShareIDInput.text, out parseValue);
+        SCREEN_SHARE_ID = (uint)parseValue;
     }
 
     //for muting/unmuting local video through IRtcEngine class.
@@ -153,7 +154,8 @@ public class AgoraClientManager : MonoBehaviour
     //for starting/stopping a new screen share through IRtcEngine class.
     public void startNewScreenShare(bool audioEnabled)
     {
-        mRtcEngine.StartNewScreenCaptureForWeb(1000, audioEnabled);
+        updateScreenShareID();
+        mRtcEngine.StartNewScreenCaptureForWeb(SCREEN_SHARE_ID, audioEnabled);
     }
 
     public void stopNewScreenShare()
