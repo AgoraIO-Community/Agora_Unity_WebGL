@@ -30,7 +30,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
     public Slider azimuthSlider, elevationSlider, distanceSlider,
     orientationSlider, attenuationSlider;
 
-    public Toggle blurToggle, airAbsorbToggle;
+    public Toggle blurToggle, airAbsorbToggle, enableToggle;
 
     public Text azimuthText, elevationText, 
     distanceText, orientationText, attenuationText;
@@ -136,7 +136,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
         
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         joinedChannel = true;
-        mRtcEngine.EnableSpatialAudio(true);
+        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
     }
 
     public void LeaveChannel()
@@ -205,3 +205,4 @@ public class SpatialAudioForClientManager : MonoBehaviour
     }
     
 }
+

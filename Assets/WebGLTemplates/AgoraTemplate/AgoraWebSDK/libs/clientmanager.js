@@ -196,6 +196,11 @@ class ClientManager {
   // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
     const id = user.uid;
+    console.log("user joined", this.spatialAudioProcessor, this.spatialAudioProcessor !== null && this.spatialAudio.enabled === true);
+    if(this.spatialAudioProcessor !== null && this.spatialAudio.enabled === true){
+      console.log("remote spatial audio processor", this.spatialAudio);
+      this.enableSpatialAudio(true, user);
+    }
   }
 
   handleUserUnpublished(user, mediaType) {
@@ -216,6 +221,10 @@ class ClientManager {
       rcode = 1; //DROPPED
     } else if (reason === "BecomeAudience") {
       rcode = 2;
+    }
+
+    if(this.spatialAudio !== undefined){
+      this.spatialAudio.localPlayerStop(user);
     }
 
     event_manager.raiseOnRemoteUserLeaved(strUID, rcode); 
@@ -295,7 +304,11 @@ class ClientManager {
       }
     }
 
+    console.log(this.spatialAudio);
 
+    if(this.spatialAudio !== undefined){
+      this.spatialAudio.localPlayerStopAll();
+    }
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
@@ -1050,12 +1063,10 @@ class ClientManager {
 async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
   if(this.virtualBackgroundProcessor == null && localTracks.videoTrack){
     console.log("getting virtual background", localTracks.videoTrack);
-   this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
-    console.log("got virtual background", this.virtualBackgroundProcessor);
+    this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
   } else if(this.virtualBackgroundProcessor != null) {
     console.log("setting virtual background", localTracks.videoTrack);
-   this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
-   console.log("set virtual background", this.virtualBackgroundProcessor);
+    this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
   }
 }
 
@@ -1134,17 +1145,25 @@ async setVirtualBackgroundVideo(videoFile){
     }, 2000);
   }
 
-  async enableSpatialAudio(enabled){
-    this.client.processor = window.joinSpatialAudioChannel(enabled, this.options.appid, this.options.token, this.options.channel);
+  async enableSpatialAudio(enabled, client = this.client){
+    console.log("is our client? ", client.uid === this.client.uid);
+    this.spatialAudio = window.createSpatialAudioManager();
+    if(client.uid === this.client.uid){
+      console.log(this.spatialAudio);
+      await this.spatialAudio.getLocalSpatialAudioProcessor(client, this.spatialAudio.localPlayerSound[0], enabled);
+    } else {
+      await this.spatialAudio.getRemoteSpatialAudioProcessor(client, this.spatialAudio.remoteUsersSound[0], enabled);
+      console.log("is remote client", this.spatialAudio.localPlayProcessors);
+    }
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
-    window.updateSpatialAzimuth(azimuth);
-    window.updateSpatialElevation(elevation);
-    window.updateSpatialDistance(distance);
-    window.updateSpatialOrientation(orientation);
-    window.updateSpatialAttenuation(attenuation);
-    window.updateSpatialBlur(blur);
-    window.updateSpatialAirAbsorb(airAbsorb);
+     this.spatialAudio.updateSpatialAzimuth(azimuth);
+     this.spatialAudio.updateSpatialElevation(elevation);
+     this.spatialAudio.updateSpatialDistance(distance);
+     this.spatialAudio.updateSpatialOrientation(orientation);
+     this.spatialAudio.updateSpatialAttenuation(attenuation);
+     this.spatialAudio.updateSpatialBlur(blur);
+     this.spatialAudio.updateSpatialAirAbsorb(airAbsorb);
   }
 }
