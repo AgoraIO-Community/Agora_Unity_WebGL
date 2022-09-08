@@ -196,8 +196,8 @@ class ClientManager {
   // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
     const id = user.uid;
-    console.log("user joined", this.spatialAudioProcessor, this.spatialAudioProcessor !== null && this.spatialAudio.enabled === true);
-    if(this.spatialAudioProcessor !== null && this.spatialAudio.enabled === true){
+    console.log("user joined", this.spatialAudio.processor, this.spatialAudio.enabled);
+    if(this.spatialAudio.processor !== null && this.spatialAudio.enabled === true){
       console.log("remote spatial audio processor", this.spatialAudio);
       this.enableSpatialAudio(true, user);
     }
@@ -308,6 +308,9 @@ class ClientManager {
 
     if(this.spatialAudio !== undefined){
       this.spatialAudio.localPlayerStopAll();
+
+      
+      console.log(this.spatialAudio.localPlayTracks);
     }
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
@@ -465,6 +468,10 @@ class ClientManager {
         event_manager.raiseHandleUserError(error.code, error.message);
       }),
     ])
+
+    if(this.spatialAudio !== undefined){
+      
+    }
 
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
@@ -1146,14 +1153,15 @@ async setVirtualBackgroundVideo(videoFile){
   }
 
   async enableSpatialAudio(enabled, client = this.client){
-    console.log("is our client? ", client.uid === this.client.uid);
-    this.spatialAudio = window.createSpatialAudioManager();
+    if(this.spatialAudio == undefined){
+      this.spatialAudio = window.createSpatialAudioManager();
+    }
     if(client.uid === this.client.uid){
-      console.log(this.spatialAudio);
-      await this.spatialAudio.getLocalSpatialAudioProcessor(client, this.spatialAudio.localPlayerSound[0], enabled);
+       await this.spatialAudio.getLocalSpatialAudioProcessor(client, this.spatialAudio.localPlayerSound[0], enabled);
+       console.log(this.spatialAudioProcessor);
     } else {
       await this.spatialAudio.getRemoteSpatialAudioProcessor(client, this.spatialAudio.remoteUsersSound[0], enabled);
-      console.log("is remote client", this.spatialAudio.localPlayProcessors);
+      console.log("is remote client", this.spatialAudio);
     }
   }
 

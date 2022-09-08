@@ -79,21 +79,24 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
             joinButton.interactable = false;
             leaveButton.interactable = true;
-            appIdText.interactable = false;
-            tokenText.interactable = false;
-            channelNameText.interactable = false;
+            if(enableToggle.isOn){
+                appIdText.interactable = false;
+                tokenText.interactable = false;
+                channelNameText.interactable = false;
 
-            azimuthSlider.interactable = true;
-            elevationSlider.interactable = true;
-            distanceSlider.interactable = true;
-            orientationSlider.interactable = true;
-            attenuationSlider.interactable = true;
-            blurToggle.interactable = true;
-            airAbsorbToggle.interactable = true;
+                azimuthSlider.interactable = true;
+                elevationSlider.interactable = true;
+                distanceSlider.interactable = true;
+                orientationSlider.interactable = true;
+                attenuationSlider.interactable = true;
+                blurToggle.interactable = true;
+                airAbsorbToggle.interactable = true;
+            }
         } else {
 
             joinButton.interactable = true;
             leaveButton.interactable = false;
+
             appIdText.interactable = true;
             tokenText.interactable = true;
             channelNameText.interactable = true;

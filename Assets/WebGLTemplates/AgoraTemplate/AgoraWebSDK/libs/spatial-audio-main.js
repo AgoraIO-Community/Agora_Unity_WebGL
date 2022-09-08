@@ -34,7 +34,7 @@ this.localPlayTracks = [],
 
 this.localPlayProcessors = [],
 
-this.enabled = true;
+this.enabled = undefined;
 
 this.processor = null;
 
@@ -48,23 +48,29 @@ this.processor = null;
 async getLocalSpatialAudioProcessor(client, soundSrc, enabled) {
       setTimeout(async () => {
         try {
+          this.localPlayTracks.forEach(t => {
+            if(t.uid === client.uid){
+              return;
+            }
+          });
           var isOn = enabled == 1 ? true : false;
-          let track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc });
-          client.spatialAudioTrack = track;
-          track.startProcessAudioBuffer({ loop: true });
-          this.processor = await extension.createProcessor();
-          client.spatialAudioProcessor = this.processor;
-          this.localPlayProcessors.push(this.processor);
-          await track.pipe(this.processor).pipe(track.processorDestination);
-          track.uid = client.uid;
-          if (isOn === true) {
-            track.play();
-          } else {
-            track.stop();
-          }
-          await this.localPlayTracks.push(track);
-          this.enabled = isOn;
-          return this.processor;
+              let track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc });
+              client.spatialAudioTrack = track;
+              track.startProcessAudioBuffer({ loop: true });
+              this.processor = await extension.createProcessor();
+              client.spatialAudioProcessor = this.processor;
+              this.localPlayProcessors.push(this.processor);
+              await track.pipe(this.processor).pipe(track.processorDestination);
+              track.uid = client.uid;
+              if (isOn === true) {
+                track.play();
+              } else {
+                track.stop();
+              }
+              await this.localPlayTracks.push(track);
+              this.enabled = isOn;
+              console.log("enabling local player", this.enabled);
+              return this.processor;
         } catch (error) {
           console.error(`${this.processor} with buffersource track ${soundSrc} play fail: ${error}`);
         }
@@ -75,7 +81,20 @@ async getLocalSpatialAudioProcessor(client, soundSrc, enabled) {
 async getRemoteSpatialAudioProcessor(client, soundSrc, enabled) {
   setTimeout(async () => {
     try {
-      var isOn = enabled == 1 ? true : false;
+      
+      this.localPlayTracks.forEach(t => {
+        console.log(t.uid, client.uid);
+        if(t.uid === client.uid){
+          return;
+        }
+      });
+      var isOn = undefined;
+      if(enabled !== true && enabled !== false){
+        isOn = enabled == 1 ? true : false;
+      } else { 
+        isOn = enabled;
+      }
+
       var track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc });
       client.spatialAudioTrack = track;
       track.startProcessAudioBuffer({ loop: true });
@@ -84,12 +103,14 @@ async getRemoteSpatialAudioProcessor(client, soundSrc, enabled) {
       await track.pipe(processor).pipe(track.processorDestination);
       await this.localPlayProcessors.push(processor);
       track.uid = client.uid;
+      console.log("playing remote track", isOn, this.enabled);
       if (isOn === true && this.enabled === true) {
         track.play();
       } else {
         track.stop();
       }
       await this.localPlayTracks.push(track);
+      console.log(this.localPlayTracks);
       return processor;
     } catch (error) {
       console.error(`${processor} with buffersource track ${soundSrc} play fail: ${error}`);
