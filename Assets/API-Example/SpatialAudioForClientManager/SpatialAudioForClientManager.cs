@@ -37,6 +37,9 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     public InputField appIdText, tokenText, channelNameText;
 
+    [SerializeField]
+    private List<uint> remoteClientIDs;
+
     void Awake(){
         
     }
@@ -56,7 +59,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
         appIdText.text = APP_ID;
         tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
-        
+        remoteClientIDs = new List<uint>();
     }
 
     public void updateAppID(){
@@ -84,6 +87,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
                 tokenText.interactable = false;
                 channelNameText.interactable = false;
 
+            if(remoteClientIDs.Count > 0){
                 azimuthSlider.interactable = true;
                 elevationSlider.interactable = true;
                 distanceSlider.interactable = true;
@@ -91,6 +95,8 @@ public class SpatialAudioForClientManager : MonoBehaviour
                 attenuationSlider.interactable = true;
                 blurToggle.interactable = true;
                 airAbsorbToggle.interactable = true;
+            }
+
             }
         } else {
 
@@ -108,6 +114,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
             attenuationSlider.interactable = false;
             blurToggle.interactable = false;
             airAbsorbToggle.interactable = false;
+
         }
 
         azimuthText.text = azimuthSlider.value.ToString("F2");
@@ -129,9 +136,19 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
         mRtcEngine.EnableAudio();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        mRtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
+        mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
 
-        
+    }
 
+    void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
+    {
+        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
+    }
+
+    void EngineOnUserJoinedHandler(uint uid, int elapsed)
+    {
+        remoteClientIDs.Add(uid);
     }
 
     public void JoinChannel()
@@ -139,7 +156,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
         
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         joinedChannel = true;
-        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
+        
     }
 
     public void LeaveChannel()
@@ -204,7 +221,10 @@ public class SpatialAudioForClientManager : MonoBehaviour
     }
 
     public void updateSpatialAudio(){
-        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        if(remoteClientIDs.Count > 0){
+            Debug.Log(remoteClientIDs[0]);
+            mRtcEngine.SetRemoteUserSpatialAudioParams(""+remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        }
     }
     
 }

@@ -196,9 +196,11 @@ class ClientManager {
   // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
     const id = user.uid;
-    console.log("user joined", this.spatialAudio.processor, this.spatialAudio.enabled);
-    if(this.spatialAudio.processor !== null && this.spatialAudio.enabled === true){
-      console.log("remote spatial audio processor", this.spatialAudio);
+    console.log("remote user id" , id);
+    if(this.spatialAudio !== undefined && this.spatialAudio.processor !== null && this.spatialAudio.enabled === true){
+      this.enableSpatialAudio(true, user);
+    } else {
+      this.enableSpatialAudio(true);
       this.enableSpatialAudio(true, user);
     }
   }
@@ -308,9 +310,6 @@ class ClientManager {
 
     if(this.spatialAudio !== undefined){
       this.spatialAudio.localPlayerStopAll();
-
-      
-      console.log(this.spatialAudio.localPlayTracks);
     }
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
@@ -468,10 +467,6 @@ class ClientManager {
         event_manager.raiseHandleUserError(error.code, error.message);
       }),
     ])
-
-    if(this.spatialAudio !== undefined){
-      
-    }
 
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
@@ -1153,25 +1148,25 @@ async setVirtualBackgroundVideo(videoFile){
   }
 
   async enableSpatialAudio(enabled, client = this.client){
-    if(this.spatialAudio == undefined){
-      this.spatialAudio = window.createSpatialAudioManager();
-    }
+    
     if(client.uid === this.client.uid){
-       await this.spatialAudio.getLocalSpatialAudioProcessor(client, this.spatialAudio.localPlayerSound[0], enabled);
-       console.log(this.spatialAudioProcessor);
+      if(this.spatialAudio == undefined){
+        console.log("creating spatial audio manager");
+        this.spatialAudio = window.createSpatialAudioManager();
+      }
     } else {
-      await this.spatialAudio.getRemoteSpatialAudioProcessor(client, this.spatialAudio.remoteUsersSound[0], enabled);
-      console.log("is remote client", this.spatialAudio);
+      console.log("remote client with spatial audio enabled");
+      await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
     }
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
-     this.spatialAudio.updateSpatialAzimuth(azimuth);
-     this.spatialAudio.updateSpatialElevation(elevation);
-     this.spatialAudio.updateSpatialDistance(distance);
-     this.spatialAudio.updateSpatialOrientation(orientation);
-     this.spatialAudio.updateSpatialAttenuation(attenuation);
-     this.spatialAudio.updateSpatialBlur(blur);
-     this.spatialAudio.updateSpatialAirAbsorb(airAbsorb);
+     this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
+     this.spatialAudio.updateSpatialElevation(uid, elevation);
+     this.spatialAudio.updateSpatialDistance(uid, distance);
+     this.spatialAudio.updateSpatialOrientation(uid, orientation);
+     this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
+     this.spatialAudio.updateSpatialBlur(uid, blur);
+     this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
   }
 }
