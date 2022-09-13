@@ -117,7 +117,8 @@ public class AgoraClientManager : MonoBehaviour
         return (APP_ID.Length > 10);
     }
 
-    public void updateScreenShareID(){
+    public void updateScreenShareID()
+    {
         uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
     }
 
@@ -229,7 +230,7 @@ public class AgoraClientManager : MonoBehaviour
         else
         {
             TokenClient.Instance.RtcEngine = mRtcEngine;
-            TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
+            TokenClient.Instance.GetRtcToken(CHANNEL_NAME_1, 0, (token) =>
             {
                 TOKEN_1 = token;
                 Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);

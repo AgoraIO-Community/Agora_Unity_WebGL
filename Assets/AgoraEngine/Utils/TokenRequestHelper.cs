@@ -14,6 +14,12 @@ namespace agora_utilities
     }
 
     [Serializable]
+    public class RtcToken
+    {
+        public string rtcToken;
+    }
+
+    [Serializable]
     public class TokenServerPingResult
     {
         public string message;
@@ -29,13 +35,48 @@ namespace agora_utilities
     public static class TokenRequestHelper
     {
         const string RteTokenEndPointFormatter = "{0}/rte/{1}/{2}/uid/{3}/?expiry={4}";
+        const string RtcTokenEndPointFormatter = "{0}/rtc/{1}/{2}/uid/{3}/?expiry={4}";
         const string ServerPingRequest = "{0}/ping";
 
-        public static IEnumerator FetchToken(
-            string url, string channel, uint userId, string role, int expireSecs, Action<TokenObject> callback = null
+        /// <summary>
+        ///    Fetch both RTC and RTM tokens
+        /// </summary>
+        /// <param name="url">Token Server URL</param>
+        /// <param name="channel">channel name</param>
+        /// <param name="userId">uid</param>
+        /// <param name="role">Publisher or Subscriber</param>
+        /// <param name="expireSecs">time to expire in seconds</param>
+        /// <param name="callback"></param>
+        /// <returns></returns>
+        public static IEnumerator FetchTokens(
+            string url, string channel, uint userId, string role, int expireSecs, Action<string, string> callback = null
         )
         {
             var query_url = string.Format(RteTokenEndPointFormatter, url, channel, role, userId, expireSecs);
+            Debug.Log("Query:" + query_url);
+            UnityWebRequest request = UnityWebRequest.Get(query_url);
+
+            yield return request.SendWebRequest();
+
+            if (request.isNetworkError || request.isHttpError)
+            {
+                Debug.Log(request.error);
+                callback(null, null);
+                yield break;
+            }
+
+            TokenObject tokenInfo = JsonUtility.FromJson<TokenObject>(
+              request.downloadHandler.text
+            );
+
+            callback(tokenInfo.rtcToken, tokenInfo.rtmToken);
+        }
+
+        public static IEnumerator FetchRtcToken(
+    string url, string channel, uint userId, string role, int expireSecs, Action<string> callback = null
+)
+        {
+            var query_url = string.Format(RtcTokenEndPointFormatter, url, channel, role, userId, expireSecs);
             Debug.Log("Query:" + query_url);
             UnityWebRequest request = UnityWebRequest.Get(query_url);
 
@@ -48,11 +89,11 @@ namespace agora_utilities
                 yield break;
             }
 
-            TokenObject tokenInfo = JsonUtility.FromJson<TokenObject>(
+            RtcToken tokenInfo = JsonUtility.FromJson<RtcToken>(
               request.downloadHandler.text
             );
 
-            callback(tokenInfo);
+            callback(tokenInfo.rtcToken);
         }
 
         public static IEnumerator PingServer(string url, Action<TokenServerPingResult> callback)

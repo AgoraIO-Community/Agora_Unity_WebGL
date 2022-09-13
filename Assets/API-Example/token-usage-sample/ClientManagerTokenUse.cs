@@ -129,7 +129,7 @@ public class ClientManagerTokenUse : MonoBehaviour
         {
             /* <--------------------- Token client usage here ------------------------> */
             TokenClient.Instance.SetRtcEngineInstance(mRtcEngine);
-            TokenClient.Instance.GetTokens(CHANNEL_NAME, 0, (token, _) =>
+            TokenClient.Instance.GetRtcToken(CHANNEL_NAME, 0, (token) =>
             {
                 RTC_TOKEN = token;
                 Debug.Log(gameObject.name + " Got rtc token:" + RTC_TOKEN);

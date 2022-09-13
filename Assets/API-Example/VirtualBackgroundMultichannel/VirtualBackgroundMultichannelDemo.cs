@@ -22,23 +22,23 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 
     public Button joinButton, leaveButton, blurButton, colorButton, imageButton, videoButton, enableButton, disableButton;
     public bool joinedChannel = false;
-	public bool virtualBackgroundOn = false;
-	public bool useToken= false;
+    public bool virtualBackgroundOn = false;
+    public bool useToken = false;
     public bool mute, loop;
     public VirtualBackgroundSource myVirtualBackground;
-	public BACKGROUND_SOURCE_TYPE background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
+    public BACKGROUND_SOURCE_TYPE background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
     public BACKGROUND_BLUR_DEGREE blur;
 
     private List<uint> remoteClientIDs;
 
     public int blurDegrees = 2;
-	public int hexIndex = 0;
-    public string[] hexColors = {"#FF1111", "#11FF11", "#1111FF"};
-	public Dropdown hexDropdown, blurDropdown;
+    public int hexIndex = 0;
+    public string[] hexColors = { "#FF1111", "#11FF11", "#1111FF" };
+    public Dropdown hexDropdown, blurDropdown;
     public Toggle muteToggle, loopToggle;
     public string imgFile = "bedroom.jpg";
     public string videoFile = "outside.mp4";
-	
+
     public AgoraChannel channel;
 
     // Use this for initialization
@@ -54,15 +54,15 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         //channel setup.
         remoteClientIDs = new List<uint>();
         myVirtualBackground = new VirtualBackgroundSource();
-		myVirtualBackground.background_source_type = background;
-		myVirtualBackground.blur_degree = (BACKGROUND_BLUR_DEGREE)blurDegrees;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.blur_degree = (BACKGROUND_BLUR_DEGREE)blurDegrees;
         blurDropdown.value = blurDegrees;
         uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
         myVirtualBackground.color = colorValue;
-        blurDropdown.onValueChanged.AddListener(delegate{updateBlur();});
-        hexDropdown.onValueChanged.AddListener(delegate{updateHex();});
-		myVirtualBackground.source = imgFile;
-		Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
+        blurDropdown.onValueChanged.AddListener(delegate { updateBlur(); });
+        hexDropdown.onValueChanged.AddListener(delegate { updateHex(); });
+        myVirtualBackground.source = imgFile;
+        Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
     }
 
 
@@ -82,39 +82,48 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
             leaveButton.interactable = false;
         }
 
-		if(virtualBackgroundOn)
-		{
-			enableButton.interactable = false;
-			disableButton.interactable = true;
-		} else {
-			enableButton.interactable = true;
-			disableButton.interactable = false;
-		}
+        if (virtualBackgroundOn)
+        {
+            enableButton.interactable = false;
+            disableButton.interactable = true;
+        }
+        else
+        {
+            enableButton.interactable = true;
+            disableButton.interactable = false;
+        }
 
         mute = muteToggle.isOn;
         loop = loopToggle.isOn;
 
-		if(background == BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR){
-			blurButton.interactable = false;
-			colorButton.interactable = true;
-			imageButton.interactable = true;
-			videoButton.interactable = true;
-		} else if(background == BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR){
-			blurButton.interactable = true;
-			colorButton.interactable = false;
-			imageButton.interactable = true;
-			videoButton.interactable = true;
-		} else if(background == BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG){
-			blurButton.interactable = true;
-			colorButton.interactable = true;
-			imageButton.interactable = false;
-			videoButton.interactable = true;
-		} else if(background == BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO){
-			blurButton.interactable = true;
-			colorButton.interactable = true;
-			imageButton.interactable = true;
-			videoButton.interactable = false;
-		}
+        if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR)
+        {
+            blurButton.interactable = false;
+            colorButton.interactable = true;
+            imageButton.interactable = true;
+            videoButton.interactable = true;
+        }
+        else if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR)
+        {
+            blurButton.interactable = true;
+            colorButton.interactable = false;
+            imageButton.interactable = true;
+            videoButton.interactable = true;
+        }
+        else if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG)
+        {
+            blurButton.interactable = true;
+            colorButton.interactable = true;
+            imageButton.interactable = false;
+            videoButton.interactable = true;
+        }
+        else if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO)
+        {
+            blurButton.interactable = true;
+            colorButton.interactable = true;
+            imageButton.interactable = true;
+            videoButton.interactable = false;
+        }
     }
 
     bool CheckAppId()
@@ -145,55 +154,58 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 
     }
 
-	public void updateHex(){
-		hexIndex = hexDropdown.value;
-		setVirtualBackgroundColor();
-	}
+    public void updateHex()
+    {
+        hexIndex = hexDropdown.value;
+        setVirtualBackgroundColor();
+    }
 
-    public void updateBlur(){
-		blur = (BACKGROUND_BLUR_DEGREE)blurDropdown.value+1;
-		setVirtualBackgroundBlur();
-	}
+    public void updateBlur()
+    {
+        blur = (BACKGROUND_BLUR_DEGREE)blurDropdown.value + 1;
+        setVirtualBackgroundBlur();
+    }
 
     public void enableVirtualBackground(bool onoff)
     {
-		if(onoff){
-			myVirtualBackground.background_source_type = background;
-		}
-		virtualBackgroundOn = onoff;
+        if (onoff)
+        {
+            myVirtualBackground.background_source_type = background;
+        }
+        virtualBackgroundOn = onoff;
         channel.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundBlur()
     {
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
-		myVirtualBackground.background_source_type = background;
-		myVirtualBackground.blur_degree = blur;
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.blur_degree = blur;
         channel.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundColor()
     {
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR;
-		myVirtualBackground.background_source_type = background;
-		uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR;
+        myVirtualBackground.background_source_type = background;
+        uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
         myVirtualBackground.color = colorValue;
         channel.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundImage()
     {
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
-		myVirtualBackground.background_source_type = background;
-		myVirtualBackground.source = imgFile;
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.source = imgFile;
         channel.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundVideo()
     {
-		background = BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO;
-		myVirtualBackground.background_source_type = background;
-		myVirtualBackground.source = videoFile;
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.source = videoFile;
         myVirtualBackground.mute = mute;
         myVirtualBackground.loop = loop;
         channel.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
@@ -208,7 +220,7 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         else
         {
             TokenClient.Instance.RtcEngine = mRtcEngine;
-            TokenClient.Instance.GetTokens(CHANNEL_NAME_1, 0, (token, rtm) =>
+            TokenClient.Instance.GetRtcToken(CHANNEL_NAME_1, 0, (token) =>
             {
                 TOKEN_1 = token;
                 Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);

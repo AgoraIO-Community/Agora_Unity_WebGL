@@ -17,6 +17,7 @@ namespace agora_utilities
     }
 
     public delegate void OnTokensReceivedHandler(string rtcToken, string rtmToken);
+    public delegate void OnSingleTokenReceivedHandler(string token);
 
 
     /// <summary>
@@ -128,7 +129,7 @@ namespace agora_utilities
             mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
         }
 
-        public void GetTokens(string channelName, uint uid, OnTokensReceivedHandler handleTokens)
+        public void GetRtcToken(string channelName, uint uid, OnSingleTokenReceivedHandler handleToken)
         {
             if (!serverURL.StartsWith("http"))
             {
@@ -136,26 +137,26 @@ namespace agora_utilities
             }
             else
             {
-                StartCoroutine(CoGetTokens(channelName, uid, handleTokens));
+                StartCoroutine(CoGetTokens(channelName, uid, handleToken));
             }
         }
 
-        IEnumerator CoGetTokens(string channelName, uint uid, OnTokensReceivedHandler handleTokens)
+        IEnumerator CoGetTokens(string channelName, uint uid, OnSingleTokenReceivedHandler handleToken)
         {
             yield return new WaitUntil(() => IsInitialized);
 
             ChannelName = channelName;
             UID = uid;
 
-            StartCoroutine(TokenRequestHelper.FetchToken(
+            StartCoroutine(TokenRequestHelper.FetchRtcToken(
                         url: serverURL,
                         channel: channelName,
                         userId: uid,
                         role: clientType.ToString(),
                         expireSecs: ExpirationSecs,
-                        callback: (tokens) =>
+                        callback: (token) =>
                         {
-                            handleTokens(tokens.rtcToken, tokens.rtmToken);
+                            handleToken(token);
                         }
                         ));
         }
@@ -163,13 +164,13 @@ namespace agora_utilities
         void OnTokenPrivilegeWillExpireHandler(string token)
         {
             Debug.Log("Token will expire soon, renewing .... ");
-            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
+            StartCoroutine(TokenRequestHelper.FetchRtcToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
                         (myToken) =>
                         {
 
                             if (mRtcEngine != null)
                             {
-                                mRtcEngine.RenewToken(myToken.rtcToken);
+                                mRtcEngine.RenewToken(myToken);
                             }
                         }));
         }
@@ -183,13 +184,13 @@ namespace agora_utilities
         void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token)
         {
             Debug.Log("Channel Token will expire soon for " + channelId + ", renewing .... ");
-            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, channelId, UID, clientType.ToString(), ExpirationSecs,
+            StartCoroutine(TokenRequestHelper.FetchRtcToken(serverURL, channelId, UID, clientType.ToString(), ExpirationSecs,
                         (myToken) =>
                         {
                             var channel = AgoraChannel.GetChannel(channelId);
                             if (channel != null)
                             {
-                                channel.RenewToken(myToken.rtcToken);
+                                channel.RenewToken(myToken);
                             }
                         }));
         }
@@ -203,13 +204,13 @@ namespace agora_utilities
         {
             ClientType client_type = newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER ? ClientType.publisher : ClientType.subscriber;
             Debug.Log("Channel Token will change for " + channelId + ", renewing from " + oldRole + " to " + newRole);
-            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, channelId, UID, client_type.ToString(), ExpirationSecs,
+            StartCoroutine(TokenRequestHelper.FetchRtcToken(serverURL, channelId, UID, client_type.ToString(), ExpirationSecs,
                         (token) =>
                         {
                             var channel = AgoraChannel.GetChannel(channelId);
                             if (channel != null)
                             {
-                                channel.RenewToken(token.rtcToken);
+                                channel.RenewToken(token);
                             }
                         }));
         }
@@ -218,15 +219,14 @@ namespace agora_utilities
         {
             clientType = newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER ? ClientType.publisher : ClientType.subscriber;
             Debug.Log("Client Token will change for " + ChannelName + ", renewing from " + oldRole + " to " + newRole);
-            StartCoroutine(TokenRequestHelper.FetchToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
+            StartCoroutine(TokenRequestHelper.FetchRtcToken(serverURL, ChannelName, UID, clientType.ToString(), ExpirationSecs,
                         this.RenewToken)); ;
         }
 
-        void RenewToken(TokenObject token)
+        void RenewToken(string token)
         {
 
-            if (RtcEngine != null) RtcEngine.RenewToken(token.rtcToken);
-            //if (RtmClient != null) RtmClient.RenewToken(token.rtmToken);
+            if (RtcEngine != null) RtcEngine.RenewToken(token);
             Debug.Log("RTC token has been renewed.");
         }
 

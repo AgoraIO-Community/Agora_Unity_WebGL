@@ -263,7 +263,7 @@ public class AgoraChannelPanel : MonoBehaviour
         if (UseToken)
         {
             TokenClient.Instance.SetMultiChannelInstance(mChannel);
-            TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
+            TokenClient.Instance.GetRtcToken(channelName, ClientUID, (token) =>
             {
                 channelToken = token;
                 Debug.Log(gameObject.name + " Got rtc token:" + token);

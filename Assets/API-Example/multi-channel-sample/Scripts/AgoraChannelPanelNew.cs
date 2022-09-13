@@ -156,7 +156,7 @@ public class AgoraChannelPanelNew : MonoBehaviour
         SetButtonsState(false, false, false, false);
         if (UseToken)
         {
-            TokenClient.Instance.GetTokens(channelName, ClientUID, (token, rtm) =>
+            TokenClient.Instance.GetRtcToken(channelName, ClientUID, (token) =>
         {
             channelToken = token;
             Debug.Log(gameObject.name + " Got rtc token:" + token);
