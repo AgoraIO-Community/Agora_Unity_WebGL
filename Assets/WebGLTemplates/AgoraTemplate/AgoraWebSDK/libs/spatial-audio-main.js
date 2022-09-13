@@ -67,17 +67,22 @@ async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
 async getRemoteUserSpatialAudioProcessor(client, enabled) {
   setTimeout(async () => {
     try {
-      var isOn = undefined;
-      if(enabled !== true && enabled !== false){
-        isOn = enabled == 1 ? true : false;
+      
+      var processor = undefined;
+      
+      
+      if(enabled === true){
+        processor = await extension.createProcessor();
+        await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
+        this.localPlayProcessors[client.uid] = processor;
+        this.localPlayTracks[client.uid] = client.audioTrack;
+        console.log(this.localPlayTracks);
       } else { 
-        isOn = enabled;
+        //disable spatial audio code would go here.
       }
-      console.log("client uid ", client.uid);
-      var processor = await extension.createProcessor();
-      await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
-      this.localPlayProcessors[client.uid] = processor;
-      this.localPlayTracks[client.uid] = client.audioTrack;
+
+      this.enabled = enabled;
+      
     } catch (error) {
       console.error(`${processor} with microphone track play fail: ${error}`);
     }
@@ -87,18 +92,22 @@ async getRemoteUserSpatialAudioProcessor(client, enabled) {
 }
 
 async localPlayerStop(user) {
+    if(this.localPlayTracks[user.uid] !== undefined){
       await this.localPlayTracks[user.uid].stop();
       delete this.localPlayTracks[user.uid];
+    }
 }
 
 async localPlayerStopAll() {
-  this.localPlayTracks.forEach(e => {
-    e.stop();
-    e.close();
-  });
+  if (Object.keys(this.localPlayTracks).length > 0) {
+    Object.values(this.localPlayTracks).forEach(e => {
+      e.stop();
+      e.close();
+    });
 
-  this.localPlayTracks = {};
-  this.localPlayProcessors = {};
+    this.localPlayTracks = {};
+    this.localPlayProcessors = {};
+  }
 }
 
 updateSpatialAzimuth(uid, value) {

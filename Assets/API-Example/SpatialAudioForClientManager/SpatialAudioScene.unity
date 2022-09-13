@@ -4208,7 +4208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97e6ba23288256a40ad0fe7d4e38f826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: d2c9420f5ea0498abd30eabac50b33ed
+  APP_ID: 
   TOKEN_1: 
   CHANNEL_NAME_1: unity3d
   joinButton: {fileID: 288453850}
@@ -4237,6 +4237,7 @@ MonoBehaviour:
   appIdText: {fileID: 652596163}
   tokenText: {fileID: 1356185541}
   channelNameText: {fileID: 539862102}
+  remoteClientIDs: 
 --- !u!114 &1348336706
 MonoBehaviour:
   m_ObjectHideFlags: 0
