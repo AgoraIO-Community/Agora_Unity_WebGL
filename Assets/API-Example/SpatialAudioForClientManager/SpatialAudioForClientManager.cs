@@ -54,7 +54,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
         InitEngine();
         
-        
+        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
         //channel setup.
         appIdText.text = APP_ID;
         tokenText.text = TOKEN_1;
@@ -143,7 +143,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
-        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
+        
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
@@ -222,7 +222,6 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     public void updateSpatialAudio(){
         if(remoteClientIDs.Count > 0){
-            Debug.Log(remoteClientIDs[0]);
             mRtcEngine.SetRemoteUserSpatialAudioParams(""+remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
         }
     }

@@ -199,11 +199,6 @@ class ClientManager {
     const id = user.uid;
     console.log("remote user id" , id);
 
-    if(this.spatialAudio === undefined){
-      this.spatialAudio = window.createSpatialAudioManager();
-    }
-
-
     if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
       this.enableSpatialAudio(true, user);
     }
@@ -1155,11 +1150,9 @@ async setVirtualBackgroundVideo(videoFile){
     
     if(client.uid === this.client.uid){
       if(this.spatialAudio == undefined){
-        console.log("creating spatial audio manager");
         this.spatialAudio = window.createSpatialAudioManager();
       }
     } else {
-      console.log("remote client with spatial audio enabled");
       await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
     }
   }
