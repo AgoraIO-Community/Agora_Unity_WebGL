@@ -34,7 +34,7 @@ this.localPlayTracks = {},
 
 this.localPlayProcessors = {},
 
-this.enabled = undefined;
+this.enabled = true;
 
 this.processor = null;
 
@@ -50,15 +50,15 @@ async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
         try {
         console.log(client);
         var isOn = enabled == 1 ? true : false;
-        this.processor = await extension.createProcessor();
-        client.spatialAudioProcessor = this.processor;
-        this.localPlayProcessors.push(this.processor);
-        await client.audioTrack.pipe(this.processor).pipe(client.audioTrack.processorDestination);
+        var processor = await extension.createProcessor();
+        client.spatialAudioProcessor = processor;
+        this.localPlayProcessors.push(processor);
+        await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
         client.audioTrack.uid = client.uid;
         this.enabled = isOn;
-        return this.processor;
+        return processor;
         } catch (error) {
-          console.error(`${this.processor} with microphone track play fail: ${error}`);
+          console.error(`${processor} with microphone track play fail: ${error}`);
         }
       }, 1000);
 
@@ -76,7 +76,6 @@ async getRemoteUserSpatialAudioProcessor(client, enabled) {
         await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
         this.localPlayProcessors[client.uid] = processor;
         this.localPlayTracks[client.uid] = client.audioTrack;
-        console.log(this.localPlayTracks);
       } else { 
         //disable spatial audio code would go here.
       }

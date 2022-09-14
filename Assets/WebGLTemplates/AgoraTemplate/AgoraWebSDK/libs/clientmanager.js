@@ -21,6 +21,7 @@ class ClientManager {
     this.tempLocalTracks = null;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
+    this.spatialAudio = undefined;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -197,10 +198,13 @@ class ClientManager {
   handleUserJoined(user, mediaType) {
     const id = user.uid;
     console.log("remote user id" , id);
-    if(this.spatialAudio !== undefined && this.spatialAudio.processor !== null && this.spatialAudio.enabled === true){
-      this.enableSpatialAudio(true, user);
-    } else {
-      this.enableSpatialAudio(true);
+
+    if(this.spatialAudio === undefined){
+      this.spatialAudio = window.createSpatialAudioManager();
+    }
+
+
+    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
       this.enableSpatialAudio(true, user);
     }
   }
