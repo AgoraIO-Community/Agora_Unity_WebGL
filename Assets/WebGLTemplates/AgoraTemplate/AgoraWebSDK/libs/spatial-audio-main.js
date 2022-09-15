@@ -93,6 +93,7 @@ async getRemoteUserSpatialAudioProcessor(client, enabled) {
 async localPlayerStop(user) {
     if(this.localPlayTracks[user.uid] !== undefined){
       await this.localPlayTracks[user.uid].stop();
+      await this.localPlayTracks[user.uid].close();
       delete this.localPlayTracks[user.uid];
     }
 }
@@ -110,40 +111,52 @@ async localPlayerStopAll() {
 }
 
 updateSpatialAzimuth(uid, value) {
-  console.log(this.localPlayProcessors);
-  console.log(uid);
   this.spatialAudioSettings.azimuth = value;
-  this.localPlayProcessors[uid].updateSpatialAzimuth(value);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialAzimuth(value);
+  }
 }
 
 updateSpatialElevation(uid, value) {
   this.spatialAudioSettings.elevation = value;
-  this.localPlayProcessors[uid].updateSpatialElevation(value);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialElevation(value);
+  }
 }
 
 updateSpatialDistance(uid, value) {
   this.spatialAudioSettings.distance = value;
-  this.localPlayProcessors[uid].updateSpatialDistance(value);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialDistance(value);
+  }
 }
 
 updateSpatialOrientation(uid, value) {
   this.spatialAudioSettings.orientation = value;
-  this.localPlayProcessors[uid].updateSpatialOrientation(value);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialOrientation(value);
+  }
 }
 
 updateSpatialAttenuation(uid, value) {
   this.spatialAudioSettings.attenuation = value;
-  this.localPlayProcessors[uid].updateSpatialAttenuation(value);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialAttenuation(value);
+  }
 }
 
 updateSpatialBlur(uid, checked) {
   this.spatialAudioSettings.blur = checked;
-  this.localPlayProcessors[uid].updateSpatialBlur(checked);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialBlur(checked);
+  }
 }
 
 updateSpatialAirAbsorb(uid, checked) {
   this.spatialAudioSettings.airAbsorb = checked;
-  this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
+  }
 }
 
 }
