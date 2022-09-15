@@ -21,6 +21,7 @@ class ClientManager {
     this.tempLocalTracks = null;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
+    this.spatialAudio = undefined;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -196,6 +197,11 @@ class ClientManager {
   // see the event raised in subscribe_remoteuser instead
   handleUserJoined(user, mediaType) {
     const id = user.uid;
+    console.log("remote user id" , id);
+
+    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
+      this.enableSpatialAudio(true, user);
+    }
   }
 
   handleUserUnpublished(user, mediaType) {
@@ -216,6 +222,10 @@ class ClientManager {
       rcode = 1; //DROPPED
     } else if (reason === "BecomeAudience") {
       rcode = 2;
+    }
+
+    if(this.spatialAudio !== undefined){
+      this.spatialAudio.localPlayerStop(user);
     }
 
     event_manager.raiseOnRemoteUserLeaved(strUID, rcode); 
@@ -295,7 +305,11 @@ class ClientManager {
       }
     }
 
+    console.log(this.spatialAudio);
 
+    if(this.spatialAudio !== undefined){
+      this.spatialAudio.localPlayerStopAll();
+    }
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
@@ -1045,12 +1059,10 @@ class ClientManager {
 async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
   if(this.virtualBackgroundProcessor == null && localTracks.videoTrack){
     console.log("getting virtual background", localTracks.videoTrack);
-   this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
-    console.log("got virtual background", this.virtualBackgroundProcessor);
+    this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
   } else if(this.virtualBackgroundProcessor != null) {
     console.log("setting virtual background", localTracks.videoTrack);
-   this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
-   console.log("set virtual background", this.virtualBackgroundProcessor);
+    this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
   }
 }
 
@@ -1129,17 +1141,24 @@ async setVirtualBackgroundVideo(videoFile){
     }, 2000);
   }
 
-  async enableSpatialAudio(enabled){
-    this.client.processor = window.joinSpatialAudioChannel(enabled, this.options.appid, this.options.token, this.options.channel);
+  async enableSpatialAudio(enabled, client = this.client){
+    
+    if(client.uid === this.client.uid){
+      if(this.spatialAudio == undefined){
+        this.spatialAudio = window.createSpatialAudioManager();
+      }
+    } else {
+      await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
+    }
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
-    window.updateSpatialAzimuth(azimuth);
-    window.updateSpatialElevation(elevation);
-    window.updateSpatialDistance(distance);
-    window.updateSpatialOrientation(orientation);
-    window.updateSpatialAttenuation(attenuation);
-    window.updateSpatialBlur(blur);
-    window.updateSpatialAirAbsorb(airAbsorb);
+     this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
+     this.spatialAudio.updateSpatialElevation(uid, elevation);
+     this.spatialAudio.updateSpatialDistance(uid, distance);
+     this.spatialAudio.updateSpatialOrientation(uid, orientation);
+     this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
+     this.spatialAudio.updateSpatialBlur(uid, blur);
+     this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
   }
 }

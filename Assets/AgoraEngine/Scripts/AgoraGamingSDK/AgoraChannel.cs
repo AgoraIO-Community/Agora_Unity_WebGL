@@ -1855,7 +1855,7 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb)
+        public int SetRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;

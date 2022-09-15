@@ -1,20 +1,17 @@
 import { SpatialAudioExtension} from "./index.esm.js";
 
-let processor = null;
-let extension = null;
-let track = null;
+
 
 AgoraRTC.setLogLevel(1);
-extension = new SpatialAudioExtension();
+let extension = new SpatialAudioExtension();
 AgoraRTC.registerExtensions([extension]);
 
-var options = {
-  appid: null,
-  channel: null,
-  uid: null,
-  token: null
-};
-var spatialAudioSettings = {
+
+class spatialAudioManager {
+
+constructor(){
+
+this.spatialAudioSettings = {
   azimuth: 0,
   elevation: 0,
   distance: 1,
@@ -23,281 +20,149 @@ var spatialAudioSettings = {
   blur: false,
   airAbsorb: false
 };
-var client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
-var localUserTrack = {
-  videoTrack: null,
-  audioTrack: null
-};
 
-var remoteUsers = [];
-var remoteUsersSound = [
-  // './AgoraWebSDK/libs/resources/1.mp3',
-  // './AgoraWebSDK/libs/resources/2.mp3',
-  './AgoraWebSDK/libs/resources/3.mp3',
-  // './AgoraWebSDK/libs/resources/4.mp3',
+
+this.remoteUsersSound = [
+  './AgoraWebSDK/libs/resources/3.mp3'
 ];
 
-var localPlayerSound = [
-  // './AgoraWebSDK/libs/resources/1.mp3',
-  './AgoraWebSDK/libs/resources/2.mp3',
-  // './AgoraWebSDK/libs/resources/3.mp3',
-  // './AgoraWebSDK/libs/resources/4.mp3',
+this.localPlayerSound = [
+  './AgoraWebSDK/libs/resources/2.mp3'
 ];
-var localPlayTracks = [];
-var localPlayProcessors = [];
 
-window.joinSpatialAudioChannel = joinSpatialAudioChannel;
-window.getSpatialAudioProcessorInstance = getSpatialAudioProcessorInstance;
-window.localSpatialAudioPlayerStop = localPlayerStop;
-window.updateSpatialAzimuth = updateSpatialAzimuth;
-window.updateSpatialElevation = updateSpatialElevation;
-window.updateSpatialDistance = updateSpatialDistance;
-window.updateSpatialOrientation = updateSpatialOrientation;
-window.updateSpatialAttenuation = updateSpatialAttenuation;
-window.updateSpatialBlur = updateSpatialBlur;
-window.updateSpatialAirAbsorb = updateSpatialAirAbsorb;
+this.localPlayTracks = {},
+
+this.localPlayProcessors = {},
+
+this.enabled = true;
+
+this.processor = null;
+
+
+}
 
 
 
 
-function getSpatialAudioProcessorInstance(enabled) {
-  if (enabled == true) {
-    for (let i = 0; i < localPlayerSound.length; i++) {
+
+async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
       setTimeout(async () => {
         try {
-          track = await AgoraRTC.createBufferSourceAudioTrack({ source: localPlayerSound[i] });
-          client.spatialAudioTrack = track;
-          track.startProcessAudioBuffer({ loop: true });
-          processor = extension.createProcessor();
-          localPlayProcessors.push(processor);
-          track.pipe(processor).pipe(track.processorDestination);
-          track.play();
+        console.log(client);
+        var isOn = enabled == 1 ? true : false;
+        var processor = await extension.createProcessor();
+        client.spatialAudioProcessor = processor;
+        this.localPlayProcessors.push(processor);
+        await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
+        client.audioTrack.uid = client.uid;
+        this.enabled = isOn;
+        return processor;
         } catch (error) {
-          console.error(`localPlayerSound[${i}] with buffersource track ${localPlayerSound[i]} play fail: ${error}`);
+          console.error(`${processor} with microphone track play fail: ${error}`);
         }
-      }, 500 * i);
-    }
-  }
-
-  return processor;
-}
-
-
-function localPlayerStop() {
-  for (let i = 0; i < localPlayTracks.length; i++) {
-    localPlayTracks[i].stop();
-  }
-  localPlayTracks = [];
-}
-
-async function join() {
-  client.on("user-joined", handleUserJoined);
-  client.on("user-left", handleUserLeft);
-
-  options.uid = await Promise.all([
-    client.join(options.appid, options.channel, options.token || null),
-  ]);
-
-  for(var i = 0; i < remoteUsers.length; i++){
-    if (remoteUsers[i].spatialAudioTrack !== undefined) {
-      remoteUsers[i].spatialAudioTrack.play();
-    }
-  }
-
-  console.log("remoteUsers", remoteUsers);
+      }, 1000);
 
 }
 
-async function handleUserJoined(user){
-    processor = extension.createProcessor();
-    user.processor = processor;
-    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: remoteUsersSound[0] });
-    track.startProcessAudioBuffer({ loop: true });
-    user.spatialAudioTrack = track;
-    remoteUsers.push(user);
-    if (track.processorDestination != user.processor) {
-      track.pipe(user.processor).pipe(track.processorDestination);
-    }
-    
-    track.play();
-  console.log("remoteUsers", remoteUsers);
-}
-
-async function leave() {
-  for (const trackName in localUserTrack) {
-    var track = localUserTrack[trackName];
-    if (track) {
-      track.stop();
-      track.close();
-      localUserTrack[trackName] = undefined;
-    }
-  }
-  for (var i = 0; i < remoteUsers.length; i++) {
-    if (remoteUsers[i].spatialAudioTrack !== undefined) {
-      remoteUsers[i].spatialAudioTrack.stop();
-    }
-
-  }
-  remoteUsers = [];
-  await client.spatialAudioTrack.stop();
-  await client.leave();
-
-  
-  
-  console.log("client leaves channel success");
-}
-
-function handleUserLeft(user) {
-  const id = user.uid;
-  for(var i = 0; i < remoteUsers.length; i++){
-    console.log("remoteUsers", remoteUsers);
-    client.unsubscribe(remoteUsers[i]);
-    remoteUsers[i] = null;
-  }
-}
-
-function  updateSpatialAzimuth(value) {
-  spatialAudioSettings.azimuth = value;
-  remoteUsers.forEach(e => {
-    console.log(e.processor);
-    if(e.processor != undefined){
-      e.processor.updateSpatialAzimuth(value);
-    }
-  });
-  localPlayProcessors.forEach(e => {
-    if(e != undefined){
-      e.updateSpatialAzimuth(value);
-    }
-  });
-}
-
-function updateSpatialElevation(value) {
-  spatialAudioSettings.elevation = value;
-  remoteUsers.forEach(e => {
-    if (e.processor != undefined) {
-      e.processor.updateSpatialElevation(value);
-    }
-  });
-  localPlayProcessors.forEach(e => {
-    if (e != undefined) {
-      e.updateSpatialElevation(value);
-    }
-  });
-}
-
-function updateSpatialDistance(value) {
-  spatialAudioSettings.distance = value;
-  remoteUsers.forEach(e => {
-    if (e.processor != undefined) {
-      e.processor.updateSpatialDistance(value);
-    }
-  });
-  localPlayProcessors.forEach(e => {
-    if (e != undefined) {
-      e.updateSpatialDistance(value);
-    }
-  });
-}
-
-function updateSpatialOrientation(value) {
-  spatialAudioSettings.orientation = value;
-  remoteUsers.forEach(e => {
-    if (e.processor != undefined) {
-      e.processor.updateSpatialOrientation(value);
-    }
-  });
-  localPlayProcessors.forEach(e => {
-    if (e != undefined) {
-      e.updateSpatialOrientation(value);
-    }
-  });
-}
-
-function updateSpatialAttenuation(value) {
-  spatialAudioSettings.attenuation = value;
-  remoteUsers.forEach(e => {
-    if (e.processor != undefined) {
-      e.processor.updateSpatialAttenuation(value);
-    }
-  });
-  localPlayProcessors.forEach(e => {
-    if (e != undefined) {
-      e.updateSpatialAttenuation(value);
-    }
-  });
-}
-
-function updateSpatialBlur(checked) {
-  spatialAudioSettings.blur = checked;
-  if (checked === true) {
-    remoteUsers.forEach(e => {
-      if (e.processor != undefined) {
-        e.processor.updateSpatialBlur(true);
+async getRemoteUserSpatialAudioProcessor(client, enabled) {
+  setTimeout(async () => {
+    try {
+      
+      var processor = undefined;
+      
+      
+      if(enabled === true){
+        processor = await extension.createProcessor();
+        await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
+        this.localPlayProcessors[client.uid] = processor;
+        this.localPlayTracks[client.uid] = client.audioTrack;
+      } else { 
+        //disable spatial audio code would go here.
       }
+
+      this.enabled = enabled;
+      
+    } catch (error) {
+      console.error(`${processor} with microphone track play fail: ${error}`);
+    }
+  }, 1000);
+
+
+}
+
+async localPlayerStop(user) {
+    if(this.localPlayTracks[user.uid] !== undefined){
+      await this.localPlayTracks[user.uid].stop();
+      await this.localPlayTracks[user.uid].close();
+      delete this.localPlayTracks[user.uid];
+    }
+}
+
+async localPlayerStopAll() {
+  if (Object.keys(this.localPlayTracks).length > 0) {
+    Object.values(this.localPlayTracks).forEach(e => {
+      e.stop();
+      e.close();
     });
-    localPlayProcessors.forEach(e => {
-      if (e != undefined) {
-        e.updateSpatialBlur(true);
-      }
-    });
-  } else {
-    remoteUsers.forEach(e => {
-      if (e.processor != undefined) {
-        e.processor.updateSpatialBlur(false);
-      }
-    });
-    localPlayProcessors.forEach(e => {
-      if (e != undefined) {
-        e.updateSpatialBlur(false);
-      }
-    });
+
+    this.localPlayTracks = {};
+    this.localPlayProcessors = {};
   }
 }
 
-function updateSpatialAirAbsorb(checked) {
-  spatialAudioSettings.airAbsorb = checked;
-  if (checked === true) {
-    remoteUsers.forEach(e => {
-      if (e.processor != undefined) {
-        e.processor.updateSpatialAirAbsorb(true);
-      }
-    });
-    localPlayProcessors.forEach(e => {
-      if (e != undefined) {
-        e.updateSpatialAirAbsorb(true);
-      }
-    });
-  } else {
-    remoteUsers.forEach(e => {
-      if (e.processor != undefined) {
-        e.processor.updateSpatialAirAbsorb(false);
-      }
-    });
-    localPlayProcessors.forEach(e => {
-      if (e != undefined) {
-        e.updateSpatialAirAbsorb(false);
-      }
-    });
+updateSpatialAzimuth(uid, value) {
+  this.spatialAudioSettings.azimuth = value;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialAzimuth(value);
   }
 }
 
-async function joinSpatialAudioChannel(enabled, appid, apptoken, appchannel){
-  const isEnabled = enabled == 0 ? false : true;
-  console.log("join spatial audio channel", enabled, isEnabled, appid, apptoken, appchannel);
-  if(isEnabled == true){
-    options.appid = appid;
-    options.token = apptoken;
-    options.channel = appchannel;
-    //await mockRemoteUserJoin();
-    
-    await join();
-
-    
-    processor = await getSpatialAudioProcessorInstance(enabled);
-    
-
-    return processor;
-  } else {
-    await leave();
+updateSpatialElevation(uid, value) {
+  this.spatialAudioSettings.elevation = value;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialElevation(value);
   }
 }
+
+updateSpatialDistance(uid, value) {
+  this.spatialAudioSettings.distance = value;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialDistance(value);
+  }
+}
+
+updateSpatialOrientation(uid, value) {
+  this.spatialAudioSettings.orientation = value;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialOrientation(value);
+  }
+}
+
+updateSpatialAttenuation(uid, value) {
+  this.spatialAudioSettings.attenuation = value;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialAttenuation(value);
+  }
+}
+
+updateSpatialBlur(uid, checked) {
+  this.spatialAudioSettings.blur = checked;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialBlur(checked);
+  }
+}
+
+updateSpatialAirAbsorb(uid, checked) {
+  this.spatialAudioSettings.airAbsorb = checked;
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
+  }
+}
+
+}
+
+function createSpatialAudioManager(){
+  return new spatialAudioManager();
+}
+
+window.createSpatialAudioManager = createSpatialAudioManager;
