@@ -1,9 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
-using agora_utilities;
+using System.Linq;
 
 public class SpatialAudioForClientManager : MonoBehaviour
 {
@@ -13,7 +12,6 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
-    private const float Offset = 100;
 
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
@@ -32,16 +30,20 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     public Toggle blurToggle, airAbsorbToggle, enableToggle;
 
-    public Text azimuthText, elevationText, 
+    public Text azimuthText, elevationText,
     distanceText, orientationText, attenuationText;
 
     public InputField appIdText, tokenText, channelNameText;
+    public Dropdown userDropdown;
 
     [SerializeField]
-    private List<uint> remoteClientIDs;
+    private List<uint> remoteClientIDs = new List<uint>();
 
-    void Awake(){
-        
+    Dictionary<uint, EffectParams> UserParams = new Dictionary<uint, EffectParams>();
+
+    void Awake()
+    {
+        UpdateDropDown();
     }
 
     // Use this for initialization
@@ -53,24 +55,27 @@ public class SpatialAudioForClientManager : MonoBehaviour
         }
 
         InitEngine();
-        
+
         mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
         //channel setup.
         appIdText.text = APP_ID;
         tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
-        remoteClientIDs = new List<uint>();
+        userDropdown.onValueChanged.AddListener(OnDropDownSelect);
     }
 
-    public void updateAppID(){
+    public void updateAppID()
+    {
         APP_ID = appIdText.text;
     }
 
-    public void updateToken(){
+    public void updateToken()
+    {
         TOKEN_1 = tokenText.text;
     }
 
-    public void updateChannelName(){
+    public void updateChannelName()
+    {
         CHANNEL_NAME_1 = channelNameText.text;
     }
 
@@ -78,27 +83,32 @@ public class SpatialAudioForClientManager : MonoBehaviour
     {
         PermissionHelper.RequestMicrophontPermission();
 
-        if(joinedChannel){
+        if (joinedChannel)
+        {
 
             joinButton.interactable = false;
             leaveButton.interactable = true;
-            if(enableToggle.isOn){
+            if (enableToggle.isOn)
+            {
                 appIdText.interactable = false;
                 tokenText.interactable = false;
                 channelNameText.interactable = false;
 
-            if(remoteClientIDs.Count > 0){
-                azimuthSlider.interactable = true;
-                elevationSlider.interactable = true;
-                distanceSlider.interactable = true;
-                orientationSlider.interactable = true;
-                attenuationSlider.interactable = true;
-                blurToggle.interactable = true;
-                airAbsorbToggle.interactable = true;
-            }
+                if (remoteClientIDs.Count > 0)
+                {
+                    azimuthSlider.interactable = true;
+                    elevationSlider.interactable = true;
+                    distanceSlider.interactable = true;
+                    orientationSlider.interactable = true;
+                    attenuationSlider.interactable = true;
+                    blurToggle.interactable = true;
+                    airAbsorbToggle.interactable = true;
+                }
 
             }
-        } else {
+        }
+        else
+        {
 
             joinButton.interactable = true;
             leaveButton.interactable = false;
@@ -138,47 +148,83 @@ public class SpatialAudioForClientManager : MonoBehaviour
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
         mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
+        mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
         mRtcEngine.OnLeaveChannel += EngineOnLeaveChannelHandler;
-
     }
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
-        
+        Debug.Log("join channel success, spatial " + enableToggle.isOn);
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
         remoteClientIDs.Add(uid);
+        UpdateDropDown();
     }
 
     void EngineOnLeaveChannelHandler(RtcStats stats)
     {
-        for(int i = 0; i < remoteClientIDs.Count; i++){
-            remoteClientIDs.RemoveAt(i);
-        }
+        remoteClientIDs.Clear();
+        UpdateDropDown();
+    }
+
+    void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
+    {
+        remoteClientIDs.Remove(uid);
+        UpdateDropDown();
     }
 
     public void JoinChannel()
     {
-        
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         joinedChannel = true;
-        
     }
 
     public void LeaveChannel()
     {
         mRtcEngine.LeaveChannel();
         joinedChannel = false;
+        ResetEffectOptions(new EffectParams());
+    }
 
-        azimuthSlider.value = 0f;
-        elevationSlider.value = 0f;
-        distanceSlider.value = 1f;
-        orientationSlider.value = 0f;
-        attenuationSlider.value = .5f;
-        blurToggle.isOn = false;
-        airAbsorbToggle.isOn = false;
+    int prevDropSelect = 0;
+    void OnDropDownSelect(int v)
+    {
+        if (v != prevDropSelect)
+        {
+            var uid = remoteClientIDs[prevDropSelect];
+            UserParams[uid] = new EffectParams
+            {
+                attenuation = attenuation,
+                azimuth = azimuth,
+                distance = distance,
+                elevation = elevation,
+                orientation = orientation,
+                blur = spatialBlur,
+                airabsort = spatialAirAbsorb,
+            };
+
+            // switch to another user
+            uid = remoteClientIDs[v];
+            if (!UserParams.ContainsKey(uid))
+            {
+                UserParams[uid] = new EffectParams();
+            }
+            ResetEffectOptions(UserParams[uid]);
+            prevDropSelect = v;
+        }
+    }
+
+    void ResetEffectOptions(EffectParams p)
+    {
+        azimuthSlider.value = (float)p.azimuth;
+        elevationSlider.value = (float)p.elevation;
+        distanceSlider.value = (float)p.distance;
+        orientationSlider.value = p.orientation;
+        attenuationSlider.value = (float)p.attenuation;
+        blurToggle.isOn = p.blur;
+        airAbsorbToggle.isOn = p.airabsort;
     }
 
     void OnApplicationQuit()
@@ -192,47 +238,72 @@ public class SpatialAudioForClientManager : MonoBehaviour
         }
     }
 
-    public void updateAzimuth(){
+    void UpdateDropDown()
+    {
+        userDropdown.ClearOptions();
+        userDropdown.AddOptions(remoteClientIDs.Select(c => new Dropdown.OptionData(c.ToString())).ToList());
+        userDropdown.value = 0;
+    }
+
+    public void updateAzimuth()
+    {
         azimuth = azimuthSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateElevation(){
+    public void updateElevation()
+    {
         elevation = elevationSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateDistance(){
+    public void updateDistance()
+    {
         distance = distanceSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateOrientation(){
+    public void updateOrientation()
+    {
         orientation = (int)orientationSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateAttenuation(){
+    public void updateAttenuation()
+    {
         attenuation = attenuationSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateBlur(){
+    public void updateBlur()
+    {
         spatialBlur = blurToggle.isOn;
         updateSpatialAudio();
     }
 
-    public void updateAirAbsorb(){
+    public void updateAirAbsorb()
+    {
         spatialAirAbsorb = airAbsorbToggle.isOn;
         updateSpatialAudio();
     }
 
-    public void updateSpatialAudio(){
-        Debug.Log(remoteClientIDs.Count);
-        if(remoteClientIDs.Count > 0){
-            mRtcEngine.SetRemoteUserSpatialAudioParams(""+remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
-        }
+    public void updateSpatialAudio()
+    {
+        uint uid = remoteClientIDs[userDropdown.value];
+        Debug.Log("Updating spatial effect for uid:" + uid);
+        mRtcEngine.SetRemoteUserSpatialAudioParams(uid.ToString(), azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
-    
+
+
+    internal class EffectParams
+    {
+        public double azimuth = 0;
+        public double attenuation = .5f;
+        public double distance = 0;
+        public double elevation = 0;
+        public int orientation = 0;
+        public bool blur = false;
+        public bool airabsort = false;
+    }
 }
 
