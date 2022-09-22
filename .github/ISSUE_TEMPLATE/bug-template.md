@@ -3,7 +3,7 @@ name: Bug template
 about: Use this template to report bugs / issues
 title: "[BUG]"
 labels: bug
-assignees: icywind, digitallysavvy
+assignees: icywind
 
 ---
 
