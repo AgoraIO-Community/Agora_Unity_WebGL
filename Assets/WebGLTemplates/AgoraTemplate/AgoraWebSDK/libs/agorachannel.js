@@ -807,7 +807,7 @@ class AgoraChannel {
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
           var screenShareUID = uid;
-            if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
+            if(this.remoteUsers !== undefined && this.remoteUsers[screenShareUID] !== undefined){
               screenShareTrack = null;
               event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
               return;
@@ -823,8 +823,8 @@ class AgoraChannel {
           screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          var screenShareUID = uid + this.client.uid;
-            if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
+          var screenShareUID = uid;
+            if(this.remoteUsers !== undefined && this.remoteUsers[screenShareUID] !== undefined){
               screenShareTrack = null;
               event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
               return;
