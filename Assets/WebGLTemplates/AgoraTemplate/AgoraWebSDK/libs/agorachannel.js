@@ -806,15 +806,15 @@ class AgoraChannel {
           screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          var screenShareUID = uid + this.client.uid;
+          var screenShareUID = uid;
             if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
               screenShareTrack = null;
-              event_manager.raiseScreenShareCanceled_MC(this.options.channel, screenShareUID);
+              event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
               return;
             }
           this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
-            event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
+            event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
 
           });
         } else {
@@ -826,12 +826,12 @@ class AgoraChannel {
           var screenShareUID = uid + this.client.uid;
             if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
               screenShareTrack = null;
-              event_manager.raiseScreenShareCanceled_MC(this.options.channel, screenShareUID);
+              event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
               return;
             }
           this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
-            event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
+            event_manager.raiseScreenShareStarted_MC(this.options.channel, this.options.uid);
           });
         }
       }).catch(error => {

@@ -894,7 +894,7 @@ class ClientManager {
   async startNewScreenCaptureForWeb(uid, enableAudio) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
-    var screenShareUID = uid + this.client.uid;
+    var screenShareUID = uid;
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       AgoraRTC.createScreenVideoTrack({
@@ -912,7 +912,7 @@ class ClientManager {
           event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
           return;
         }
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
           this.screenShareClient.publish(this.tempLocalTracks);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
@@ -927,7 +927,7 @@ class ClientManager {
           event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
           return;
         }
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid + this.client.uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
