@@ -895,6 +895,7 @@ class ClientManager {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
     var screenShareUID = uid;
+    console.log("remote user IDs", remoteUsers, screenShareUID);
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       AgoraRTC.createScreenVideoTrack({
@@ -907,9 +908,9 @@ class ClientManager {
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.tempLocalTracks = screenShareTrack;
-        if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
+        if(remoteUsers !== undefined && remoteUsers[screenShareUID] !== undefined){
           screenShareTrack = null;
-          event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+          event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
           return;
         }
         this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
@@ -922,9 +923,9 @@ class ClientManager {
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.tempLocalTracks = screenShareTrack;
         this.enableLoopbackAudio = enableAudio;
-        if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
+        if(remoteUsers !== undefined && remoteUsers[screenShareUID] !== undefined){
           screenShareTrack = null;
-          event_manager.raiseScreenShareCanceled_MC(this.options.channel, this.options.uid);
+          event_manager.raiseScreenShareCanceled(this.options.channel, this.options.uid);
           return;
         }
         this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
