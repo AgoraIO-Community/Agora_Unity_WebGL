@@ -446,10 +446,9 @@ function getRemoteVideoStatsMC() {
   }
 }
 
-function initVirtualBackground_MC(){
-  console.log("multichannel working");
+function initVirtualBackground_MC(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
   var c = clients[selectedCurrentChannel];
-  c.enableVirtualBackground();
+  c.enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
 }
 
 function setVirtualBackgroundBlur_MC(blurDegree){

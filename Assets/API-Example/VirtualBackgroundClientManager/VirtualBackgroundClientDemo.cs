@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
+using agora_gaming_rtc;
 
-public class AgoraClientManager : MonoBehaviour
+public class VirtualBackgroundClientDemo : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
 
@@ -14,37 +15,30 @@ public class AgoraClientManager : MonoBehaviour
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
     [SerializeField] private string TOKEN_2 = "";
-
-    [SerializeField] private uint SCREEN_SHARE_ID = 1000;
-
     public Text logText;
-    public Text screenShareIDText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
 
-    public Button joinButton, leaveButton;
-    public Button startScreenShareButton, stopScreenShareButton;
-    public Button muteLocalVideoButton, muteRemoteVideoButton;
-    public Button muteLocalAudioButton, muteRemoteAudioButton;
-    public Text muteLocalVideoText, muteRemoteVideoText;
-    public Text muteLocalAudioText, muteRemoteAudioText;
-    public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
-    public bool useNewScreenShare = false;
-    public bool useScreenShareAudio = false;
+    public Button joinButton, leaveButton, blurButton, colorButton, imageButton, videoButton, enableButton, disableButton;
     public bool joinedChannel = false;
+    public bool virtualBackgroundOn = false;
     public bool useToken = false;
-    public Toggle loopbackAudioToggle, newScreenShareToggle;
+    public bool mute, loop;
     public VirtualBackgroundSource myVirtualBackground;
+    public BACKGROUND_SOURCE_TYPE background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
+    public BACKGROUND_BLUR_DEGREE blur;
 
     private List<uint> remoteClientIDs;
 
     public int blurDegrees = 2;
-    public string hexColor = "#00FF00";
-    public string imgFile = "seinfeld.png";
-    public string videoFile = "movie.mp4";
+    public int hexIndex = 0;
+    public string[] hexColors = { "#FF1111", "#11FF11", "#1111FF" };
+    public Dropdown hexDropdown, blurDropdown;
+    public Toggle muteToggle, loopToggle;
+    public string imgFile = "bedroom.png";
+    public string videoFile = "outside.mp4";
 
-    public InputField screenShareIDInput;
 
     // Use this for initialization
     void Start()
@@ -57,46 +51,28 @@ public class AgoraClientManager : MonoBehaviour
         InitEngine();
 
         //channel setup.
-
-        newScreenShareToggle.isOn = useNewScreenShare;
-        loopbackAudioToggle.isOn = useScreenShareAudio;
-        updateScreenShareNew();
         remoteClientIDs = new List<uint>();
         myVirtualBackground = new VirtualBackgroundSource();
-        Debug.Log(SCREEN_SHARE_ID.ToString());
-        screenShareIDInput.text = SCREEN_SHARE_ID.ToString();
+        hexColors[0] = "FF1111";
+        hexColors[1] = "11FF11";
+        hexColors[2] = "1111FF";
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.blur_degree = (BACKGROUND_BLUR_DEGREE)blurDegrees;
+        blurDropdown.value = blurDegrees;
+        uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
+        myVirtualBackground.color = colorValue;
+        blurDropdown.onValueChanged.AddListener(delegate { updateBlur(); });
+        hexDropdown.onValueChanged.AddListener(delegate { updateHex(); });
+        uint.TryParse(hexColors[hexIndex], out myVirtualBackground.color);
+        myVirtualBackground.source = imgFile;
+        Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
     }
 
-    public void updateScreenShareNew()
-    {
-        useNewScreenShare = newScreenShareToggle.isOn;
-        startScreenShareButton.onClick.RemoveAllListeners();
-        stopScreenShareButton.onClick.RemoveAllListeners();
-        if (!useNewScreenShare)
-        {
-            startScreenShareButton.onClick.AddListener(delegate { startScreenShare(useScreenShareAudio); });
-            stopScreenShareButton.onClick.AddListener(delegate { stopScreenShare(); });
-        }
-        else
-        {
-            startScreenShareButton.onClick.AddListener(delegate { startNewScreenShare(useScreenShareAudio); });
-            stopScreenShareButton.onClick.AddListener(delegate { stopNewScreenShare(); });
-        }
-
-
-    }
 
     void Update()
     {
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
-
-        useScreenShareAudio = loopbackAudioToggle.isOn;
-
-        //muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
-        //muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
-        //muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
-        //muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
 
         if (joinedChannel)
         {
@@ -108,6 +84,49 @@ public class AgoraClientManager : MonoBehaviour
             joinButton.interactable = true;
             leaveButton.interactable = false;
         }
+
+        if (virtualBackgroundOn)
+        {
+            enableButton.interactable = false;
+            disableButton.interactable = true;
+        }
+        else
+        {
+            enableButton.interactable = true;
+            disableButton.interactable = false;
+        }
+
+        mute = muteToggle.isOn;
+        loop = loopToggle.isOn;
+
+        if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR)
+        {
+            blurButton.interactable = false;
+            colorButton.interactable = true;
+            imageButton.interactable = true;
+            videoButton.interactable = true;
+        }
+        else if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR)
+        {
+            blurButton.interactable = true;
+            colorButton.interactable = false;
+            imageButton.interactable = true;
+            videoButton.interactable = true;
+        }
+        else if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG)
+        {
+            blurButton.interactable = true;
+            colorButton.interactable = true;
+            imageButton.interactable = false;
+            videoButton.interactable = true;
+        }
+        else if (background == BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO)
+        {
+            blurButton.interactable = true;
+            colorButton.interactable = true;
+            imageButton.interactable = true;
+            videoButton.interactable = false;
+        }
     }
 
     bool CheckAppId()
@@ -117,60 +136,24 @@ public class AgoraClientManager : MonoBehaviour
         return (APP_ID.Length > 10);
     }
 
-    public void updateScreenShareID()
+    public void setBackgroundBlur()
     {
-        uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
     }
 
-    //for muting/unmuting local video through IRtcEngine class.
-    public void setLocalMuteVideo()
+    public void setBackgroundColor()
     {
-        localVideoMuted = !localVideoMuted;
-        mRtcEngine.MuteLocalVideoStream(localVideoMuted);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR;
     }
 
-    //for muting/unmuting remote video through IRtcEngine class.
-    public void setRemoteMuteVideo()
+    public void setBackgroundImage()
     {
-        remoteVideoMuted = !remoteVideoMuted;
-        mRtcEngine.MuteRemoteVideoStream(remoteClientIDs[0], remoteVideoMuted);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
     }
 
-    //for muting/unmuting local video through IRtcEngine class.
-    public void setLocalMuteAudio()
+    public void setBackgroundVideo()
     {
-        localAudioMuted = !localAudioMuted;
-        mRtcEngine.MuteLocalAudioStream(localAudioMuted);
-    }
-
-    //for muting/unmuting local video through IRtcEngine class.
-    public void setRemoteMuteAudio()
-    {
-        remoteAudioMuted = !remoteAudioMuted;
-        mRtcEngine.MuteRemoteAudioStream(remoteClientIDs[0], remoteAudioMuted);
-    }
-
-    //for starting/stopping a new screen share through IRtcEngine class.
-    public void startNewScreenShare(bool audioEnabled)
-    {
-        updateScreenShareID();
-        mRtcEngine.StartNewScreenCaptureForWeb(SCREEN_SHARE_ID, audioEnabled);
-    }
-
-    public void stopNewScreenShare()
-    {
-        mRtcEngine.StopNewScreenCaptureForWeb();
-    }
-
-    //for starting/stopping a screen share through IRtcEngine class.
-    public void startScreenShare(bool audioEnabled)
-    {
-        mRtcEngine.StartScreenCaptureForWeb(audioEnabled);
-    }
-
-    public void stopScreenShare()
-    {
-        mRtcEngine.StopScreenCapture();
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO;
     }
 
     void InitEngine()
@@ -196,29 +179,61 @@ public class AgoraClientManager : MonoBehaviour
 
     }
 
+    public void updateHex()
+    {
+        hexIndex = hexDropdown.value;
+        setVirtualBackgroundColor();
+    }
+
+    public void updateBlur()
+    {
+        blur = (BACKGROUND_BLUR_DEGREE)blurDropdown.value + 1;
+        setVirtualBackgroundBlur();
+    }
+
     public void enableVirtualBackground(bool onoff)
     {
-        mRtcEngine.enableVirtualBackground(onoff, myVirtualBackground);
+        if (onoff)
+        {
+            myVirtualBackground.background_source_type = background;
+        }
+        virtualBackgroundOn = onoff;
+        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundBlur()
     {
-        mRtcEngine.SetVirtualBackgroundBlur(blurDegrees);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.blur_degree = blur;
+        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundColor()
     {
-        mRtcEngine.SetVirtualBackgroundColor(hexColor);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_COLOR;
+        myVirtualBackground.background_source_type = background;
+        uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
+        myVirtualBackground.color = colorValue;
+        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundImage()
     {
-        mRtcEngine.SetVirtualBackgroundImage(imgFile);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.source = imgFile;
+        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundVideo()
     {
-        mRtcEngine.SetVirtualBackgroundVideo(videoFile);
+        background = BACKGROUND_SOURCE_TYPE.BACKGROUND_VIDEO;
+        myVirtualBackground.background_source_type = background;
+        myVirtualBackground.source = videoFile;
+        myVirtualBackground.mute = mute;
+        myVirtualBackground.loop = loop;
+        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void JoinChannel()
@@ -277,25 +292,6 @@ public class AgoraClientManager : MonoBehaviour
     void screenShareCanceledHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("onScreenShareCanceled channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-    }
-
-    void screenShareStartedHandler_MC(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("onScreenShareStartedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-    }
-
-    void screenShareStoppedHandler_MC(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("onScreenShareStoppedMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
-            elapsed));
-
-    }
-
-    void screenShareCanceledHandler_MC(string channelId, uint uid, int elapsed)
-    {
-        logger.UpdateLog(string.Format("onScreenShareCanceledMC channelId: {0}, uid: {1}, elapsed: {2}", channelId, uid,
             elapsed));
     }
 

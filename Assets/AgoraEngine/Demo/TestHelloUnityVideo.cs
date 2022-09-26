@@ -95,6 +95,7 @@ public class TestHelloUnityVideo
         mRtcEngine.OnError = HandleError;
         mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
         mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();

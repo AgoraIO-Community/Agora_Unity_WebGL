@@ -13,7 +13,6 @@ class AgoraChannel {
     this.audioEnabled = false; // if true then mic access is created, if false then not
     this.videoSubscribing = true;
     this.audioSubscribing = true;
-
     this.is_publishing = false;
     this.is_screensharing = false;
     this.remoteUsers = {};
@@ -28,6 +27,8 @@ class AgoraChannel {
     this.liveTranscodingConfig = null;
     this.volumeIndicationOn = false;
     this.tempLocalTracks = null;
+    this.virtualBackgroundProcessor = null;
+    this.spatialAudio = undefined;
     this.userJoinedHandle = this.handleUserJoined.bind(this);
     this.userPublishedHandle = this.handleUserPublished.bind(this);
     this.userUnpublishedHandle = this.handleUserUnpublished.bind(this);
@@ -87,6 +88,10 @@ class AgoraChannel {
     const id = user.uid;
     event_manager.raiseChannelOnUserJoined_MC(id, this.options.channel);
     event_manager.raiseCustomMsg("New User Joined: " + id);
+
+    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
+      this.enableSpatialAudio(true, user);
+    }
   }
 
   async handleUserPublished(user, mediaType) {
@@ -347,7 +352,7 @@ class AgoraChannel {
           localTracks[i].close();
           this.client.unpublish(localTracks[i])
         }
-        localTracks = undefined;
+        //localTracks = undefined;
       }
 
       
@@ -794,6 +799,13 @@ class AgoraChannel {
   async startNewScreenCaptureForWeb2(uid, enableAudio) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio ? "auto" : "disable";
+    var screenShareUID = uid;
+    console.log(screenShareUID);
+    if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
+      screenShareTrack = null;
+      event_manager.raiseHandleChannelError(this.options.channel, -1, "Screen Share Client Error: ID is already in use!");
+      return;
+    }
     if (!this.is_screensharing) {
       this.screenShareClient = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       AgoraRTC.createScreenVideoTrack({
@@ -806,12 +818,6 @@ class AgoraChannel {
           screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          var screenShareUID = uid + this.client.uid;
-            if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
-              screenShareTrack = null;
-              event_manager.raiseScreenShareCanceled_MC(this.options.channel, screenShareUID);
-              return;
-            }
           this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
             event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
@@ -823,12 +829,6 @@ class AgoraChannel {
           screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          var screenShareUID = uid + this.client.uid;
-            if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
-              screenShareTrack = null;
-              event_manager.raiseScreenShareCanceled_MC(this.options.channel, screenShareUID);
-              return;
-            }
           this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
             event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
@@ -960,9 +960,12 @@ class AgoraChannel {
   }
 
 
-  async enableVirtualBackground(){
-    console.log("agora channel working");
-    getProcessorInstance(localTracks.videoTrack);
+  async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
+    if(this.virtualBackgroundProcessor == null && localTracks.videoTrack){
+     this.virtualBackgroundProcessor = await getVirtualBackgroundProcessor(localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
+    } else if(this.virtualBackgroundProcessor != null) {
+     this.virtualBackgroundProcessor = await setVirtualBackgroundProcessor(this.virtualBackgroundProcessor, localTracks.videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop);
+    }
   }
   
   async setVirtualBackgroundBlur(blurDegree){
@@ -981,18 +984,25 @@ class AgoraChannel {
     setBackgroundVideo(localTracks.videoTrack, videoFile);
   }
 
-  async enableSpatialAudio(enabled){
-    this.client.processor = window.joinSpatialAudioChannel(enabled, this.options.appid, this.options.token, this.options.channel);
+  async enableSpatialAudio(enabled, client = this.client){
+    
+    if(client.uid === this.client.uid){
+      if(this.spatialAudio == undefined){
+        this.spatialAudio = window.createSpatialAudioManager();
+      }
+    } else {
+      await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
+    }
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
-    window.updateSpatialAzimuth(azimuth);
-    window.updateSpatialElevation(elevation);
-    window.updateSpatialDistance(distance);
-    window.updateSpatialOrientation(orientation);
-    window.updateSpatialAttenuation(attenuation);
-    window.updateSpatialBlur(blur);
-    window.updateSpatialAirAbsorb(airAbsorb);
-  }
+    this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
+    this.spatialAudio.updateSpatialElevation(uid, elevation);
+    this.spatialAudio.updateSpatialDistance(uid, distance);
+    this.spatialAudio.updateSpatialOrientation(uid, orientation);
+    this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
+    this.spatialAudio.updateSpatialBlur(uid, blur);
+    this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
+ }
 
 }

@@ -444,7 +444,6 @@ var LibraryAgoraWebGLSDK = {
   },
 
   startNewScreenCaptureForWeb: function(uid, enableAudio) {
-    console.log("SDK startNewScreenCaptureForWeb");
      startNewScreenCaptureForWeb(uid, enableAudio);
   },
 
@@ -1043,14 +1042,18 @@ var LibraryAgoraWebGLSDK = {
     SendNotImplementedError()
   },
   setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
-    setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+    setRemoteUserSpatialAudioParams(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
-    setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+    setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError()
@@ -2012,8 +2015,12 @@ muteLocalAudioStream_channel: function(channel, mute) {
   createDataStream_channel: function(channel, syncWithAudio, ordered) {},
 
   enableDeepLearningDenoise: function() {},
-  enableVirtualBackground: function() {
-    initVirtualBackground();
+  enableVirtualBackground: function(enabled, backgroundSourceType, color, source, blurDegree, mute, loop) {
+    enable = enabled == 0 ? false : true;
+    muted = mute == 0 ? false : true;
+    looped = loop == 0 ? false : true;
+    source_Str = Pointer_stringify(source);
+    initVirtualBackground(enable, backgroundSourceType, color, source_Str, blurDegree, muted, looped);
   },
   setVirtualBackgroundBlur: function(blurDegree) {
     setVirtualBackgroundBlur(blurDegree);
@@ -2030,9 +2037,12 @@ muteLocalAudioStream_channel: function(channel, mute) {
     var myVideo = Pointer_stringify(videoFile);
     setVirtualBackgroundVideo(myVideo);
   },
-  initVirtualBackground_MC: function() {
-    console.log('this is working');
-    initVirtualBackground_MC();
+  initVirtualBackground_MC: function(enabled, backgroundSourceType, color, source, blurDegree, mute, loop) {
+    enable = enabled == 0 ? false : true;
+    muted = mute == 0 ? false : true;
+    looped = loop == 0 ? false : true;
+    source_Str = Pointer_stringify(source);
+    initVirtualBackground_MC(enabled, backgroundSourceType, color, source_Str, blurDegree, mute, loop);
   },
   setVirtualBackgroundBlur_MC: function(blurDegree) {
     setVirtualBackgroundBlur_MC(blurDegree);

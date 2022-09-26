@@ -30,7 +30,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     public Slider azimuthSlider, elevationSlider, distanceSlider,
     orientationSlider, attenuationSlider;
 
-    public Toggle blurToggle, airAbsorbToggle;
+    public Toggle blurToggle, airAbsorbToggle, enableToggle;
 
     public Text azimuthText, elevationText, 
     distanceText, orientationText, attenuationText;
@@ -38,6 +38,9 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     public InputField appIdText, tokenText, channelNameText;
 
 	AgoraChannel spatialAudioChannel;
+
+    [SerializeField]
+    private List<uint> remoteClientIDs;
 
     void Awake(){
         
@@ -53,12 +56,12 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
         InitEngine();
         
-        
+        spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
         //channel setup.
         appIdText.text = APP_ID;
         tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
-        
+        remoteClientIDs = new List<uint>();
     }
 
     public void updateAppID(){
@@ -132,6 +135,19 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
 		spatialAudioChannel = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
         spatialAudioChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        spatialAudioChannel.ChannelOnJoinChannelSuccess += OnJoinChannelSuccessHandler;
+        spatialAudioChannel.ChannelOnUserJoined += OnUserJoinedHandler;
+    }
+
+    void OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
+    {
+        
+    }
+
+    void OnUserJoinedHandler(string channelId, uint uid, int elapsed)
+    {
+        remoteClientIDs.Add(uid);
     }
 
     public void JoinChannel()
@@ -139,7 +155,6 @@ public class SpatialAudioforMultichannel : MonoBehaviour
         
         spatialAudioChannel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, false, true, false));
         joinedChannel = true;
-        spatialAudioChannel.EnableSpatialAudio_MC(true);
     }
 
     public void LeaveChannel()
@@ -205,7 +220,9 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     }
 
     public void updateSpatialAudio(){
-        spatialAudioChannel.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        if(remoteClientIDs.Count > 0){
+            spatialAudioChannel.SetRemoteUserSpatialAudioParams(""+remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        }
     }
     
 }
