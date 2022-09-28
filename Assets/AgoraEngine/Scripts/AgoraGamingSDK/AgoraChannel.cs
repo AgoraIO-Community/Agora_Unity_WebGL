@@ -345,7 +345,7 @@ namespace agora_gaming_rtc
             }
             return null;
         }
-	
+
 
         /// @cond
 
@@ -1198,8 +1198,10 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
             String transcodingUserInfo = "";
-            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null) {
-                for (int i = 0; i < liveTranscoding.userCount; i ++) {
+            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null)
+            {
+                for (int i = 0; i < liveTranscoding.userCount; i++)
+                {
                     transcodingUserInfo += liveTranscoding.transcodingUsers[i].uid;
                     transcodingUserInfo += "\t";
                     transcodingUserInfo += liveTranscoding.transcodingUsers[i].x;
@@ -1220,8 +1222,10 @@ namespace agora_gaming_rtc
             }
 
             String liveStreamAdvancedFeaturesStr = "";
-            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0) {
-                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++) {
+            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0)
+            {
+                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++)
+                {
                     liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].featureName;
                     liveStreamAdvancedFeaturesStr += "\t";
                     liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].opened;
@@ -1248,8 +1252,10 @@ namespace agora_gaming_rtc
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
             String transcodingUserInfo = "";
-            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null) {
-                for (int i = 0; i < liveTranscoding.userCount; i ++) {
+            if (liveTranscoding.userCount != 0 && liveTranscoding.transcodingUsers != null)
+            {
+                for (int i = 0; i < liveTranscoding.userCount; i++)
+                {
                     transcodingUserInfo += liveTranscoding.transcodingUsers[i].uid;
                     transcodingUserInfo += "\t";
                     transcodingUserInfo += liveTranscoding.transcodingUsers[i].x;
@@ -1270,8 +1276,10 @@ namespace agora_gaming_rtc
             }
 
             String liveStreamAdvancedFeaturesStr = "";
-            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0) {
-                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++) {
+            if (liveTranscoding.liveStreamAdvancedFeatures.Length > 0)
+            {
+                for (int i = 0; i < liveTranscoding.liveStreamAdvancedFeatures.Length; i++)
+                {
                     liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].featureName;
                     liveStreamAdvancedFeaturesStr += "\t";
                     liveStreamAdvancedFeaturesStr += liveTranscoding.liveStreamAdvancedFeatures[i].opened;
@@ -1575,7 +1583,12 @@ namespace agora_gaming_rtc
          */
         public int enableVirtualBackground(bool enabled, VirtualBackgroundSource source)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.initVirtualBackground_MC(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree, source.mute, source.loop);
+#else
+            Debug.LogWarning("This API is WEBGL only");
+            return -1;
+#endif
         }
 
         /* 
@@ -1814,7 +1827,12 @@ namespace agora_gaming_rtc
          */
         public int EnableSpatialAudio_MC(bool enabled)
         {
+#if UNITY_WEBGL
             return IRtcEngineNative.enableSpatialAudio_MC(enabled);
+#else 
+            Debug.LogError("Not implemented");
+            return -1;
+#endif
         }
 
         /// @cond
@@ -2951,7 +2969,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -2978,7 +2997,8 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
@@ -3005,14 +3025,15 @@ namespace agora_gaming_rtc
                     AgoraCallbackQueue queue = _AgoraCallbackObjectDictionary[channelId]._CallbackQueue;
                     if (queue != null)
                     {
-                        queue.EnQueue(()=> {
+                        queue.EnQueue(() =>
+                        {
                             if (_channelDictionary.ContainsKey(channelId))
                             {
                                 AgoraChannel ch = _channelDictionary[channelId];
                                 if (ch != null && channel.ChannelOnChannelProxyConnected != null)
                                 {
                                     ch.ChannelOnChannelProxyConnected(channelId, uid, proxyType, localProxyIp, elapsed);
-                                }  
+                                }
                             }
                         });
                     }

@@ -4513,7 +4513,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundBlur(int blurDegrees)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundBlur(blurDegrees);
+#else
+            return -1;
+#endif
         }
 
 
@@ -4546,7 +4550,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundColor(string hexColor)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundColor(hexColor);
+#else
+            return -1;
+#endif
         }
 
 
@@ -4579,7 +4587,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundImage(string imgFile)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundImage(imgFile);
+#else 
+            return -1;
+#endif
         }
 
 
@@ -4612,13 +4624,12 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundVideo(string videoFile)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundVideo(videoFile);
+#else
+            return -1;
+#endif
         }
-
-
-        
-
-
 
         /** Enables blur for the virtual background being used by agoraChannel.
          * 
@@ -4649,7 +4660,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundBlur_MC(int blurDegrees)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundBlur_MC(blurDegrees);
+#else
+            return -1;
+#endif
         }
 
 
@@ -4682,7 +4697,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundColor_MC(string hexColor)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundColor_MC(hexColor);
+#else
+            return -1;
+#endif
         }
 
 
@@ -4715,7 +4734,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundImage_MC(string imgFile)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundImage_MC(imgFile);
+#else
+            return -1;
+#endif
         }
 
 
@@ -4748,7 +4771,11 @@ namespace agora_gaming_rtc
          */
         public int SetVirtualBackgroundVideo_MC(string videoFile)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundVideo_MC(videoFile);
+#else
+            return -1;
+#endif
         }
 
         /**
@@ -5323,7 +5350,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableSpatialAudio(enabled);
         }
 
-        
+
 
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
