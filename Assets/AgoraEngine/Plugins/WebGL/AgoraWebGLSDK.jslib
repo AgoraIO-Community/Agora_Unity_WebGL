@@ -919,6 +919,10 @@ var LibraryAgoraWebGLSDK = {
   enableSpatialAudio: function (enabled) {
     enableSpatialAudio(enabled);
   },
+  enableLocalMediaSpatialAudio: function (enabled, media) {
+    file = Pointer_stringify(media);
+    enableLocalMediaSpatialAudio(enabled, file);
+  },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
   },
@@ -1073,6 +1077,13 @@ var LibraryAgoraWebGLSDK = {
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
     setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+  },
+  updateLocalSpatialAudioPosition: function(posX, posY, posZ, forwardX, forwardY, forwardZ){
+    const localPosition = {
+      position: [posX, posY, posZ],
+      forward: [forwardX, forwardY, forwardZ],
+    };
+    updateLocalSpatialAudioPosition(localPosition.position, localPosition.forward);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError("setScreenCaptureScenario")
