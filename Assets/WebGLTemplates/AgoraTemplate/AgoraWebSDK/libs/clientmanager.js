@@ -22,6 +22,7 @@ class ClientManager {
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
+    this.spatialAudioProcessor = null;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -1152,6 +1153,16 @@ async setVirtualBackgroundVideo(videoFile){
     }
   }
 
+  async enableLocalMediaSpatialAudio(enabled, media){
+
+    if(this.spatialAudio == undefined){
+      this.spatialAudio = await window.createSpatialAudioManager();
+    }
+
+    this.spatialAudioProcessor = this.spatialAudio.getLocalMediaSpatialAudioProcessor(this.client, media, enabled);
+    
+  }
+
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
      this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
      this.spatialAudio.updateSpatialElevation(uid, elevation);
@@ -1160,5 +1171,11 @@ async setVirtualBackgroundVideo(videoFile){
      this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
      this.spatialAudio.updateSpatialBlur(uid, blur);
      this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
+  }
+
+  async updateLocalSpatialAudioPosition(position, forward){
+    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+      this.spatialAudio.updatePlayerPositionInfo(position, forward);
+    }
   }
 }

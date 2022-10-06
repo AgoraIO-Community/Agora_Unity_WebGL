@@ -64,6 +64,52 @@ async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
 
 }
 
+async getLocalMediaSpatialAudioProcessor(client, soundSrc, enabled) {
+  setTimeout(async () => {
+    try {
+    var isOn = enabled == 1 ? true : false;
+    var processor = await extension.createProcessor();
+    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: this.remoteUsersSound[0]});
+    await track.pipe(processor).pipe(track.processorDestination);
+    client.spatialAudioProcessor = processor;
+    this.localPlayProcessors[client.uid] = processor;
+    this.localPlayTracks[client.uid] = track;
+    this.enabled = isOn;
+    this.processor = processor;
+    track.play();
+    return processor;
+    } catch (error) {
+      console.error(`${processor} with microphone track play fail: ${error}`);
+    }
+  }, 1000);
+
+}
+
+async getRemoteMediaSpatialAudioProcessor(enabled, media){
+    setTimeout(async () => {
+      try {
+        
+        var processor = undefined;
+        
+        
+        if(enabled === true){
+          processor = await extension.createProcessor();
+          const track = await AgoraRTC.createBufferSourceAudioTrack(media)
+          await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
+          this.localPlayProcessors[client.uid] = processor;
+          this.localPlayTracks[client.uid] = track;
+        } else { 
+          //disable spatial audio code would go here.
+        }
+
+        this.enabled = enabled;
+        
+      } catch (error) {
+        console.error(`${processor} with microphone track play fail: ${error}`);
+      }
+    }, 1000);
+}
+
 async getRemoteUserSpatialAudioProcessor(client, enabled) {
   setTimeout(async () => {
     try {
@@ -108,6 +154,26 @@ async localPlayerStopAll() {
     this.localPlayTracks = {};
     this.localPlayProcessors = {};
   }
+}
+
+updatePlayerPositionInfo(position, forward){
+  const localPlayerPosition = {
+    position: position,
+    forward: forward,
+  };
+
+  if(this.processor !== null){
+    this.processor.updatePlayerPositionInfo(localPlayerPosition);
+  }
+
+}
+
+updateRemotePosition(position, forward){
+  this.localPlayProcessors[uid].updatePlayerPositionInfo(position, forward);
+}
+
+removeRemotePosition(position, forward){
+  this.localPlayProcessors[uid].updatePlayerPositionInfo(position, forward);
 }
 
 updateSpatialAzimuth(uid, value) {

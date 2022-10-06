@@ -927,3 +927,11 @@ function setVirtualBackgroundVideo(videoFile){
 function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
 }
+
+function enableLocalMediaSpatialAudio(enabled, media){
+  client_manager.enableLocalMediaSpatialAudio(enabled, media);
+}
+
+function updateLocalSpatialAudioPosition(position, forward){
+  client_manager.updateLocalSpatialAudioPosition(position, forward);
+}

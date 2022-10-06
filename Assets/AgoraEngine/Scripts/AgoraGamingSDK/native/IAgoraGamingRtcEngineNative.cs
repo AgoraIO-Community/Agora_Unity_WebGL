@@ -1531,6 +1531,12 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio(bool enabled);
 
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableLocalMediaSpatialAudio(bool enabled, string media);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int updateLocalSpatialAudioPosition(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
+
 #if UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio_MC(bool enabled);
