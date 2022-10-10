@@ -25,11 +25,16 @@ public class SpatialAudioDemoManager : MonoBehaviour
     public bool spatialBlur = false;
     public bool spatialAirAbsorb = false;
 
+    public string[] soundFiles;
+
     public InputField appIdText, tokenText, channelNameText;
-    public Dropdown userDropdown;
+
+    public Transform peter;
 
     [SerializeField]
     private List<uint> remoteClientIDs = new List<uint>();
+
+    public GameObject loginScreen, player;
 
 
 
@@ -45,14 +50,15 @@ public class SpatialAudioDemoManager : MonoBehaviour
         {
             return;
         }
-
+        
         InitEngine();
-        JoinChannel();
-        mRtcEngine.EnableLocalMediaSpatialAudio(true, "");
+        
+
+       
         //channel setup.
-        // appIdText.text = APP_ID;
-        // tokenText.text = TOKEN_1;
-        // channelNameText.text = CHANNEL_NAME_1;
+         appIdText.text = APP_ID;
+         tokenText.text = TOKEN_1;
+         channelNameText.text = CHANNEL_NAME_1;
 
     }
 
@@ -80,7 +86,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
             // joinButton.interactable = false;
             // leaveButton.interactable = true;
-            mRtcEngine.updateLocalSpatialAudioPosition(transform.position, transform.forward);
+            mRtcEngine.updatePlayerPositionInfo("1000", peter.position, peter.right);
         }
         else
         {
@@ -138,7 +144,13 @@ public class SpatialAudioDemoManager : MonoBehaviour
     public void JoinChannel()
     {
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        for(uint i = 0; i < soundFiles.Length; i++) {
+            mRtcEngine.EnableLocalMediaSpatialAudio(((uint)1000+i).ToString(), true, "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3");
+        }
         joinedChannel = true;
+        loginScreen.SetActive(false);
+        player.SetActive(true);
+        peter.gameObject.SetActive(true);
     }
 
     public void LeaveChannel()
@@ -160,9 +172,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public void updateSpatialAudio()
     {
-        uint uid = remoteClientIDs[userDropdown.value];
-        Debug.Log("Updating spatial effect for uid:" + uid);
-        mRtcEngine.SetRemoteUserSpatialAudioParams(uid.ToString(), azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        mRtcEngine.SetRemoteUserSpatialAudioParams("0", azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
 
 
