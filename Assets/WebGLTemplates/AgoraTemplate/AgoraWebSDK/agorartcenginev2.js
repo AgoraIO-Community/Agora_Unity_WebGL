@@ -941,10 +941,18 @@ function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
 }
 
-function enableLocalMediaSpatialAudio(enabled, media){
-  client_manager.enableLocalMediaSpatialAudio(enabled, media);
+function enableLocalMediaSpatialAudio(uid, enabled, media){
+  client_manager.enableLocalMediaSpatialAudio(uid, enabled, media);
 }
 
-function updateLocalSpatialAudioPosition(position, forward){
-  client_manager.updateLocalSpatialAudioPosition(position, forward);
+function updatePlayerPositionInfo(uid, position, forward){
+  client_manager.updatePlayerPositionInfo(uid, position, forward);
+}
+
+function updateRemotePosition(uid, position, forward){
+  client_manager.updateRemotePosition(uid, position, forward);
+}
+
+function removeRemotePosition(uid){
+  client_manager.removeRemotePosition(uid);
 }

@@ -64,13 +64,33 @@ async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
 
 }
 
-async getLocalMediaSpatialAudioProcessor(client, soundSrc, enabled) {
+async getLocalMediaSpatialAudioProcessor(uid, soundSrc, enabled) {
   setTimeout(async () => {
     try {
     var isOn = enabled == 1 ? true : false;
     var processor = await extension.createProcessor();
-    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: this.remoteUsersSound[0]});
+    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc});
     await track.pipe(processor).pipe(track.processorDestination);
+    track.startProcessAudioBuffer({ loop: true });
+    track.play();
+    this.localPlayProcessors[uid] = processor;
+    this.localPlayTracks[uid] = track;
+    this.enabled = isOn;
+    } catch (error) {
+      console.error(`${processor} with buffer track play fail: ${error}`);
+    }
+  }, 1000);
+
+}
+
+async getRemoteMediaSpatialAudioProcessor(client, soundSrc, enabled) {
+  setTimeout(async () => {
+    try {
+    var isOn = enabled == 1 ? true : false;
+    var processor = await extension.createProcessor();
+    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc});
+    await track.pipe(processor).pipe(track.processorDestination);
+    track.startProcessAudioBuffer({ loop: true });
     client.spatialAudioProcessor = processor;
     this.localPlayProcessors[client.uid] = processor;
     this.localPlayTracks[client.uid] = track;
@@ -84,6 +104,8 @@ async getLocalMediaSpatialAudioProcessor(client, soundSrc, enabled) {
   }, 1000);
 
 }
+
+
 
 async getRemoteMediaSpatialAudioProcessor(enabled, media){
     setTimeout(async () => {
@@ -156,24 +178,33 @@ async localPlayerStopAll() {
   }
 }
 
-updatePlayerPositionInfo(position, forward){
+updatePlayerPositionInfo(uid, position, forward){
   const localPlayerPosition = {
     position: position,
     forward: forward,
   };
 
-  if(this.processor !== null){
-    this.processor.updatePlayerPositionInfo(localPlayerPosition);
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updatePlayerPositionInfo(localPlayerPosition);
   }
 
 }
 
-updateRemotePosition(position, forward){
-  this.localPlayProcessors[uid].updatePlayerPositionInfo(position, forward);
+updateRemotePosition(uid, position, forward){
+  const localPlayerPosition = {
+    position: position,
+    forward: forward,
+  };
+
+  if(this.localPlayProcessors[uid] !== undefined){
+    this.localPlayProcessors[uid].updateRemotePosition(localPlayerPosition);
+  }
+  
 }
 
-removeRemotePosition(position, forward){
-  this.localPlayProcessors[uid].updatePlayerPositionInfo(position, forward);
+removeRemotePosition(uid){
+ delete this.localPlayProcessors[uid];
+ delete this.localPlayTracks[uid];
 }
 
 updateSpatialAzimuth(uid, value) {
