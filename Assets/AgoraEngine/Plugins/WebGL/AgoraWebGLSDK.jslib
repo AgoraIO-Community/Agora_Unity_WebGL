@@ -1098,6 +1098,13 @@ var LibraryAgoraWebGLSDK = {
     newUID = parseInt(uid_Str);
     updateRemotePosition(newUID, localPosition.position, localPosition.forward);
   },
+  updateSelfPosition: function(posX, posY, posZ, forwardX, forwardY, forwardZ){
+    const localPosition = {
+      position: [posX, posY, posZ],
+      forward: [forwardX, forwardY, forwardZ],
+    };
+    updateSelfPosition(localPosition.position, localPosition.forward);
+  },
   removeRemotePosition: function(uid){
     uid_Str = Pointer_stringify(uid);
     newUID = parseInt(uid_Str);

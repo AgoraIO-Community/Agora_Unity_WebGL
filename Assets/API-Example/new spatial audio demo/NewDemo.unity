@@ -127,7 +127,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &60697612
 Transform:
   m_ObjectHideFlags: 0
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b47a658557469024e8073e76c8269dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: 
+  APP_ID: d2c9420f5ea0498abd30eabac50b33ed
   TOKEN_1: 
   CHANNEL_NAME_1: YOUR_CHANNEL_NAME_1
   joinButton: {fileID: 379757078}
@@ -575,7 +575,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &455326722
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1302,7 +1302,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1289766590}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.79, y: -7.4, z: 0}
+  m_LocalPosition: {x: -0.79, y: -7.4, z: 1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1337,6 +1337,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 37a01d0d0533ea546b742ade0c9f3a9a, type: 3}
   - {fileID: 21300000, guid: f5b1bb0cc0bfbff4e9609b4088086d6b, type: 3}
   - {fileID: 21300000, guid: c3330479017c0834ba211e86f864362f, type: 3}
+  waypointIndex: 0
   lerpTime: 5
   lerpDistance: 0
   startingPoint: {fileID: 860605695}

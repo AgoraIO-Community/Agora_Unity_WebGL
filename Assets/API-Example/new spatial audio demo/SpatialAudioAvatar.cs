@@ -18,7 +18,7 @@ public class SpatialAudioAvatar : MonoBehaviour {
 		if(Input.GetMouseButton(0)){
 			arrow.gameObject.SetActive(true);
 			updateMovement();
-		} else {
+		} else if(Input.GetMouseButtonUp(0)) {
 			rig.velocity = Vector2.zero;
 			arrow.gameObject.SetActive(false);
 		}

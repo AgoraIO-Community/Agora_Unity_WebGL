@@ -7,10 +7,11 @@ public class AIWaypointMovement : MonoBehaviour {
 	public GameObject path;
 	public List<Transform> waypoints;
 	public Sprite[] sprites;
-	int waypointIndex;
+	public int waypointIndex;
 	public float lerpTime, lerpDistance;
 	public Transform startingPoint, endPoint;
 	SpriteRenderer sprite;
+	
 
 	// Use this for initialization
 	void Start () {

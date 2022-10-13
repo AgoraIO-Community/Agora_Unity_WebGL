@@ -1281,4 +1281,10 @@ async setVirtualBackgroundVideo(videoFile){
       this.spatialAudio.removeRemotePosition(uid);
     }
   }
+
+  async updateSelfPosition(position, forward){
+    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+      this.spatialAudio.updateSelfPosition(position, forward);
+    }
+  }
 }

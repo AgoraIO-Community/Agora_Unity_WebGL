@@ -36,7 +36,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public GameObject loginScreen, player;
 
-
+    Vector3[] directions = {Vector3.right, Vector3.down, Vector3.left, Vector3.up};
 
     void Awake()
     {
@@ -86,7 +86,8 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
             // joinButton.interactable = false;
             // leaveButton.interactable = true;
-            mRtcEngine.updatePlayerPositionInfo("1000", peter.position, peter.right);
+            mRtcEngine.updatePlayerPositionInfo("1000", peter.position * 8, directions[peter.gameObject.GetComponent<AIWaypointMovement>().waypointIndex]);
+            mRtcEngine.updateSelfPosition(player.transform.position * 8, player.GetComponent<SpatialAudioAvatar>().arrow.eulerAngles);
         }
         else
         {

@@ -1553,6 +1553,9 @@ namespace agora_gaming_rtc
         protected static extern int updateRemotePosition(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int updateSelfPosition(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int removeRemotePosition(string uid);
 
 #if UNITY_WEBGL

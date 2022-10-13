@@ -956,3 +956,7 @@ function updateRemotePosition(uid, position, forward){
 function removeRemotePosition(uid){
   client_manager.removeRemotePosition(uid);
 }
+
+function updateSelfPosition(position, forward){
+  client_manager.updateSelfPosition(position, forward);
+}
