@@ -292,11 +292,13 @@ class ClientManager {
       var track = localTracks[trackName];
       if (track) {
         if(!Array.isArray(track)){
+          track.unpipe();
           track.stop();
           track.close();
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
+            track.unpipe();
             track[i].stop();
             track[i].close();
           }
@@ -318,7 +320,6 @@ class ClientManager {
 
     if(this.virtualBackgroundProcessor !== null){
       this.virtualBackgroundProcessor = null;
-      localTracks.videoTrack.unpipe();
     }
 
     this.is_screensharing = false; // set to default
