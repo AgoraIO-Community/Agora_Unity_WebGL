@@ -1,7 +1,7 @@
 let extension = null;
 let imgElement = null;
 let videoElement = null;
-let processor = null;
+let myProcessor = null;
 let backgroundType = null;
 
 // Initialization
@@ -14,13 +14,13 @@ async function getVirtualBackgroundProcessor(videoTrack, enabled, backgroundSour
     AgoraRTC.registerExtensions([extension]);
   }
 
-  if(processor === null){
-    processor = extension.createProcessor();
+  if(myProcessor === null){
+    myProcessor = await extension.createProcessor();
   }
 
   try {
       // Initialize the extension and pass in the URL of the Wasm file
-      await processor.init("./assets/agora-wasm");
+      await myProcessor.init("./assets/agora-wasm");
     } catch(e) {
         console.log("Fail to load WASM resource!");return null;
     }
@@ -29,31 +29,30 @@ async function getVirtualBackgroundProcessor(videoTrack, enabled, backgroundSour
     // Create a VirtualBackgroundProcessor instance
     
     // Inject the extension into the video processing pipeline in the SDK
-    videoTrack.pipe(processor).pipe(videoTrack.processorDestination);
+    videoTrack.pipe(myProcessor).pipe(videoTrack.processorDestination);
   }
 
   if(backgroundSourceType == 3){
-   processor = await setBackgroundBlurring(processor, videoTrack, blurDegree);
+    myProcessor = await setBackgroundBlurring(myProcessor, videoTrack, blurDegree);
   } else if(backgroundSourceType == 1){
-   processor = await setBackgroundColor(processor, videoTrack, color);
+    myProcessor = await setBackgroundColor(myProcessor, videoTrack, color);
   } else if(backgroundSourceType == 2){
-   processor = await setBackgroundImage(processor, videoTrack, source);
+    myProcessor = await setBackgroundImage(myProcessor, videoTrack, source);
   } else if(backgroundSourceType == 4){
-   processor = await setBackgroundVideo(processor, videoTrack, source, mute, loop);
+    myProcessor = await setBackgroundVideo(myProcessor, videoTrack, source, mute, loop);
   }
 
   if(enabled == true){
-   await processor.enable();
+   await myProcessor.enable();
   } else {
-   await processor.disable();
+   await myProcessor.disable();
   }
 
-  return processor;
+  return myProcessor;
 }
 
 async function setVirtualBackgroundProcessor(processor, videoTrack, enabled, backgroundSourceType, color, source, blurDegree, mute, loop) {
   backgroundType = backgroundSourceType;
-
   if(backgroundSourceType == 3){
     processor = await setBackgroundBlurring(processor, videoTrack, blurDegree);
   } else if(backgroundSourceType == 1){
@@ -61,7 +60,6 @@ async function setVirtualBackgroundProcessor(processor, videoTrack, enabled, bac
   } else if(backgroundSourceType == 2){
     processor = await setBackgroundImage(processor, videoTrack, source);
   } else if(backgroundSourceType == 4){
-    console.log("setBackgroundVideo", backgroundSourceType);
     processor = await setBackgroundVideo(processor, videoTrack, source, mute, loop);
   }
 
@@ -84,7 +82,7 @@ async function setBackgroundColor(processor, videoTrack, hexColor) {
       //videoElement = null;
     }
 
-    console.log(hexColor);
+    console.log(processor);
 
     try {
       processor.setOptions({type: 'color', color: hexColor});
@@ -108,7 +106,7 @@ async function setBackgroundBlurring(processor, videoTrack, myBlur) {
       //videoElement = null;
     }
 
-    
+    console.log(processor);
 
     try {
       processor.setOptions({type: 'blur', blurDegree: myBlur});
