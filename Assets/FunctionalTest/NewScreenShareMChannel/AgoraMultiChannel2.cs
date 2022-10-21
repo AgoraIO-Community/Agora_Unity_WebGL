@@ -39,11 +39,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     protected Dictionary<uint, VideoSurface> UserVideoDict = new Dictionary<uint, VideoSurface>();
     private List<GameObject> remoteUserDisplays = new List<GameObject>();
 
-    public VirtualBackgroundSource myVirtualBackground;
-    public int blurDegrees = 2;
-    public string hexColor = "#00FF00";
-    public string imgFile = "seinfeld.jpg";
-    public string videoFile = "movie.mp4";
+    
     public InputField screenShareIDInput; 
     
 
@@ -126,25 +122,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
 
-    public void enableVirtualBackground(){
-        channel1.enableVirtualBackground(true, myVirtualBackground);
-    }
-
-    public void setVirtualBackgroundBlur(){
-        mRtcEngine.SetVirtualBackgroundBlur_MC(blurDegrees);
-    }
-
-    public void setVirtualBackgroundColor(){
-        mRtcEngine.SetVirtualBackgroundColor_MC(hexColor);
-    }
-
-    public void setVirtualBackgroundImage(){
-        mRtcEngine.SetVirtualBackgroundImage_MC(imgFile);
-    }
-
-     public void setVirtualBackgroundVideo(){
-        mRtcEngine.SetVirtualBackgroundVideo_MC(videoFile);
-    }
+   
 
     void InitEngine()
     {
