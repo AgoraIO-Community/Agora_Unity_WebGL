@@ -349,7 +349,7 @@ class AgoraChannel {
       if (localTracks != undefined) {
 
         for (var i = 0; i < localTracks.length; i++) {
-          localTracks.videoTrack.unpipe();
+          localTracks[i].unpipe();
           localTracks[i].stop();
           localTracks[i].close();
           this.client.unpublish(localTracks[i])
@@ -358,6 +358,10 @@ class AgoraChannel {
       }
 
       
+    }
+
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
     }
 
     this.is_screensharing = false;

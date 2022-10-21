@@ -298,7 +298,7 @@ class ClientManager {
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
-            track.unpipe();
+            track[i].unpipe();
             track[i].stop();
             track[i].close();
           }
