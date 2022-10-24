@@ -2048,7 +2048,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
     setVirtualBackgroundBlur_MC(blurDegree);
   },
   setVirtualBackgroundColor_MC: function(hexColor) {
-    var myColor = Pointer_stringify(hexColor);
+    myColor = Pointer_stringify(hexColor);
     setVirtualBackgroundColor_MC(myColor);
   },
   setVirtualBackgroundImage_MC: function(imageFile) {

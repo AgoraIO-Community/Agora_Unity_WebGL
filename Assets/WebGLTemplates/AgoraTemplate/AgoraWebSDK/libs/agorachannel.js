@@ -340,6 +340,7 @@ class AgoraChannel {
 
     if (multiclient_connections <= 1) {
       if (localTracks != undefined && localTracks.videoTrack != undefined) {
+        localTracks.videoTrack.unpipe();
         localTracks.videoTrack.stop();
         localTracks.videoTrack.close();
         this.client.unpublish(localTracks.videoTrack);
@@ -348,6 +349,7 @@ class AgoraChannel {
       if (localTracks != undefined) {
 
         for (var i = 0; i < localTracks.length; i++) {
+          localTracks[i].unpipe();
           localTracks[i].stop();
           localTracks[i].close();
           this.client.unpublish(localTracks[i])
@@ -356,6 +358,10 @@ class AgoraChannel {
       }
 
       
+    }
+
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
     }
 
     this.is_screensharing = false;
@@ -969,19 +975,19 @@ class AgoraChannel {
   }
   
   async setVirtualBackgroundBlur(blurDegree){
-    setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+    setBackgroundBlurring(this.virtualBackgroundProcessor, localTracks.videoTrack, blurDegree);
   }
   
   async setVirtualBackgroundColor(hexColor){
-    setBackgroundColor(localTracks.videoTrack, hexColor);
+    setBackgroundColor(this.virtualBackgroundProcessor, localTracks.videoTrack, hexColor);
   }
   
   async setVirtualBackgroundImage(imgFile){
-    setBackgroundImage(localTracks.videoTrack, imgFile);
+    setBackgroundImage(this.virtualBackgroundProcessor, localTracks.videoTrack, imgFile);
   }
   
   async setVirtualBackgroundVideo(videoFile){
-    setBackgroundVideo(localTracks.videoTrack, videoFile);
+    setBackgroundVideo(this.virtualBackgroundProcessor, localTracks.videoTrack, videoFile);
   }
 
   async enableSpatialAudio(enabled, client = this.client){

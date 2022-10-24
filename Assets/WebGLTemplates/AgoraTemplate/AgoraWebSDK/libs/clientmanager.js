@@ -292,11 +292,13 @@ class ClientManager {
       var track = localTracks[trackName];
       if (track) {
         if(!Array.isArray(track)){
+          track.unpipe();
           track.stop();
           track.close();
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
+            track[i].unpipe();
             track[i].stop();
             track[i].close();
           }
@@ -314,6 +316,10 @@ class ClientManager {
     if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb();
+    }
+
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
     }
 
     this.is_screensharing = false; // set to default
@@ -1067,19 +1073,27 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
 }
 
 async setVirtualBackgroundBlur(blurDegree){
-  setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundBlurring(this.virtualBackgroundProcessor, localTracks.videoTrack, blurDegree);
+  }
 }
 
 async setVirtualBackgroundColor(hexColor){
-  setBackgroundColor(localTracks.videoTrack, hexColor);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundColor(this.virtualBackgroundProcessor, localTracks.videoTrack, hexColor);
+  }
 }
 
 async setVirtualBackgroundImage(imgFile){
-  setBackgroundImage(localTracks.videoTrack, imgFile);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundImage(this.virtualBackgroundProcessor, localTracks.videoTrack, imgFile);
+  }
 }
 
 async setVirtualBackgroundVideo(videoFile){
-  setBackgroundVideo(localTracks.videoTrack, videoFile);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundVideo(this.virtualBackgroundProcessor, localTracks.videoTrack, videoFile);
+  }
 }
 
   SetRemoteUserPriority(uid, userPriority) {

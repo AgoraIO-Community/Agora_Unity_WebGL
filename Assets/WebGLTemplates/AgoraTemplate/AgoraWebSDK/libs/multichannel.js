@@ -457,6 +457,7 @@ function setVirtualBackgroundBlur_MC(blurDegree){
 }
 
 function setVirtualBackgroundColor_MC(hexColor){
+  console.log(hexColor);
   var c = clients[selectedCurrentChannel];
   c.setVirtualBackgroundColor(hexColor);
 }

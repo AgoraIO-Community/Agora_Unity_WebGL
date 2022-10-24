@@ -35,14 +35,8 @@ public class AgoraClientManager : MonoBehaviour
     public bool joinedChannel = false;
     public bool useToken = false;
     public Toggle loopbackAudioToggle, newScreenShareToggle;
-    public VirtualBackgroundSource myVirtualBackground;
 
     private List<uint> remoteClientIDs;
-
-    public int blurDegrees = 2;
-    public string hexColor = "#00FF00";
-    public string imgFile = "seinfeld.png";
-    public string videoFile = "movie.mp4";
 
     public InputField screenShareIDInput;
 
@@ -62,7 +56,6 @@ public class AgoraClientManager : MonoBehaviour
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
         remoteClientIDs = new List<uint>();
-        myVirtualBackground = new VirtualBackgroundSource();
         Debug.Log(SCREEN_SHARE_ID.ToString());
         screenShareIDInput.text = SCREEN_SHARE_ID.ToString();
     }
@@ -194,31 +187,6 @@ public class AgoraClientManager : MonoBehaviour
 
         mRtcEngine.OnError += EngineOnErrorHandler;
 
-    }
-
-    public void enableVirtualBackground(bool onoff)
-    {
-        mRtcEngine.enableVirtualBackground(onoff, myVirtualBackground);
-    }
-
-    public void setVirtualBackgroundBlur()
-    {
-        mRtcEngine.SetVirtualBackgroundBlur(blurDegrees);
-    }
-
-    public void setVirtualBackgroundColor()
-    {
-        mRtcEngine.SetVirtualBackgroundColor(hexColor);
-    }
-
-    public void setVirtualBackgroundImage()
-    {
-        mRtcEngine.SetVirtualBackgroundImage(imgFile);
-    }
-
-    public void setVirtualBackgroundVideo()
-    {
-        mRtcEngine.SetVirtualBackgroundVideo(videoFile);
     }
 
     public void JoinChannel()
