@@ -106,9 +106,9 @@ class AgoraChannel {
       this.remoteUsersVideoMuted[id] = true;
     }
 
-    var userAudioMuted = this.remoteUsersAudioMuted[id] != null && this.remoteUsersAudioMuted[id] == true;
-    var userVideoMuted = this.remoteUsersVideoMuted[id] != null && this.remoteUsersVideoMuted[id] == true;
-    if ((mediaType == "audio" && !userAudioMuted || mediaType == "video" && !userVideoMuted)) {
+    var userAudioMuted = this.remoteUsersAudioMuted[id] == true;
+    var userVideoMuted = this.remoteUsersVideoMuted[id] == true;
+    if ((mediaType == "audio" && !userAudioMuted && this.audioSubscribing || mediaType == "video" && !userVideoMuted && this.videoSubscribing)) {
       if (mediaType == "video" || (mediaType == "audio" && this.screenShareClient == null
         || mediaType == "audio" && this.screenShareClient != null
         && id != this.screenShareClient.uid)) {
