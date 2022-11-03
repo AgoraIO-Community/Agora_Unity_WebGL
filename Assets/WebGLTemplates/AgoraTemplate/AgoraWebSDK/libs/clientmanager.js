@@ -186,7 +186,6 @@ class ClientManager {
       await this.subscribe_remoteuser(user, mediaType);
     } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
       await this.subscribe_remoteuser(user, mediaType);
-      event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
       this.getRemoteVideoStats(id);
     }
     remoteUsers[id] = user;
@@ -206,10 +205,7 @@ class ClientManager {
 
   handleUserUnpublished(user, mediaType) {
     const id = user.uid;
-    // delete remoteUsers[id];
-    // $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
-    event_manager.raiseOnRemoteUserMuted(strUID, mediaType, 1);
   }
 
   handleUserLeft(user, reason) {
