@@ -900,6 +900,12 @@ var LibraryAgoraWebGLSDK = {
   enableSpatialAudio: function (enabled) {
     enableSpatialAudio(enabled);
   },
+  enableLocalMediaSpatialAudio: function (uid, enabled, media) {
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
+    file = Pointer_stringify(media);
+    enableLocalMediaSpatialAudio(newUID, enabled, file);
+  },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
   },
@@ -1054,6 +1060,36 @@ var LibraryAgoraWebGLSDK = {
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
     setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+  },
+  updatePlayerPositionInfo: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
+    const localPosition = {
+      position: [posX, posY, posZ],
+      forward: [forwardX, forwardY, forwardZ],
+    };
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
+    updatePlayerPositionInfo(newUID, localPosition.position, localPosition.forward);
+  },
+  updateRemotePosition: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
+    const localPosition = {
+      position: [posX, posY, posZ],
+      forward: [forwardX, forwardY, forwardZ],
+    };
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
+    updateRemotePosition(newUID, localPosition.position, localPosition.forward);
+  },
+  updateSelfPosition: function(posX, posY, posZ, forwardX, forwardY, forwardZ){
+    const localPosition = {
+      position: [posX, posY, posZ],
+      forward: [forwardX, forwardY, forwardZ],
+    };
+    updateSelfPosition(localPosition.position, localPosition.forward);
+  },
+  removeRemotePosition: function(uid){
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
+    removeRemotePosition(newUID);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError()

@@ -64,6 +64,74 @@ async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
 
 }
 
+async getLocalMediaSpatialAudioProcessor(uid, soundSrc, enabled) {
+  setTimeout(async () => {
+    try {
+    var isOn = enabled == 1 ? true : false;
+    var processor = await extension.createProcessor();
+    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc});
+    await track.pipe(processor).pipe(track.processorDestination);
+    track.startProcessAudioBuffer({ loop: true });
+    track.play();
+    this.localPlayProcessors[uid] = processor;
+    this.localPlayTracks[uid] = track;
+    this.enabled = isOn;
+    } catch (error) {
+      console.error(`${processor} with buffer track play fail: ${error}`);
+    }
+  }, 1000);
+
+}
+
+async getRemoteMediaSpatialAudioProcessor(client, soundSrc, enabled) {
+  setTimeout(async () => {
+    try {
+    var isOn = enabled == 1 ? true : false;
+    var processor = await extension.createProcessor();
+    const track = await AgoraRTC.createBufferSourceAudioTrack({ source: soundSrc});
+    await track.pipe(processor).pipe(track.processorDestination);
+    track.startProcessAudioBuffer({ loop: true });
+    client.spatialAudioProcessor = processor;
+    this.localPlayProcessors[client.uid] = processor;
+    this.localPlayTracks[client.uid] = track;
+    this.enabled = isOn;
+    this.processor = processor;
+    track.play();
+    return processor;
+    } catch (error) {
+      console.error(`${processor} with microphone track play fail: ${error}`);
+    }
+  }, 1000);
+
+}
+
+
+
+async getRemoteMediaSpatialAudioProcessor(enabled, media){
+    setTimeout(async () => {
+      try {
+        
+        var processor = undefined;
+        
+        
+        if(enabled === true){
+          processor = await extension.createProcessor();
+          const track = await AgoraRTC.createBufferSourceAudioTrack(media)
+          await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
+          this.localPlayProcessors[client.uid] = processor;
+          this.localPlayTracks[client.uid] = track;
+        } else { 
+          //disable spatial audio code would go here.
+        }
+
+        this.enabled = enabled;
+        
+      } catch (error) {
+        console.error(`${processor} with microphone track play fail: ${error}`);
+      }
+    }, 1000);
+}
+
 async getRemoteUserSpatialAudioProcessor(client, enabled) {
   setTimeout(async () => {
     try {
@@ -108,6 +176,56 @@ async localPlayerStopAll() {
     this.localPlayTracks = {};
     this.localPlayProcessors = {};
   }
+}
+
+updateSelfPosition(position, forward){
+  const localPlayerPosition = {
+    position: [position[0], position[1], 1],
+    forward: forward,
+    right: [1, 0, 0],
+    up: [0, 1, 0]
+  };
+
+  
+  console.log("updating extension position");
+  extension.updateSelfPosition(localPlayerPosition);
+  
+
+}
+
+updatePlayerPositionInfo(uid, position, forward){
+  const localPlayerPosition = {
+    position: [position[0], position[1], position[2]],
+    forward: forward
+  };
+
+ 
+
+  if(this.localPlayProcessors[uid] !== undefined){
+    console.log(this.localPlayProcessors[uid].updatePlayerPositionInfo({position, forward}));
+    this.localPlayProcessors[uid].updatePlayerPositionInfo(localPlayerPosition);
+  }
+
+}
+
+updateRemotePosition(uid, position, forward){
+  const localPlayerPosition = {
+    position: [position[0], position[1], 1],
+    forward: forward,
+  };
+
+  
+
+  if(this.localPlayProcessors[uid] !== undefined){
+    
+    this.localPlayProcessors[uid].updateRemotePosition(localPlayerPosition);
+  }
+  
+}
+
+removeRemotePosition(uid){
+ delete this.localPlayProcessors[uid];
+ delete this.localPlayTracks[uid];
 }
 
 updateSpatialAzimuth(uid, value) {

@@ -22,6 +22,7 @@ class ClientManager {
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
+    this.spatialAudioProcessor = null;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -1162,6 +1163,16 @@ async setVirtualBackgroundVideo(videoFile){
     }
   }
 
+  async enableLocalMediaSpatialAudio(uid, enabled, media){
+
+    if(this.spatialAudio == undefined){
+      this.spatialAudio = await window.createSpatialAudioManager();
+    }
+
+    this.spatialAudio.getLocalMediaSpatialAudioProcessor(uid, media, enabled);
+    
+  }
+
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
      this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
      this.spatialAudio.updateSpatialElevation(uid, elevation);
@@ -1170,5 +1181,29 @@ async setVirtualBackgroundVideo(videoFile){
      this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
      this.spatialAudio.updateSpatialBlur(uid, blur);
      this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
+  }
+
+  async updatePlayerPositionInfo(uid, position, forward){
+    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+      this.spatialAudio.updatePlayerPositionInfo(uid, position, forward);
+    }
+  }
+
+  async updateRemotePosition(uid, position, forward){
+    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+      this.spatialAudio.updateRemotePosition(uid, position, forward);
+    }
+  }
+
+  async removeRemotePosition(uid){
+    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+      this.spatialAudio.removeRemotePosition(uid);
+    }
+  }
+
+  async updateSelfPosition(position, forward){
+    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+      this.spatialAudio.updateSelfPosition(position, forward);
+    }
   }
 }

@@ -5351,6 +5351,105 @@ namespace agora_gaming_rtc
         }
 
 
+        /// @cond
+        /** Enables or disables the spatial audio effect.
+         * @since 3.7.0
+         *
+         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
+         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
+         * with a real sense of space.
+         * @note Call this method before joining a channel.
+         * @param enabled Whether to enable the spatial audio effect:
+         * - `true`: Yes.
+         * - `false`: No.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int EnableLocalMediaSpatialAudio(string uid, bool enabled, string media)
+        {
+            return IRtcEngineNative.enableLocalMediaSpatialAudio(uid, enabled, media);
+        }
+
+        /// @cond
+        /** Enables or disables the spatial audio effect.
+         * @since 3.7.0
+         *
+         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
+         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
+         * with a real sense of space.
+         * @note Call this method before joining a channel.
+         * @param enabled Whether to enable the spatial audio effect:
+         * - `true`: Yes.
+         * - `false`: No.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int updatePlayerPositionInfo(string uid, Vector3 position, Vector3 forward)
+        {
+            return IRtcEngineNative.updatePlayerPositionInfo(uid, position.x, position.y, position.z, forward.x, forward.y, forward.z);
+        }
+
+        /// @cond
+        /** Enables or disables the spatial audio effect.
+         * @since 3.7.0
+         *
+         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
+         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
+         * with a real sense of space.
+         * @note Call this method before joining a channel.
+         * @param enabled Whether to enable the spatial audio effect:
+         * - `true`: Yes.
+         * - `false`: No.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int updateRemotePosition(string uid, Vector3 position, Vector3 forward)
+        {
+            return IRtcEngineNative.updateRemotePosition(uid, position.x, position.y, position.z, forward.x, forward.y, forward.z);
+        }
+
+        /// @cond
+        /** Enables or disables the spatial audio effect.
+         * @since 3.7.0
+         *
+         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
+         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
+         * with a real sense of space.
+         * @note Call this method before joining a channel.
+         * @param enabled Whether to enable the spatial audio effect:
+         * - `true`: Yes.
+         * - `false`: No.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int removeRemotePosition(string uid)
+        {
+            return IRtcEngineNative.removeRemotePosition(uid);
+        }
+
+        /// @cond
+        /** Enables or disables the spatial audio effect.
+         * @since 3.7.0
+         *
+         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
+         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
+         * with a real sense of space.
+         * @note Call this method before joining a channel.
+         * @param enabled Whether to enable the spatial audio effect:
+         * - `true`: Yes.
+         * - `false`: No.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
+        public int updateSelfPosition(Vector3 position, Vector3 forward)
+        {
+           return IRtcEngineNative.updateSelfPosition(position.x, position.y, position.z, forward.x, forward.y, forward.z);
+        }
 
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
