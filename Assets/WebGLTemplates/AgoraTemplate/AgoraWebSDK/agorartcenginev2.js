@@ -927,3 +927,6 @@ function setVirtualBackgroundVideo(videoFile){
 function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
 }
+function enableEncryption(enabled, encryptionKey, encryptionMode, encryptionSalt){
+  client_manager.enableEncryption(enabled, encryptionKey, encryptionMode, encryptionSalt);
+}

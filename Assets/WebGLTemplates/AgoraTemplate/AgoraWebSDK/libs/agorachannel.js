@@ -895,24 +895,60 @@ class AgoraChannel {
     }
   }
 
-  enableEncryption2_mc(enable, encryptionKey_Str, encryptionMode) {
-    var modestr = "none";
+  base64ToUint8Array(base64Str){
+    console.log("base string is....", base64Str);
+    const raw = window.atob(base64Str);
+    const result = new Uint8Array(new ArrayBuffer(32));
+  
+    for (let i = 0; i < 32; i += 1) {
+      result[i] = raw.charCodeAt(i);
+    }
+  
+    return result;
+  }
 
+  // Declare a function to convert Hex to ASCII.
+  hex2ascii(hexx) {
+    const hex = hexx.toString();//force conversion
+    let str = '';
+    for (let i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+  }
+
+  enableEncryption2_mc(enable, encryptionKey, encryptionMode, encryptionSalt) {
+    var modestr = "none";
+    var saltResult = this.base64ToUint8Array(encryptionSalt);
+    var encryptAscii = this.hex2ascii(encryptionKey);
     if (enable) {
       if (encryptionMode == 1) {
         modestr = "aes-128-xts";
       } else if (encryptionMode == 2) {
-        modestr = "aes-256-xts";
-      } else if (encryptionMode == 3) {
         modestr = "aes-128-ecb";
+      } else if (encryptionMode == 3) {
+        modestr = "aes-256-xts";
       } else if (encryptionMode == 4) {
         modestr = "sm4-128-ecb";
+      } else if (encryptionMode == 5) {
+        modestr = "aes-128-gcm";
+      } else if (encryptionMode == 6) {
+        modestr = "aes-256-gcm";
+      } else if (encryptionMode == 7) {
+        modestr = "aes-128-gcm2";
+      } else if (encryptionMode == 8) {
+        modestr = "aes-256-gcm2";
       }
     } else {
       modestr = "none";
     }
     if (this.client) {
-      this.client.setEncryptionConfig(modestr, encryptionKey_Str);
+      
+      if(modestr === "aes-128-gcm2" || modestr === "aes-256-gcm2")
+        this.client.setEncryptionConfig(modestr, encryptAscii, saltResult);
+      else
+        this.client.setEncryptionConfig(modestr, encryptAscii);
+
+      console.log("encryption configuration updated");
     }
   }
 

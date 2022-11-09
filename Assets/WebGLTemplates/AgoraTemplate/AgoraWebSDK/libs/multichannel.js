@@ -379,12 +379,12 @@ function setEncryptionMode2_mc_WGL(mode) {
   c.setEncryptionMode(mode);
 }
 
-function enableEncryption2_mc(enable, encryptionKey_Str, encryptionMode) {
+function enableEncryption2_mc(enable, encryptionKey_Str, encryptionMode, encryptionSalt) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
   }
   var c = clients[selectedCurrentChannel];
-  c.enableEncryption2_mc(enable, encryptionKey_Str, encryptionMode);
+  c.enableEncryption2_mc(enable, encryptionKey_Str, encryptionMode, encryptionSalt);
 }
 
 function find_mc_client(channelId) {

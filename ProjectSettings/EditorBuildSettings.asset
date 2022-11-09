@@ -41,9 +41,9 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/FunctionalTest/DevDemo/SceneFuncTests.unity
     guid: 38239e0a3e78848d8a1e3b083920e199
-  - enabled: 1
-    path: Assets/API-Example/SpatialAudioForMultichannel/SpatialAudioScene.unity
-    guid: 04cfcb3deed02204ab61de68f097a240
   - enabled: 0
-    path: Assets/API-Example/SpatialAudioForClientManager/SpatialAudioScene.unity
-    guid: 9b5f437855cd6ee468f48354227c74a7
+    path: Assets/API-Example/EncryptionForClientManager/MainSceneNew.unity
+    guid: 9bf1ff8fa751b5642b86e4da9a118f08
+  - enabled: 1
+    path: Assets/API-Example/EncryptionForMultichannel/MainSceneNew.unity
+    guid: 8a28c6f5fe9fdaa4a84aa3cd5caa8bc3

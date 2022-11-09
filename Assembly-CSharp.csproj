@@ -9,7 +9,7 @@
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <RootNamespace></RootNamespace>
-    <ProjectGuid>{885A3DAA-1E51-87A4-E4C6-DD4176626251}</ProjectGuid>
+    <ProjectGuid>{972D41C4-3DFC-1F87-69EC-772A6E72B5CE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <AssemblyName>Assembly-CSharp</AssemblyName>
@@ -85,13 +85,13 @@
      <Compile Include="Assets\API-Example\app-screenshare-sample\AgoraScreenShare.cs" />
      <Compile Include="Assets\API-Example\datastream-sample\TestDataStream.cs" />
      <Compile Include="Assets\API-Example\desktop-screenshare-sample\WebScreenShare.cs" />
+     <Compile Include="Assets\API-Example\EncryptionForClientManager\EncryptionForClientManager.cs" />
+     <Compile Include="Assets\API-Example\EncryptionForMultichannel\EncryptionForMultichannel.cs" />
      <Compile Include="Assets\API-Example\geo-area-sample\HelloVideoAgora2.cs" />
      <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanel.cs" />
      <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanelNew.cs" />
      <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\MultiChannelSceneCtrl.cs" />
      <Compile Include="Assets\API-Example\rtmp-streaming-sample\RtmpStreaming.cs" />
-     <Compile Include="Assets\API-Example\SpatialAudioForClientManager\SpatialAudioForClientManager.cs" />
-     <Compile Include="Assets\API-Example\SpatialAudioForMultichannel\SpatialAudioforMultichannel.cs" />
      <Compile Include="Assets\API-Example\tools\Logger.cs" />
      <Compile Include="Assets\API-Example\tools\PermissionHelper.cs" />
      <Compile Include="Assets\API-Example\tools\ToggleStateButton.cs" />

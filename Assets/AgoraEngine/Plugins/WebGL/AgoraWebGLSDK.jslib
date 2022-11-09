@@ -1310,10 +1310,16 @@ var LibraryAgoraWebGLSDK = {
     channel,
     enabled,
     encryptionKey,
-    encryptionMode
+    encryptionMode,
+    encryptionSalt
   ) {
     var encryptionKey_Str = Pointer_stringify(encryptionKey);
-    enableEncryption2_mc(enabled, encryptionKey_Str, encryptionMode);
+    console.log(" the salt on JS is...", encryptionSalt);
+    var encryptionSalt_Str = Pointer_stringify(encryptionSalt);
+    console.log(" the salt on JS is...", encryptionSalt_Str);
+    var encodedSalt = window.btoa(encryptionSalt_Str);
+    console.log(" the salt on JS is...", encodedSalt);
+    enableEncryption2_mc(enabled, encryptionKey_Str, encryptionMode, encodedSalt);
   },
 
   setDefaultMuteAllRemoteAudioStreams: function (channel, mute) {
@@ -1503,7 +1509,15 @@ var LibraryAgoraWebGLSDK = {
     screenCaptureCaptureMouseCursor
   ) {},
   enableRemoteSuperResolution2: function (channel, userId, enable) {},
-  enableEncryption: function (enabled, encryptionKey, encryptionMode) {},
+  enableEncryption: function (enabled, encryptionKey, encryptionMode, encryptionSalt) {
+    var encryptionKey_Str = Pointer_stringify(encryptionKey);
+    console.log(" the salt on JS is...", encryptionSalt);
+    var encryptionSalt_Str = Pointer_stringify(encryptionSalt);
+    console.log(" the salt on JS is...", encryptionSalt_Str);
+    var encodedSalt = window.btoa(encryptionSalt_Str);
+    console.log(" the salt on JS is...", encodedSalt);
+    enableEncryption(enabled, encryptionKey_Str, encryptionMode, encodedSalt);
+  },
   unRegisterMediaMetadataObserver: function () {},
   setMultiChannelWant: function (multiChannelWant) {
     setMultiChannelWant_MC(multiChannelWant);
