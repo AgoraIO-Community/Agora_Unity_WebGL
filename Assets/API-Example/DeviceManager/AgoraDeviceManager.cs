@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using System.Linq;
+using agora_utilities;
 
 public class AgoraDeviceManager : MonoBehaviour
 {
@@ -28,7 +29,10 @@ public class AgoraDeviceManager : MonoBehaviour
     private int _recordingDeviceIndex = 0,
     _playbackDeviceIndex = 0,
     _videoDeviceIndex = 0;
-    private List<uint> remoteClientIDs;
+    private List<uint> remoteClientIDs = new List<uint>();
+    private const float Offset = 100;
+    GameObject LastRemote = null;
+    public Slider recordingVolume, playbackVolume;
 
     // Start is called before the first frame update
     void Start()
@@ -43,6 +47,7 @@ public class AgoraDeviceManager : MonoBehaviour
     void Update() 
     {
         PermissionHelper.RequestMicrophontPermission();
+        PermissionHelper.RequestCameraPermission();
     }
 
     bool CheckAppId()
@@ -69,11 +74,17 @@ public class AgoraDeviceManager : MonoBehaviour
         ReleaseDeviceManager();
     }
 
+    public void volumeUpdate(){
+        SetCurrentDeviceVolume();
+    }
+
     void InitRtcEngine()
     {
         _rtcEngine = IRtcEngine.GetEngine(APP_ID);
         _rtcEngine.SetLogFile("log.txt");
         _rtcEngine.EnableAudio();
+        _rtcEngine.EnableVideo();
+        _rtcEngine.EnableVideoObserver();
         _rtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         _rtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         _rtcEngine.OnJoinChannelSuccess += OnJoinChannelSuccessHandler;
@@ -146,10 +157,10 @@ public class AgoraDeviceManager : MonoBehaviour
         _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
     }
 
-    void SetCurrentDeviceVolume()
+    public void SetCurrentDeviceVolume()
     {
-        _audioRecordingDeviceManager.SetAudioRecordingDeviceVolume(100);
-        _audioPlaybackDeviceManager.SetAudioPlaybackDeviceVolume(100);
+        _audioRecordingDeviceManager.SetAudioRecordingDeviceVolume((int)recordingVolume.value);
+        _audioPlaybackDeviceManager.SetAudioPlaybackDeviceVolume((int)playbackVolume.value);
     }
 
     void ReleaseDeviceManager()
@@ -162,12 +173,14 @@ public class AgoraDeviceManager : MonoBehaviour
     void JoinChannel()
     {
         _rtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        makeVideoView(CHANNEL_NAME, 0);
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
         _logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME,
             uid, elapsed));
+        makeVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Add(uid);
     }
 
@@ -210,6 +223,84 @@ public class AgoraDeviceManager : MonoBehaviour
     void OnConnectionLostHandler()
     {
         _logger.UpdateLog(string.Format("OnConnectionLost "));
+    }
+
+    private void makeVideoView(string channelId, uint uid)
+    {
+        string objName = channelId + "_" + uid.ToString();
+        GameObject go = GameObject.Find(objName);
+        if (!ReferenceEquals(go, null))
+        {
+            return; // reuse
+        }
+
+
+        // create a GameObject and assign to this new user
+        VideoSurface videoSurface = makeImageSurface(objName);
+        if (!ReferenceEquals(videoSurface, null))
+        {
+            // configure videoSurface
+            videoSurface.SetForUser(uid);
+            videoSurface.SetEnable(true);
+            videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+            // make the object draggable
+            //videoSurface.gameObject.AddComponent<UIElementDragger>();
+
+            if (uid != 0)
+            {
+                LastRemote = videoSurface.gameObject;
+            }
+        }
+    }
+
+    // Video TYPE 2: RawImage
+    public VideoSurface makeImageSurface(string goName)
+    {
+        GameObject go = new GameObject();
+
+        if (go == null)
+        {
+            return null;
+        }
+
+        go.name = goName;
+        // make the object draggable
+        go.AddComponent<UIElementDrag>();
+        // to be renderered onto
+        go.AddComponent<RawImage>();
+
+        GameObject canvas = GameObject.Find("VideoPanel");
+        if (canvas != null)
+        {
+            go.transform.SetParent(canvas.transform);
+            Debug.Log("add video view");
+        }
+        else
+        {
+            Debug.Log("Canvas is null video view");
+        }
+
+        // set up transform
+        go.transform.Rotate(0f, 0.0f, 180.0f);
+        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
+        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+        Debug.Log("position x " + xPos + " y: " + yPos);
+        go.transform.localPosition = new Vector3(xPos, yPos, 0f);
+        go.transform.localScale = new Vector3(1.5f, 1f, 1f);
+
+        // configure videoSurface
+        VideoSurface videoSurface = go.AddComponent<VideoSurface>();
+        return videoSurface;
+    }
+
+    private void DestroyVideoView(string channelId, uint uid)
+    {
+        string objName = channelId + "_" + uid.ToString();
+        GameObject go = GameObject.Find(objName);
+        if (!ReferenceEquals(go, null))
+        {
+            Object.Destroy(go);
+        }
     }
 }
 
