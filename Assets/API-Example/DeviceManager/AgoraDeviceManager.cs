@@ -24,6 +24,9 @@ public class AgoraDeviceManager : MonoBehaviour
     private Dictionary<int, string> _audioRecordingDeviceDic = new Dictionary<int, string>();
     private Dictionary<int, string> _audioPlaybackDeviceDic = new Dictionary<int, string>();
     private Dictionary<int, string> _videoDeviceManagerDic = new Dictionary<int, string>();
+    private Dictionary<int, string> _audioRecordingDeviceNamesDic = new Dictionary<int, string>();
+    private Dictionary<int, string> _audioPlaybackDeviceNamesDic = new Dictionary<int, string>();
+    private Dictionary<int, string> _videoDeviceManagerNamesDic = new Dictionary<int, string>();
     public Dropdown videoDropdown, recordingDropdown, playbackDropdown;
     [SerializeField]
     private int _recordingDeviceIndex = 0,
@@ -58,21 +61,17 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void playbackUpdate(){
         _playbackDeviceIndex = playbackDropdown.value;
-        SetCurrentDevice();
-        ReleaseDeviceManager();
     }
 
     public void recordingUpdate(){
-        _playbackDeviceIndex = recordingDropdown.value;
-        SetCurrentDevice();
-        ReleaseDeviceManager();
+        _recordingDeviceIndex = recordingDropdown.value;
     }
 
     public void videoUpdate(){
-        _playbackDeviceIndex = videoDropdown.value;
-        SetCurrentDevice();
-        ReleaseDeviceManager();
+        _videoDeviceIndex = videoDropdown.value;
     }
+
+
 
     public void volumeUpdate(){
         SetCurrentDeviceVolume();
@@ -107,10 +106,11 @@ public class AgoraDeviceManager : MonoBehaviour
         for(int i = 0; i < count ; i ++) {
             _audioRecordingDeviceManager.GetAudioRecordingDevice(i, ref audioRecordingDeviceName, ref audioRecordingDeviceId);
             _audioRecordingDeviceDic.Add(i, audioRecordingDeviceId);
+            _audioRecordingDeviceNamesDic.Add(i, audioRecordingDeviceName);
             _logger.UpdateLog(string.Format("AudioRecordingDevice device index: {0}, name: {1}, id: {2}", i, audioRecordingDeviceName, audioRecordingDeviceId));
         }
 
-        recordingDropdown.AddOptions(_audioRecordingDeviceDic.Values.ToList());
+        recordingDropdown.AddOptions(_audioRecordingDeviceNamesDic.Values.ToList());
     }
 
     void GetAudioPlaybackDevice()
@@ -125,10 +125,11 @@ public class AgoraDeviceManager : MonoBehaviour
         for(int i = 0; i < count ; i ++) {
             _audioPlaybackDeviceManager.GetAudioPlaybackDevice(i, ref audioPlaybackDeviceName, ref audioPlaybackDeviceId);
             _audioPlaybackDeviceDic.Add(i, audioPlaybackDeviceId);
+            _audioPlaybackDeviceNamesDic.Add(i, audioPlaybackDeviceName);
             _logger.UpdateLog(string.Format("AudioPlaybackDevice device index: {0}, name: {1}, id: {2}", i, audioPlaybackDeviceName, audioPlaybackDeviceId));
         }
 
-         playbackDropdown.AddOptions(_audioPlaybackDeviceDic.Values.ToList());
+         playbackDropdown.AddOptions(_audioPlaybackDeviceNamesDic.Values.ToList());
     }
 
     void GetVideoDeviceManager()
@@ -145,9 +146,10 @@ public class AgoraDeviceManager : MonoBehaviour
         for(int i = 0; i < count ; i ++) {
             _videoDeviceManager.GetVideoDevice(i, ref videoDeviceName, ref videoDeviceId);
             _videoDeviceManagerDic.Add(i, videoDeviceId);
+            _videoDeviceManagerNamesDic.Add(i, videoDeviceName);
             _logger.UpdateLog(string.Format("VideoDeviceManager device index: {0}, name: {1}, id: {2}", i, videoDeviceName, videoDeviceId));
         }
-        videoDropdown.AddOptions(_videoDeviceManagerDic.Values.ToList());
+        videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
     }
 
     void SetCurrentDevice()
@@ -168,6 +170,21 @@ public class AgoraDeviceManager : MonoBehaviour
         _audioPlaybackDeviceManager.ReleaseAAudioPlaybackDeviceManager();
         _audioRecordingDeviceManager.ReleaseAAudioRecordingDeviceManager();
         _videoDeviceManager.ReleaseAVideoDeviceManager();
+    }
+
+    public void SetAndReleaseRecordingDevice(){
+        _audioRecordingDeviceManager.SetAudioRecordingDevice(_audioRecordingDeviceDic[_recordingDeviceIndex]);
+        _audioRecordingDeviceManager.ReleaseAAudioRecordingDeviceManager();
+    }
+
+    public void SetAndReleasePlaybackDevice(){
+        _audioPlaybackDeviceManager.SetAudioPlaybackDevice(_audioRecordingDeviceDic[_recordingDeviceIndex]);
+        _audioPlaybackDeviceManager.ReleaseAAudioPlaybackDeviceManager();
+    }
+
+    public void SetAndReleaseVideoDevice(){
+       _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
+       _videoDeviceManager.ReleaseAVideoDeviceManager();
     }
 
     void JoinChannel()
