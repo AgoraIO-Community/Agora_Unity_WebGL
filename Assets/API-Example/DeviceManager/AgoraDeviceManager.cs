@@ -15,7 +15,7 @@ public class AgoraDeviceManager : MonoBehaviour
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
 
-    public Text LogText;
+    public Text LogText, videoDeviceText;
     private Logger _logger;
     private IRtcEngine _rtcEngine = null;
     private AudioRecordingDeviceManager _audioRecordingDeviceManager = null;
@@ -36,14 +36,15 @@ public class AgoraDeviceManager : MonoBehaviour
     private const float Offset = 100;
     GameObject LastRemote = null;
     public Slider recordingVolume, playbackVolume;
-
+    public bool joinedChannel;
+    public Button videoDeviceButton, joinChannelButton, leaveChannelButton;
     // Start is called before the first frame update
     void Start()
     {
         if (CheckAppId())
         {
             InitRtcEngine();
-            JoinChannel();
+            
         }
     }
 
@@ -51,6 +52,14 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
+
+
+        //videoDeviceButton.interactable = !joinedChannel;
+        //videoDropdown.interactable = !joinedChannel;
+        videoDeviceText.gameObject.SetActive(joinedChannel);
+        joinChannelButton.interactable = !joinedChannel;
+        leaveChannelButton.interactable = joinedChannel;
+        
     }
 
     bool CheckAppId()
@@ -105,8 +114,10 @@ public class AgoraDeviceManager : MonoBehaviour
         recordingDropdown.ClearOptions();
         for(int i = 0; i < count ; i ++) {
             _audioRecordingDeviceManager.GetAudioRecordingDevice(i, ref audioRecordingDeviceName, ref audioRecordingDeviceId);
-            _audioRecordingDeviceDic.Add(i, audioRecordingDeviceId);
-            _audioRecordingDeviceNamesDic.Add(i, audioRecordingDeviceName);
+            if (!_audioRecordingDeviceDic.ContainsKey(i)) {
+                _audioRecordingDeviceDic.Add(i, audioRecordingDeviceId);
+                _audioRecordingDeviceNamesDic.Add(i, audioRecordingDeviceName);
+            }
             _logger.UpdateLog(string.Format("AudioRecordingDevice device index: {0}, name: {1}, id: {2}", i, audioRecordingDeviceName, audioRecordingDeviceId));
         }
 
@@ -124,8 +135,11 @@ public class AgoraDeviceManager : MonoBehaviour
         playbackDropdown.ClearOptions();
         for(int i = 0; i < count ; i ++) {
             _audioPlaybackDeviceManager.GetAudioPlaybackDevice(i, ref audioPlaybackDeviceName, ref audioPlaybackDeviceId);
-            _audioPlaybackDeviceDic.Add(i, audioPlaybackDeviceId);
-            _audioPlaybackDeviceNamesDic.Add(i, audioPlaybackDeviceName);
+            if (!_audioPlaybackDeviceDic.ContainsKey(i))
+            {
+                _audioPlaybackDeviceDic.Add(i, audioPlaybackDeviceId);
+                _audioPlaybackDeviceNamesDic.Add(i, audioPlaybackDeviceName);
+            }
             _logger.UpdateLog(string.Format("AudioPlaybackDevice device index: {0}, name: {1}, id: {2}", i, audioPlaybackDeviceName, audioPlaybackDeviceId));
         }
 
@@ -145,8 +159,11 @@ public class AgoraDeviceManager : MonoBehaviour
         videoDropdown.ClearOptions();
         for(int i = 0; i < count ; i ++) {
             _videoDeviceManager.GetVideoDevice(i, ref videoDeviceName, ref videoDeviceId);
-            _videoDeviceManagerDic.Add(i, videoDeviceId);
-            _videoDeviceManagerNamesDic.Add(i, videoDeviceName);
+            if (!_videoDeviceManagerDic.ContainsKey(i))
+            {
+                _videoDeviceManagerDic.Add(i, videoDeviceId);
+                _videoDeviceManagerNamesDic.Add(i, videoDeviceName);
+            }
             _logger.UpdateLog(string.Format("VideoDeviceManager device index: {0}, name: {1}, id: {2}", i, videoDeviceName, videoDeviceId));
         }
         videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
@@ -187,10 +204,17 @@ public class AgoraDeviceManager : MonoBehaviour
        _videoDeviceManager.ReleaseAVideoDeviceManager();
     }
 
-    void JoinChannel()
+    public void JoinChannel()
     {
         _rtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
         makeVideoView(CHANNEL_NAME, 0);
+        
+    }
+
+    public void LeaveChannel()
+    {
+        _rtcEngine.LeaveChannel();
+        DestroyVideoView(CHANNEL_NAME, 0);
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
@@ -214,6 +238,7 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         _logger.UpdateLog(string.Format("sdk version: {0}", IRtcEngine.GetSdkVersion()));
         _logger.UpdateLog(string.Format("onJoinChannelSuccess channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
+        joinedChannel = true;
         GetAudioPlaybackDevice();
         GetVideoDeviceManager();
         GetAudioRecordingDevice();
@@ -225,6 +250,7 @@ public class AgoraDeviceManager : MonoBehaviour
     void OnLeaveChannelHandler(RtcStats stats)
     {
         _logger.UpdateLog("OnLeaveChannelSuccess");
+        joinedChannel = false;
     }
 
     void OnSDKWarningHandler(int warn, string msg)

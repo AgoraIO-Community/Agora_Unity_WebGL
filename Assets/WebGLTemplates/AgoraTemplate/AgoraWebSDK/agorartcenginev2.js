@@ -286,19 +286,21 @@ async function setLocalAudioTrackMicrophone(deviceId) {
 }
 
 async function setLocalTrackCamera(deviceId) {
-  if (localTracks.videoTrack) {
-    localTracks.videoTrack.setDevice(deviceId);
+  if (localTracks.videoTrack !== undefined) {
+    currentVideoDevice = deviceId;
+    await localTracks.videoTrack.setDevice(currentVideoDevice);
   }
 }
 
 async function setVideoDeviceCollectionDeviceWGL(deviceId) {
+  var client = client_manager.getClient();
   if (currentVideoDevice === "") {
     currentVideoDevice = deviceId;
     event_manager.raiseGetCurrentVideoDevice(currentVideoDevice);
   } else {
     currentVideoDevice = deviceId;
     event_manager.raiseGetCurrentVideoDevice(currentVideoDevice);
-    setLocalTrackCamera(currentVideoDevice);
+    await setLocalTrackCamera(currentVideoDevice);
   }
 }
 
