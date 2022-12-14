@@ -292,11 +292,13 @@ class ClientManager {
       var track = localTracks[trackName];
       if (track) {
         if(!Array.isArray(track)){
+          track.unpipe();
           track.stop();
           track.close();
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
+            track.unpipe();
             track[i].stop();
             track[i].close();
           }
@@ -309,6 +311,10 @@ class ClientManager {
 
     if(this.spatialAudio !== undefined){
       this.spatialAudio.localPlayerStopAll();
+    }
+
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
     }
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
@@ -1075,18 +1081,24 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
 }
 
 async setVirtualBackgroundBlur(blurDegree){
-  setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  }
 }
 
 async setVirtualBackgroundColor(hexColor){
-  setBackgroundColor(localTracks.videoTrack, hexColor);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundColor(localTracks.videoTrack, hexColor);
+  }
 }
 
 async setVirtualBackgroundImage(imgFile){
+  if(this.virtualBackgroundProcessor !== null){
   setBackgroundImage(localTracks.videoTrack, imgFile);
 }
 
 async setVirtualBackgroundVideo(videoFile){
+  if(this.virtualBackgroundProcessor !== null){
   setBackgroundVideo(localTracks.videoTrack, videoFile);
 }
 
