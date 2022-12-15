@@ -1094,12 +1094,14 @@ async setVirtualBackgroundColor(hexColor){
 
 async setVirtualBackgroundImage(imgFile){
   if(this.virtualBackgroundProcessor !== null){
-  setBackgroundImage(localTracks.videoTrack, imgFile);
+    setBackgroundImage(localTracks.videoTrack, imgFile);
+  }
 }
 
 async setVirtualBackgroundVideo(videoFile){
   if(this.virtualBackgroundProcessor !== null){
-  setBackgroundVideo(localTracks.videoTrack, videoFile);
+    setBackgroundVideo(localTracks.videoTrack, videoFile);
+  }
 }
 
   SetRemoteUserPriority(uid, userPriority) {
