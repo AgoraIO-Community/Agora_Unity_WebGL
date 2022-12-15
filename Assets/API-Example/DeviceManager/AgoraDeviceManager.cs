@@ -56,7 +56,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
         //videoDeviceButton.interactable = !joinedChannel;
         //videoDropdown.interactable = !joinedChannel;
-        videoDeviceText.gameObject.SetActive(joinedChannel);
+        videoDeviceText.gameObject.SetActive(!joinedChannel);
         joinChannelButton.interactable = !joinedChannel;
         leaveChannelButton.interactable = joinedChannel;
         
