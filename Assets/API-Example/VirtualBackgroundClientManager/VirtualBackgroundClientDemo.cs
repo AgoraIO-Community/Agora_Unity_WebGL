@@ -66,8 +66,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         myVirtualBackground.source = imgFile;
         Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
 
-        InputField.text = CHANNEL_NAME;
-        InputField.onValueChanged.AddListener((chan) => CHANNEL_NAME = chan);
+
     }
 
 

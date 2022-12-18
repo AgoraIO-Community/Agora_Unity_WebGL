@@ -186,6 +186,7 @@ class ClientManager {
       await this.subscribe_remoteuser(user, mediaType);
     } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
       await this.subscribe_remoteuser(user, mediaType);
+      event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
       this.getRemoteVideoStats(id);
     }
     remoteUsers[id] = user;
@@ -205,7 +206,10 @@ class ClientManager {
 
   handleUserUnpublished(user, mediaType) {
     const id = user.uid;
+    // delete remoteUsers[id];
+    // $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
+    event_manager.raiseOnRemoteUserMuted(strUID, mediaType, 1);
   }
 
   handleUserLeft(user, reason) {
@@ -294,7 +298,7 @@ class ClientManager {
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
-            track[i].unpipe();
+            track.unpipe();
             track[i].stop();
             track[i].close();
           }
@@ -309,13 +313,13 @@ class ClientManager {
       this.spatialAudio.localPlayerStopAll();
     }
 
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
+    }
+
     if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb();
-    }
-
-    if(this.virtualBackgroundProcessor !== null){
-      this.virtualBackgroundProcessor = null;
     }
 
     this.is_screensharing = false; // set to default
@@ -611,12 +615,20 @@ class ClientManager {
   }
 
   async startPreview() {
+
+    if(localTracks.videoTrack){
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+    }
+
     [localTracks.videoTrack] = await Promise.all([
       AgoraRTC.createCameraVideoTrack().catch(e => {
         event_manager.raiseHandleUserError(e.code, e.msg);
       }),
     ]);
     localTracks.videoTrack.play("local-player");
+    await this.client.publish(localTracks.videoTrack);
   }
 
   stopPreview() {
@@ -1070,25 +1082,25 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
 
 async setVirtualBackgroundBlur(blurDegree){
   if(this.virtualBackgroundProcessor !== null){
-    setBackgroundBlurring(this.virtualBackgroundProcessor, localTracks.videoTrack, blurDegree);
+    setBackgroundBlurring(localTracks.videoTrack, blurDegree);
   }
 }
 
 async setVirtualBackgroundColor(hexColor){
   if(this.virtualBackgroundProcessor !== null){
-    setBackgroundColor(this.virtualBackgroundProcessor, localTracks.videoTrack, hexColor);
+    setBackgroundColor(localTracks.videoTrack, hexColor);
   }
 }
 
 async setVirtualBackgroundImage(imgFile){
   if(this.virtualBackgroundProcessor !== null){
-    setBackgroundImage(this.virtualBackgroundProcessor, localTracks.videoTrack, imgFile);
+    setBackgroundImage(localTracks.videoTrack, imgFile);
   }
 }
 
 async setVirtualBackgroundVideo(videoFile){
   if(this.virtualBackgroundProcessor !== null){
-    setBackgroundVideo(this.virtualBackgroundProcessor, localTracks.videoTrack, videoFile);
+    setBackgroundVideo(localTracks.videoTrack, videoFile);
   }
 }
 
