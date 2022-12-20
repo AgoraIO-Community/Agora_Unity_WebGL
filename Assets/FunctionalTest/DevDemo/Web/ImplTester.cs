@@ -13,9 +13,9 @@ namespace agora_gs_test
         [SerializeField] private Vector2 scrollPosition = Vector2.zero;
         [SerializeField] private string FBURL = "rtmps://live-api-s.facebook.com:443/rtmp/761881614728913?s_bl=1&s_psm=1&s_sc=761881671395574&s_sw=0&s_vt=api-s&a=AbxzSme10reUuODr";
         [SerializeField] private string audioEffectURL = "SET FROM INSPECTOR";
-        string vdc = "";
-        string adc = "";
-        string cvdc = "";
+        //string vdc = "";
+        //string adc = "";
+        //string cvdc = "";
 
         bool uploadLogStatus = false;
 
@@ -59,13 +59,14 @@ namespace agora_gs_test
                 ChannelMediaRelayConfiguration mediaRelayConfiguration = new ChannelMediaRelayConfiguration();
                 mediaRelayConfiguration.srcInfo.uid = (uint)src_uid;
                 mediaRelayConfiguration.srcInfo.channelName = "unity3d";
-                mediaRelayConfiguration.srcInfo.token = src_token;//"006b16bc9253a014a10a5c8d246601ff843IACchFus76wPyzDAuZkiyl4UZ6spRHnNiXKf/l/SYlV514H/KYQAAAAAEACkGjsKvQmVYAEAAQC9CZVg";
+                mediaRelayConfiguration.srcInfo.token = src_token;
 
                 mediaRelayConfiguration.destCount = 1;
+                mediaRelayConfiguration.destInfos = new ChannelMediaInfo[1];
 
-                mediaRelayConfiguration.destInfos.uid = (uint)dest_uid;
-                mediaRelayConfiguration.destInfos.channelName = "unity2d";
-                mediaRelayConfiguration.destInfos.token = dest_token;// "006b16bc9253a014a10a5c8d246601ff843IACMjVR0+7ZMsPRXylBh5BoS9Z7v0RTzQtntp3CURt3cisDOMp0AAAAAEACkGjsK4gmVYAEAAQDiCZVg";
+                mediaRelayConfiguration.destInfos[0].uid = (uint)dest_uid;
+                mediaRelayConfiguration.destInfos[0].channelName = "unity2d";
+                mediaRelayConfiguration.destInfos[0].token = dest_token;
 
                 int res = engine.StartChannelMediaRelay(mediaRelayConfiguration);
                 Debug.Log("StartChannelMediaRelay = " + res);
@@ -83,13 +84,14 @@ namespace agora_gs_test
                 ChannelMediaRelayConfiguration mediaRelayConfiguration = new ChannelMediaRelayConfiguration();
                 mediaRelayConfiguration.srcInfo.uid = (uint)src_uid;
                 mediaRelayConfiguration.srcInfo.channelName = "unity3d";
-                mediaRelayConfiguration.srcInfo.token = src_token;// "006b16bc9253a014a10a5c8d246601ff843IACchFus76wPyzDAuZkiyl4UZ6spRHnNiXKf/l/SYlV514H/KYQAAAAAEACkGjsKvQmVYAEAAQC9CZVg";
+                mediaRelayConfiguration.srcInfo.token = src_token;
 
                 mediaRelayConfiguration.destCount = 1;
+                mediaRelayConfiguration.destInfos = new ChannelMediaInfo[1];
 
-                mediaRelayConfiguration.destInfos.uid = (uint)dest_uid2;
-                mediaRelayConfiguration.destInfos.channelName = "unity2021";
-                mediaRelayConfiguration.destInfos.token = dest_token2;// "006b16bc9253a014a10a5c8d246601ff843IACxev5HXS/QmIwjL5zWsJLkKN2d7zgP7v/6vwU/z3WJ8RNl5CEAAAAAEACkGjsKIzOVYAEAAQAjM5Vg";
+                mediaRelayConfiguration.destInfos[0].uid = (uint)dest_uid2;
+                mediaRelayConfiguration.destInfos[0].channelName = "unity2021";
+                mediaRelayConfiguration.destInfos[0].token = dest_token2;
 
                 int res = engine.UpdateChannelMediaRelay(mediaRelayConfiguration);
                 Debug.Log("UpdateChannelMediaRelay = " + res);
@@ -110,29 +112,29 @@ namespace agora_gs_test
                 //adc = "" + ardm.GetAudioRecordingDeviceCount();
             }
 
-            if (GUILayout.Button("Get Playback Devices Count " + adc))
-            {
-                IRtcEngine engine = IRtcEngine.QueryEngine();
-                AudioRecordingDeviceManager ardm = engine.TestGetAudioRecordingDeviceManager();
-                Debug.Log("Play Devices Count = " + ardm.GetAudioRecordingDeviceCount());
-                adc = "" + ardm.GetAudioRecordingDeviceCount();
-            }
+            //if (GUILayout.Button("Get Playback Devices Count " + adc))
+            //{
+            //    IRtcEngine engine = IRtcEngine.QueryEngine();
+            //    AudioRecordingDeviceManager ardm = engine.TestGetAudioRecordingDeviceManager();
+            //    Debug.Log("Play Devices Count = " + ardm.GetAudioRecordingDeviceCount());
+            //    adc = "" + ardm.GetAudioRecordingDeviceCount();
+            //}
 
-            if (GUILayout.Button("GetVideoDeviceCount " + vdc))
-            {
-                IRtcEngine engine = IRtcEngine.QueryEngine();
-                VideoDeviceManager vdm = engine.TestGetVideoDeviceManager();
-                Debug.Log("Video devices Count = " + vdm.GetVideoDeviceCount());
-                vdc = "" + vdm.GetVideoDeviceCount();
-            }
+            //if (GUILayout.Button("GetVideoDeviceCount " + vdc))
+            //{
+            //    IRtcEngine engine = IRtcEngine.QueryEngine();
+            //    VideoDeviceManager vdm = engine.TestGetVideoDeviceManager();
+            //    Debug.Log("Video devices Count = " + vdm.GetVideoDeviceCount());
+            //    vdc = "" + vdm.GetVideoDeviceCount();
+            //}
 
-            if (GUILayout.Button("GetCurrentVideoDevice " + cvdc))
-            {
-                IRtcEngine engine = IRtcEngine.QueryEngine();
-                VideoDeviceManager vdm = engine.TestGetVideoDeviceManager();
+            //if (GUILayout.Button("GetCurrentVideoDevice " + cvdc))
+            //{
+            //    IRtcEngine engine = IRtcEngine.QueryEngine();
+            //    VideoDeviceManager vdm = engine.TestGetVideoDeviceManager();
 
-                vdm.GetCurrentVideoDevice(ref cvdc);
-            }
+            //    vdm.GetCurrentVideoDevice(ref cvdc);
+            //}
 
 
 

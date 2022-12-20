@@ -1940,6 +1940,19 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
             return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
         }
+
+        // WEBGL Version retains the attuation parameter
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+#endif
+        }
+
         /// @endcond
 
 

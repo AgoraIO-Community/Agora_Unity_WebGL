@@ -211,14 +211,12 @@ namespace agora_gaming_rtc
 
         public OnScreenCaptureInfoUpdatedHandler OnScreenCaptureInfoUpdated;
 
-#if UNITY_WEBGL
+
         public OnUserScreenShareStarted OnScreenShareStarted;
 
         public OnUserScreenShareStopped OnScreenShareStopped;
 
         public OnUserScreenShareCanceled OnScreenShareCanceled;
-#endif
-
 
         #endregion  set callback here for user
 
@@ -3408,8 +3406,7 @@ namespace agora_gaming_rtc
             IRtcEngineNative.startChannelMediaRelay_WEBGL(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, "" + mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, "" + mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
             return 0;
 #else
-            return IRtcEngineNative.startChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
-#endif
+
 
             String destInfosStr = "";
             for (int i = 0; i < mediaRelayConfiguration.destInfos.Length; i++)
@@ -3422,6 +3419,7 @@ namespace agora_gaming_rtc
                 destInfosStr += "\t";
             }
             return IRtcEngineNative.startChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, destInfosStr, mediaRelayConfiguration.destCount);
+#endif
         }
 
         /** Updates the channels for media stream relay. After a successful {@link agora_gaming_rtc.IRtcEngine.StartChannelMediaRelay StartChannelMediaRelay} method call, if you want to relay the media stream to more channels, or leave the current relay channel, you can call the `UpdateChannelMediaRelay` method.
@@ -3443,8 +3441,6 @@ namespace agora_gaming_rtc
             IRtcEngineNative.updateChannelMediaRelay_WEBGL(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, "" + mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, "" + mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
             return 0;
 #else
-            return IRtcEngineNative.updateChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
-#endif
 
             String destInfosStr = "";
             for (int i = 0; i < mediaRelayConfiguration.destInfos.Length; i++)
@@ -3457,6 +3453,7 @@ namespace agora_gaming_rtc
                 destInfosStr += "\t";
             }
             return IRtcEngineNative.updateChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, destInfosStr, mediaRelayConfiguration.destCount);
+#endif
         }
 
         /** Stops the media stream relay.
@@ -4581,8 +4578,8 @@ namespace agora_gaming_rtc
          */
         public int EnableVirtualBackground(bool enabled, VirtualBackgroundSource source)
         {
-            return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree, source.mute, source.loop);
-            // return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
+            //     return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree, source.mute, source.loop);
+            return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
         }
 
         /** Enables blur for the virtual background being used by clientManager.
@@ -4877,7 +4874,6 @@ namespace agora_gaming_rtc
 #else
             return -1;
 #endif
-            return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
         }
 
         /**
@@ -5493,6 +5489,16 @@ namespace agora_gaming_rtc
         {
             return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
         }
+
+        // WebGL Version retains attenuation parameter
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+#endif
+        }
         /// @endcond
         /**
          * Sets the screen sharing scenario.
@@ -6031,7 +6037,7 @@ namespace agora_gaming_rtc
         }
 
         [MonoPInvokeCallback(typeof(EngineEventOnAudioVolumeIndicationHandler))]
-        private static void OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
+        internal static void OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
         {
             if (instance != null && instance.OnVolumeIndication != null && instance._AgoraCallbackObject != null)
             {

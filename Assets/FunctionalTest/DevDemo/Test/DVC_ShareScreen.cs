@@ -7,18 +7,20 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using System;
 
-public class DVC_ShareScreen : MonoBehaviour {
+public class DVC_ShareScreen : MonoBehaviour
+{
 
     //public Dropdown dropDownAngle2;
     Texture2D mTexture;
-	Rect mRect;
-	int i = 100;
+    Rect mRect;
+    int i = 100;
 
     List<string> m_DropOptions = new List<string>();
     // Use this for initialization
-    void Start () {
-        
-        
+    void Start()
+    {
+
+
     }
 
     void Awake()
@@ -40,9 +42,9 @@ public class DVC_ShareScreen : MonoBehaviour {
     public InputField shareWidth;
     public InputField shareHeight;
 
-	public void StartScreenSharing()
+    public void StartScreenSharing()
     {
-		
+
 
         int sw = 0;
         int sh = 0;
@@ -66,11 +68,11 @@ public class DVC_ShareScreen : MonoBehaviour {
         }
         catch (Exception e)
         {
-
+            Debug.LogException(e);
         }
 
-        
-	}
+
+    }
 
     public void SliderWidthValueChanged()
     {
@@ -93,7 +95,7 @@ public class DVC_ShareScreen : MonoBehaviour {
     {
         sharingOn = true;
         //StartCoroutine(shareScreen());
-        Debug.Log("sharing screen one frame "+ sharingOn);
+        Debug.Log("sharing screen one frame " + sharingOn);
         //int dvalue = dropDownAngle2.value;
         //Debug.Log("dvalue = " + dropDownAngle2.value);
     }
@@ -114,7 +116,7 @@ public class DVC_ShareScreen : MonoBehaviour {
         }
     }
 
-   
+
     //public InputField inpCropLeft;
     //public InputField inpCropTop;
     //public InputField inpCropRight;
@@ -177,7 +179,7 @@ public class DVC_ShareScreen : MonoBehaviour {
             //    externalVideoFrame.rotation = 180;
             //}
 
-            
+
             // Increments i with the video timestamp.
             externalVideoFrame.timestamp = i++;
             // Pushes the external video frame with the frame you create.
@@ -186,7 +188,7 @@ public class DVC_ShareScreen : MonoBehaviour {
         }
     }
 
-    
+
 
 
     public void playEffect()

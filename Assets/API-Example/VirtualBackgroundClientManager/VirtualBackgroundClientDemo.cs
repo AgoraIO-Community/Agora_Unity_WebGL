@@ -193,14 +193,14 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         setVirtualBackgroundBlur();
     }
 
-    public void enableVirtualBackground(bool onoff)
+    public void EnableVirtualBackground(bool onoff)
     {
         if (onoff)
         {
             myVirtualBackground.background_source_type = background;
         }
         virtualBackgroundOn = onoff;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundBlur()
@@ -208,7 +208,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
         myVirtualBackground.background_source_type = background;
         myVirtualBackground.blur_degree = blur;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundColor()
@@ -217,7 +217,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         myVirtualBackground.background_source_type = background;
         uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
         myVirtualBackground.color = colorValue;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundImage()
@@ -225,7 +225,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
         myVirtualBackground.background_source_type = background;
         myVirtualBackground.source = imgFile;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundVideo()
@@ -235,7 +235,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         myVirtualBackground.source = videoFile;
         myVirtualBackground.mute = mute;
         myVirtualBackground.loop = loop;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void JoinChannel()

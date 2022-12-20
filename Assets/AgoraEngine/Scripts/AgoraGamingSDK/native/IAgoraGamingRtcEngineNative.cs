@@ -1323,6 +1323,8 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setClientRole_1(int role, int audienceLatencyLevel);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableRemoteSuperResolution3(bool enabled, int mode, uint userId);
 
 
@@ -1387,10 +1389,12 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int startAudioRecordingWithConfig(string filePath, int recordingQuality, int recordingPosition, int recordingSampleRate, int recordingChannel);
 
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setLocalAccessPoint(string ips, int ipSize, string domainList, int domainListSize, string verifyDomainName, int mode, string serverDomain, string serverPath, int serverPort, bool serverHttps);
+
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalAudioStream_channel(string channel, bool mute);
-        protected static extern int setLocalAccessPoint(string ips, int ipSize, string domainList, int domainListSize, string verifyDomainName, int mode, string serverDomain, string serverPath, int serverPort, bool serverHttps); 
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalVideoStream_channel(string channel, bool mute);
@@ -1537,12 +1541,21 @@ namespace agora_gaming_rtc
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+#else
         protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+#endif
+
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setScreenCaptureScenario(int screenScenario);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        protected static extern int setRemoteUserSpatialAudioParams2(IntPtr channel, uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+#else
         protected static extern int setRemoteUserSpatialAudioParams2(IntPtr channel, uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraZoomFactor(float factor);
