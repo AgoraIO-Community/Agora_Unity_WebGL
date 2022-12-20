@@ -27,7 +27,6 @@ namespace agora_gaming_rtc
         public ChannelOnConnectionLostHandler ChannelOnConnectionLost;
         public ChannelOnRequestTokenHandler ChannelOnRequestToken;
         public ChannelOnTokenPrivilegeWillExpireHandler ChannelOnTokenPrivilegeWillExpire;
-        public ChannelOnTokenPrivilegeDidExpireHandler ChannelOnTokenPrivilegeDidExpire;
         public ChannelOnRtcStatsHandler ChannelOnRtcStats;
         public ChannelOnNetworkQualityHandler ChannelOnNetworkQuality;
         public ChannelOnRemoteVideoStatsHandler ChannelOnRemoteVideoStats;
@@ -258,8 +257,7 @@ namespace agora_gaming_rtc
 
         /** Joins the channel with a user account, and configures whether to publish or automatically subscribe to the audio or video streams.
          *
-         * This method differs from the `JoinChannelWithUserAccount` method in the `IRtcEngine` class in the following aspects:
-         *
+         * A successful method call triggers the following callbacks:
          * - The local client: {@link agora_gaming_rtc.OnLocalUserRegisteredHandler OnLocalUserRegisteredHandler} and {@link agora_gaming_rtc.OnJoinChannelSuccessHandler OnJoinChannelSuccessHandler}.
          * - The remote client: {@link agora_gaming_rtc.OnUserJoinedHandler OnUserJoinedHandler} and {@link agora_gaming_rtc.OnUserInfoUpdatedHandler OnUserInfoUpdatedHandler}, if the user joining the channel is in the `COMMUNICATION` profile, or is a host in the `LIVE_BROADCASTING` profile.
          *
@@ -1310,6 +1308,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.stopRtmpStream2(_channelHandler, url);
         }
 
+        /// @cond
         /** Adds a voice or video stream URL address to the interactive live streaming.
          *
          * The {@link agora_gaming_rtc.OnStreamPublishedHandler OnStreamPublishedHandler} callback returns the inject status. If this method call is successful, the server pulls the voice or video stream and injects it into a live channel. This is applicable to scenarios where all audience members in the channel can watch a live show and interact with each other.
@@ -1370,6 +1369,7 @@ namespace agora_gaming_rtc
 
             return IRtcEngineNative.removeInjectStreamUrl2(_channelHandler, url);
         }
+        /// @endcond
 
         /** Starts to relay media streams across channels.
          *
@@ -1394,10 +1394,24 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid + "", channelMediaRelayConfiguration.destCount);
+            IRtcEngineNative.startChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, 
+		        channelMediaRelayConfiguration.srcInfo.uid + "", 
+		        channelMediaRelayConfiguration.destInfos[0].channelName, channelMediaRelayConfiguration.destInfos[0].token, channelMediaRelayConfiguration.destInfos[0].uid + "", 
+		        channelMediaRelayConfiguration.destCount);
             return 0;
 #else
-            return IRtcEngineNative.startChannelMediaRelay2(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid, channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid, channelMediaRelayConfiguration.destCount);
+
+            String destInfosStr = "";
+            for (int i = 0; i < channelMediaRelayConfiguration.destInfos.Length; i++)
+            {
+                destInfosStr += channelMediaRelayConfiguration.destInfos[i].channelName;
+                destInfosStr += "\t";
+                destInfosStr += channelMediaRelayConfiguration.destInfos[i].token;
+                destInfosStr += "\t";
+                destInfosStr += channelMediaRelayConfiguration.destInfos[i].uid;
+                destInfosStr += "\t";
+            }
+            return IRtcEngineNative.startChannelMediaRelay2(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid, destInfosStr, channelMediaRelayConfiguration.destCount);
 #endif
         }
 
@@ -1421,12 +1435,24 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.updateChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid + "", channelMediaRelayConfiguration.destCount);
+            IRtcEngineNative.updateChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, 
+		        channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos[0].channelName, channelMediaRelayConfiguration.destInfos[0].token,
+                channelMediaRelayConfiguration.destInfos[0].uid + "", channelMediaRelayConfiguration.destCount);
             return 0;
 #else
-            return IRtcEngineNative.updateChannelMediaRelay2(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid, channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid, channelMediaRelayConfiguration.destCount);
-#endif
 
+            String destInfosStr = "";
+            for (int i = 0; i < channelMediaRelayConfiguration.destInfos.Length; i++)
+            {
+                destInfosStr += channelMediaRelayConfiguration.destInfos[i].channelName;
+                destInfosStr += "\t";
+                destInfosStr += channelMediaRelayConfiguration.destInfos[i].token;
+                destInfosStr += "\t";
+                destInfosStr += channelMediaRelayConfiguration.destInfos[i].uid;
+                destInfosStr += "\t";
+            }
+            return IRtcEngineNative.updateChannelMediaRelay2(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid, destInfosStr, channelMediaRelayConfiguration.destCount);
+#endif
         }
 
         /** Stops the media stream relay.
@@ -1728,7 +1754,7 @@ namespace agora_gaming_rtc
         * @param mute Whether to stop publishing the local audio stream.
         * - true: Stop publishing the local video stream.
         * - false: Resume publishing the local video stream.
-        * @return        
+        * @return
         * - 0: Success.
         * - &lt; 0: Failure.
         */
@@ -1746,6 +1772,7 @@ namespace agora_gaming_rtc
 
         /** Enables/Disables the super-resolution algorithm for a remote user's video stream.
          *
+         * @deprecated This method is deprecated from v3.7.1. Use {@link EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId) EnableRemoteSuperResolution [2/2]} instead.
          * @since v3.6.1.1
          *
          * This feature effectively boosts the resolution of a remote user's video seen by the local user. If the original resolution of a remote user's video is a × b, the local user's device can render the remote video at a resolution of 2a × 2b after you enable this feature.
@@ -1802,12 +1829,12 @@ namespace agora_gaming_rtc
          * - < 0: Failure.
          *  - `-157 (ERR_MODULE_NOT_FOUND)`: The dynamic library for super resolution is not integrated.
          */
-        public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
+        public int EnableRemoteSuperResolution(uint userId, bool enable)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
-            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, enabled, (int)mode, userId);
+            return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
         }
 
         /// @cond
@@ -1827,11 +1854,50 @@ namespace agora_gaming_rtc
          */
         public int EnableSpatialAudio_MC(bool enabled)
         {
+            return -1;
+        }
+
+        /**
+        * Enables/Disables the super-resolution feature for a remote user's video stream. This is a beta feature.
+        *
+        * @since v3.7.1
+        *
+        * This feature effectively boosts the resolution of a remote user's video seen by the local user. If the original resolution of a remote user's video is a × b, the local user's device can render the remote video at a resolution of 2a × 2b after you enable this feature.
+        *
+        * After calling this method, the SDK triggers the {@link agora_gaming_rtc.ChannelOnUserSuperResolutionEnabledHandler ChannelOnUserSuperResolutionEnabledHandler} callback to report whether you have successfully enabled super resolution.
+        *
+        * @note Before calling this method, ensure that you have integrated the following dynamic libraries into your project:
+        * - Android: `libagora_super_resolution_extension.so`
+        * - iOS/macOS: `AgoraSuperResolutionExtension.xcframework`
+        * - Windows: `libagora_super_resolution_extension.dll`
+        *
+        * @warning The super resolution feature requires extra system resources. To balance the visual experience and system consumption, the SDK poses the following restrictions:
+        * - This feature can only be enabled for a single remote user.
+        * - The original resolution of the remote user's video cannot exceed 640 × 360 pixels.
+        * - The feature cannot be enabled in certain specific devices.
+        *
+        * @param enabled Determines whether to enable super resolution for the remote user's video:
+        * - true: Enable super resolution.
+        * - false: Disable super resolution.
+        * @param mode The mode of super resolution. See #SR_MODE.
+        * @param userId The user ID of the remote user. This parameter only applies when mode is set as `SR_MODE_MANUAL(0)`.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        *   - `-157 (ERR_MODULE_NOT_FOUND)`: The dynamic library for super resolution is not integrated.
+        *
+        */
+        public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
+        {
 #if UNITY_WEBGL
             return IRtcEngineNative.enableSpatialAudio_MC(enabled);
 #else 
-            Debug.LogError("Not implemented");
-            return -1;
+
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+            return IRtcEngineNative.enableRemoteSuperResolution4(_channelHandler, enabled, (int)mode, userId);
+
 #endif
         }
 
@@ -1862,7 +1928,7 @@ namespace agora_gaming_rtc
          * head in a spherical coordinate system (taking the position of the local user as its origin). The value range
          * is [0,180], as defined by the following main directions:
          * - `0`: (Default) 0 degrees, which means the remote user's head and the local user's head face the same direction.
-         * - `180`: 180 degrees, which means the remote user's head and the local user's head face opposite directions. 
+         * - `180`: 180 degrees, which means the remote user's head and the local user's head face opposite directions.
          * @param enable_blur Whether to enable audio blurring:
          * - `true`: Enable blurring.
          * - `false`: (Default) Disable blurring.
@@ -1873,12 +1939,29 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int SetRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb)
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb)
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
-            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb);
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return -1;
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+#endif
         }
+
+        // WEBGL Version retains the attuation parameter
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+#endif
+        }
+
         /// @endcond
 
 

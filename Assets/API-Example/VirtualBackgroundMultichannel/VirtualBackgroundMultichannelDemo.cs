@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
-using agora_gaming_rtc;
 
 public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 {

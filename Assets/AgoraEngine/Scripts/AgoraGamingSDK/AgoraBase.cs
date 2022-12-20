@@ -2131,6 +2131,7 @@ namespace agora_gaming_rtc
         MEDIA_DEVICE_STATE_UNRECOMMENDED = 16,
     };
 
+    /// @cond
     /** States of importing an external video stream in the interactive live streaming. */
     public enum INJECT_STREAM_STATUS
     {
@@ -2157,6 +2158,7 @@ namespace agora_gaming_rtc
         /** 10: The external video stream is corrupted. */
         INJECT_STREAM_STATUS_BROKEN = 10,
     };
+    /// @endcond
 
     /** The priority of the remote user.
     */
@@ -2439,6 +2441,8 @@ namespace agora_gaming_rtc
         public bool enableHighLight;
     };
 
+    /// cond
+
     /** Configuration of the injected media stream.
     */
     public struct InjectStreamConfig
@@ -2478,6 +2482,7 @@ namespace agora_gaming_rtc
         */
         public int audioChannels;
     };
+    /// @endcond
 
     /** Audio session restriction. */
     public enum AUDIO_SESSION_OPERATION_RESTRICTION
@@ -2514,7 +2519,7 @@ namespace agora_gaming_rtc
          *   - If you have not enabled the App Certificate, set this parameter as the default value `null`, which means the SDK applies the App ID.
          *   - If you have enabled the App Certificate, you must use the `token` generated with the `channelName` and `uid`.
          */
-        public ChannelMediaInfo destInfos;
+        public ChannelMediaInfo[] destInfos;
         /** The number of destination channels. The default value is 0, and the
         * value range is [0,4]. Ensure that the value of this parameter
         * corresponds to the number of ChannelMediaInfo structs you define in
@@ -3303,7 +3308,9 @@ namespace agora_gaming_rtc
         /** 3: The device does not support using super resolution.
          */
         SR_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
-        /** 4: Insufficient device performance，It is recommended to turn off super resolution.
+        /** 4: When the super resolution feature is enabled or is running, the SDK detects that device performance is not qualified. When you receive this reason code, Agora recommends that the user disable super resolution.
+        *
+        * @since v3.7.1
         */
         SR_STATE_REASON_INSUFFICIENT_PERFORMANCE = 4,
     };
@@ -3588,7 +3595,9 @@ namespace agora_gaming_rtc
          */
         VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_DEVICE_NOT_SUPPORTED = 3,
         /**
-        * 4: Insufficient device performance，It is recommended to turn off virtual background.
+        * 4: When the virtual background feature is enabled or is running, the SDK detects that device performance is not qualified. When you receive this reason code, Agora recommends that the user disable virtual background.
+        *
+        * @since v3.7.1
         */
         VIRTUAL_BACKGROUND_SOURCE_STATE_REASON_INSUFFICIENT_PERFORMANCE = 4,
     };
@@ -3954,6 +3963,17 @@ namespace agora_gaming_rtc
         LocalOnly = 1,
     };
 
+    public struct LogUploadServerInfo {
+        public string serverDomain;
+        public string serverPath;
+        public int serverPort;
+        public bool serverHttps;
+    };
+
+    public struct AdvancedConfigInfo {
+        public LogUploadServerInfo logUploadServer;
+    };
+
     public struct LocalAccessPointConfiguration {
         /** local access point ip address list.
         */
@@ -3973,6 +3993,8 @@ namespace agora_gaming_rtc
         /** local proxy connection mode, connectivity first or local only.
         */
         public LOCAL_PROXY_MODE mode;
+
+        public AdvancedConfigInfo advancedConfig;
     };
     /// @endcond
 
@@ -4223,7 +4245,7 @@ namespace agora_gaming_rtc
     *
     * @since v3.5.2
     *
-    * @note The default image is in the RGBA format. If you need to use another format, you need to convert the image on
+    * @note The default image is in the ARGB format. If you need to use another format, you need to convert the image on
     * your own.
     */
     [StructLayout(LayoutKind.Sequential)]
@@ -4282,11 +4304,22 @@ namespace agora_gaming_rtc
         public EXCLUDE_WINDOW_ERROR errCode;
     };
 
-    /** Super Resolution modes. */
+    // The information of remote voice position
+    public struct RemoteVoicePositionInfo {
+        // The coordnate of remote voice source, (x, y, z)
+        public float[] position;
+        // The forward vector of remote voice, (x, y, z). When it's not set, the vector is forward to listner.
+        public float[] forward;
+    };
+
+    /** The mode of super resolution.
+    *
+    * @since v3.7.1
+    */
     public enum SR_MODE {
-        /** 0: manual select uid to do super resolution */
+        /** 0: Enables super resolution for the remote user you specify. */
         SR_MODE_MANUAL = 0,
-        /** 1: auto select.*/
+        /** Enables super resolution for the remote user corresponding to the largest rendering window in the channel. */
         SR_MODE_AUTO,
     };
 

@@ -437,7 +437,6 @@ public class AgoraChannelPanel : MonoBehaviour
 
     void OnRemoteVideoStatsHandler(string channelID, RemoteVideoStats remoteStats)
     {
-        return;
         Debug.Log("UNITY -> OnRemoteVideoStatsHandler = channelID: " + channelID
             + ", remoteStats.receivedBitrate: " + remoteStats.receivedBitrate
             + ", remoteStats.uid: " + remoteStats.uid);

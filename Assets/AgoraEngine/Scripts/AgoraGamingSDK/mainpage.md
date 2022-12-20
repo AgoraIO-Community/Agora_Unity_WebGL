@@ -633,7 +633,7 @@ in a specified channel. By creating multiple AgoraChannel instances, users can j
 <td>Enables/Disables the virtual background.</td>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.EnableRemoteSuperResolution EnableRemoteSuperResolution}</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId) EnableRemoteSuperResolution}</td>
 <td>Enables/Disables the super resolution feature for a remote user's video.</td>
 </tr>
 <tr>
@@ -784,7 +784,7 @@ in a specified channel. By creating multiple AgoraChannel instances, users can j
 <th>Description</th>
 </tr>
 <tr>
-<td>{@link agora_gaming_rtc.IRtcEngine.StartAudioMixing StartAudioMixing}</td>
+<td>{@link agora_gaming_rtc.IRtcEngine.StartAudioMixing(string filePath, bool loopback, bool replace, int cycle, int startPos) StartAudioMixing}</td>
 <td>Starts playing and mixing the music file.</td>
 </tr>
 <tr>

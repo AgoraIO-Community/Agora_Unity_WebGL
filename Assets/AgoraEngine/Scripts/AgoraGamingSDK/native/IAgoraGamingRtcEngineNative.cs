@@ -834,16 +834,15 @@ namespace agora_gaming_rtc
         protected static extern int switchChannel(string token, string channelId);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int startChannelMediaRelay(string srcChannelName, string srcToken, uint srcUid, string destChannelName, string destToken, uint destUid, int destCount);
+        protected static extern int startChannelMediaRelay(string srcChannelName, string srcToken, uint srcUid, string destInfosStr, int destCount);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int updateChannelMediaRelay(string srcChannelName, string srcToken, uint srcUid, string destInfosStr, int destCount);
 
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int startChannelMediaRelay_WEBGL(string srcChannelName, string srcToken, string srcUid, string destChannelName, string destToken, string destUid, int destCount);
-#endif
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int updateChannelMediaRelay(string srcChannelName, string srcToken, uint srcUid, string destChannelName, string destToken, uint destUid, int destCount);
 
-#if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updateChannelMediaRelay_WEBGL(string srcChannelName, string srcToken, string srcUid, string destChannelName, string destToken, string destUid, int destCount);
 #endif
@@ -1283,7 +1282,7 @@ namespace agora_gaming_rtc
         protected static extern int removeInjectStreamUrl2(IntPtr channel, string url);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int startChannelMediaRelay2(IntPtr channel, string srcChannelName, string srcToken, uint srcUid, string destChannelName, string destToken, uint destUid, int destCount);
+        protected static extern int startChannelMediaRelay2(IntPtr channel, string srcChannelName, string srcToken, uint srcUid, string destInfosStr, int destCount);
 
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1291,7 +1290,7 @@ namespace agora_gaming_rtc
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int updateChannelMediaRelay2(IntPtr channel, string srcChannelName, string srcToken, uint srcUid, string destChannelName, string destToken, uint destUid, int destCount);
+        protected static extern int updateChannelMediaRelay2(IntPtr channel, string srcChannelName, string srcToken, uint srcUid, string destInfosStr, int destCount);
 
 #if UNITY_WEBGL || UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1320,10 +1319,13 @@ namespace agora_gaming_rtc
         protected static extern int enableEncryption(bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableRemoteSuperResolution(bool enabled, int mode, uint userId);
+        protected static extern int enableRemoteSuperResolution(uint userId, bool enable);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setClientRole_1(int role, int audienceLatencyLevel);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableRemoteSuperResolution3(bool enabled, int mode, uint userId);
 
 
 #if !UNITY_EDITOR && UNITY_WEBGL
@@ -1352,7 +1354,10 @@ namespace agora_gaming_rtc
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableRemoteSuperResolution2(IntPtr channel, bool enabled, int mode, uint userId);
+        protected static extern int enableRemoteSuperResolution2(IntPtr channel, uint userId, bool enable);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableRemoteSuperResolution4(IntPtr channel, bool enabled, int mode, uint userId);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int sendCustomReportMessage(string id, string category, string events, string label, int value);
@@ -1385,8 +1390,7 @@ namespace agora_gaming_rtc
         protected static extern int startAudioRecordingWithConfig(string filePath, int recordingQuality, int recordingPosition, int recordingSampleRate, int recordingChannel);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setLocalAccessPoint(string ips, int ipSize, string domainList, int domainListSize, string verifyDomainName, int mode);
-
+        protected static extern int setLocalAccessPoint(string ips, int ipSize, string domainList, int domainListSize, string verifyDomainName, int mode, string serverDomain, string serverPath, int serverPort, bool serverHttps);
 
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1401,9 +1405,6 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalVideoStream_channel(IntPtr channel, bool mute);
 #endif
-
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source, int blur_degree, bool mute, bool loop);
 
 #if UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1433,6 +1434,8 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setVirtualBackgroundVideo_MC(string videoFile);
 #endif
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source, int blur_degree);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraTorchOn(bool on);
@@ -1537,13 +1540,21 @@ namespace agora_gaming_rtc
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb);
+#if !UNITY_EDITOR && UNITY_WEBGL
+        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+#else
+        protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setScreenCaptureScenario(int screenScenario);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioParams2(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb);
+#if !UNITY_EDITOR && UNITY_WEBGL
+        protected static extern int setRemoteUserSpatialAudioParams2(IntPtr channel, uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+#else
+        protected static extern int setRemoteUserSpatialAudioParams2(IntPtr channel, uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraZoomFactor(float factor);
@@ -1574,6 +1585,43 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setCameraCaptureRotation(int rotation);
+
+        //spatialAudio
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int localSpatialAudio_initialize();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int updateRemotePosition(uint uid, float[] position, float[] forward);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int removeRemotePosition(uint uid);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int clearRemotePositions();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern void localSpatialAudio_release();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setMaxAudioRecvCount(int maxCount);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setAudioRecvRange(float range);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setDistanceUnit(float unit);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int updateSelfPosition(float[] position, float[] axisForward, float[] axisRight, float[] axisUp);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int localSpatialAudio_setParameters(string @params);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int muteLocalAudioStream_spatialAudio(bool mute);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int muteAllRemoteAudioStreams_spatialAudio(bool mute);
 
         #endregion engine callbacks
     }

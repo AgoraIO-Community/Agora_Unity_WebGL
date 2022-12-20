@@ -77,7 +77,6 @@ namespace agora_gaming_rtc {
         * - A remote user or host joins the channel by calling the {@link agora_gaming_rtc.AgoraChannel.JoinChannel JoinChannel} method.
         * - A remote user switches the user role to the host by calling the {@link agora_gaming_rtc.AgoraChannel.SetClientRole SetClientRole} method after joining the channel.
         * - A remote user or host rejoins the channel after a network interruption.
-        * - The host injects an online media stream into the channel by calling the {@link agora_gaming_rtc.AgoraChannel.AddInjectStreamUrl AddInjectStreamUrl} method.
         *
         * @note
         * In the Live-broadcast profile:
@@ -136,14 +135,6 @@ namespace agora_gaming_rtc {
          * @param token The token that expires in 30 seconds.
          */
         public delegate void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token);
-
-        /** Occurs when the token expires.
-         *
-         *
-         * @param channelId The name of the channel that you joined.
-         * @param token The token that expired.
-         */
-        public delegate void ChannelOnTokenPrivilegeDidExpireHandler(string channelId, string token);
 
         /** Reports the statistics of the current call session once every two seconds.
         *
@@ -297,6 +288,7 @@ namespace agora_gaming_rtc {
          */
         public delegate void ChannelOnTranscodingUpdatedHandler(string channelId);
 
+        /// @cond
         /** Occurs when a voice or video stream URL address is added to the interactive live streaming.
          *
          * @warning Agora will soon stop the service for injecting online media streams on the client. If you have not implemented this service, Agora recommends that you do not use it.
@@ -307,6 +299,7 @@ namespace agora_gaming_rtc {
          * @param status The state of the externally injected stream: #INJECT_STREAM_STATUS.
          */
         public delegate void ChannelOnStreamInjectedStatusHandler(string channelId, string url, uint uid, int status);
+        /// @endcond
 
         /** Occurs when the remote media stream falls back to audio-only stream due to poor network conditions or switches back to the video stream after the network conditions improve.
          *
