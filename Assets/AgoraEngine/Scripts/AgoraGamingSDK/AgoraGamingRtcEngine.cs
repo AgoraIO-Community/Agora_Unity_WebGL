@@ -91,8 +91,6 @@ namespace agora_gaming_rtc
 
         public OnTokenPrivilegeWillExpireHandler OnTokenPrivilegeWillExpire;
 
-        public OnTokenPrivilegeDidExpireHandler OnTokenPrivilegeDidExpire;
-
         public OnActiveSpeakerHandler OnActiveSpeaker;
 
         public OnVideoStoppedHandler OnVideoStopped;
@@ -213,11 +211,13 @@ namespace agora_gaming_rtc
 
         public OnScreenCaptureInfoUpdatedHandler OnScreenCaptureInfoUpdated;
 
+#if UNITY_WEBGL
         public OnUserScreenShareStarted OnScreenShareStarted;
 
         public OnUserScreenShareStopped OnScreenShareStopped;
 
         public OnUserScreenShareCanceled OnScreenShareCanceled;
+#endif
 
 
         #endregion  set callback here for user
@@ -233,18 +233,19 @@ namespace agora_gaming_rtc
         private readonly ScreenCaptureManager screenCaptureManager;
 #endif
         private readonly MediaRecorder mediaRecorder;
+        private readonly LocalSpatialAudioEngine localSpatialAudioEngine;
         private readonly bool initStatus = false;
         private const string agoraGameObjectName = "agora_engine_CallBackGamObject";
         // private static GameObject agoraGameObject = null;
         // private static AgoraCallbackQueue ._AgoraCallbackObject = null;
         private AgoraCallbackObject _AgoraCallbackObject = null;
 
+        private GameObject _agoraEngineObject;
+
         private IRtcEngine(string appId)
         {
-
             InitGameObject();
             InitEngineCallback();
-
             int retCode = IRtcEngineNative.createEngine(appId);
             if (retCode != 0)
             {
@@ -275,22 +276,9 @@ namespace agora_gaming_rtc
 #endif
             mediaRecorder = MediaRecorder.GetInstance(this);
 #endif
-        }
+            localSpatialAudioEngine = LocalSpatialAudioEngine.GetInstance(this);
 
-        // custom testing function -- AR
-        public AudioRecordingDeviceManager TestGetAudioRecordingDeviceManager()
-        {
-            return audioRecordingDeviceManager;
-        }
-
-        public AudioPlaybackDeviceManager TestGetAudioPlaybackDeviceManager()
-        {
-            return audioPlaybackDeviceManager;
-        }
-
-        public VideoDeviceManager TestGetVideoDeviceManager()
-        {
-            return videoDeviceManager;
+            InitAgoraEngineObject();
         }
 
         private IRtcEngine(RtcEngineConfig engineConfig)
@@ -314,6 +302,21 @@ namespace agora_gaming_rtc
             screenCaptureManager = ScreenCaptureManager.GetInstance(this);
 #endif
             mediaRecorder = MediaRecorder.GetInstance(this);
+            localSpatialAudioEngine = LocalSpatialAudioEngine.GetInstance(this);
+
+            InitAgoraEngineObject();
+        }
+
+        private void InitAgoraEngineObject()
+        {
+            _agoraEngineObject = GameObject.Find("AgoraRtcEngineObj");
+            if (_agoraEngineObject == null)
+            {
+                _agoraEngineObject = new GameObject("AgoraRtcEngineObj");
+                UnityEngine.Object.DontDestroyOnLoad(_agoraEngineObject);
+                _agoraEngineObject.hideFlags = HideFlags.HideInHierarchy;
+                _agoraEngineObject.AddComponent<AgoraGameObject>();
+            }
         }
 
         private void InitGameObject()
@@ -1518,6 +1521,7 @@ namespace agora_gaming_rtc
          * @note
          * - Call this method when you are in a channel.
          * - If the local audio mixing file does not exist, or if the SDK does not support the file format or cannot access the music file URL, the SDK returns `WARN_AUDIO_MIXING_OPEN_ERROR(701)`.
+         * - On Android, if you set `filePath` as an HTTP URL, ensure that you add `android:usesCleartextTraffic="true"` in the `<application>` tag in the project AndroidManifest.xml file.
          *
          * @param filePath The absolute path (including the suffixes of the filename) of the local or online audio file to mix. Supported audio formats: mp3, mp4, m4a, aac, 3gp, mkv and wav. For more information, see [Supported Media Formats in Media Foundation](https://docs.microsoft.com/en-us/windows/win32/medfound/supported-media-formats-in-media-foundation).
          * @param loopback Sets which user can hear the audio mixing:
@@ -1539,6 +1543,34 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.startAudioMixing(filePath, loopback, replace, cycle);
         }
 
+        /** 
+         * Starts playing and mixing the music file.
+         * 
+         * This method supports mixing or replacing local or online music file and audio collected by a microphone. 
+         * After successfully playing the music file, the SDK triggers OnAudioMixingStateChangedHandler(AUDIO_MIXING_STATE_PLAYING, AUDIO_MIXING_REASON_STARTED_BY_USER). 
+         * After completing playing the music file, the SDK triggers OnAudioMixingStateChangedHandler(AUDIO_MIXING_STATE_STOPPED, AUDIO_MIXING_REASON_ALL_LOOPS_COMPLETED).
+         *
+         * @note
+         * - To use this method, ensure that the Android device is v4.2 or later and the API version is v16 or later.
+         * - If you need to play an online music file, Agora does not recommend using the redirected URL address. Some Android devices may fail to open a redirected URL address.
+         * - On Android, if you set `filePath` as an HTTP URL, ensure that you add `android:usesCleartextTraffic="true"` in the `<application>` tag in the project AndroidManifest.xml file.
+         * - If the local music file does not exist, or if the SDK does not support the file format or cannot access the music file URL, the SDK returns `WARN_AUDIO_MIXING_OPEN_ERROR(701)`.
+         *
+         * @param filePath The file path, including the filename extensions. To access an online file, Agora supports using a URL address; to access a local file, Agora supports using a URI address, an absolute path, or a path that starts with /assets/. 
+         * @param loopback Whether to only play the music file on the local client:
+         * - `true`: Only play the music file on the local client so that only the local user can hear the music.
+         * - `false`: Publish the music file to remote clients so that both the local user and remote users can hear the music.
+         * @param replace Whether to replace the audio collected by the microphone with a music file:
+         * - `true`: Replace. Users can only hear music.
+         * - `false`: Do not replace. Users can hear both music and audio collected by the microphone.
+         * @param cycle The number of times the music file plays.
+         * - ≥ 0: The number of playback times. For example, 0 means that the SDK does not play the music file, while 1 means that the SDK plays the music file once.
+         * - -1: Play the music in an indefinite loop.
+         * @param startPos The playback position (ms) of the music file.
+         * @return
+         * - 0: Success.
+         * - < 0: Failure.
+         */
         public int StartAudioMixing(string filePath, bool loopback, bool replace, int cycle, int startPos)
         {
             return IRtcEngineNative.startAudioMixing2(filePath, loopback, replace, cycle, startPos);
@@ -1810,6 +1842,11 @@ namespace agora_gaming_rtc
         public IMediaRecorder GetMediaRecorder()
         {
             return mediaRecorder;
+        }
+
+        public ILocalSpatialAudioEngine GetLocalSpatialAudioEngine()
+        {
+            return localSpatialAudioEngine;
         }
 
         /** Enables the video module.
@@ -3239,6 +3276,9 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.stopScreenCapture();
         }
 
+
+        /// @cond
+
         /** Adds a voice or video stream URL address to the interactive live streaming.
          *
          * The {@link agora_gaming_rtc.OnStreamPublishedHandler OnStreamPublishedHandler} callback returns the inject status. If this method call is successful, the server pulls the voice or video stream and injects it into a live channel. This is applicable to scenarios where all audience members in the channel can watch a live show and interact with each other.
@@ -3293,6 +3333,7 @@ namespace agora_gaming_rtc
         {
             return IRtcEngineNative.removeInjectStreamUrl(url);
         }
+        /// @endcond
 
         /** Enables loopback capturing.
          *
@@ -3370,6 +3411,17 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.startChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
 #endif
 
+            String destInfosStr = "";
+            for (int i = 0; i < mediaRelayConfiguration.destInfos.Length; i++)
+            {
+                destInfosStr += mediaRelayConfiguration.destInfos[i].channelName;
+                destInfosStr += "\t";
+                destInfosStr += mediaRelayConfiguration.destInfos[i].token;
+                destInfosStr += "\t";
+                destInfosStr += mediaRelayConfiguration.destInfos[i].uid;
+                destInfosStr += "\t";
+            }
+            return IRtcEngineNative.startChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, destInfosStr, mediaRelayConfiguration.destCount);
         }
 
         /** Updates the channels for media stream relay. After a successful {@link agora_gaming_rtc.IRtcEngine.StartChannelMediaRelay StartChannelMediaRelay} method call, if you want to relay the media stream to more channels, or leave the current relay channel, you can call the `UpdateChannelMediaRelay` method.
@@ -3394,6 +3446,17 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.updateChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
 #endif
 
+            String destInfosStr = "";
+            for (int i = 0; i < mediaRelayConfiguration.destInfos.Length; i++)
+            {
+                destInfosStr += mediaRelayConfiguration.destInfos[i].channelName;
+                destInfosStr += "\t";
+                destInfosStr += mediaRelayConfiguration.destInfos[i].token;
+                destInfosStr += "\t";
+                destInfosStr += mediaRelayConfiguration.destInfos[i].uid;
+                destInfosStr += "\t";
+            }
+            return IRtcEngineNative.updateChannelMediaRelay(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, mediaRelayConfiguration.srcInfo.uid, destInfosStr, mediaRelayConfiguration.destCount);
         }
 
         /** Stops the media stream relay.
@@ -3812,6 +3875,7 @@ namespace agora_gaming_rtc
 
         /** Enables/Disables the super-resolution algorithm for a remote user's video stream.
          *
+         * @deprecated This method is deprecated from v3.7.1. Use {@link EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId) EnableRemoteSuperResolution [2/2]} instead.
          * @since v3.5.1
          *
          * The algorithm effectively improves the resolution of the specified remote user's video stream. When the original
@@ -3864,9 +3928,45 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
+        public int EnableRemoteSuperResolution(uint userId, bool enable)
+        {
+            return IRtcEngineNative.enableRemoteSuperResolution(userId, enable);
+        }
+
+        /**
+        * Enables/Disables the super-resolution feature for a remote user's video stream. This is a beta feature.
+        *
+        * @since v3.7.1
+        *
+        * This feature effectively boosts the resolution of a remote user's video seen by the local user. If the original resolution of a remote user's video is a × b, the local user's device can render the remote video at a resolution of 2a × 2b after you enable this feature.
+        *
+        * After calling this method, the SDK triggers the {@link agora_gaming_rtc.OnUserSuperResolutionEnabledHandler OnUserSuperResolutionEnabledHandler} callback to report whether you have successfully enabled super resolution.
+        *
+        * @note Before calling this method, ensure that you have integrated the following dynamic libraries into your project:
+        * - Android: `libagora_super_resolution_extension.so`
+        * - iOS/macOS: `AgoraSuperResolutionExtension.xcframework`
+        * - Windows: `libagora_super_resolution_extension.dll`
+        *
+        * @warning The super resolution feature requires extra system resources. To balance the visual experience and system consumption, the SDK poses the following restrictions:
+        * - This feature can only be enabled for a single remote user.
+        * - The original resolution of the remote user's video cannot exceed 640 × 360 pixels.
+        * - The feature cannot be enabled in certain specific devices.
+        *
+        * @param enabled Determines whether to enable super resolution for the remote user's video:
+        * - true: Enable super resolution.
+        * - false: Disable super resolution.
+        * @param mode The mode of super resolution. See #SR_MODE.
+        * @param userId The user ID of the remote user. This parameter only applies when mode is set as `SR_MODE_MANUAL(0)`.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        *   - `-157 (ERR_MODULE_NOT_FOUND)`: The dynamic library for super resolution is not integrated.
+        *
+        */
         public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
         {
-            return IRtcEngineNative.enableRemoteSuperResolution(enabled, (int)mode, userId);
+            return IRtcEngineNative.enableRemoteSuperResolution3(enabled, (int)mode, userId);
         }
 
         /** Sets the role of a user in interactive live streaming.
@@ -4440,10 +4540,10 @@ namespace agora_gaming_rtc
                 domainStr.Append(config.domainList[i]);
                 domainStr.Append("\t");
             }
-            return IRtcEngineNative.setLocalAccessPoint(ipsStr.ToString(), config.ipList.Length, domainStr.ToString(), config.domainList.Length, config.verifyDomainName, (int)config.mode);
+            return IRtcEngineNative.setLocalAccessPoint(ipsStr.ToString(), config.ipList.Length, domainStr.ToString(), config.domainList.Length, config.verifyDomainName, (int)config.mode, config.advancedConfig.logUploadServer.serverDomain, config.advancedConfig.logUploadServer.serverPath, config.advancedConfig.logUploadServer.serverPort, config.advancedConfig.logUploadServer.serverHttps);
         }
 
-        /** Enables/Disables the virtual background for the clientManager.
+        /** Enables/Disables the virtual background.
          * 
          * After enabling the virtual background feature, you can replace the original background image of the local user with a custom background image.
          * After the replacement, all users in the channel can see the custom background image. You can find out from the {@link agora_gaming_rtc.OnVirtualBackgroundSourceEnabledHandler OnVirtualBackgroundSourceEnabledHandler}
@@ -4479,9 +4579,10 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - &lt; 0: Failure.
          */
-        public int enableVirtualBackground(bool enabled, VirtualBackgroundSource source)
+        public int EnableVirtualBackground(bool enabled, VirtualBackgroundSource source)
         {
             return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree, source.mute, source.loop);
+            // return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
         }
 
         /** Enables blur for the virtual background being used by clientManager.
@@ -4589,7 +4690,7 @@ namespace agora_gaming_rtc
         {
 #if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.setVirtualBackgroundImage(imgFile);
-#else 
+#else
             return -1;
 #endif
         }
@@ -4776,6 +4877,7 @@ namespace agora_gaming_rtc
 #else
             return -1;
 #endif
+            return IRtcEngineNative.enableVirtualBackground(enabled, (int)source.background_source_type, source.color, source.source, (int)source.blur_degree);
         }
 
         /**
@@ -5350,8 +5452,6 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableSpatialAudio(enabled);
         }
 
-
-
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
          *
@@ -5389,9 +5489,9 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int SetRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double speaker_attenuation, bool enable_blur, bool enable_air_absorb)
+        public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb)
         {
-            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb);
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
         }
         /// @endcond
         /**
@@ -5539,11 +5639,36 @@ namespace agora_gaming_rtc
         {
             return IRtcEngineNative.setCameraAutoFocusFaceModeEnabled(enabled);
         }
-
+        /// @cond
+        /**
+        * Sets the video rotation angle.
+        *
+        * @since v3.7.1
+        *
+        * When you call this method, the SDK sets the rotation angle of the video in the original capture 0-degree
+        * direction, so that the locally rendered video and the video seen by remote users are rotated.
+        *
+        * Cameras of some devices capture video with a rotation angle, which results in the user seeing the video with the rotation angle as well. In this case, you can call this method to correct the rotation angle; otherwise, you do not need to call this method.
+        *
+        * @note
+        * - You can call this method either before or after joining a channel.
+        * - Besides camera capture scenarios, this method also applies to custom video source and renderer scenarios.
+        *
+        * @param rotation The counterclockwise rotation angle of the original capture 0-degree direction. You can set this parameter as any of the following values:
+        * - 0: (Default) 0 degree.
+        * - 1: 90 degree.
+        * - 2: 180 degree.
+        * - 3: 270 degree.
+        *
+        * @return
+        * - 0: Success.
+        * - < 0: Failure.
+        */
         public int SetCameraCaptureRotation(int rotation)
         {
             return IRtcEngineNative.setCameraCaptureRotation(rotation);
         }
+        /// @endcond
 
         /** Initializes an IRtcEngine instance.
          *
@@ -5561,7 +5686,11 @@ namespace agora_gaming_rtc
          * @return
          * - The IRtcEngine instance, if this method call succeeds.
          * - The error code, if this method call fails.
-         *   - `ERR_INVALID_APP_ID (101)`: The App ID is invalid. Check if your App ID is in the correct format.
+         *   - -1(`ERR_FAILED`): A general error occurs (no specified reason).
+         *   - -2(`ERR_INVALID_ARGUMENT`): No IRtcEngineEventHandler object is specified.
+         *   - -7(`ERR_NOT_INITIALIZED`): The SDK is not initialized. Check whether context is properly set.
+         *   - -22(`ERR_RESOURCE_LIMITED`): The resource is limited. The app uses too much of the system resource and fails to allocate any resources.
+         *   - -101(`ERR_INVALID_APP_ID`): The App ID is invalid.
          */
         public static IRtcEngine GetEngine(string appId)
         {
@@ -5586,7 +5715,11 @@ namespace agora_gaming_rtc
          * @return
          * - The IRtcEngine instance, if this method call succeeds.
          * - The error code, if this method call fails.
-         *   - `ERR_INVALID_APP_ID (101)`: The App ID is invalid. Check if your App ID is in the correct format.
+         *   - -1(`ERR_FAILED`): A general error occurs (no specified reason).
+         *   - -2(`ERR_INVALID_ARGUMENT`): No IRtcEngineEventHandler object is specified.
+         *   - -7(`ERR_NOT_INITIALIZED`): The SDK is not initialized. Check whether context is properly set.
+         *   - -22(`ERR_RESOURCE_LIMITED`): The resource is limited. The app uses too much of the system resource and fails to allocate any resources.
+         *   - -101(`ERR_INVALID_APP_ID`): The App ID is invalid.
          */
         public static IRtcEngine GetEngine(RtcEngineConfig engineConfig)
         {
@@ -5683,6 +5816,13 @@ namespace agora_gaming_rtc
                     MediaRecorder.ReleaseInstance();
                 }
 
+                LocalSpatialAudioEngine le = (LocalSpatialAudioEngine)instance.GetLocalSpatialAudioEngine();
+                if (le != null)
+                {
+                    le.SetEngine(null);
+                    LocalSpatialAudioEngine.ReleaseInstance();
+                }
+
 #if UNITY_EDITOR_WIN || UNITY_EDITOR_OSX || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
                 ScreenCaptureManager sc = (ScreenCaptureManager)instance.GetScreenCaptureManager();
                 if (sc != null)
@@ -5691,17 +5831,13 @@ namespace agora_gaming_rtc
                     ScreenCaptureManager.ReleaseInstance();
                 }
 #endif
-            }
 
-            IRtcEngineNative.deleteEngine();
-            AgoraChannel.Release();
+                IRtcEngineNative.deleteEngine();
+                AgoraChannel.Release();
 
-            if (instance != null)
-            {
                 instance.DeInitGameObject();
+                instance = null;
             }
-
-            instance = null;
         }
 
         // only query, do not create
@@ -5717,19 +5853,6 @@ namespace agora_gaming_rtc
         }
 
         private static IRtcEngine instance = null;
-
-        internal static void EnqueueCallback(Action action)
-        {
-
-            AgoraCallbackQueue queue = instance._AgoraCallbackObject._CallbackQueue;
-            if (!ReferenceEquals(queue, null))
-            {
-                queue.EnQueue(() =>
-                {
-                    action.Invoke();
-                });
-            }
-        }
 
         [MonoPInvokeCallback(typeof(OnJoinChannelSuccessHandler))]
         private static void OnJoinChannelSuccessCallback(string channel, uint uid, int elapsed)
@@ -5908,7 +6031,7 @@ namespace agora_gaming_rtc
         }
 
         [MonoPInvokeCallback(typeof(EngineEventOnAudioVolumeIndicationHandler))]
-        internal static void OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
+        private static void OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
         {
             if (instance != null && instance.OnVolumeIndication != null && instance._AgoraCallbackObject != null)
             {
@@ -5926,9 +6049,9 @@ namespace agora_gaming_rtc
                             {
                                 for (int i = 0; i < speakerNumber; i++)
                                 {
-                                    uint uids = uint.Parse(sArray[j++]);
-                                    uint vol = uint.Parse(sArray[j++]);
-                                    uint vad = uint.Parse(sArray[j++]);
+                                    uint uids = (uint)int.Parse(sArray[j++]);
+                                    uint vol = (uint)int.Parse(sArray[j++]);
+                                    uint vad = (uint)int.Parse(sArray[j++]);
                                     string channelId = sArray[j++];
                                     infos[i].uid = uids;
                                     infos[i].volume = vol;
