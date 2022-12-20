@@ -1394,7 +1394,10 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid + "", channelMediaRelayConfiguration.destCount);
+            IRtcEngineNative.startChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, 
+		        channelMediaRelayConfiguration.srcInfo.uid + "", 
+		        channelMediaRelayConfiguration.destInfos[0].channelName, channelMediaRelayConfiguration.destInfos[0].token, channelMediaRelayConfiguration.destInfos[0].uid + "", 
+		        channelMediaRelayConfiguration.destCount);
             return 0;
 #else
 
@@ -1432,7 +1435,9 @@ namespace agora_gaming_rtc
 
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.updateChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos.channelName, channelMediaRelayConfiguration.destInfos.token, channelMediaRelayConfiguration.destInfos.uid + "", channelMediaRelayConfiguration.destCount);
+            IRtcEngineNative.updateChannelMediaRelay2_WEBGL(_channelHandler, channelMediaRelayConfiguration.srcInfo.channelName, channelMediaRelayConfiguration.srcInfo.token, 
+		        channelMediaRelayConfiguration.srcInfo.uid + "", channelMediaRelayConfiguration.destInfos[0].channelName, channelMediaRelayConfiguration.destInfos[0].token,
+                channelMediaRelayConfiguration.destInfos[0].uid + "", channelMediaRelayConfiguration.destCount);
             return 0;
 #else
 
@@ -1938,7 +1943,11 @@ namespace agora_gaming_rtc
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return -1;
+#else
             return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+#endif
         }
 
         // WEBGL Version retains the attuation parameter

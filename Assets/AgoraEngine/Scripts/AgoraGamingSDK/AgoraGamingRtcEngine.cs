@@ -3403,7 +3403,8 @@ namespace agora_gaming_rtc
         {
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.startChannelMediaRelay_WEBGL(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, "" + mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, "" + mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
+            IRtcEngineNative.startChannelMediaRelay_WEBGL(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, "" + mediaRelayConfiguration.srcInfo.uid,
+                mediaRelayConfiguration.destInfos[0].channelName, mediaRelayConfiguration.destInfos[0].token, "" + mediaRelayConfiguration.destInfos[0].uid, mediaRelayConfiguration.destCount);
             return 0;
 #else
 
@@ -3438,7 +3439,8 @@ namespace agora_gaming_rtc
         {
 
 #if !UNITY_EDITOR && UNITY_WEBGL
-            IRtcEngineNative.updateChannelMediaRelay_WEBGL(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, "" + mediaRelayConfiguration.srcInfo.uid, mediaRelayConfiguration.destInfos.channelName, mediaRelayConfiguration.destInfos.token, "" + mediaRelayConfiguration.destInfos.uid, mediaRelayConfiguration.destCount);
+            IRtcEngineNative.updateChannelMediaRelay_WEBGL(mediaRelayConfiguration.srcInfo.channelName, mediaRelayConfiguration.srcInfo.token, "" + mediaRelayConfiguration.srcInfo.uid,
+                mediaRelayConfiguration.destInfos[0].channelName, mediaRelayConfiguration.destInfos[0].token, "" + mediaRelayConfiguration.destInfos[0].uid, mediaRelayConfiguration.destCount);
             return 0;
 #else
 
@@ -5487,7 +5489,11 @@ namespace agora_gaming_rtc
          */
         public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb)
         {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return -1;
+#else
             return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
+#endif
         }
 
         // WebGL Version retains attenuation parameter

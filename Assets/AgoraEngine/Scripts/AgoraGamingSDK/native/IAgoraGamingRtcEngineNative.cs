@@ -1406,8 +1406,6 @@ namespace agora_gaming_rtc
         protected static extern int muteLocalVideoStream_channel(IntPtr channel, bool mute);
 #endif
 
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-
 #if UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setVirtualBackgroundBlur(int blur_degree);
@@ -1436,6 +1434,7 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setVirtualBackgroundVideo_MC(string videoFile);
 #endif
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableVirtualBackground(bool enabled, int background_source_type, uint color, string source, int blur_degree);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
