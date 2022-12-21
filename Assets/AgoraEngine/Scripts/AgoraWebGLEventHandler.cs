@@ -571,6 +571,39 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void onCameraChanged(string info)
+        {
+            string[] myInfo = info.Split('|');
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnCameraChanged != null)
+            {
+                engine.OnCameraChanged(myInfo[0], myInfo[1]);
+            }
+        }
+
+        public void onMicrophoneChanged(string info)
+        {
+            string[] myInfo = info.Split('|');
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnMicrophoneChanged != null)
+            {
+                engine.OnMicrophoneChanged(myInfo[0], myInfo[1]);
+            }
+        }
+
+        public void onPlaybackChanged(string info)
+        {
+            string[] myInfo = info.Split('|');
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnPlaybackChanged != null)
+            {
+                engine.OnPlaybackChanged(myInfo[0], myInfo[1]);
+            }
+        }
+
         public void onRemoteUserLeaved(string eventData)
         {
             string[] events = eventData.Split('|');

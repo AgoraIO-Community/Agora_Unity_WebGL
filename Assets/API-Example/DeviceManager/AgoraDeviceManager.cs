@@ -102,6 +102,9 @@ public class AgoraDeviceManager : MonoBehaviour
         _rtcEngine.OnWarning += OnSDKWarningHandler;
         _rtcEngine.OnError += OnSDKErrorHandler;
         _rtcEngine.OnConnectionLost += OnConnectionLostHandler;
+        _rtcEngine.OnCameraChanged += OnCameraChangedHandler;
+        _rtcEngine.OnMicrophoneChanged += OnMicrophoneChangedHandler;
+        _rtcEngine.OnPlaybackChanged += OnPlaybackChangedHandler;
     }
 
     void GetAudioRecordingDevice() 
@@ -156,8 +159,10 @@ public class AgoraDeviceManager : MonoBehaviour
         _videoDeviceManager = (VideoDeviceManager)_rtcEngine.GetVideoDeviceManager();
         _videoDeviceManager.CreateAVideoDeviceManager();
         int count = _videoDeviceManager.GetVideoDeviceCount();
-        _logger.UpdateLog(string.Format("VideoDeviceManager count: {0}", count));
+        _logger.UpdateLog(string.Format("VideoDevice count: {0}", count));
         videoDropdown.ClearOptions();
+        _videoDeviceManagerDic.Clear();
+        _videoDeviceManagerNamesDic.Clear();
         for (int i = 0; i < count; i++)
         {
             _videoDeviceManager.GetVideoDevice(i, ref videoDeviceName, ref videoDeviceId);
@@ -226,6 +231,22 @@ public class AgoraDeviceManager : MonoBehaviour
             uid, elapsed));
         makeVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Add(uid);
+    }
+
+    void OnCameraChangedHandler(string state, string device)
+    {
+        _logger.UpdateLog(string.Format("OnCameraChanged state: {0} device: {1}", state, device));
+        GetVideoDeviceManager();
+    }
+
+    void OnMicrophoneChangedHandler(string state, string device)
+    {
+        _logger.UpdateLog(string.Format("OnMicrophoneChanged state: {0} device: {1}", state, device));
+    }
+
+    void OnPlaybackChangedHandler(string state, string device)
+    {
+        _logger.UpdateLog(string.Format("OnPlaybackChanged state: {0} device: {1}", state, device));
     }
 
     void OnApplicationQuit()
