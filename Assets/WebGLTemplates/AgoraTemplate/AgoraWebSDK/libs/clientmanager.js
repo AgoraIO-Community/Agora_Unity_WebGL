@@ -473,10 +473,11 @@ class ClientManager {
       }),
     ])
 
-    AgoraRTC.onCameraChanged = (info) => {
+    AgoraRTC.onCameraChanged = async (info) => {
       console.log("onCameraChanged fired", info);
       wrapper.initStats();
       cacheDevices();
+      console.log(await AgoraRTC.getCameras());
       event_manager.raiseOnCameraChanged(info);
     };
 
