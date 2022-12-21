@@ -225,7 +225,6 @@ namespace agora_gs_test
                 videoSurface.SetEnable(true);
                 // TODO: call this before set enable in webgl, creates error
                 videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-                videoSurface.SetGameFps(30);
             }
         }
 

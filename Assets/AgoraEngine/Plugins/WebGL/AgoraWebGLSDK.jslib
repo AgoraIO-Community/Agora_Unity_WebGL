@@ -1048,18 +1048,14 @@ var LibraryAgoraWebGLSDK = {
     SendNotImplementedError()
   },
   setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
-    setRemoteUserSpatialAudioParams(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+    setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
-    setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+    setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   updatePlayerPositionInfo: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
     const localPosition = {
@@ -2110,7 +2106,22 @@ muteLocalAudioStream_channel: function(channel, mute) {
   startAudioRecordingWithConfig: function() {},
   switchChannel2: function() {},
   uploadLogFile: function() {},
-  setCameraCaptureRotation: function (rotation) {}
+  setCameraCaptureRotation: function (rotation) {},
+  clearRemotePositions : function () {},
+  enableRemoteSuperResolution3 : function (enabled, mode, uid) {},
+  enableRemoteSuperResolution4 : function (chan_ptr, enabled, mode, uid) {},
+  localSpatialAudio_initialize : function () {},
+  localSpatialAudio_release  : function () {},
+  localSpatialAudio_setParameters  : function (params) {},
+  muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
+  muteLocalAudioStream_spatialAudio   : function (mute) {},
+  removeRemotePosition   : function (uid) {},
+  setAudioRecvRange   : function (range) {},
+  setDistanceUnit   : function (unit) {},
+  setMaxAudioRecvCount   : function (count) {},
+  updateRemotePosition : function (uid, pos, forward) {},
+  updateSelfPosition  : function (pos, forward, right, up) {}
+
 };
 
 autoAddDeps(LibraryAgoraWebGLSDK, "$localVideo");

@@ -1,6 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
+#if(UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
+using UnityEngine.Android;
+#endif
+using System.Collections;
 
 /// <summary>
 ///  This demo shows MultiChannel video streaming.
@@ -15,7 +19,10 @@ public class MultiChannelSceneCtrl : MonoBehaviour
 
     [SerializeField]
     Text logText;
-
+    // Use this for initialization
+#if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
+    private ArrayList permissionList = new ArrayList();
+#endif
     static IRtcEngine mRtcEngine;
     static string APPID { get; set; }
 
@@ -23,6 +30,10 @@ public class MultiChannelSceneCtrl : MonoBehaviour
 
     private void Awake()
     {
+#if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
+        permissionList.Add(Permission.Microphone);
+        permissionList.Add(Permission.Camera);
+# endif
         DontDestroyOnLoad(gameObject);
         if (Instance != null)
         {
@@ -41,6 +52,25 @@ public class MultiChannelSceneCtrl : MonoBehaviour
         SetupEngine();
     }
 
+    private void Update()
+    {
+        CheckPermissions();
+    }
+    /// <summary>
+    ///   Checks for platform dependent permissions.
+    /// </summary>
+    private void CheckPermissions()
+    {
+#if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
+        foreach (string permission in permissionList)
+        {
+            if (!Permission.HasUserAuthorizedPermission(permission))
+            {
+                Permission.RequestUserPermission(permission);
+            }
+        }
+#endif
+    }
     public void SetupEngine(bool resetting = false)
     {
         if (mRtcEngine == null || resetting)
@@ -54,7 +84,8 @@ public class MultiChannelSceneCtrl : MonoBehaviour
             Debug.Log("engine is null");
             return;
         }
-        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_GAME);
+        mRtcEngine.SetAudioProfile(AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT, AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_GAME_STREAMING);
         mRtcEngine.SetMultiChannelWant(true);
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableAudio();

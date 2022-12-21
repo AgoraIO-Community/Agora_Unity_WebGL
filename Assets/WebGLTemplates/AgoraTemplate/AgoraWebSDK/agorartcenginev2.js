@@ -287,7 +287,8 @@ async function setLocalAudioTrackMicrophone(deviceId) {
 
 async function setLocalTrackCamera(deviceId) {
   if (localTracks.videoTrack) {
-    localTracks.videoTrack.setDevice(deviceId);
+    await localTracks.videoTrack.setDevice(deviceId);
+    localTracks.videoTrack.play("local-player");
   }
 }
 
@@ -298,7 +299,7 @@ async function setVideoDeviceCollectionDeviceWGL(deviceId) {
   } else {
     currentVideoDevice = deviceId;
     event_manager.raiseGetCurrentVideoDevice(currentVideoDevice);
-    setLocalTrackCamera(currentVideoDevice);
+    await setLocalTrackCamera(currentVideoDevice);
   }
 }
 
