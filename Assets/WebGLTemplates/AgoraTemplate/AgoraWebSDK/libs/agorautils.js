@@ -1,6 +1,6 @@
 // Caching the list of devices for the usage in Device Manager
-function cacheDevices() {
-  AgoraRTC.getPlaybackDevices()
+async function cacheDevices() {
+  await AgoraRTC.getPlaybackDevices()
     .then((cameras) => {
       wrapper.savePlayBackDevices(cameras);
       var fstr = "";
@@ -24,7 +24,7 @@ function cacheDevices() {
       //console.log("get playback devices error!", e);
     });
 
-  AgoraRTC.getMicrophones()
+  await AgoraRTC.getMicrophones()
     .then((mics) => {
       wrapper.saveMicrophones(mics);
       var fstr = "";
@@ -48,7 +48,7 @@ function cacheDevices() {
       //console.log("get playback devices error!", e);
     });
 
-  AgoraRTC.getCameras()
+  await AgoraRTC.getCameras()
     .then((cameras) => {
       wrapper.saveCameras(cameras);
 
