@@ -173,10 +173,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public void updateSpatialAudio()
     {
-        mRtcEngine.SetRemoteUserSpatialAudioParams("0", azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
-
-
-
 }
 
