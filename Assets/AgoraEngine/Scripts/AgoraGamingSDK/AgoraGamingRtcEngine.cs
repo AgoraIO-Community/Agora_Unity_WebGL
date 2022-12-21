@@ -5505,7 +5505,7 @@ namespace agora_gaming_rtc
         public int SetRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid + "", speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
 #else
             return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
 #endif

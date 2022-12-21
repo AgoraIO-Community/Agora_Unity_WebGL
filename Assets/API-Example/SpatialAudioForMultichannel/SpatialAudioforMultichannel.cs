@@ -42,11 +42,6 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     [SerializeField]
     private List<uint> remoteClientIDs;
 
-    void Awake()
-    {
-
-    }
-
     // Use this for initialization
     void Start()
     {
@@ -57,7 +52,6 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
         InitEngine();
 
-        spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
         //channel setup.
         appIdText.text = APP_ID;
         tokenText.text = TOKEN_1;
@@ -159,7 +153,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     public void JoinChannel()
     {
-
+        spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
         spatialAudioChannel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, false, true, false));
         joinedChannel = true;
     }
@@ -235,7 +229,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     public void updateSpatialAudio()
     {
-        if (remoteClientIDs.Count > 0)
+        if (remoteClientIDs.Count > 0 && enableToggle.isOn)
         {
             spatialAudioChannel.SetRemoteUserSpatialAudioParams(remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
         }

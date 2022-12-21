@@ -1854,7 +1854,7 @@ namespace agora_gaming_rtc
          */
         public int EnableSpatialAudio_MC(bool enabled)
         {
-            return -1;
+            return IRtcEngineNative.enableSpatialAudio_MC(enabled);
         }
 
         /**
@@ -1890,15 +1890,10 @@ namespace agora_gaming_rtc
         */
         public int EnableRemoteSuperResolution(bool enabled, SR_MODE mode, uint userId)
         {
-#if UNITY_WEBGL
-            return IRtcEngineNative.enableSpatialAudio_MC(enabled);
-#else 
 
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
             return IRtcEngineNative.enableRemoteSuperResolution4(_channelHandler, enabled, (int)mode, userId);
-
-#endif
         }
 
         /// @cond
@@ -1955,8 +1950,10 @@ namespace agora_gaming_rtc
         {
             if (_rtcEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
 #if !UNITY_EDITOR && UNITY_WEBGL
-            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
+            IRtcEngineNative.setCurrentChannel_WGL(_channelId);
+            return IRtcEngineNative.setRemoteUserSpatialAudioParams2(uid+"", speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, attenuation, enable_blur, enable_air_absorb);
 #else
             return IRtcEngineNative.setRemoteUserSpatialAudioParams2(_channelHandler, uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
 #endif
