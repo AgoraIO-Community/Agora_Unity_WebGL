@@ -126,6 +126,7 @@ public class AgoraDeviceManager : MonoBehaviour
         }
         
         recordingDropdown.AddOptions(_audioRecordingDeviceNamesDic.Values.ToList());
+        recordingDropdown.value = _audioRecordingDeviceNamesDic.Count - 1;
     }
 
     void GetAudioPlaybackDevice()
@@ -148,6 +149,7 @@ public class AgoraDeviceManager : MonoBehaviour
         }
         
         playbackDropdown.AddOptions(_audioPlaybackDeviceNamesDic.Values.ToList());
+        playbackDropdown.value = _audioPlaybackDeviceNamesDic.Count - 1;
     }
 
     void GetVideoDeviceManager()
@@ -174,8 +176,9 @@ public class AgoraDeviceManager : MonoBehaviour
 
             _logger.UpdateLog(string.Format("VideoDeviceManager device index: {0}, name: {1}, id: {2}", i, videoDeviceName, videoDeviceId));
         }
-
+        
         videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
+        videoDropdown.value = _videoDeviceManagerNamesDic.Count - 1;
     }
 
     void SetCurrentDevice()
@@ -242,11 +245,13 @@ public class AgoraDeviceManager : MonoBehaviour
     void OnMicrophoneChangedHandler(string state, string device)
     {
         _logger.UpdateLog(string.Format("OnMicrophoneChanged state: {0} device: {1}", state, device));
+        GetAudioRecordingDevice();
     }
 
     void OnPlaybackChangedHandler(string state, string device)
     {
         _logger.UpdateLog(string.Format("OnPlaybackChanged state: {0} device: {1}", state, device));
+        GetAudioPlaybackDevice();
     }
 
     void OnApplicationQuit()

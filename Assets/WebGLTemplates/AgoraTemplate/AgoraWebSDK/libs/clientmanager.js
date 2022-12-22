@@ -475,19 +475,19 @@ class ClientManager {
 
     AgoraRTC.onCameraChanged = async (info) => {
       console.log("onCameraChanged fired", info);
-      await cacheDevices();
+      await cacheVideoDevices();
       event_manager.raiseOnCameraChanged(info);
     };
 
     AgoraRTC.onMicrophoneChanged = async (info) => {
       console.log("onMicrophoneChanged fired", info);
-      await cacheDevices();
+      await cacheMicrophones();
       event_manager.raiseOnMicrophoneChanged(info);
     };
 
     AgoraRTC.onPlaybackChanged = async (info) => {
       console.log("onPlaybackChanged fired", info);
-      await cacheDevices();
+      await cachePlaybackDevices();
       event_manager.raiseOnPlaybackChanged(info);
     };
 
