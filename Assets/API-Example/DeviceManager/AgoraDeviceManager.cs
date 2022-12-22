@@ -116,7 +116,9 @@ public class AgoraDeviceManager : MonoBehaviour
         int count = _audioRecordingDeviceManager.GetAudioRecordingDeviceCount();
         _logger.UpdateLog(string.Format("AudioRecordingDevice count: {0}", count));
         recordingDropdown.ClearOptions();
-        for(int i = 0; i < count ; i ++) {
+        _audioRecordingDeviceDic.Clear();
+        _audioRecordingDeviceNamesDic.Clear();
+        for (int i = 0; i < count ; i ++) {
             _audioRecordingDeviceManager.GetAudioRecordingDevice(i, ref audioRecordingDeviceName, ref audioRecordingDeviceId);
             if (!_audioRecordingDeviceDic.ContainsKey(i)) {
                 _audioRecordingDeviceDic.Add(i, audioRecordingDeviceId);
@@ -138,7 +140,9 @@ public class AgoraDeviceManager : MonoBehaviour
         int count = _audioPlaybackDeviceManager.GetAudioPlaybackDeviceCount();
         _logger.UpdateLog(string.Format("AudioPlaybackDeviceManager count: {0}", count));
         playbackDropdown.ClearOptions();
-        for(int i = 0; i < count ; i ++) {
+        _audioPlaybackDeviceDic.Clear();
+        _audioPlaybackDeviceNamesDic.Clear();
+        for (int i = 0; i < count ; i ++) {
             _audioPlaybackDeviceManager.GetAudioPlaybackDevice(i, ref audioPlaybackDeviceName, ref audioPlaybackDeviceId);
             if (!_audioPlaybackDeviceDic.ContainsKey(i))
             {
