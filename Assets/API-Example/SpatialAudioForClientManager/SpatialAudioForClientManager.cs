@@ -291,7 +291,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
     {
         uint uid = remoteClientIDs[userDropdown.value];
         Debug.Log("Updating spatial effect for uid:" + uid);
-        mRtcEngine.SetRemoteUserSpatialAudioParams(uid.ToString(), azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        mRtcEngine.SetRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
 
 

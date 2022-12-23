@@ -32,19 +32,15 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     public Toggle blurToggle, airAbsorbToggle, enableToggle;
 
-    public Text azimuthText, elevationText, 
+    public Text azimuthText, elevationText,
     distanceText, orientationText, attenuationText;
 
     public InputField appIdText, tokenText, channelNameText;
 
-	AgoraChannel spatialAudioChannel;
+    AgoraChannel spatialAudioChannel;
 
     [SerializeField]
     private List<uint> remoteClientIDs;
-
-    void Awake(){
-        
-    }
 
     // Use this for initialization
     void Start()
@@ -55,8 +51,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
         }
 
         InitEngine();
-        
-        spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
+
         //channel setup.
         appIdText.text = APP_ID;
         tokenText.text = TOKEN_1;
@@ -64,15 +59,18 @@ public class SpatialAudioforMultichannel : MonoBehaviour
         remoteClientIDs = new List<uint>();
     }
 
-    public void updateAppID(){
+    public void updateAppID()
+    {
         APP_ID = appIdText.text;
     }
 
-    public void updateToken(){
+    public void updateToken()
+    {
         TOKEN_1 = tokenText.text;
     }
 
-    public void updateChannelName(){
+    public void updateChannelName()
+    {
         CHANNEL_NAME_1 = channelNameText.text;
     }
 
@@ -80,7 +78,8 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     {
         PermissionHelper.RequestMicrophontPermission();
 
-        if(joinedChannel){
+        if (joinedChannel)
+        {
 
             joinButton.interactable = false;
             leaveButton.interactable = true;
@@ -95,7 +94,9 @@ public class SpatialAudioforMultichannel : MonoBehaviour
             attenuationSlider.interactable = true;
             blurToggle.interactable = true;
             airAbsorbToggle.interactable = true;
-        } else {
+        }
+        else
+        {
 
             joinButton.interactable = true;
             leaveButton.interactable = false;
@@ -131,9 +132,9 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
         mRtcEngine.EnableAudio();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
-		mRtcEngine.SetMultiChannelWant(true);
+        mRtcEngine.SetMultiChannelWant(true);
 
-		spatialAudioChannel = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
+        spatialAudioChannel = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
         spatialAudioChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
         spatialAudioChannel.ChannelOnJoinChannelSuccess += OnJoinChannelSuccessHandler;
@@ -142,7 +143,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     void OnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
-        
+
     }
 
     void OnUserJoinedHandler(string channelId, uint uid, int elapsed)
@@ -152,14 +153,14 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     public void JoinChannel()
     {
-        
+        spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
         spatialAudioChannel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, false, true, false));
         joinedChannel = true;
     }
 
     public void LeaveChannel()
     {
-        
+
         spatialAudioChannel.EnableSpatialAudio_MC(false);
         spatialAudioChannel.LeaveChannel();
         joinedChannel = false;
@@ -184,45 +185,54 @@ public class SpatialAudioforMultichannel : MonoBehaviour
         }
     }
 
-    public void updateAzimuth(){
+    public void updateAzimuth()
+    {
         azimuth = azimuthSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateElevation(){
+    public void updateElevation()
+    {
         elevation = elevationSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateDistance(){
+    public void updateDistance()
+    {
         distance = distanceSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateOrientation(){
+    public void updateOrientation()
+    {
         orientation = (int)orientationSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateAttenuation(){
+    public void updateAttenuation()
+    {
         attenuation = attenuationSlider.value;
         updateSpatialAudio();
     }
 
-    public void updateBlur(){
+    public void updateBlur()
+    {
         spatialBlur = blurToggle.isOn;
         updateSpatialAudio();
     }
 
-    public void updateAirAbsorb(){
+    public void updateAirAbsorb()
+    {
         spatialAirAbsorb = airAbsorbToggle.isOn;
         updateSpatialAudio();
     }
 
-    public void updateSpatialAudio(){
-        if(remoteClientIDs.Count > 0){
-            spatialAudioChannel.SetRemoteUserSpatialAudioParams(""+remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+    public void updateSpatialAudio()
+    {
+        if (remoteClientIDs.Count > 0 && enableToggle.isOn)
+        {
+            spatialAudioChannel.SetRemoteUserSpatialAudioParams(remoteClientIDs[0], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
         }
     }
-    
+
 }

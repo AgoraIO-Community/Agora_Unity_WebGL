@@ -3,7 +3,7 @@ import { SpatialAudioExtension} from "./index.esm.js";
 
 
 AgoraRTC.setLogLevel(1);
-let extension = new SpatialAudioExtension();
+let extension = new SpatialAudioExtension({assetPath:'./AgoraWebSDK/libs/spatial'});
 AgoraRTC.registerExtensions([extension]);
 
 

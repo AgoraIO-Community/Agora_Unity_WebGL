@@ -292,11 +292,13 @@ class ClientManager {
       var track = localTracks[trackName];
       if (track) {
         if(!Array.isArray(track)){
+          track.unpipe();
           track.stop();
           track.close();
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
+            track.unpipe();
             track[i].stop();
             track[i].close();
           }
@@ -309,6 +311,10 @@ class ClientManager {
 
     if(this.spatialAudio !== undefined){
       this.spatialAudio.localPlayerStopAll();
+    }
+
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
     }
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
@@ -467,6 +473,24 @@ class ClientManager {
       }),
     ])
 
+    AgoraRTC.onCameraChanged = async (info) => {
+      console.log("onCameraChanged fired", info);
+      await cacheVideoDevices();
+      event_manager.raiseOnCameraChanged(info);
+    };
+
+    AgoraRTC.onMicrophoneChanged = async (info) => {
+      console.log("onMicrophoneChanged fired", info);
+      await cacheMicrophones();
+      event_manager.raiseOnMicrophoneChanged(info);
+    };
+
+    AgoraRTC.onPlaybackDeviceChanged = async (info) => {
+      console.log("onPlaybackChanged fired", info);
+      await cachePlaybackDevices();
+      event_manager.raiseOnPlaybackDeviceChanged(info);
+    };
+
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
 
@@ -609,12 +633,20 @@ class ClientManager {
   }
 
   async startPreview() {
+
+    if(localTracks.videoTrack){
+      localTracks.videoTrack.stop();
+      localTracks.videoTrack.close();
+      await this.client.unpublish(localTracks.videoTrack);
+    }
+
     [localTracks.videoTrack] = await Promise.all([
       AgoraRTC.createCameraVideoTrack().catch(e => {
         event_manager.raiseHandleUserError(e.code, e.msg);
       }),
     ]);
     localTracks.videoTrack.play("local-player");
+    await this.client.publish(localTracks.videoTrack);
   }
 
   stopPreview() {
@@ -1067,19 +1099,27 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
 }
 
 async setVirtualBackgroundBlur(blurDegree){
-  setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  }
 }
 
 async setVirtualBackgroundColor(hexColor){
-  setBackgroundColor(localTracks.videoTrack, hexColor);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundColor(localTracks.videoTrack, hexColor);
+  }
 }
 
 async setVirtualBackgroundImage(imgFile){
-  setBackgroundImage(localTracks.videoTrack, imgFile);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundImage(localTracks.videoTrack, imgFile);
+  }
 }
 
 async setVirtualBackgroundVideo(videoFile){
-  setBackgroundVideo(localTracks.videoTrack, videoFile);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundVideo(localTracks.videoTrack, videoFile);
+  }
 }
 
   SetRemoteUserPriority(uid, userPriority) {

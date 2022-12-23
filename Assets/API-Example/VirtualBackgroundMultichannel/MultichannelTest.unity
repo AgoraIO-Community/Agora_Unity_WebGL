@@ -3390,7 +3390,7 @@ MonoBehaviour:
   muteToggle: {fileID: 231672356}
   loopToggle: {fileID: 1037289746}
   imgFile: bedroom.jpg
-  videoFile: outside.mp4
+  videoFile: jellyfish.mp4
 --- !u!1 &1404540726
 GameObject:
   m_ObjectHideFlags: 0

@@ -60,6 +60,30 @@ class EventManager {
     );
   }
 
+  raiseOnCameraChanged(info){
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onCameraChanged",
+      info.state +  ' | ' + info.device
+    );
+  }
+
+  raiseOnMicrophoneChanged(info){
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onMicrophoneChanged",
+      info.state +  ' | ' + info.device
+    );
+  }
+
+  raiseOnPlaybackDeviceChanged(info){
+    unityInstance.SendMessage(
+      "AgoraEventHandler",
+      "onPlaybackChanged",
+      info.state +  ' | ' + info.device
+    );
+  }
+
   isNumber(n) { return /^-?[\d.]+(?:e-?\d+)?$/.test(n); } 
 
   raiseJoinChannelSuccess(userId, channel) {

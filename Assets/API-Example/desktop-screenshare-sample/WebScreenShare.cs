@@ -58,9 +58,11 @@ public class WebScreenShare : MonoBehaviour
         mRtcEngine.OnConnectionLost += OnConnectionLostHandler;
         mRtcEngine.OnUserJoined += OnUserJoinedHandler;
         mRtcEngine.OnUserOffline += OnUserOfflineHandler;
+#if UNITY_WEBGL
         mRtcEngine.OnScreenShareStarted += OnScreenShareStarted;
         mRtcEngine.OnScreenShareStopped += OnScreenShareStopped;
         mRtcEngine.OnScreenShareCanceled += OnScreenShareCanceled;
+#endif
     }
 
     void JoinChannel()

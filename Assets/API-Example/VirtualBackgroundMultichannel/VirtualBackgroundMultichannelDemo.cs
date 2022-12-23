@@ -1,10 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
-using agora_gaming_rtc;
 
 public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 {
@@ -14,7 +12,6 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
-    [SerializeField] private string TOKEN_2 = "";
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
@@ -86,11 +83,23 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         {
             enableButton.interactable = false;
             disableButton.interactable = true;
+            blurButton.interactable = true;
+            colorButton.interactable = true;
+            imageButton.interactable = true;
+            videoButton.interactable = true;
+            blurDropdown.interactable = true;
+            hexDropdown.interactable = true;
         }
         else
         {
             enableButton.interactable = true;
             disableButton.interactable = false;
+            blurButton.interactable = false;
+            colorButton.interactable = false;
+            imageButton.interactable = false;
+            videoButton.interactable = false;
+            blurDropdown.interactable = false;
+            hexDropdown.interactable = false;
         }
 
         mute = muteToggle.isOn;
@@ -234,6 +243,7 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
     {
         channel.LeaveChannel();
         joinedChannel = false;
+        virtualBackgroundOn = false;
     }
 
     void OnApplicationQuit()

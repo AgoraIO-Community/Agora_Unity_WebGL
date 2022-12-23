@@ -4,10 +4,17 @@
 
 This project is the open source WebGL SDK for Unity, a wrapper to the Agora Web SDK 4.x.  
 
-**Please be aware that this is still a beta release.  Do not assume everything works correctly as an official product. Do not expect the same behaviors from the original Unity SDK. You should check the README files to understand this SDK some more before proceeding to download. Do press the Star to show respect to people who work hard on creation of this SDK on your demand.** 
+## Important Notice
+
+1. **This is a community supported SDK in open beta.**  Do not assume everything works correctly as an official product. Do not expect the same behaviors from the original Unity SDK. Please accept the risk to use this in a production environment.
+2. This project is **NOT** compatible with the current Agora Unity SDK ver. **4.x**
+3. If your just want to get the SDK, **do not clone this project** unless you plan to contribute code.  Instead, go to the [Release](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/releases) section download the package.
+4. Check the [Wiki page](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/wiki) to understand this SDK some more before proceeding to download or asking questions.
+5. If it is not a bug or improvement request, your question probably should be asked in the [Discussions](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/discussions) page instead. 
+6. Do press the Star to show respect to people who work hard on creation of this SDK on your demand.** 
 
 ## Prerequisites
-- Unity 2017 and up
+- Unity 2019 and up
 - Agora Developer Account
 - Knowledge of how to deploy and debug WebGL Application from Unity
 - Google Chrome
@@ -34,17 +41,16 @@ Before you can build and run any Agora project, you will need to add your AppID 
 ### Run the Demo Application
 
 1. It is optional to clone this repository,  to obtain the unity package file, go to [the release section](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/releases) and download the latest version.
-2. [Optional] Download and import the Agora Video SDK
-3. Import the WebGL SDK package (Unity Editor-> Assets -> Import Package -> Custom Package). Overwrite all the files if Step 2 was performed.
+3. Import the WebGL SDK package (Unity Editor-> Assets -> Import Package -> Custom Package). 
 4. From Project window, open Asset/AgoraEngine/Demo/Main.scene
 5. Next, go into your Hierarchy window and select  ****GameController****, in the Inspector add your  ****App ID****  to to the  ****AppID****  Input field.
 
 ### API-Examples
-This repository includes a subset of API-Examples that resembles [the main SDK's version](https://github.com/AgoraIO/Agora-Unity-Quickstart/tree/master/API-Example-Unity).
-Please use the Canvas game object to fill the AppID instead of GameController.
+This repository includes a set of API-Examples that shows how to use a particular feature.
+For the most demos, please use the Canvas game object to fill the AppID instead of the GameController.
 
 ### [optional] Test in Editor
-You must download the Agora Video SDK in Step 2 above.
+You must download the "Complete" package from the Release.  The package includes native plugins that support the Editor environment.
 
 ### Build and Run
 
@@ -52,7 +58,7 @@ You must download the Agora Video SDK in Step 2 above.
  2. Make sure ****AgoraTemplate**** or ****AgoraTemplate2020**** is chosen under "Resolution and Presentation":
 ![webgl_template](https://user-images.githubusercontent.com/1261195/130500369-53dca294-2cf5-4a0d-a875-a8ab8fbabd70.png)
 The difference of the templates: use AgoraTemplate2020 for Unity Editor 2020 and up.
- 3. You may do Build And Run for Unity version 2020 and up.  For Unity 2017, you need to build first, then run it from your local http server. 
+ 3. You may do Build And Run for Unity version 2020 and up.  For other versions, you need to build first, then run it from your local http server. 
 
 
 
@@ -63,3 +69,4 @@ Please see [the Wiki page](https://github.com/AgoraIO-Community/Agora_Unity_WebG
 
 ## License
 The MIT License (MIT).  [See doc.](LICENSE)
+

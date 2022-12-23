@@ -6,7 +6,8 @@ using agora_utilities;
 using UnityEngine.UI;
 using System;
 
-public class Test_Misc : MonoBehaviour {
+public class Test_Misc : MonoBehaviour
+{
 
     public Text txtmsg;
 
@@ -100,10 +101,11 @@ public class Test_Misc : MonoBehaviour {
         mediaRelayConfiguration.srcInfo.token = inpTokenSource.text;
 
         mediaRelayConfiguration.destCount = 1;
+        mediaRelayConfiguration.destInfos = new ChannelMediaInfo[1];
         uint dest_uid = uint.Parse(inpDestUID.text);
-        mediaRelayConfiguration.destInfos.uid = dest_uid;
-        mediaRelayConfiguration.destInfos.channelName = "unity2d";
-        mediaRelayConfiguration.destInfos.token = inpTokenDest.text;
+        mediaRelayConfiguration.destInfos[0].uid = dest_uid;
+        mediaRelayConfiguration.destInfos[0].channelName = "unity2d";
+        mediaRelayConfiguration.destInfos[0].token = inpTokenDest.text;
 
         int res = engine.StartChannelMediaRelay(mediaRelayConfiguration);
         Debug.Log("StartChannelMediaRelay = " + res);
@@ -120,10 +122,11 @@ public class Test_Misc : MonoBehaviour {
         mediaRelayConfiguration.srcInfo.token = inpTokenSource.text;
 
         mediaRelayConfiguration.destCount = 1;
+        mediaRelayConfiguration.destInfos = new ChannelMediaInfo[1];
         uint dest_uid = uint.Parse(inpDestUID.text);
-        mediaRelayConfiguration.destInfos.uid = dest_uid;
-        mediaRelayConfiguration.destInfos.channelName = "unity2d";
-        mediaRelayConfiguration.destInfos.token = inpTokenDest.text;
+        mediaRelayConfiguration.destInfos[0].uid = dest_uid;
+        mediaRelayConfiguration.destInfos[0].channelName = "unity2d";
+        mediaRelayConfiguration.destInfos[0].token = inpTokenDest.text;
 
         int res = engine.UpdateChannelMediaRelay(mediaRelayConfiguration);
         Debug.Log("UpdateChannelMediaRelay = " + res);

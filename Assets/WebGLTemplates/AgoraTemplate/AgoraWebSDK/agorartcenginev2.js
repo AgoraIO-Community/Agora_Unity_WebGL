@@ -35,7 +35,7 @@ async function joinChannelWithUserAccount_WGL(
   client_manager.setOptions(token_str, channelId_str);
   await client_manager.joinAgoraChannel(userAccount_str);
   wrapper.initStats();
-  cacheDevices();
+  await cacheDevices();
 }
 
 async function joinChannelWithUserAccount_engine_WGL(
@@ -287,7 +287,8 @@ async function setLocalAudioTrackMicrophone(deviceId) {
 
 async function setLocalTrackCamera(deviceId) {
   if (localTracks.videoTrack) {
-    localTracks.videoTrack.setDevice(deviceId);
+    await localTracks.videoTrack.setDevice(deviceId);
+    localTracks.videoTrack.play("local-player");
   }
 }
 
@@ -298,7 +299,7 @@ async function setVideoDeviceCollectionDeviceWGL(deviceId) {
   } else {
     currentVideoDevice = deviceId;
     event_manager.raiseGetCurrentVideoDevice(currentVideoDevice);
-    setLocalTrackCamera(currentVideoDevice);
+    await setLocalTrackCamera(currentVideoDevice);
   }
 }
 

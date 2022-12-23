@@ -80,7 +80,6 @@ namespace agora_gaming_rtc
         * - A remote user/host joins the channel by calling the {@link agora_gaming_rtc.IRtcEngine.JoinChannelByKey JoinChannelByKey} method.
         * - A remote user switches the user role to the host by calling the {@link agora_gaming_rtc.IRtcEngine.SetClientRole SetClientRole} method after joining the channel.
         * - A remote user/host rejoins the channel after a network interruption.
-        * - The host injects an online media stream into the channel by calling the {@link agora_gaming_rtc.IRtcEngine.AddInjectStreamUrl AddInjectStreamUrl} method.
         *
         * @note
         * In the Live-broadcast profile:
@@ -208,11 +207,7 @@ namespace agora_gaming_rtc
         public delegate void OnAudioRouteChangedHandler(AUDIO_ROUTE route);
 
         /** Occurs when the first remote video frame is received and decoded.
-        * 
-        * @deprecated Use the {@link agora_gaming_rtc.OnRemoteVideoStateChangedHandler OnRemoteVideoStateChangedHandler} callback with the following parameters instead:
-        * - {@link agora_gaming_rtc.REMOTE_VIDEO_STATE#REMOTE_VIDEO_STATE_STARTING REMOTE_VIDEO_STATE_STARTING(1)}
-        * - {@link agora_gaming_rtc.REMOTE_VIDEO_STATE#REMOTE_VIDEO_STATE_DECODING REMOTE_VIDEO_STATE_DECODING(2)}
-        * 
+        *
         * This callback is triggered in either of the following scenarios:
         * - The remote user joins the channel and sends the video stream.
         * - The remote user stops sending the video stream and re-sends it after 15 seconds. Reasons for such an interruption include:
@@ -324,6 +319,7 @@ namespace agora_gaming_rtc
         */
         public delegate void OnAudioQualityHandler(uint userId, int quality, ushort delay, ushort lost);
 
+        /// @cond
         /** Occurs when a voice or video stream URL address is added to the interactive live streaming.
          *
          * @warning Agora will soon stop the service for injecting online media streams on the client. If you have not implemented this service, Agora recommends that you do not use it.
@@ -333,6 +329,7 @@ namespace agora_gaming_rtc
          * @param status The state of the externally injected stream: #INJECT_STREAM_STATUS.
          */
         public delegate void OnStreamInjectedStatusHandler(string url, uint userId, int status);
+        /// @endcond
 
         /** Reports the result of calling the {@link agora_gaming_rtc.IRtcEngine.RemovePublishStreamUrl RemovePublishStreamUrl} method. (CDN live only.)
          *
@@ -408,14 +405,6 @@ namespace agora_gaming_rtc
          * @param token The token that expires in 30 seconds.
          */
         public delegate void OnTokenPrivilegeWillExpireHandler(string token);
-
-        /** Occurs when the token has expired.
-         *
-         * The user becomes offline if the token used in the {@link agora_gaming_rtc.IRtcEngine.JoinChannelByKey JoinChannelByKey} method expires.
-         *
-         * @param token The token that expires in 30 seconds.
-         */
-        public delegate void OnTokenPrivilegeDidExpireHandler(string token);
 
         /** Occurs when the most active speaker is detected.
          *
@@ -1101,4 +1090,49 @@ namespace agora_gaming_rtc
         *
         */
         public delegate void OnScreenCaptureInfoUpdatedHandler(ScreenCaptureInfo info);
+
+        /** Occurs when the Camera for the local user has changed.
+        *
+        * @since v3.6.1.1
+        *
+        * When you call {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId} or {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByScreenRect StartScreenCaptureByScreenRect} to start screen sharing
+        * and use the `excludeWindowList` attribute to block the specified window, the SDK triggers this callback if the window blocking fails.
+        *
+        *
+        *
+        * @param state of the camera
+        * @param information on the video device
+        *
+        */
+        public delegate void OnCameraChanged(string state, string device);
+
+    /** Occurs when the Audio Playback Device for the local user has changed.
+    *
+    * @since v3.6.1.1
+    *
+    * When you call {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId} or {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByScreenRect StartScreenCaptureByScreenRect} to start screen sharing
+    * and use the `excludeWindowList` attribute to block the specified window, the SDK triggers this callback if the window blocking fails.
+    *
+    *
+    *
+    * @param state of the Audio Playback Device
+    * @param information on the Audio Playback Device
+    *
+    */
+    public delegate void OnPlaybackChanged(string state, string device);
+
+    /** Occurs when the Microphone for the local user has changed.
+    *
+    * @since v3.6.1.1
+    *
+    * When you call {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId} or {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByScreenRect StartScreenCaptureByScreenRect} to start screen sharing
+    * and use the `excludeWindowList` attribute to block the specified window, the SDK triggers this callback if the window blocking fails.
+    *
+    *
+    *
+    * @param state of the Microphone
+    * @param information on the Microphone
+    *
+    */
+    public delegate void OnMicrophoneChanged(string state, string device);
 }

@@ -43,7 +43,6 @@ namespace agora_utilities
             {
                 mRtcEngine = value;
                 mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
-                mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
                 mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
             }
         }
@@ -112,7 +111,6 @@ namespace agora_utilities
         public void SetMultiChannelInstance(AgoraChannel channel)
         {
             channel.ChannelOnTokenPrivilegeWillExpire = ChannelOnTokenPrivilegeWillExpireHandler;
-            channel.ChannelOnTokenPrivilegeDidExpire = ChannelOnTokenPrivilegeDidExpireHandler;
             channel.ChannelOnClientRoleChanged += ChannelOnClientRoleChangedHandler;
         }
 
@@ -125,7 +123,6 @@ namespace agora_utilities
         {
             mRtcEngine = engine;
             mRtcEngine.OnTokenPrivilegeWillExpire = OnTokenPrivilegeWillExpireHandler;
-            mRtcEngine.OnTokenPrivilegeDidExpire = OnTokenPrivilegeDidExpireHandler;
             mRtcEngine.OnClientRoleChanged += OnClientRoleChangedHandler;
         }
 
@@ -175,11 +172,6 @@ namespace agora_utilities
                         }));
         }
 
-        void OnTokenPrivilegeDidExpireHandler(string token)
-        {
-            Debug.Log("Token has expired, please rejoin to get another token.... ");
-
-        }
 
         void ChannelOnTokenPrivilegeWillExpireHandler(string channelId, string token)
         {
@@ -195,10 +187,6 @@ namespace agora_utilities
                         }));
         }
 
-        void ChannelOnTokenPrivilegeDidExpireHandler(string channelId, string token)
-        {
-            Debug.Log("Channel Token has expired for " + channelId + ", join again to renew token");
-        }
 
         void ChannelOnClientRoleChangedHandler(string channelId, CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
         {

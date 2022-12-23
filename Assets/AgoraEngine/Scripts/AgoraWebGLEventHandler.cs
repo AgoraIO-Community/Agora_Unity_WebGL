@@ -571,6 +571,39 @@ namespace agora_gaming_rtc
             }
         }
 
+        public void onCameraChanged(string info)
+        {
+            string[] myInfo = info.Split('|');
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnCameraChanged != null)
+            {
+                engine.OnCameraChanged(myInfo[0], myInfo[1]);
+            }
+        }
+
+        public void onMicrophoneChanged(string info)
+        {
+            string[] myInfo = info.Split('|');
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnMicrophoneChanged != null)
+            {
+                engine.OnMicrophoneChanged(myInfo[0], myInfo[1]);
+            }
+        }
+
+        public void onPlaybackChanged(string info)
+        {
+            string[] myInfo = info.Split('|');
+
+            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
+            if (engine.OnPlaybackChanged != null)
+            {
+                engine.OnPlaybackChanged(myInfo[0], myInfo[1]);
+            }
+        }
+
         public void onRemoteUserLeaved(string eventData)
         {
             string[] events = eventData.Split('|');
@@ -711,7 +744,8 @@ namespace agora_gaming_rtc
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
                 uint uid = uint.Parse(userId);
-                if(ch.ChannelOnUserJoined != null) {
+                if (ch.ChannelOnUserJoined != null)
+                {
                     ch.ChannelOnUserJoined(channel, uid, 0);
                 }
             }
@@ -812,13 +846,13 @@ namespace agora_gaming_rtc
         {
             string[] events = eventData.Split('|');
 
-            
+
             string channel = events[0];
             string errCode = events[1];
             string msg = events[2];
             int results = 0;
             int.TryParse(errCode, out results);
-            
+
 
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
@@ -833,7 +867,7 @@ namespace agora_gaming_rtc
         public void HandleUserError(string eventData)
         {
             string[] events = eventData.Split('|');
-            
+
             string errCode = events[0];
             string msg = events[1];
             Debug.Log(errCode);
@@ -843,7 +877,7 @@ namespace agora_gaming_rtc
             agora_gaming_rtc.IRtcEngine engine = IRtcEngine.QueryEngine();
             if (engine != null)
             {
-                
+
                 if (engine.OnError != null)
                 {
                     engine.OnError(results, msg);
@@ -953,7 +987,7 @@ namespace agora_gaming_rtc
         public void ChannelOnVideoSizeChanged(string eventData)
         {
             string[] events = eventData.Split('|');
-            
+
             try
             {
                 uint uid = uint.Parse(events[0]);
@@ -962,7 +996,7 @@ namespace agora_gaming_rtc
                 int height = int.Parse(events[2]);
                 string channel = events[3];
                 AgoraChannel myChannel = GetInstance()._clientsList[channel];
-                
+
                 if (myChannel == null) return;
                 if (myChannel.ChannelOnVideoSizeChanged != null)
                 {
@@ -1035,56 +1069,26 @@ namespace agora_gaming_rtc
 
         // server expires token after some time
         // you need to call setToken again otherwise server will disconnect
-        public void tokenPrivilegeDidExpire(string token)
-        {
-            agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
-            if (engine.OnTokenPrivilegeDidExpire != null)
-            {
-                engine.OnTokenPrivilegeDidExpire(token);
-            }
-
-        }
-
-        // server expires token after some time
-        // you need to call setToken again otherwise server will disconnect
         public void channelTokenPrivilegeWillExpire(string eventData)
         {
             string[] events = eventData.Split('|');
             string channel = events[0];
             string token = events[1];
-           
+
             Debug.Log(GetInstance()._clientsList.ContainsKey(channel));
             if (GetInstance()._clientsList.ContainsKey(channel))
             {
                 AgoraChannel ch = GetInstance()._clientsList[channel];
-                
+
                 if (ch.ChannelOnTokenPrivilegeWillExpire != null)
                 {
-                    
+
                     ch.ChannelOnTokenPrivilegeWillExpire(channel, token);
                 }
             }
 
         }
 
-        // server expires token after some time
-        // you need to call setToken again otherwise server will disconnect
-        public void channelTokenPrivilegeDidExpire(string eventData)
-        {
-            string[] events = eventData.Split('|');
-            string channel = events[0];
-            string token = events[1];
-
-            if (GetInstance()._clientsList.ContainsKey(channel))
-            {
-                AgoraChannel ch = GetInstance()._clientsList[channel];
-                if (ch.ChannelOnTokenPrivilegeDidExpire != null)
-                {
-                    ch.ChannelOnTokenPrivilegeDidExpire(channel, token);
-                }
-            }
-
-        }
 
         // sending to OnAudioVolumeIndicationCallback(string volumeInfo, int speakerNumber, int totalVolume)
         // volumn info is <uid volume vad channel>* 

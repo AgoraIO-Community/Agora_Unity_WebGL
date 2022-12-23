@@ -1,21 +1,20 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
-using agora_gaming_rtc;
 
 public class VirtualBackgroundClientDemo : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
 
-    [SerializeField] private string TOKEN_1 = "";
+    [SerializeField] private string TOKEN = "";
 
-    [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
+    [SerializeField] private string CHANNEL_NAME = "YOUR_CHANNEL_NAME_1";
 
-    [SerializeField] private string TOKEN_2 = "";
     public Text logText;
+    public InputField InputField;
+
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
@@ -66,6 +65,8 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         uint.TryParse(hexColors[hexIndex], out myVirtualBackground.color);
         myVirtualBackground.source = imgFile;
         Debug.Log("Background Source C#....." + myVirtualBackground.background_source_type.ToString());
+
+
     }
 
 
@@ -175,6 +176,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
         mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
 
+        mRtcEngine.OnUserMuteVideo += userVideoMutedHandler;
         mRtcEngine.OnError += EngineOnErrorHandler;
 
     }
@@ -191,14 +193,14 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         setVirtualBackgroundBlur();
     }
 
-    public void enableVirtualBackground(bool onoff)
+    public void EnableVirtualBackground(bool onoff)
     {
         if (onoff)
         {
             myVirtualBackground.background_source_type = background;
         }
         virtualBackgroundOn = onoff;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundBlur()
@@ -206,7 +208,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         background = BACKGROUND_SOURCE_TYPE.BACKGROUND_BLUR;
         myVirtualBackground.background_source_type = background;
         myVirtualBackground.blur_degree = blur;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundColor()
@@ -215,7 +217,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         myVirtualBackground.background_source_type = background;
         uint colorValue = (uint)int.Parse(hexColors[hexIndex], System.Globalization.NumberStyles.HexNumber);
         myVirtualBackground.color = colorValue;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundImage()
@@ -223,7 +225,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         background = BACKGROUND_SOURCE_TYPE.BACKGROUND_IMG;
         myVirtualBackground.background_source_type = background;
         myVirtualBackground.source = imgFile;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void setVirtualBackgroundVideo()
@@ -233,23 +235,23 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         myVirtualBackground.source = videoFile;
         myVirtualBackground.mute = mute;
         myVirtualBackground.loop = loop;
-        mRtcEngine.enableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
+        mRtcEngine.EnableVirtualBackground(virtualBackgroundOn, myVirtualBackground);
     }
 
     public void JoinChannel()
     {
         if (!useToken)
         {
-            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+            mRtcEngine.JoinChannel(TOKEN, CHANNEL_NAME, "", 0, new ChannelMediaOptions(true, true, true, true));
         }
         else
         {
             TokenClient.Instance.RtcEngine = mRtcEngine;
-            TokenClient.Instance.GetRtcToken(CHANNEL_NAME_1, 0, (token) =>
+            TokenClient.Instance.GetRtcToken(CHANNEL_NAME, 0, (token) =>
             {
-                TOKEN_1 = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
+                TOKEN = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN);
+                mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME);
             });
         }
         joinedChannel = true;
@@ -297,15 +299,21 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
+        logger.UpdateLog(string.Format("sdk version: {0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME, uid,
             elapsed));
         makeVideoView(channelId, 0);
     }
 
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
+        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME));
+        DestroyVideoView(CHANNEL_NAME, 0);
+        foreach (var remoteuser in remoteClientIDs)
+        {
+            DestroyVideoView(CHANNEL_NAME, remoteuser);
+        }
+        remoteClientIDs.Clear();
     }
 
     void EngineOnErrorHandler(int err, string message)
@@ -316,16 +324,16 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: {1} elapsed: {2}", CHANNEL_NAME,
             uid, elapsed));
-        makeVideoView(CHANNEL_NAME_1, uid);
+        makeVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Add(uid);
     }
 
     void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
-        DestroyVideoView(CHANNEL_NAME_1, uid);
+        logger.UpdateLog(string.Format("OnUserOffLine uid: {0}, reason: {1}", uid, (int)reason));
+        DestroyVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Remove(uid);
     }
 
