@@ -485,10 +485,10 @@ class ClientManager {
       event_manager.raiseOnMicrophoneChanged(info);
     };
 
-    AgoraRTC.onPlaybackChanged = async (info) => {
+    AgoraRTC.onPlaybackDeviceChanged = async (info) => {
       console.log("onPlaybackChanged fired", info);
       await cachePlaybackDevices();
-      event_manager.raiseOnPlaybackChanged(info);
+      event_manager.raiseOnPlaybackDeviceChanged(info);
     };
 
     this._inChannel = true;

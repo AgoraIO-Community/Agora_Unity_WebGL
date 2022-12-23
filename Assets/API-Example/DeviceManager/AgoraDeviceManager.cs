@@ -211,7 +211,7 @@ public class AgoraDeviceManager : MonoBehaviour
     }
 
     public void SetAndReleasePlaybackDevice(){
-        _audioPlaybackDeviceManager.SetAudioPlaybackDevice(_audioRecordingDeviceDic[_recordingDeviceIndex]);
+        _audioPlaybackDeviceManager.SetAudioPlaybackDevice(_audioPlaybackDeviceDic[_playbackDeviceIndex]);
         _audioPlaybackDeviceManager.ReleaseAAudioPlaybackDeviceManager();
     }
 

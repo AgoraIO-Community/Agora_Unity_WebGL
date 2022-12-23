@@ -75,6 +75,7 @@ async function cacheDevices() {
 }
 
 async function cachePlaybackDevices(){
+  console.log("caching Playback Devices");
   await AgoraRTC.getPlaybackDevices()
     .then((cameras) => {
       wrapper.savePlayBackDevices(cameras);
@@ -101,6 +102,7 @@ async function cachePlaybackDevices(){
 }
 
 async function cacheMicrophones(){
+  console.log("caching Microphones Devices");
   await AgoraRTC.getMicrophones()
     .then((mics) => {
       wrapper.saveMicrophones(mics);
@@ -127,6 +129,7 @@ async function cacheMicrophones(){
 }
 
 async function cacheVideoDevices(){
+  console.log("caching Video Devices");
   await AgoraRTC.getCameras()
     .then((cameras) => {
       wrapper.saveCameras(cameras);
