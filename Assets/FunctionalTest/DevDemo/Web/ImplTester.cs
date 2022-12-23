@@ -12,12 +12,14 @@ namespace agora_gs_test
         string strFilePath = "sample_mp3.mp3";
         [SerializeField] private Vector2 scrollPosition = Vector2.zero;
         [SerializeField] private string FBURL = "rtmps://live-api-s.facebook.com:443/rtmp/761881614728913?s_bl=1&s_psm=1&s_sc=761881671395574&s_sw=0&s_vt=api-s&a=AbxzSme10reUuODr";
-        [SerializeField] private string audioEffectURL = "SET FROM INSPECTOR";
+        //[SerializeField] private string audioEffectURL = "SET FROM INSPECTOR";
         //string vdc = "";
         //string adc = "";
         //string cvdc = "";
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         bool uploadLogStatus = false;
+#endif
 
         string src_uid_str = "src uid :";
         string dest_uid_str = "dest uid :";

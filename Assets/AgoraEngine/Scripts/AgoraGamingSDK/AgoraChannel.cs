@@ -1854,7 +1854,12 @@ namespace agora_gaming_rtc
          */
         public int EnableSpatialAudio_MC(bool enabled)
         {
+#if UNITY_WEBGL
             return IRtcEngineNative.enableSpatialAudio_MC(enabled);
+#else
+            Debug.LogError("No supported for this platform:" + Application.platform);
+            return -1;
+#endif
         }
 
         /**

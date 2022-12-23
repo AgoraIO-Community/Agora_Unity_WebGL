@@ -13,8 +13,6 @@ public class AgoraClientManager : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
-    [SerializeField] private string TOKEN_2 = "";
-
     [SerializeField] private uint SCREEN_SHARE_ID = 1000;
 
     public Text logText;

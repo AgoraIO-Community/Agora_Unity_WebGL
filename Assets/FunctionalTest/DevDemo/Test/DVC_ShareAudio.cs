@@ -5,9 +5,10 @@ using agora_gaming_rtc;
 using agora_utilities;
 using System;
 
-public class DVC_ShareAudio : MonoBehaviour {
+public class DVC_ShareAudio : MonoBehaviour
+{
 
-	const int SAMPLE_RATE = 44100;
+    const int SAMPLE_RATE = 44100;
     public AudioSource audioSource;
     public bool GrabSceneAudio = true;
     private IRtcEngine mRtcEngine;
@@ -121,7 +122,7 @@ public class DVC_ShareAudio : MonoBehaviour {
         Debug.LogWarning("Done Audio Render coroutine...");
     }
 
-    bool  flag  = false;
+    //bool  flag  = false;
     virtual protected void PushExternalAudioFrame(byte[] _externalAudioFrameBuffer, int channels)
     {
         AudioFrame _externalAudioFrame = new AudioFrame();
@@ -150,8 +151,8 @@ public class DVC_ShareAudio : MonoBehaviour {
         {
             //if (flag == false)
             //{
-                int a = mRtcEngine.PushAudioFrame(_externalAudioFrame);
-                flag = true;
+            int a = mRtcEngine.PushAudioFrame(_externalAudioFrame);
+            //flag = true;
             //}
         }
     }

@@ -12,9 +12,6 @@ public class AgoraMultiChannel2 : MonoBehaviour
     [SerializeField] private string TOKEN_1 = "";
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
-
-    [SerializeField] private string TOKEN_2 = "";
-
     [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
     [SerializeField] private string CHANNEL_NAME_3 = "YOUR_CHANNEL_NAME_3";
     [SerializeField] private string CHANNEL_NAME_4 = "YOUR_CHANNEL_NAME_4";
@@ -39,9 +36,9 @@ public class AgoraMultiChannel2 : MonoBehaviour
     protected Dictionary<uint, VideoSurface> UserVideoDict = new Dictionary<uint, VideoSurface>();
     private List<GameObject> remoteUserDisplays = new List<GameObject>();
 
-    
-    public InputField screenShareIDInput; 
-    
+
+    public InputField screenShareIDInput;
+
 
     // Use this for initialization
     void Start()
@@ -85,7 +82,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
         useScreenShareAudio = loopbackAudioToggle.isOn;
     }
 
-    public void updateScreenShareID(){
+    public void updateScreenShareID()
+    {
         uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
     }
 
@@ -122,7 +120,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
 
-   
+
 
     void InitEngine()
     {
