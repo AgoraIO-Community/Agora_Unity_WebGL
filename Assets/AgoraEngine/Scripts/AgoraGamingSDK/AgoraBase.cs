@@ -142,7 +142,7 @@ namespace agora_gaming_rtc
         *
         * @note Agora does not recommend using this setting.
         */
-        CHANNEL_PROFILE_GAME = 2,
+        // CHANNEL_PROFILE_GAME = 2,
     };
 
 

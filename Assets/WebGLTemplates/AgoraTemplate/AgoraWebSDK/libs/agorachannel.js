@@ -224,7 +224,7 @@ class AgoraChannel {
     const vad = 0;
     const channel_str = this.channelId;
     result.forEach(function (volume, index) {
-      console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
+      //console.log(`${index} UID ${volume.uid} Level ${volume.level}`);
 
       if (volume.level > total) {
         total = volume.level;
@@ -956,7 +956,7 @@ class AgoraChannel {
     let Client = this.client;
     setTimeout(function () {
       var stats = Client.getRemoteVideoStats();
-      console.log("agora channel remote video: " + stats);
+      //console.log("agora channel remote video: " + stats);
       if (stats[uid]) {
         const width = stats[uid].receiveResolutionWidth;
         const height = stats[uid].receiveResolutionHeight;

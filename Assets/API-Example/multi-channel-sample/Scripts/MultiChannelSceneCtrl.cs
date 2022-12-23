@@ -84,7 +84,7 @@ public class MultiChannelSceneCtrl : MonoBehaviour
             Debug.Log("engine is null");
             return;
         }
-        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_GAME);
+        mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetAudioProfile(AUDIO_PROFILE_TYPE.AUDIO_PROFILE_DEFAULT, AUDIO_SCENARIO_TYPE.AUDIO_SCENARIO_GAME_STREAMING);
         mRtcEngine.SetMultiChannelWant(true);
         mRtcEngine.EnableVideo();
