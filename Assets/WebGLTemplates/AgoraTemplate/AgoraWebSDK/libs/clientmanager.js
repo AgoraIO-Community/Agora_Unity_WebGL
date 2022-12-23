@@ -473,6 +473,24 @@ class ClientManager {
       }),
     ])
 
+    AgoraRTC.onCameraChanged = async (info) => {
+      console.log("onCameraChanged fired", info);
+      await cacheVideoDevices();
+      event_manager.raiseOnCameraChanged(info);
+    };
+
+    AgoraRTC.onMicrophoneChanged = async (info) => {
+      console.log("onMicrophoneChanged fired", info);
+      await cacheMicrophones();
+      event_manager.raiseOnMicrophoneChanged(info);
+    };
+
+    AgoraRTC.onPlaybackDeviceChanged = async (info) => {
+      console.log("onPlaybackChanged fired", info);
+      await cachePlaybackDevices();
+      event_manager.raiseOnPlaybackDeviceChanged(info);
+    };
+
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
 

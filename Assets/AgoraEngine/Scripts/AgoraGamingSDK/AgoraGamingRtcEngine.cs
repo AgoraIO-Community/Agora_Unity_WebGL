@@ -211,12 +211,17 @@ namespace agora_gaming_rtc
 
         public OnScreenCaptureInfoUpdatedHandler OnScreenCaptureInfoUpdated;
 
-
         public OnUserScreenShareStarted OnScreenShareStarted;
 
         public OnUserScreenShareStopped OnScreenShareStopped;
 
         public OnUserScreenShareCanceled OnScreenShareCanceled;
+
+        public OnCameraChanged OnCameraChanged;
+
+        public OnPlaybackChanged OnPlaybackChanged;
+
+        public OnMicrophoneChanged OnMicrophoneChanged;
 
         #endregion  set callback here for user
 

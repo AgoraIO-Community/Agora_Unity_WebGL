@@ -35,7 +35,7 @@ async function joinChannelWithUserAccount_WGL(
   client_manager.setOptions(token_str, channelId_str);
   await client_manager.joinAgoraChannel(userAccount_str);
   wrapper.initStats();
-  cacheDevices();
+  await cacheDevices();
 }
 
 async function joinChannelWithUserAccount_engine_WGL(

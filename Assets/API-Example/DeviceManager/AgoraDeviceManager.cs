@@ -102,6 +102,9 @@ public class AgoraDeviceManager : MonoBehaviour
         _rtcEngine.OnWarning += OnSDKWarningHandler;
         _rtcEngine.OnError += OnSDKErrorHandler;
         _rtcEngine.OnConnectionLost += OnConnectionLostHandler;
+        _rtcEngine.OnCameraChanged += OnCameraChangedHandler;
+        _rtcEngine.OnMicrophoneChanged += OnMicrophoneChangedHandler;
+        _rtcEngine.OnPlaybackChanged += OnPlaybackChangedHandler;
     }
 
     void GetAudioRecordingDevice() 
@@ -113,7 +116,9 @@ public class AgoraDeviceManager : MonoBehaviour
         int count = _audioRecordingDeviceManager.GetAudioRecordingDeviceCount();
         _logger.UpdateLog(string.Format("AudioRecordingDevice count: {0}", count));
         recordingDropdown.ClearOptions();
-        for(int i = 0; i < count ; i ++) {
+        _audioRecordingDeviceDic.Clear();
+        _audioRecordingDeviceNamesDic.Clear();
+        for (int i = 0; i < count ; i ++) {
             _audioRecordingDeviceManager.GetAudioRecordingDevice(i, ref audioRecordingDeviceName, ref audioRecordingDeviceId);
             if (!_audioRecordingDeviceDic.ContainsKey(i)) {
                 _audioRecordingDeviceDic.Add(i, audioRecordingDeviceId);
@@ -123,6 +128,7 @@ public class AgoraDeviceManager : MonoBehaviour
         }
         
         recordingDropdown.AddOptions(_audioRecordingDeviceNamesDic.Values.ToList());
+        recordingDropdown.value = _audioRecordingDeviceNamesDic.Count - 1;
     }
 
     void GetAudioPlaybackDevice()
@@ -134,7 +140,9 @@ public class AgoraDeviceManager : MonoBehaviour
         int count = _audioPlaybackDeviceManager.GetAudioPlaybackDeviceCount();
         _logger.UpdateLog(string.Format("AudioPlaybackDeviceManager count: {0}", count));
         playbackDropdown.ClearOptions();
-        for(int i = 0; i < count ; i ++) {
+        _audioPlaybackDeviceDic.Clear();
+        _audioPlaybackDeviceNamesDic.Clear();
+        for (int i = 0; i < count ; i ++) {
             _audioPlaybackDeviceManager.GetAudioPlaybackDevice(i, ref audioPlaybackDeviceName, ref audioPlaybackDeviceId);
             if (!_audioPlaybackDeviceDic.ContainsKey(i))
             {
@@ -145,6 +153,7 @@ public class AgoraDeviceManager : MonoBehaviour
         }
         
         playbackDropdown.AddOptions(_audioPlaybackDeviceNamesDic.Values.ToList());
+        playbackDropdown.value = _audioPlaybackDeviceNamesDic.Count - 1;
     }
 
     void GetVideoDeviceManager()
@@ -156,8 +165,10 @@ public class AgoraDeviceManager : MonoBehaviour
         _videoDeviceManager = (VideoDeviceManager)_rtcEngine.GetVideoDeviceManager();
         _videoDeviceManager.CreateAVideoDeviceManager();
         int count = _videoDeviceManager.GetVideoDeviceCount();
-        _logger.UpdateLog(string.Format("VideoDeviceManager count: {0}", count));
+        _logger.UpdateLog(string.Format("VideoDevice count: {0}", count));
         videoDropdown.ClearOptions();
+        _videoDeviceManagerDic.Clear();
+        _videoDeviceManagerNamesDic.Clear();
         for (int i = 0; i < count; i++)
         {
             _videoDeviceManager.GetVideoDevice(i, ref videoDeviceName, ref videoDeviceId);
@@ -169,8 +180,9 @@ public class AgoraDeviceManager : MonoBehaviour
 
             _logger.UpdateLog(string.Format("VideoDeviceManager device index: {0}, name: {1}, id: {2}", i, videoDeviceName, videoDeviceId));
         }
-
+        
         videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
+        videoDropdown.value = _videoDeviceManagerNamesDic.Count - 1;
     }
 
     void SetCurrentDevice()
@@ -199,7 +211,7 @@ public class AgoraDeviceManager : MonoBehaviour
     }
 
     public void SetAndReleasePlaybackDevice(){
-        _audioPlaybackDeviceManager.SetAudioPlaybackDevice(_audioRecordingDeviceDic[_recordingDeviceIndex]);
+        _audioPlaybackDeviceManager.SetAudioPlaybackDevice(_audioPlaybackDeviceDic[_playbackDeviceIndex]);
         _audioPlaybackDeviceManager.ReleaseAAudioPlaybackDeviceManager();
     }
 
@@ -226,6 +238,24 @@ public class AgoraDeviceManager : MonoBehaviour
             uid, elapsed));
         makeVideoView(CHANNEL_NAME, uid);
         remoteClientIDs.Add(uid);
+    }
+
+    void OnCameraChangedHandler(string state, string device)
+    {
+        _logger.UpdateLog(string.Format("OnCameraChanged state: {0} device: {1}", state, device));
+        GetVideoDeviceManager();
+    }
+
+    void OnMicrophoneChangedHandler(string state, string device)
+    {
+        _logger.UpdateLog(string.Format("OnMicrophoneChanged state: {0} device: {1}", state, device));
+        GetAudioRecordingDevice();
+    }
+
+    void OnPlaybackChangedHandler(string state, string device)
+    {
+        _logger.UpdateLog(string.Format("OnPlaybackChanged state: {0} device: {1}", state, device));
+        GetAudioPlaybackDevice();
     }
 
     void OnApplicationQuit()

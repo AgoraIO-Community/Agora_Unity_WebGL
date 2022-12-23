@@ -1090,4 +1090,49 @@ namespace agora_gaming_rtc
         *
         */
         public delegate void OnScreenCaptureInfoUpdatedHandler(ScreenCaptureInfo info);
+
+        /** Occurs when the Camera for the local user has changed.
+        *
+        * @since v3.6.1.1
+        *
+        * When you call {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId} or {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByScreenRect StartScreenCaptureByScreenRect} to start screen sharing
+        * and use the `excludeWindowList` attribute to block the specified window, the SDK triggers this callback if the window blocking fails.
+        *
+        *
+        *
+        * @param state of the camera
+        * @param information on the video device
+        *
+        */
+        public delegate void OnCameraChanged(string state, string device);
+
+    /** Occurs when the Audio Playback Device for the local user has changed.
+    *
+    * @since v3.6.1.1
+    *
+    * When you call {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId} or {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByScreenRect StartScreenCaptureByScreenRect} to start screen sharing
+    * and use the `excludeWindowList` attribute to block the specified window, the SDK triggers this callback if the window blocking fails.
+    *
+    *
+    *
+    * @param state of the Audio Playback Device
+    * @param information on the Audio Playback Device
+    *
+    */
+    public delegate void OnPlaybackChanged(string state, string device);
+
+    /** Occurs when the Microphone for the local user has changed.
+    *
+    * @since v3.6.1.1
+    *
+    * When you call {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByDisplayId StartScreenCaptureByDisplayId} or {@link agora_gaming_rtc.IRtcEngine.StartScreenCaptureByScreenRect StartScreenCaptureByScreenRect} to start screen sharing
+    * and use the `excludeWindowList` attribute to block the specified window, the SDK triggers this callback if the window blocking fails.
+    *
+    *
+    *
+    * @param state of the Microphone
+    * @param information on the Microphone
+    *
+    */
+    public delegate void OnMicrophoneChanged(string state, string device);
 }
