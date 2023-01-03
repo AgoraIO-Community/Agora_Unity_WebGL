@@ -1857,8 +1857,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5ded6a84836e4016a2584a1c1445dfc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: 
-  TOKEN: 
+  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
   CHANNEL_NAME: YOUR_CHANNEL_NAME
   LogText: {fileID: 642115944}
   videoDeviceText: {fileID: 654726336}
