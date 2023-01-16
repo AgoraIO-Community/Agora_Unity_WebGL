@@ -9,10 +9,7 @@ public class TestDataStream : MonoBehaviour
 {
 
     [SerializeField]
-    private string APP_ID = "";
-
-    [SerializeField]
-    private string TOKEN = "";
+    private AppInfoObject appInfo;
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
@@ -44,13 +41,13 @@ public class TestDataStream : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
     }
 
     void InitEngine()
     {
         // NOTE LogConfig is discarded in WebGL
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
 
         mRtcEngine.SetLogFile("log.txt");
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
@@ -84,7 +81,7 @@ public class TestDataStream : MonoBehaviour
 
     void JoinChannel()
     {
-        mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)

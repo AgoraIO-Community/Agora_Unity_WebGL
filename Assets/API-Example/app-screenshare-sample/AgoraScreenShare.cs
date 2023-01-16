@@ -8,7 +8,7 @@ public class AgoraScreenShare : MonoBehaviour
 {
 
     [SerializeField]
-    private AppIDObject appInfo;
+    private AppInfoObject appInfo;
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";

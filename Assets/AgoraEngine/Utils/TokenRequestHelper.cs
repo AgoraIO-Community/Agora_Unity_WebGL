@@ -55,7 +55,10 @@ namespace agora_utilities
             var query_url = string.Format(RteTokenEndPointFormatter, url, channel, role, userId, expireSecs);
             Debug.Log("Query:" + query_url);
             UnityWebRequest request = UnityWebRequest.Get(query_url);
-
+            request.SetRequestHeader("Access-Control-Allow-Credentials", "true");
+            request.SetRequestHeader("Access-Control-Allow-Headers", "Accept, X-Access-Token, X-Application-Name, X-Request-Sent-Time");
+            request.SetRequestHeader("Access-Control-Allow-Methods", "*");
+            request.SetRequestHeader("Access-Control-Allow-Origin", "*");
             yield return request.SendWebRequest();
 
             if (request.isNetworkError || request.isHttpError)

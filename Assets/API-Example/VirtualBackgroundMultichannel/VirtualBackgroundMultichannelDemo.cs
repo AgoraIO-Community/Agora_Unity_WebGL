@@ -6,9 +6,7 @@ using agora_utilities;
 
 public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 {
-    [SerializeField] private string APP_ID = "YOUR_APPID";
-
-    [SerializeField] private string TOKEN_1 = "";
+    [SerializeField] private AppInfoObject appInfo;
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
@@ -138,13 +136,13 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
-        return (APP_ID.Length > 10);
+        logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        return (appInfo.appID.Length > 10);
     }
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
@@ -224,16 +222,16 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
     {
         if (!useToken)
         {
-            channel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+            channel.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true, true, true));
         }
         else
         {
             TokenClient.Instance.RtcEngine = mRtcEngine;
             TokenClient.Instance.GetRtcToken(CHANNEL_NAME_1, 0, (token) =>
             {
-                TOKEN_1 = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                channel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+                appInfo.token = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + appInfo.token);
+                channel.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true, true, true));
             });
         }
         joinedChannel = true;

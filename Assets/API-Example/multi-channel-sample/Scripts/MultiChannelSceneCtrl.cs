@@ -15,7 +15,7 @@ using System.Collections;
 public class MultiChannelSceneCtrl : MonoBehaviour
 {
     [SerializeField]
-    string appID;
+    AppInfoObject appInfo;
 
     [SerializeField]
     Text logText;
@@ -48,7 +48,7 @@ public class MultiChannelSceneCtrl : MonoBehaviour
         {
             return;
         }
-        APPID = appID;
+        APPID = appInfo.appID;
         SetupEngine();
     }
 
@@ -101,6 +101,6 @@ public class MultiChannelSceneCtrl : MonoBehaviour
     bool CheckAppId()
     {
         Logger logger = new Logger(logText);
-        return logger.DebugAssert(appID.Length > 10, "<color=red>[STOP] Please fill in your appId in Canvas!!!!</color>");
+        return logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in Canvas!!!!</color>");
     }
 }

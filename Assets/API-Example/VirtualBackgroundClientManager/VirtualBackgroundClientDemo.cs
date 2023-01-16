@@ -6,9 +6,7 @@ using agora_utilities;
 
 public class VirtualBackgroundClientDemo : MonoBehaviour
 {
-    [SerializeField] private string APP_ID = "YOUR_APPID";
-
-    [SerializeField] private string TOKEN = "";
+    [SerializeField] private AppInfoObject appInfo;
 
     [SerializeField] private string CHANNEL_NAME = "YOUR_CHANNEL_NAME_1";
 
@@ -133,8 +131,8 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
-        return (APP_ID.Length > 10);
+        logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        return (appInfo.appID.Length > 10);
     }
 
     public void setBackgroundBlur()
@@ -159,7 +157,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
@@ -242,16 +240,16 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     {
         if (!useToken)
         {
-            mRtcEngine.JoinChannel(TOKEN, CHANNEL_NAME, "", 0, new ChannelMediaOptions(true, true, true, true));
+            mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME, "", 0, new ChannelMediaOptions(true, true, true, true));
         }
         else
         {
             TokenClient.Instance.RtcEngine = mRtcEngine;
             TokenClient.Instance.GetRtcToken(CHANNEL_NAME, 0, (token) =>
             {
-                TOKEN = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN);
-                mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME);
+                appInfo.token = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + appInfo.token);
+                mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME);
             });
         }
         joinedChannel = true;

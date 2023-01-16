@@ -10,7 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1f2bcbf9634c47f1931de6e558046a3, type: 3}
-  m_Name: DefaultAppIDObject
+  m_Name: DefaultAppInfoObject
   m_EditorClassIdentifier: 
-  appID: d2c9420f5ea0498abd30eabac50b33ed
+  appID: 
   token: 
+  screenShareToken: 
+  tokenServerURL: 
