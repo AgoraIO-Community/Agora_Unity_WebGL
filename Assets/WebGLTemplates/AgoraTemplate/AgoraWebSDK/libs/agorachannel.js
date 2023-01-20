@@ -802,11 +802,11 @@ class AgoraChannel {
     }
   }
 
-  async startNewScreenCaptureForWeb2(uid, enableAudio) {
+  async startNewScreenCaptureForWeb2(uid, enableAudio, token) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio ? "auto" : "disable";
     var screenShareUID = uid;
-    console.log(screenShareUID);
+    console.log(token);
     if(this.remoteUsers && this.remoteUsers[screenShareUID] !== undefined){
       screenShareTrack = null;
       event_manager.raiseHandleChannelError(this.options.channel, -1, "Screen Share Client Error: ID is already in use!");
@@ -824,7 +824,7 @@ class AgoraChannel {
           screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
+          this.screenShareClient.join(this.options.appid, this.options.channel, token || null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
             event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
 
@@ -835,7 +835,7 @@ class AgoraChannel {
           screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          this.screenShareClient.join(this.options.appid, this.options.channel, null, screenShareUID).then(u => {
+          this.screenShareClient.join(this.options.appid, this.options.channel, this.options.token || null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
             event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
           });

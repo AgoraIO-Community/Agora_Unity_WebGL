@@ -8,9 +8,9 @@ using UnityEngine.UI;
 public class MC_Main : MonoBehaviour {
 
 
-	// NOTE: This feature applies to the live streaming channel profile. Do not use it for the communication profile.
-	[SerializeField]
-	private string AppID = "your_appid";
+    // NOTE: This feature applies to the live streaming channel profile. Do not use it for the communication profile.
+    [SerializeField]
+    private AppInfoObject appInfo;
 	private IRtcEngine mRtcEngine;
     public uint myUID;
     public string myChannelName = string.Empty;
@@ -30,7 +30,7 @@ public class MC_Main : MonoBehaviour {
         }
 
         // init engine
-        mRtcEngine = IRtcEngine.GetEngine(AppID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
 
         // enable log
         mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
