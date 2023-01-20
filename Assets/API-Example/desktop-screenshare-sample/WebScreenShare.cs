@@ -37,7 +37,7 @@ public class WebScreenShare : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        return logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in Canvas!!!!</color>");
+        return logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppInfoObject!!!! \n (Assets/API-Example/_AppIDInfo/DefaultAppInfoObject)</color>");
     }
 
     void InitEngine()

@@ -131,7 +131,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppInfoObject!!!! \n (Assets/API-Example/_AppIDInfo/DefaultAppInfoObject)</color>");
         return (appInfo.appID.Length > 10);
     }
 
