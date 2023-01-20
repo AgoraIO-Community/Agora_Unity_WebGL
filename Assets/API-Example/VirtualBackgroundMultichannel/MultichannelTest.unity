@@ -3696,7 +3696,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 421b2472e3ef7e145bfbef131f01e8c1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME_1: unity3d
   logText: {fileID: 1416670727}
   joinButton: {fileID: 1102350104}

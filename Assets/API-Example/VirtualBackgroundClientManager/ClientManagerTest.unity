@@ -3601,7 +3601,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0086b7a878502154b8da4e6aa05c465a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME: YOUR_CHANNEL_NAME_1
   logText: {fileID: 1416670727}
   InputField: {fileID: 0}

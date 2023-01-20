@@ -950,7 +950,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d0122b4fc6b64808b43946bffd5ced3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME: unity3d
   logText: {fileID: 634102969}
   button1: {fileID: 219673365}

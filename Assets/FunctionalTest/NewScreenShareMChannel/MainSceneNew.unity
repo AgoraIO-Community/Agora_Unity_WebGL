@@ -2649,7 +2649,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b0c604d1e8d541a6be38f194e1df410, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME_1: unity3d
   CHANNEL_NAME_2: unity2d
   CHANNEL_NAME_3: YOUR_CHANNEL_NAME_3

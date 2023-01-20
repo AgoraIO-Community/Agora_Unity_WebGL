@@ -1052,7 +1052,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c38bde60d136d644490eaf7dae9c25fe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME: YOUR_CHANNEL_NAME_1
   logText: {fileID: 1416670727}
   joinButton: {fileID: 288453850}

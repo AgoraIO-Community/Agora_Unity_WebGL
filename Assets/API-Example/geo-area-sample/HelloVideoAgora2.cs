@@ -40,7 +40,7 @@ public class HelloVideoAgora2 : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppInfoObject!!!! \n (Assets/Resources/Objects/AppInfoObject)</color>");
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
     }
 
     void InitEngine()

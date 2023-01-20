@@ -1803,7 +1803,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 49077210539eb471c84c3f0620d78fc8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  appInfo: {fileID: 11400000, guid: c3e0b6a5ddae9499b97d3ecd4a8c2b6e, type: 2}
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME: unity3d
   ScreenToggle: {fileID: 887909529}
   logText: {fileID: 425984003}

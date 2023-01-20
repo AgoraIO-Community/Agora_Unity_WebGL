@@ -41,7 +41,7 @@ public class TestDataStream : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppInfoObject!!!! \n (Assets/API-Example/_AppIDInfo/DefaultAppInfoObject)</color>");
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
     }
 
     void InitEngine()

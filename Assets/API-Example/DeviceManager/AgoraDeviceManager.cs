@@ -63,7 +63,7 @@ public class AgoraDeviceManager : MonoBehaviour
     bool CheckAppId()
     {
         _logger = new Logger(LogText);
-        return _logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppInfoObject!!!! \n (Assets/API-Example/_AppIDInfo/DefaultAppInfoObject)</color>");
+        return _logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
     }
 
     public void playbackUpdate(){
