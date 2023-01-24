@@ -793,7 +793,7 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern void stopNewScreenCaptureForWeb();
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern void startNewScreenCaptureForWeb2(uint uid, bool audioEnabled);
+        protected static extern void startNewScreenCaptureForWeb2(uint uid, bool audioEnabled, string token);
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern void stopNewScreenCaptureForWeb2();
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

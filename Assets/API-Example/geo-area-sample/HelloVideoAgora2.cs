@@ -9,10 +9,7 @@ public class HelloVideoAgora2 : MonoBehaviour
 {
 
     [SerializeField]
-    private string APP_ID = "";
-
-    [SerializeField]
-    private string TOKEN = "";
+    private AppInfoObject appInfo;
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
@@ -43,7 +40,7 @@ public class HelloVideoAgora2 : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
     }
 
     void InitEngine()
@@ -52,7 +49,7 @@ public class HelloVideoAgora2 : MonoBehaviour
         logger.UpdateLog("Getting RTC Engine with region area:" + code.ToString());
 
         // NOTE LogConfig is discarded in WebGL
-        mRtcEngine = IRtcEngine.GetEngine(new RtcEngineConfig(APP_ID, new LogConfig(), code));
+        mRtcEngine = IRtcEngine.GetEngine(new RtcEngineConfig(appInfo.appID, new LogConfig(), code));
 
         mRtcEngine.SetLogFile("log.txt");
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
@@ -71,7 +68,7 @@ public class HelloVideoAgora2 : MonoBehaviour
 
     void JoinChannel()
     {
-        mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)

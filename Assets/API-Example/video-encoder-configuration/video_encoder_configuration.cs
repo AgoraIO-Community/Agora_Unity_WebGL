@@ -6,16 +6,14 @@ using agora_utilities;
 public class video_encoder_configuration : MonoBehaviour
 {
     [SerializeField]
-    private string APP_ID = "";
-
-    [SerializeField]
-    private string TOKEN = "";
+    private AppInfoObject appInfo;
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
 
 
     public Text logText;
+    public Button statsButton;
 
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
@@ -37,11 +35,21 @@ public class video_encoder_configuration : MonoBehaviour
         bool appReady = CheckAppId();
         if (!appReady) return;
 
+        InitUI();
         InitEngine();
         SetVideoEncoderConfiguration(); // use default one
         JoinChannel();
     }
 
+    void InitUI()
+    {
+        statsButton.onClick.AddListener(() =>
+        {
+            Debug.Log("Calling GetRemoteVideoStats, this API will trigger OnVideoSizeChanged for WebGL only.");
+            mRtcEngine.GetRemoteVideoStats();
+        });
+
+    }
     // Update is called once per frame
     void Update()
     {
@@ -52,12 +60,12 @@ public class video_encoder_configuration : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        return logger.DebugAssert(APP_ID.Length > 10, "<color=red>[STOP] Please fill in your appId in Canvas!!!!</color>");
+        return logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
     }
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetLogFile("log.txt");
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -71,6 +79,7 @@ public class video_encoder_configuration : MonoBehaviour
         mRtcEngine.OnConnectionLost += OnConnectionLostHandler;
         mRtcEngine.OnUserJoined += OnUserJoinedHandler;
         mRtcEngine.OnUserOffline += OnUserOfflineHandler;
+        mRtcEngine.OnVideoSizeChanged += OnVideoSizeChangedHandler;
     }
 
     void JoinChannel()
@@ -80,7 +89,7 @@ public class video_encoder_configuration : MonoBehaviour
             mRtcEngine.EnableLogUpload();
             logger.UpdateLog("Enabled Console log upload, before joining");
         }
-        mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
     }
 
 
@@ -90,10 +99,11 @@ public class video_encoder_configuration : MonoBehaviour
     /// <param name="dim"></param>
     public void SetVideoEncoderConfiguration(int dim = 0)
     {
-        if (dim >= dimensions.Length) {
+        if (dim >= dimensions.Length)
+        {
             Debug.LogError("Invalid dimension choice!");
             return;
-	    }
+        }
 
         string logtext = string.Format("Setting dimension w,h = {0},{1}", dimensions[dim].width, dimensions[dim].height);
         logger.UpdateLog(logtext);
@@ -110,6 +120,11 @@ public class video_encoder_configuration : MonoBehaviour
             mirrorMode = VIDEO_MIRROR_MODE_TYPE.VIDEO_MIRROR_MODE_AUTO
         };
         mRtcEngine.SetVideoEncoderConfiguration(config);
+    }
+
+    void OnVideoSizeChangedHandler(uint uid, int width, int height, int rotation)
+    {
+        logger.UpdateLog(string.Format("OnVideoSizeChanged - uid:{0}, w:{1}, h:{2}, r:{3}", uid, width, height, rotation));
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
