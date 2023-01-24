@@ -1167,18 +1167,31 @@ async setVirtualBackgroundVideo(videoFile){
     if (config.bitrateMax) this._customVideoConfiguration.bitrateMax = config.bitrateMax;
   }
 
-
+  // Retrieve the remote video stats
+  // if uid is undefined, send back the stats for every online user
   async getRemoteVideoStats(uid) {
     let Client = this.client;
+    let timeout = uid ? 2500: 100;
     setTimeout(function () {
       var stats = Client.getRemoteVideoStats();
-      console.log(stats);
-      if (stats[uid]) {
+      //console.log(stats);
+      //Note that stats may contains user who are offline
+      if (uid == undefined)
+      {
+        // get all users
+        for (let id in remoteUsers) {
+          if (stats[id]) {
+            const width = stats[id].receiveResolutionWidth;
+            const height = stats[id].receiveResolutionHeight;
+            event_manager.raiseOnClientVideoSizeChanged(id, width, height);
+          }
+        }
+      } else if (stats[uid]) {
         const width = stats[uid].receiveResolutionWidth;
         const height = stats[uid].receiveResolutionHeight;
         event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
       }
-    }, 2000);
+    }, timeout);
   }
 
   async enableSpatialAudio(enabled, client = this.client){
