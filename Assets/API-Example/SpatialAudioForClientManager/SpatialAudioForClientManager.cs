@@ -6,7 +6,9 @@ using System.Linq;
 
 public class SpatialAudioForClientManager : MonoBehaviour
 {
-    [SerializeField] private AppInfoObject appInfo;
+    [SerializeField] private string APP_ID = "YOUR_APPID";
+
+    [SerializeField] private string TOKEN_1 = "";
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
@@ -56,20 +58,20 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
         mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
         //channel setup.
-        appIdText.text = appInfo.appID;
-        tokenText.text = appInfo.token;
+        appIdText.text = APP_ID;
+        tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
         userDropdown.onValueChanged.AddListener(OnDropDownSelect);
     }
 
     public void updateAppID()
     {
-        appInfo.appID = appIdText.text;
+        APP_ID = appIdText.text;
     }
 
     public void updateToken()
     {
-        appInfo.token = tokenText.text;
+        TOKEN_1 = tokenText.text;
     }
 
     public void updateChannelName()
@@ -134,12 +136,12 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     bool CheckAppId()
     {
-        return (appInfo.appID.Length > 10);
+        return (APP_ID.Length > 10);
     }
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
+        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
@@ -175,7 +177,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     public void JoinChannel()
     {
-        mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         joinedChannel = true;
     }
 

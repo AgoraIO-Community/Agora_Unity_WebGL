@@ -9,7 +9,9 @@ using agora_utilities;
 public class AgoraDeviceManager : MonoBehaviour
 {
     [SerializeField]
-    private AppInfoObject appInfo;
+    private string APP_ID = "YOUR_APPID";
+    [SerializeField]
+    private string TOKEN = "";
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
 
@@ -63,7 +65,7 @@ public class AgoraDeviceManager : MonoBehaviour
     bool CheckAppId()
     {
         _logger = new Logger(LogText);
-        return _logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
+        return _logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in Canvas!!!!!");
     }
 
     public void playbackUpdate(){
@@ -86,7 +88,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
     void InitRtcEngine()
     {
-        _rtcEngine = IRtcEngine.GetEngine(appInfo.appID);
+        _rtcEngine = IRtcEngine.GetEngine(APP_ID);
         _rtcEngine.SetLogFile("log.txt");
         _rtcEngine.EnableAudio();
         _rtcEngine.EnableVideo();
@@ -220,7 +222,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void JoinChannel()
     {
-        _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
+        _rtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
         makeVideoView(CHANNEL_NAME, 0);
     }
 

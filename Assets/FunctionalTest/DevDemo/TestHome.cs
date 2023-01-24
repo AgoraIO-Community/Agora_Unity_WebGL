@@ -27,7 +27,7 @@ namespace agora_gs_test
         // PLEASE KEEP THIS App ID IN SAFE PLACE
         // Get your own App ID at https://dashboard.agora.io/
         [SerializeField]
-        private AppInfoObject appInfo;
+        private string AppID = "your_appid";
 
         void Awake()
         {
@@ -51,20 +51,20 @@ namespace agora_gs_test
 
         private void CheckAppId()
         {
-            Debug.Assert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
+            Debug.Assert(AppID.Length > 10, "Please fill in your AppId first on Game Controller object.");
             GameObject go = GameObject.Find("AppIDText");
             if (go != null)
             {
                 Text appIDText = go.GetComponent<Text>();
                 if (appIDText != null)
                 {
-                    if (string.IsNullOrEmpty(appInfo.appID))
+                    if (string.IsNullOrEmpty(AppID))
                     {
                         appIDText.text = "AppID: " + "UNDEFINED!";
                     }
                     else
                     {
-                        appIDText.text = "AppID: " + appInfo.appID.Substring(0, 4) + "********" + appInfo.appID.Substring(appInfo.appID.Length - 4, 4);
+                        appIDText.text = "AppID: " + AppID.Substring(0, 4) + "********" + AppID.Substring(AppID.Length - 4, 4);
                     }
                 }
             }
@@ -96,7 +96,7 @@ namespace agora_gs_test
             if (ReferenceEquals(app, null))
             {
                 app = new TestHelloUnityVideo(); // create app
-                app.loadEngine(appInfo.appID); // load engine
+                app.loadEngine(AppID); // load engine
             }
 
             // join channel and jump to next scene
