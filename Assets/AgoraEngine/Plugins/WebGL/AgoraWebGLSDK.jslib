@@ -443,8 +443,9 @@ var LibraryAgoraWebGLSDK = {
       startScreenCaptureForWeb2(enableAudio);
   },
 
-  startNewScreenCaptureForWeb: function(uid, enableAudio) {
-     startNewScreenCaptureForWeb(uid, enableAudio);
+  startNewScreenCaptureForWeb: function(uid, enableAudio, token) {
+    var t = Pointer_stringify(token);
+     startNewScreenCaptureForWeb(uid, enableAudio, t);
   },
 
   stopNewScreenCaptureForWeb: function() {

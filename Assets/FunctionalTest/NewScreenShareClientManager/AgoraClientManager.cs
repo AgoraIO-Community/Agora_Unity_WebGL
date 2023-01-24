@@ -143,7 +143,7 @@ public class AgoraClientManager : MonoBehaviour
     public void startNewScreenShare(bool audioEnabled)
     {
         updateScreenShareID();
-        mRtcEngine.StartNewScreenCaptureForWeb(SCREEN_SHARE_ID, audioEnabled);
+        mRtcEngine.StartNewScreenCaptureForWeb(SCREEN_SHARE_ID, audioEnabled, appInfo.screenShareToken);
     }
 
     public void stopNewScreenShare()
