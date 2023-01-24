@@ -939,7 +939,7 @@ class ClientManager {
     }
   }
 
-  async startNewScreenCaptureForWeb(uid, enableAudio) {
+  async startNewScreenCaptureForWeb(uid, enableAudio, token) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
     var screenShareUID = uid;
@@ -960,7 +960,7 @@ class ClientManager {
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.tempLocalTracks = screenShareTrack;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, token || null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
@@ -970,7 +970,7 @@ class ClientManager {
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.tempLocalTracks = screenShareTrack;
         this.enableLoopbackAudio = enableAudio;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, token || null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });

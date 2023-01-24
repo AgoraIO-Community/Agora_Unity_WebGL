@@ -330,9 +330,9 @@ async function startScreenCaptureForWeb(enableAudio) {
   client_manager.startScreenCapture(enableAudio);
 }
 
-function startNewScreenCaptureForWeb(uid, enableAudio) {
+function startNewScreenCaptureForWeb(uid, enableAudio, token) {
   console.log("agora engine startNewScreenCaptureForWeb");
-  client_manager.startNewScreenCaptureForWeb(uid, enableAudio);
+  client_manager.startNewScreenCaptureForWeb(uid, enableAudio, token);
 }
 
 function stopNewScreenCaptureForWeb(){
