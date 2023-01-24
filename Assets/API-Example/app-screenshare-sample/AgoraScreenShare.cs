@@ -8,7 +8,10 @@ public class AgoraScreenShare : MonoBehaviour
 {
 
     [SerializeField]
-    private AppInfoObject appInfo;
+    private string APP_ID = "YOUR_APPID";
+
+    [SerializeField]
+    private string TOKEN = "";
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
@@ -197,7 +200,7 @@ public class AgoraScreenShare : MonoBehaviour
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
+        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetLogFile("log.txt");
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -220,7 +223,7 @@ public class AgoraScreenShare : MonoBehaviour
 
     void JoinChannel()
     {
-        int ret = mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
+        int ret = mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
         // int ret = mRtcEngine.JoinChannel(CHANNEL_NAME, "", 0);
         Debug.Log(string.Format("JoinChannel ret: ${0}", ret));
     }
@@ -228,7 +231,7 @@ public class AgoraScreenShare : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        return logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
+        return logger.DebugAssert(APP_ID.Length > 10, "<color=red>[STOP] Please fill in your appId in Canvas!!!!</color>");
     }
 
     void InitTexture()

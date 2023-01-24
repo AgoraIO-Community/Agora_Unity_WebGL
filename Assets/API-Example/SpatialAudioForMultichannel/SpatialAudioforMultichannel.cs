@@ -7,7 +7,9 @@ using agora_utilities;
 
 public class SpatialAudioforMultichannel : MonoBehaviour
 {
-    [SerializeField] private AppInfoObject appInfo;
+    [SerializeField] private string APP_ID = "YOUR_APPID";
+
+    [SerializeField] private string TOKEN_1 = "";
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
@@ -51,20 +53,20 @@ public class SpatialAudioforMultichannel : MonoBehaviour
         InitEngine();
 
         //channel setup.
-        appIdText.text = appInfo.appID;
-        tokenText.text = appInfo.token;
+        appIdText.text = APP_ID;
+        tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
         remoteClientIDs = new List<uint>();
     }
 
     public void updateAppID()
     {
-        appInfo.appID = appIdText.text;
+        APP_ID = appIdText.text;
     }
 
     public void updateToken()
     {
-        appInfo.token = tokenText.text;
+        TOKEN_1 = tokenText.text;
     }
 
     public void updateChannelName()
@@ -120,12 +122,12 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     bool CheckAppId()
     {
-        return (appInfo.appID.Length > 10);
+        return (APP_ID.Length > 10);
     }
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
+        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
@@ -152,7 +154,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     public void JoinChannel()
     {
         spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
-        spatialAudioChannel.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, false, true, false));
+        spatialAudioChannel.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, false, true, false));
         joinedChannel = true;
     }
 
