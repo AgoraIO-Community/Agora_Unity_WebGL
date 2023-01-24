@@ -835,7 +835,7 @@ class AgoraChannel {
           screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
           this.enableLoopbackAudio = enableAudio;
           this.tempLocalTracks = screenShareTrack;
-          this.screenShareClient.join(this.options.appid, this.options.channel, this.options.token || null, screenShareUID).then(u => {
+          this.screenShareClient.join(this.options.appid, this.options.channel, token || null, screenShareUID).then(u => {
             this.screenShareClient.publish(screenShareTrack);
             event_manager.raiseScreenShareStarted_MC(this.options.channel, screenShareUID);
           });
