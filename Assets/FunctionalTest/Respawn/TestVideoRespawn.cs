@@ -23,6 +23,12 @@ public class TestVideoRespawn : MonoBehaviour
     GameObject localUserObject = null;
     GameObject lastRemoteUserObject = null;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+    }
+
     // Use this for initialization
     void Start()
     {

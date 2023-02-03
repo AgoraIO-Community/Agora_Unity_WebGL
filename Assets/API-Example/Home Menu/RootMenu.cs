@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using TMPro;
 
 public class RootMenu : MonoBehaviour
 {
 
     public GameObject menuItemPrefab;
     public GameObject content;
+    public AppInfoObject appInfo;
+    public InputField tokenInput, channelInput;
 
     // Start is called before the first frame update
     void Start()
@@ -17,11 +18,11 @@ public class RootMenu : MonoBehaviour
         for(int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
             int index = i;
-            if (SceneManager.GetSceneByBuildIndex(i).name != "RootMenuScene")
+            if (SceneManager.GetSceneByBuildIndex(i).name != "HomeMenu")
             {
                 GameObject menuItem = (GameObject)Instantiate(menuItemPrefab, content.transform);
                 Button b = menuItem.transform.GetChild(0).GetComponent<Button>();
-                TMP_Text t = menuItem.transform.GetChild(1).GetComponent<TMP_Text>();
+                Text t = menuItem.transform.GetChild(1).GetComponent<Text>();
                 
                 string path = SceneUtility.GetScenePathByBuildIndex(i);
                 string[] dirs = path.Split('/');
@@ -33,11 +34,16 @@ public class RootMenu : MonoBehaviour
                 
                 b.onClick.AddListener(() =>
                 {
+                    appInfo.token = tokenInput.text;
+                    RootMenuControl.instance.channel = channelInput.text;
                     RootMenuControl.rootMenuOn = true;
                     SceneManager.LoadScene(index);
                 });
             }
         }
+
+        tokenInput.text = appInfo.token;
+        channelInput.text = FindObjectOfType<RootMenuControl>().channel;
     }
 
     // Update is called once per frame

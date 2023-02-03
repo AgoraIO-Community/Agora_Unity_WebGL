@@ -41,6 +41,9 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     void Awake()
     {
+       if (RootMenuControl.instance)
+           CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        
         UpdateDropDown();
     }
 

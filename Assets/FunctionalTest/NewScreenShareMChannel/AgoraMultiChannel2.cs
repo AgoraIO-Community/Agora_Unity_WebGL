@@ -38,6 +38,11 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public InputField screenShareIDInput;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+    }
 
     // Use this for initialization
     void Start()
