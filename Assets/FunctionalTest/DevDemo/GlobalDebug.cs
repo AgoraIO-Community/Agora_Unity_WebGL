@@ -14,7 +14,9 @@ public class GlobalDebug : MonoBehaviour
             Instance = this;
         }
         // keep this alive across scenes
-        DontDestroyOnLoad(this.gameObject);
+
+        if (!RootMenuControl.instance)
+            DontDestroyOnLoad(this.gameObject);
         //initEventOnEngineCallback
     }
 
