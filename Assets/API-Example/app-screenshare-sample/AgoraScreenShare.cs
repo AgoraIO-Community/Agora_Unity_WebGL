@@ -33,6 +33,12 @@ public class AgoraScreenShare : MonoBehaviour
     int timestamp = 0;
     bool _sharingImage = false;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+    }
+
     // Use this for initialization
     void Start()
     {

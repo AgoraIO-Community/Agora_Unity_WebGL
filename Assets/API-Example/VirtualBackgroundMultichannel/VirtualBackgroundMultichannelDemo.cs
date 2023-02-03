@@ -38,6 +38,12 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 
     public AgoraChannel channel;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+    }
+
     // Use this for initialization
     void Start()
     {

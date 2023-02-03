@@ -664,7 +664,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   controlPrefab: {fileID: 5246275878880053199, guid: 0ea7baf6ef22c4b9ea2d2d7cba99371b, type: 3}
-  channel: Unity3d
+  channel: myChannel
 --- !u!1 &908248131
 GameObject:
   m_ObjectHideFlags: 0
@@ -861,7 +861,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0.66565174, b: 0.77254903, a: 0}
+  m_BackGroundColor: {r: 0, g: 0.14876653, b: 0.7735849, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -1171,7 +1171,7 @@ MonoBehaviour:
     m_Bottom: 100
   m_ChildAlignment: 4
   m_Spacing: 50
-  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 1
   m_ChildControlWidth: 0
   m_ChildControlHeight: 0
@@ -1649,10 +1649,10 @@ RectTransform:
   m_Father: {fileID: 310884844}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.11111954, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 2.06604, y: -0.035995483}
-  m_SizeDelta: {x: -4.131, y: -0.071998596}
+  m_AnchorMin: {x: 0.30657223, y: 0.5}
+  m_AnchorMax: {x: 0.30657223, y: 0.5}
+  m_AnchoredPosition: {x: 1.56604, y: -0.5359955}
+  m_SizeDelta: {x: 272.86902, y: 468.928}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1719991405
 MonoBehaviour:

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class RootMenuPanel : MonoBehaviour
 {
@@ -18,15 +19,9 @@ public class RootMenuPanel : MonoBehaviour
         
     }
 
-    public void hidePanel()
+    public void goBackToMenu()
     {
-        panel.SetActive(false);
-        hideButton.SetActive(true);
+        SceneManager.LoadScene("HomeMenu");
     }
 
-    public void showPanel()
-    {
-        panel.SetActive(true);
-        hideButton.SetActive(false);
-    }
 }

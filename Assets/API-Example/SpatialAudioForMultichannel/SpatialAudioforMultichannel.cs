@@ -42,6 +42,12 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     [SerializeField]
     private List<uint> remoteClientIDs;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+    }
+
     // Use this for initialization
     void Start()
     {

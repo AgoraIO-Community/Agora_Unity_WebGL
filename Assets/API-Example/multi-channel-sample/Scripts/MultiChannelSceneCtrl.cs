@@ -34,12 +34,16 @@ public class MultiChannelSceneCtrl : MonoBehaviour
         permissionList.Add(Permission.Microphone);
         permissionList.Add(Permission.Camera);
 # endif
-        DontDestroyOnLoad(gameObject);
+        if(!RootMenuControl.instance)
+            DontDestroyOnLoad(gameObject);
+
         if (Instance != null)
         {
             Destroy(Instance);
         }
         Instance = this;
+
+
     }
 
     void Start()

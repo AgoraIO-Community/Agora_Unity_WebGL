@@ -39,6 +39,12 @@ public class AgoraDeviceManager : MonoBehaviour
     public bool joinedChannel;
     public Button videoDeviceButton, joinChannelButton, leaveChannelButton;
     // Start is called before the first frame update
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+    }
+
     void Start()
     {
         if (CheckAppId())

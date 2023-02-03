@@ -54,6 +54,12 @@ public class AgoraChannelPanelNew : MonoBehaviour
     private Logger logger;
     public Text logText;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            channelName = RootMenuControl.instance.channel;
+    }
+
     void Start()
     {
         ChannelLabel.text = channelName;

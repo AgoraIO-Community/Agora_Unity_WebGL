@@ -26,6 +26,12 @@ public class WebScreenShare : MonoBehaviour
     bool _isSharing = false;
     bool _isSharingNew = false;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+    }
+
     // Use this for initialization
     void Start()
     {

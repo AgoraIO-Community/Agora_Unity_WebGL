@@ -52,6 +52,11 @@ public class AgoraChannelPanel : MonoBehaviour
         {
             Debug.LogWarning("Note, this demo <color=orange>requires Token usage</color>.  If your AppID is test mode only, uncheck the UseToken option in the ChannelPanel properties.");
         }
+
+        if (RootMenuControl.instance)
+        {
+            channelName = RootMenuControl.instance.channel;
+        }
     }
 
     void Start()
