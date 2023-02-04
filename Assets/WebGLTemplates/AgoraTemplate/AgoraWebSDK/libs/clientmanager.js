@@ -160,16 +160,16 @@ class ClientManager {
     }
     if (mediaType === "video" && user.hasVideo && user.videoTrack && !this.remoteUserVideoMuted[user.uid]) {
       user.videoTrack.play(`player-${strUID}`, { fit: "cover", mirror: mremote });
-      if (remoteUsers[user.uid] == null)
-      {
+      if (remoteUsers[user.uid] == null) {
         event_manager.raiseOnRemoteUserJoined(strUID);
+        event_manager.raiseOnRemoteUserMuted(user.uid.toString(), mediaType, 0);
       } 
     } else {
       if (mediaType === "audio" && user.hasAudio && user.audioTrack && !this.remoteUserAudioMuted[user.uid]) {
         user.audioTrack.play();
-        // for Voice only subscription only, the raise won't happen above
         if (remoteUsers[user.uid] == null) {
           event_manager.raiseOnRemoteUserJoined(strUID);
+          event_manager.raiseOnRemoteUserMuted(user.uid.toString(), mediaType, 0);
         }
       }
     }
