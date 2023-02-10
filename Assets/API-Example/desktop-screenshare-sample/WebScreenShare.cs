@@ -26,7 +26,9 @@ public class WebScreenShare : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
     }
 
     // Use this for initialization
@@ -191,7 +193,7 @@ public class WebScreenShare : MonoBehaviour
             uid, elapsed));
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

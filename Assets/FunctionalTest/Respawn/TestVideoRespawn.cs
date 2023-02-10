@@ -26,7 +26,9 @@ public class TestVideoRespawn : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
     }
 
     // Use this for initialization
@@ -146,7 +148,7 @@ public class TestVideoRespawn : MonoBehaviour
         }
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

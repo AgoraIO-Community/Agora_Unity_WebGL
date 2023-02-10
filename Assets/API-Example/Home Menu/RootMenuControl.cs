@@ -10,6 +10,8 @@ public class RootMenuControl : MonoBehaviour
     public GameObject controlPrefab;
     public static RootMenuControl instance;
     public string channel;
+    public delegate void exitMenuFunction();
+    public exitMenuFunction exit;
 
     // Start is called before the first frame update
     void Start()

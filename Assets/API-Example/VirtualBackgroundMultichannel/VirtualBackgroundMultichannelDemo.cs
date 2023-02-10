@@ -39,7 +39,9 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        }
     }
 
     // Use this for initialization
@@ -250,16 +252,7 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         virtualBackgroundOn = false;
     }
 
-    void OnApplicationQuit()
-    {
-        Debug.Log("OnApplicationQuit");
-        if (mRtcEngine != null)
-        {
-
-            mRtcEngine.DisableVideoObserver();
-            IRtcEngine.Destroy();
-        }
-    }
+    
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {

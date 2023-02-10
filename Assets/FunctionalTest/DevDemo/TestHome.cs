@@ -38,6 +38,10 @@ namespace agora_gs_test
             // keep this alive across scenes
             if (!RootMenuControl.instance)
                 DontDestroyOnLoad(this.gameObject);
+            else
+            {
+                RootMenuControl.instance.exit = OnApplicationQuit;
+            }
         }
 
         void Start()

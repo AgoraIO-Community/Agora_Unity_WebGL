@@ -96,7 +96,7 @@ public class MultiChannelSceneCtrl : MonoBehaviour
         mRtcEngine.EnableVideoObserver();
     }
 
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
         mRtcEngine = null;
         IRtcEngine.Destroy();

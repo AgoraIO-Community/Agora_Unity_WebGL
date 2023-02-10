@@ -26,7 +26,9 @@ public class TestDataStream : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
     }
 
     // Use this for initialization
@@ -136,7 +138,7 @@ public class TestDataStream : MonoBehaviour
         logger.UpdateLog(data);
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

@@ -32,7 +32,9 @@ public class video_encoder_configuration : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
     }
 
     // Start is called before the first frame update
@@ -173,7 +175,7 @@ public class video_encoder_configuration : MonoBehaviour
         logger.UpdateLog(string.Format("OnConnectionLost "));
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)
