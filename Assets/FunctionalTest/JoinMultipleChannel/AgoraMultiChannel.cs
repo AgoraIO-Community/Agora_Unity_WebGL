@@ -26,7 +26,9 @@ public class AgoraMultiChannel : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        }
     }
 
     // Use this for initialization
@@ -82,7 +84,7 @@ public class AgoraMultiChannel : MonoBehaviour
         channel2.JoinChannel(TOKEN_2, "", 0, new ChannelMediaOptions(true, true, false, false));
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

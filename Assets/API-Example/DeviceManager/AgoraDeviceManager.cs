@@ -42,7 +42,9 @@ public class AgoraDeviceManager : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
     }
 
     void Start()
@@ -264,11 +266,12 @@ public class AgoraDeviceManager : MonoBehaviour
         GetAudioPlaybackDevice();
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (_rtcEngine != null)
         {
+            LeaveChannel();
             IRtcEngine.Destroy();
         }
     }

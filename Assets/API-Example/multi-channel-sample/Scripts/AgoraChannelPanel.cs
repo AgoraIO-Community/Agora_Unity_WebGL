@@ -575,12 +575,15 @@ public class AgoraChannelPanel : MonoBehaviour
     }
     #endregion
 
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
         if (mChannel != null)
         {
-            mChannel.LeaveChannel();
+            Button_LeaveChannel();
             mChannel.ReleaseChannel();
+            IRtcEngine.QueryEngine().DisableVideoObserver();
+            IRtcEngine.QueryEngine().DisableAudio();
+            IRtcEngine.Destroy();
         }
     }
 

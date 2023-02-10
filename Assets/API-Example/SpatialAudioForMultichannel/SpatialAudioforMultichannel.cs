@@ -45,7 +45,9 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     private void Awake()
     {
         if (RootMenuControl.instance)
+        {
             CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        }
     }
 
     // Use this for initialization
@@ -180,12 +182,12 @@ public class SpatialAudioforMultichannel : MonoBehaviour
         airAbsorbToggle.isOn = false;
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)
         {
-
+            LeaveChannel();
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }

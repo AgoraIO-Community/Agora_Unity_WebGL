@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using agora_gaming_rtc;
 
 public class RootMenuPanel : MonoBehaviour
 {
@@ -21,6 +22,7 @@ public class RootMenuPanel : MonoBehaviour
 
     public void goBackToMenu()
     {
+        IRtcEngine.Destroy();
         SceneManager.LoadScene("HomeMenu");
     }
 

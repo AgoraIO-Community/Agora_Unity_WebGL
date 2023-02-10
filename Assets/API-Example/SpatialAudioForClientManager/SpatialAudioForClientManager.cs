@@ -43,8 +43,10 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     void Awake()
     {
-       if (RootMenuControl.instance)
-           CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        }
         
         UpdateDropDown();
     }
@@ -230,12 +232,12 @@ public class SpatialAudioForClientManager : MonoBehaviour
         airAbsorbToggle.isOn = p.airabsort;
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)
         {
-
+            LeaveChannel();
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
