@@ -54,6 +54,14 @@ public class AgoraChannelPanelNew : MonoBehaviour
     private Logger logger;
     public Text logText;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            channelName = RootMenuControl.instance.channel;
+        }
+    }
+
     void Start()
     {
         ChannelLabel.text = channelName;
@@ -708,12 +716,15 @@ public class AgoraChannelPanelNew : MonoBehaviour
     }
     #endregion
 
-    private void OnApplicationQuit()
+    private void OnDestroy()
     {
         if (mChannel != null)
         {
-            mChannel.LeaveChannel();
+            Button_LeaveChannel();
             mChannel.ReleaseChannel();
+            IRtcEngine.QueryEngine().DisableVideoObserver();
+            IRtcEngine.QueryEngine().DisableAudio();
+            IRtcEngine.Destroy();
         }
     }
 

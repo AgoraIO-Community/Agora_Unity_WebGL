@@ -24,6 +24,14 @@ public class RtmpStreaming : MonoBehaviour
     private uint remoteUid = 0;
     private bool isStreaming = false;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -199,7 +207,7 @@ public class RtmpStreaming : MonoBehaviour
         logger.UpdateLog(string.Format("OnRtmpStreamingEvent url: {0}, code: {1}", url, code));
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

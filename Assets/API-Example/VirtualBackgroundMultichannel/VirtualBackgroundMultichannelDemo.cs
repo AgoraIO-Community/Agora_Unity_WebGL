@@ -36,6 +36,14 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 
     public AgoraChannel channel;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -244,16 +252,7 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         virtualBackgroundOn = false;
     }
 
-    void OnApplicationQuit()
-    {
-        Debug.Log("OnApplicationQuit");
-        if (mRtcEngine != null)
-        {
-
-            mRtcEngine.DisableVideoObserver();
-            IRtcEngine.Destroy();
-        }
-    }
+    
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {

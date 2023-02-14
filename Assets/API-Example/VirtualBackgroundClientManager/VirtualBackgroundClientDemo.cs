@@ -36,6 +36,13 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     public string imgFile = "bedroom.png";
     public string videoFile = "outside.mp4";
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
 
     // Use this for initialization
     void Start()
@@ -261,16 +268,7 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         joinedChannel = false;
     }
 
-    void OnApplicationQuit()
-    {
-        Debug.Log("OnApplicationQuit");
-        if (mRtcEngine != null)
-        {
-
-            mRtcEngine.DisableVideoObserver();
-            IRtcEngine.Destroy();
-        }
-    }
+    
 
     void userVideoMutedHandler(uint uid, bool muted)
     {

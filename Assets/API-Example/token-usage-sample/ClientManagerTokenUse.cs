@@ -28,6 +28,14 @@ public class ClientManagerTokenUse : MonoBehaviour
 
     public static ClientManagerTokenUse instance;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -143,12 +151,12 @@ public class ClientManagerTokenUse : MonoBehaviour
         joinedChannel = false;
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)
         {
-
+            LeaveChannel();
             mRtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }

@@ -320,7 +320,9 @@ namespace agora_gaming_rtc
             if (_webglEventHandlerInstance == null)
             {
                 _webglEventHandlerInstance = this;
-                DontDestroyOnLoad(this.gameObject);
+
+                if(!RootMenuControl.instance)
+                    DontDestroyOnLoad(this.gameObject);
             }
             else
             {

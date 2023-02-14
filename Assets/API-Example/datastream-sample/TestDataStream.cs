@@ -23,6 +23,14 @@ public class TestDataStream : MonoBehaviour
     private const float Offset = 100;
     private int StreamId { get; set; }
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -130,7 +138,7 @@ public class TestDataStream : MonoBehaviour
         logger.UpdateLog(data);
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

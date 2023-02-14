@@ -37,6 +37,14 @@ public class AgoraDeviceManager : MonoBehaviour
     public bool joinedChannel;
     public Button videoDeviceButton, joinChannelButton, leaveChannelButton;
     // Start is called before the first frame update
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
+
     void Start()
     {
         if (CheckAppId())
@@ -256,11 +264,12 @@ public class AgoraDeviceManager : MonoBehaviour
         GetAudioPlaybackDevice();
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (_rtcEngine != null)
         {
+            LeaveChannel();
             IRtcEngine.Destroy();
         }
     }

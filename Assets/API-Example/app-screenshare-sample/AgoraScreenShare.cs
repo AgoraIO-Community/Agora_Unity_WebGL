@@ -30,6 +30,14 @@ public class AgoraScreenShare : MonoBehaviour
     int timestamp = 0;
     bool _sharingImage = false;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -225,6 +233,17 @@ public class AgoraScreenShare : MonoBehaviour
         Debug.Log(string.Format("JoinChannel ret: ${0}", ret));
     }
 
+    void LeaveChannel()
+    {
+        if (mRtcEngine != null)
+        {
+            mRtcEngine.LeaveChannel();
+            mRtcEngine.DisableVideoObserver();
+            IRtcEngine.Destroy();
+            mRtcEngine = null;
+        }
+    }
+
     bool CheckAppId()
     {
         logger = new Logger(logText);
@@ -276,7 +295,7 @@ public class AgoraScreenShare : MonoBehaviour
         logger.UpdateLog(string.Format("OnConnectionLost "));
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         if (mRtcEngine != null)
         {
