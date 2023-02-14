@@ -16,28 +16,26 @@ public class RootMenuControl : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        // Ensure singleton
         if (instance)
+        {
             Destroy(gameObject);
+        }
         else
+        {
             instance = this;
+        }
 
         DontDestroyOnLoad(gameObject);
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         GameObject prefab;
-        if(scene.name != "HomeMenu" && !GameObject.Find("RootMenuControl"))
+        if (scene.name != "HomeMenu" && !GameObject.Find("RootMenuControl"))
+        {
             prefab = (GameObject)Instantiate(controlPrefab, FindObjectOfType<Canvas>().transform);
+        }
     }
-
-    
 }
