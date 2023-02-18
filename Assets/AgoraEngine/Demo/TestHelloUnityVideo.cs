@@ -205,8 +205,6 @@ public class TestHelloUnityVideo
 
     public void leave()
     {
-        Debug.Log("calling leave");
-
         if (mRtcEngine == null)
             return;
 
@@ -219,8 +217,6 @@ public class TestHelloUnityVideo
     // unload agora engine
     public void unloadEngine()
     {
-        Debug.Log("calling unloadEngine");
-
         // delete
         if (mRtcEngine != null)
         {
