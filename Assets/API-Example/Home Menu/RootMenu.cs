@@ -19,16 +19,27 @@ public class RootMenu : MonoBehaviour
         for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
         {
             int index = i;
-            string sceneName = SceneManager.GetSceneByBuildIndex(i).name;
+            var scene = SceneManager.GetSceneByBuildIndex(i);
+            string sceneName = scene.name;
             if (sceneName != "HomeMenu")
             {
+                string path = SceneUtility.GetScenePathByBuildIndex(i);
+                string[] dirs = path.Split('/');
+                string dir = dirs[2];
+
+                if (dir == "Demo")
+                {
+                    if (dirs[3] == "SceneHelloVideo.unity")
+                    {
+                        // dual scene demo
+                        continue;
+                    }
+                }
+
                 GameObject menuItem = (GameObject)Instantiate(menuItemPrefab, content.transform);
                 Button b = menuItem.transform.GetChild(0).GetComponent<Button>();
                 Text t = menuItem.transform.GetChild(1).GetComponent<Text>();
 
-                string path = SceneUtility.GetScenePathByBuildIndex(i);
-                string[] dirs = path.Split('/');
-                string dir = dirs[2];
                 //string name = dirs[dirs.Length - 1];
                 t.text = dir;
 
