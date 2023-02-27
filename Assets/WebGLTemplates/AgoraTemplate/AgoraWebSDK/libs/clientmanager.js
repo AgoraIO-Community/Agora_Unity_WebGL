@@ -646,7 +646,7 @@ class ClientManager {
       }),
     ]);
     localTracks.videoTrack.play("local-player");
-    await this.client.publish(localTracks.videoTrack);
+    //await this.client.publish(localTracks.videoTrack);
   }
 
   stopPreview() {
