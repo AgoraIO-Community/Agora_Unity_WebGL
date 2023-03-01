@@ -19,6 +19,7 @@ class ClientManager {
     this._streamMessageRetry = false;
     this.is_screensharing = false;
     this.tempLocalTracks = null;
+    this.previewVideoTrack;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
@@ -632,6 +633,7 @@ class ClientManager {
     this.videoEnabled = enabled;
   }
 
+  
   async startPreview() {
 
     if(localTracks.videoTrack){
@@ -639,21 +641,32 @@ class ClientManager {
       localTracks.videoTrack.close();
       await this.client.unpublish(localTracks.videoTrack);
     }
-
+    
     [localTracks.videoTrack] = await Promise.all([
       AgoraRTC.createCameraVideoTrack().catch(e => {
         event_manager.raiseHandleUserError(e.code, e.msg);
       }),
     ]);
     localTracks.videoTrack.play("local-player");
-    //await this.client.publish(localTracks.videoTrack);
+    
   }
 
-  stopPreview() {
-    if (localTracks.videoTrack) {
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-    }
+  async stopPreview() {
+    localTracks.videoTrack.stop();
+    localTracks.videoTrack.close();
+
+    [localTracks.videoTrack] = await Promise.all([
+      AgoraRTC.createCameraVideoTrack().catch(e => {
+        event_manager.raiseHandleUserError(e.code, e.msg);
+      }),
+    ]);
+
+    localTracks.videoTrack.play("local-player");
+    await this.client.publish(localTracks.videoTrack);
+  }
+
+  async publishPreview(){
+    await this.client.publish(localTracks.videoTrack);
   }
 
   async setBeautyEffectOn(lighteningLevel, rednessLevel, smoothnessLevel) {
