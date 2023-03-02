@@ -8,7 +8,9 @@ class ClientManager {
       token: null,
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
-    this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.audioEnabled = true; // if true then mic access is created, if false then not
+    this.audioPublishing = true; 
+    this.videoPublishing = false;
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
     this.remoteUserAudioMuted = {};
@@ -88,8 +90,8 @@ class ClientManager {
   }
 
   setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
-    this.audioEnabled = pubAudio;
-    this.videoEnabled = pubVideo;
+    this.audioPublishing = pubAudio;
+    this.videoPublishing = pubVideo;
     this.audioSubscribing = subAudio;
     this.videoSubscribing = subVideo;
   }
@@ -286,6 +288,14 @@ class ClientManager {
     console.log(e);
   }
   //============================================================================== 
+  resetClient() {
+    this.is_screensharing = false; // set to default
+    this.videoEnabled = false; // set to default
+    this.audioEnabled = true; // set to default
+    this.videoPublishing = false;
+    this.audioPublishing = true;
+    localTracks.audioMixingTrack = null;
+  }
 
   async leave() {
     for (var trackName in localTracks) {
@@ -322,10 +332,7 @@ class ClientManager {
       await stopNewScreenCaptureForWeb();
     }
 
-    this.is_screensharing = false; // set to default
-    this.videoEnabled = false; // set to default
-    this.audioEnabled = false; // set to default
-    localTracks.audioMixingTrack = null;
+    this.resetClient();
 
     if (_isCopyVideoToMainCanvasOn) {
       _isCopyVideoToMainCanvasOn = false;
@@ -542,7 +549,10 @@ class ClientManager {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
         if (track) {
-          await this.client.publish(track);
+          if ((trackName == "videoTrack" && this.videoPublishing) || (trackName == "audioTrack" && this.audioPublishing))
+          {
+            await this.client.publish(track);
+          }
         }
       }
     }
@@ -568,6 +578,7 @@ class ClientManager {
 
   async enableAudio(enabled) {
     this.audioEnabled = enabled;
+    this.audioPublishing = enabled;
     this.audioSubscribing = enabled;
   }
 
@@ -595,6 +606,7 @@ class ClientManager {
       } else {
         await this.client.publish(localTracks.videoTrack);
       }
+      this.videoPublishing = !mute;
     }
   }
 
@@ -608,6 +620,7 @@ class ClientManager {
         await this.client.publish(localTracks.audioTrack);
       }
     }
+    this.audioPublishing = !mute;
   }
 
   async enableLocalVideo(enabled) {
