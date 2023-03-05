@@ -51,9 +51,7 @@ public class AgoraDeviceManager : MonoBehaviour
         if (CheckAppId())
         {
             InitRtcEngine();
-            GetVideoDeviceManager();
-            _rtcEngine.StartPreview();
-            makeVideoView(CHANNEL_NAME, 0);
+            
         }
     }
 
@@ -62,14 +60,40 @@ public class AgoraDeviceManager : MonoBehaviour
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
 
+        List<MediaDeviceInfo> devices = AgoraWebGLEventHandler.GetCacheManager().GetCachedCameras();
+        List<string> videoDeviceLabels = new List<string>();
 
-        videoDeviceButton.interactable = (joinedChannel && currentVideoDeviceIndex != _videoDeviceIndex);
+        if (_videoDeviceManagerNamesDic.Count != devices.Count)
+        {
+            makeVideoView(CHANNEL_NAME, 0);
+            GetVideoDeviceManager();
+            SetAndReleaseVideoDevice();
+            _rtcEngine.StartPreview();
+        }
+
+        //foreach (MediaDeviceInfo info in devices) {
+        //    bool hasLabel = false;
+        //    foreach(Dropdown.OptionData data in videoDropdown.options)
+        //    {
+        //        if (data.text == info.label)
+        //            hasLabel = true;
+        //    }
+        //    if(!hasLabel)
+        //    videoDeviceLabels.Add(info.label);
+        //}
+
+        //if (videoDropdown.options.Count == 0)
+        //{
+        //    videoDropdown.AddOptions(videoDeviceLabels);
+        //}
+
+        videoDeviceButton.interactable = (currentVideoDeviceIndex != _videoDeviceIndex);
         //videoDropdown.interactable = !joinedChannel;
         videoDeviceText.gameObject.SetActive(!joinedChannel);
         joinChannelButton.interactable = !joinedChannel;
         leaveChannelButton.interactable = joinedChannel;
-        startPreviewButton.interactable = (joinedChannel && currentVideoDeviceIndex != _videoDeviceIndex && !previewing);
-        stopPreviewButton.interactable = (joinedChannel && previewing);
+        startPreviewButton.interactable = (currentVideoDeviceIndex != _videoDeviceIndex && !previewing);
+        stopPreviewButton.interactable = (previewing);
 
     }
 
@@ -89,6 +113,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void videoUpdate(){
         _videoDeviceIndex = videoDropdown.value;
+        _logger.UpdateLog(_videoDeviceManagerNamesDic.ToString());
     }
 
     public void startPreview()
@@ -208,8 +233,9 @@ public class AgoraDeviceManager : MonoBehaviour
         }
         
         videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
-        videoDropdown.value = 0;
+        videoDropdown.value = _videoDeviceManagerNamesDic.Count;
         currentVideoDeviceIndex = videoDropdown.value;
+        //SetAndReleaseVideoDevice();
     }
 
     void SetCurrentDevice()
