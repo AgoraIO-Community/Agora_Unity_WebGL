@@ -635,34 +635,37 @@ class ClientManager {
 
   
   async startPreview() {
-
+    console.log(localTracks.videoTrack);
     if(localTracks.videoTrack){
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      // localTracks.videoTrack.stop();
+      // localTracks.videoTrack.close();
+      if(this._inChannel){
+        await this.client.unpublish(localTracks.videoTrack);
+      }
     }
     
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack().catch(e => {
-        event_manager.raiseHandleUserError(e.code, e.msg);
-      }),
-    ]);
+    if(localTracks.videoTrack == null){
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
+      ]);
+    }
     localTracks.videoTrack.play("local-player");
     
   }
 
   async stopPreview() {
-    localTracks.videoTrack.stop();
-    localTracks.videoTrack.close();
 
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack().catch(e => {
-        event_manager.raiseHandleUserError(e.code, e.msg);
-      }),
-    ]);
+    if(localTracks.videoTrack != null){
+      localTracks.videoTrack.stop();
+      //localTracks.videoTrack.close();
+    }
 
     localTracks.videoTrack.play("local-player");
-    await this.client.publish(localTracks.videoTrack);
+    if(this._inChannel){
+      await this.client.publish(localTracks.videoTrack);
+    }
   }
 
   async publishPreview(){
