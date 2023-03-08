@@ -241,7 +241,6 @@ public class AgoraDeviceManager : MonoBehaviour
 
             videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
         }
-        videoDropdown.value = 0;
         _videoDeviceIndex = videoDropdown.value;
         SetAndReleaseVideoDevice();
     }
@@ -285,12 +284,16 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         _rtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
         makeVideoView(CHANNEL_NAME, 0);
+        GetVideoDeviceManager();
+        SetAndReleaseVideoDevice();
     }
 
     public void LeaveChannel()
     {
         _rtcEngine.LeaveChannel();
         DestroyVideoView(CHANNEL_NAME, 0);
+        GetVideoDeviceManager();
+        SetAndReleaseVideoDevice();
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
