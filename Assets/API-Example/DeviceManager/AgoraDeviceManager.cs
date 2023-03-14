@@ -339,10 +339,14 @@ public class AgoraDeviceManager : MonoBehaviour
         GetAudioRecordingDevice();
         if (!previewing)
         {
+            GetVideoDeviceManager();
+            _rtcEngine.StopPreview();
             SetAndReleaseVideoDevice();
         } else
         {
-
+            DestroyVideoView(CHANNEL_NAME, uid);
+            _rtcEngine.StopPreview();
+            SetAndReleaseVideoDevice();
         }
         //SetCurrentDevice();
         //SetCurrentDeviceVolume();
