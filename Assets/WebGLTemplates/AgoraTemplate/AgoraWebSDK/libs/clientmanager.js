@@ -291,8 +291,8 @@ class ClientManager {
   //============================================================================== 
   resetClient() {
     this.is_screensharing = false; // set to default
-    this.videoEnabled = false; // set to default
-    this.audioEnabled = true; // set to default
+    this.videoSubscribing = true; 
+    this.audioSubscribing = true; 
     this.videoPublishing = false;
     this.audioPublishing = true;
     localTracks.audioMixingTrack = null;
