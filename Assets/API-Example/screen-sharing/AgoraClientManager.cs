@@ -7,11 +7,9 @@ using agora_utilities;
 
 public class AgoraClientManager : MonoBehaviour
 {
-    [SerializeField] private string APP_ID = "YOUR_APPID";
+    [SerializeField] private AppInfoObject appInfo;
 
-    [SerializeField] private string TOKEN_1 = "";
-
-    [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
+    [SerializeField] private string CHANNEL_NAME = "YOUR_CHANNEL_NAME_1";
 
     [SerializeField] private uint SCREEN_SHARE_ID = 1000;
 
@@ -23,26 +21,32 @@ public class AgoraClientManager : MonoBehaviour
 
     public Button joinButton, leaveButton;
     public Button startScreenShareButton, stopScreenShareButton;
-    public Button muteLocalVideoButton, muteRemoteVideoButton;
+
+
+    public bool useToken = false;
+    public Toggle loopbackAudioToggle, newScreenShareToggle;
+    public Toggle publishCameraToggle;
+    public InputField screenShareIDInput;
+
+    [Header("Mute Function Buttons")]
+    public Button muteLocalVideoButton;
+    public Button muteRemoteVideoButton;
     public Button muteLocalAudioButton, muteRemoteAudioButton;
     public Text muteLocalVideoText, muteRemoteVideoText;
     public Text muteLocalAudioText, muteRemoteAudioText;
-    public bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
-    public bool useNewScreenShare = false;
-    public bool useScreenShareAudio = false;
-    public bool joinedChannel = false;
-    public bool useToken = false;
-    public Toggle loopbackAudioToggle, newScreenShareToggle;
 
-    private List<uint> remoteClientIDs;
+    bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
+    bool useNewScreenShare = false;
+    bool useScreenShareAudio = false;
+    bool joinedChannel = false;
 
-    public InputField screenShareIDInput;
+    GameObject localView;
 
     private void Awake()
     {
         if (RootMenuControl.instance)
         {
-            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+            CHANNEL_NAME = RootMenuControl.instance.channel;
         }
     }
 
@@ -56,13 +60,10 @@ public class AgoraClientManager : MonoBehaviour
 
         InitEngine();
 
-        //channel setup.
-
         newScreenShareToggle.isOn = useNewScreenShare;
         loopbackAudioToggle.isOn = useScreenShareAudio;
         updateScreenShareNew();
-        remoteClientIDs = new List<uint>();
-        Debug.Log(SCREEN_SHARE_ID.ToString());
+        Debug.Log("ScreenShare UID = " + SCREEN_SHARE_ID);
         screenShareIDInput.text = SCREEN_SHARE_ID.ToString();
     }
 
@@ -92,10 +93,10 @@ public class AgoraClientManager : MonoBehaviour
 
         useScreenShareAudio = loopbackAudioToggle.isOn;
 
-        //muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
-        //muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
-        //muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
-        //muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
+        muteLocalVideoText.text = localVideoMuted ? "Unmute Local Video" : "Mute Local Video";
+        muteRemoteVideoText.text = remoteVideoMuted ? "Unmute Remote Video" : "Mute Remote Video";
+        muteLocalAudioText.text = localAudioMuted ? "Unmute Local Audio" : "Mute Local Audio";
+        muteRemoteAudioText.text = remoteAudioMuted ? "Unmute Remote Audio" : "Mute Remote Audio";
 
         if (joinedChannel)
         {
@@ -112,8 +113,8 @@ public class AgoraClientManager : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
-        return (APP_ID.Length > 10);
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
+        return (appInfo.appID.Length > 10);
     }
 
     public void updateScreenShareID()
@@ -132,7 +133,7 @@ public class AgoraClientManager : MonoBehaviour
     public void setRemoteMuteVideo()
     {
         remoteVideoMuted = !remoteVideoMuted;
-        mRtcEngine.MuteRemoteVideoStream(remoteClientIDs[0], remoteVideoMuted);
+        mRtcEngine.MuteAllRemoteVideoStreams(remoteVideoMuted);
     }
 
     //for muting/unmuting local video through IRtcEngine class.
@@ -146,7 +147,7 @@ public class AgoraClientManager : MonoBehaviour
     public void setRemoteMuteAudio()
     {
         remoteAudioMuted = !remoteAudioMuted;
-        mRtcEngine.MuteRemoteAudioStream(remoteClientIDs[0], remoteAudioMuted);
+        mRtcEngine.MuteAllRemoteAudioStreams(remoteAudioMuted);
     }
 
     //for starting/stopping a new screen share through IRtcEngine class.
@@ -174,7 +175,7 @@ public class AgoraClientManager : MonoBehaviour
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
@@ -197,18 +198,29 @@ public class AgoraClientManager : MonoBehaviour
 
     public void JoinChannel()
     {
+
+        ChannelMediaOptions options = new ChannelMediaOptions
+        {
+            autoSubscribeAudio = true,
+            autoSubscribeVideo = true,
+            publishLocalAudio = true,
+            publishLocalVideo = this.publishCameraToggle.isOn
+        };
+
         if (!useToken)
         {
-            mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+            mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME, "", 0, options);
         }
         else
         {
             TokenClient.Instance.RtcEngine = mRtcEngine;
-            TokenClient.Instance.GetRtcToken(CHANNEL_NAME_1, 0, (token) =>
+            TokenClient.Instance.GetRtcToken(CHANNEL_NAME, 0, (token) =>
             {
-                TOKEN_1 = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + TOKEN_1);
-                mRtcEngine.JoinChannelByKey(TOKEN_1, CHANNEL_NAME_1);
+                appInfo.token = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + appInfo.token);
+                mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME);
+
+                mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME, "", 0, options);
             });
         }
         joinedChannel = true;
@@ -217,6 +229,7 @@ public class AgoraClientManager : MonoBehaviour
     public void LeaveChannel()
     {
         mRtcEngine.LeaveChannel();
+        Destroy(LastRemote);
         joinedChannel = false;
     }
 
@@ -276,14 +289,15 @@ public class AgoraClientManager : MonoBehaviour
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME_1, uid,
+        logger.UpdateLog(string.Format("EngineOnJoinChannelSuccess channelId: {0}, uid: {1}, elapsed: {2}", CHANNEL_NAME, uid,
             elapsed));
         makeVideoView(channelId, 0);
     }
 
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
-        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME_1));
+        logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME));
+        Destroy(localView);
     }
 
     void EngineOnErrorHandler(int err, string message)
@@ -294,43 +308,17 @@ public class AgoraClientManager : MonoBehaviour
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME_1,
+        logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME,
             uid, elapsed));
-        makeVideoView(CHANNEL_NAME_1, uid);
-        remoteClientIDs.Add(uid);
+        makeVideoView(CHANNEL_NAME, uid);
     }
 
     void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
         logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
-        DestroyVideoView(CHANNEL_NAME_1, uid);
-        remoteClientIDs.Remove(uid);
+        DestroyVideoView(CHANNEL_NAME, uid);
     }
 
-    public void RespawnLocal(string channelName)
-    {
-        GameObject go = GameObject.Find(channelName + "_0");
-        if (go != null)
-        {
-            go.name = "Destroying";
-            Destroy(go);
-            makeVideoView(channelName, 0);
-        }
-    }
-
-    public void RespawnRemote()
-    {
-        if (LastRemote != null)
-        {
-            string[] strs = LastRemote.name.Split('_');
-            string channel = strs[0];
-            uint uid = uint.Parse(strs[1]);
-            LastRemote.name = "_Destroyer";
-            Destroy(LastRemote);
-            Debug.LogWarningFormat("Remaking video surface for  uid:{0} channel:{1}", uid, channel);
-            makeVideoView(channel, uid);
-        }
-    }
 
     GameObject LastRemote = null;
 
@@ -355,7 +343,11 @@ public class AgoraClientManager : MonoBehaviour
             // make the object draggable
             videoSurface.gameObject.AddComponent<UIElementDragger>();
 
-            if (uid != 0)
+            if (uid == 0)
+            {
+                localView = videoSurface.gameObject;
+            }
+            else
             {
                 LastRemote = videoSurface.gameObject;
             }
@@ -393,7 +385,6 @@ public class AgoraClientManager : MonoBehaviour
         go.transform.Rotate(0f, 0.0f, 180.0f);
         float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
         float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
-        Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
 

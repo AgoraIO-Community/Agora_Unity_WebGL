@@ -293,7 +293,7 @@ class ClientManager {
     this.is_screensharing = false; // set to default
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
-    this.videoPublishing = false;
+    this.videoPublishing = true;
     this.audioPublishing = true;
     localTracks.audioMixingTrack = null;
   }
