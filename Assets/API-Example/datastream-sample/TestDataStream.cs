@@ -83,6 +83,7 @@ public class TestDataStream : MonoBehaviour
                 string msg = inputField.text;
                 byte[] data = System.Text.Encoding.UTF8.GetBytes(msg);
                 mRtcEngine.SendStreamMessage(StreamId, data);
+                logger.UpdateLog("Test DataStream sending " + msg);
             });
         }
     }

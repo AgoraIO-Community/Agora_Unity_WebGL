@@ -4,6 +4,16 @@ using System;
 
 namespace agora_gaming_rtc
 {
+    /*
+ * Data item for cache manager to store devices information
+ */
+    public class MediaDeviceInfo
+    {
+        public string deviceId;
+        public string kind;
+        public string groupId;
+        public string label;
+    }
 
 #if UNITY_WEBGL || UNITY_EDITOR
     /*
@@ -94,16 +104,6 @@ namespace agora_gaming_rtc
 
     }
 
-    /*
-     * Data item for cache manager to store devices information
-     */
-    public class MediaDeviceInfo
-    {
-        public string deviceId;
-        public string kind;
-        public string groupId;
-        public string label;
-    }
 
     /**
      * stores media devices in separate listing
@@ -321,8 +321,8 @@ namespace agora_gaming_rtc
             {
                 _webglEventHandlerInstance = this;
 
-                if(!RootMenuControl.instance)
-                    DontDestroyOnLoad(this.gameObject);
+                //if(!RootMenuControl.instance)
+                DontDestroyOnLoad(this.gameObject);
             }
             else
             {
@@ -1529,5 +1529,18 @@ namespace agora_gaming_rtc
         }
 
     }
+
+
+#else
+
+public class AgoraWebGLEventHandler : MonoBehaviour {
+
+        public static List<MediaDeviceInfo> GetCachedCameras()
+        {
+            Debug.LogWarning("NOTE THIS FUNCTION IS ONLY FOR WEBGL!!!");
+            return new List<MediaDeviceInfo>();
+        }
+}
+
 #endif
 }

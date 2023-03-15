@@ -1766,6 +1766,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
                                       OnUserJoinedCallback,
                                       OnUserOfflineCallback,
                                       OnAudioVolumeIndicationCallback,
+                                      OnLocalVoicePitchInHzCallback,
                                       OnUserMuteAudioCallback,
                                       OnSDKWarningCallback,
                                       OnSDKErrorCallback,
@@ -1841,16 +1842,15 @@ muteLocalAudioStream_channel: function(channel, mute) {
                                       OnUserSuperResolutionEnabledCallback,
                                       OnUploadLogResultCallback,
                                       OnVirtualBackgroundSourceEnabledCallback,
-                                      OnRequestAudioFileInfo,
-                                      OnContentInspectResult,
-                                      OnSnapshotTaken,
-                                      OnClientRoleChangeFailed,
-                                      OnAudioDeviceTestVolumeIndication,
-                                      OnProxyConnected,
-                                      OnWlAccMessage,
-                                      OnWlAccStats,
-                                      OnScreenCaptureInfoUpdated
-
+                                      OnRequestAudioFileInfoHandlback,
+                                      OnContentInspectResultCallback,
+                                      OnSnapshotTakenCallback,
+                                      OnClientRoleChangeFailedCallback,
+                                      OnAudioDeviceTestVolumeIndicationCallback,
+                                      OnProxyConnectedCallback,
+                                      OnWlAccMessageCallback,
+                                      OnWlAccStatsCallback,
+                                      OnScreenCaptureInfoUpdatedCallback
   ) {
     UnityHooks.OnStreamMessageCallback = OnStreamMessageCallback;
     UnityHooks.InvokeStreamMessageCallback = function(uid, bytes, length) {
@@ -1862,14 +1862,14 @@ muteLocalAudioStream_channel: function(channel, mute) {
         HEAPU8[data+i] = bytes[i];
       }
       UnityHooks.data = data;
-      //Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
-      Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
+      Runtime.dynCall('viiii', UnityHooks.OnStreamMessageCallback, [uid, 0, data, length]);
+      //Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
     };
 
     UnityHooks.OnVideoSizeChangedCallback = OnVideoSizeChangedCallback;
     UnityHooks.InvokeVideoSizeChangedCallback = function(uid, width, height) {
-      //Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
-      Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
+      Runtime.dynCall('viiii', UnityHooks.OnVideoSizeChangedCallback, [uid, width, height, 0]);
+      //Module['dynCall_viiiii'](UnityHooks.OnStreamMessageCallback, uid, 0, data, length);
     };
 
     UnityHooks.isLoaded = true;
