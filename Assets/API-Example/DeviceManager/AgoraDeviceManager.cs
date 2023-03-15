@@ -29,13 +29,14 @@ public class AgoraDeviceManager : MonoBehaviour
     [SerializeField]
     private int _recordingDeviceIndex = 0,
     _playbackDeviceIndex = 0,
-    _videoDeviceIndex = 0;
+    _videoDeviceIndex = 0,
+    currentVideoDeviceIndex = 0;
     private List<uint> remoteClientIDs = new List<uint>();
     private const float Offset = 100;
     GameObject LastRemote = null;
     public Slider recordingVolume, playbackVolume;
-    public bool joinedChannel;
-    public Button videoDeviceButton, joinChannelButton, leaveChannelButton;
+    public bool joinedChannel, previewing;
+    public Button videoDeviceButton, joinChannelButton, leaveChannelButton, startPreviewButton, stopPreviewButton;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -59,13 +60,41 @@ public class AgoraDeviceManager : MonoBehaviour
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
 
+        List<MediaDeviceInfo> devices = AgoraWebGLEventHandler.GetCacheManager().GetCachedCameras();
+        List<string> videoDeviceLabels = new List<string>();
 
-        //videoDeviceButton.interactable = !joinedChannel;
-        //videoDropdown.interactable = !joinedChannel;
+        if (_videoDeviceManagerNamesDic.Count != devices.Count)
+        {
+            GetVideoDeviceManager();
+            SetAndReleaseVideoDevice();
+        }
+
+
+
+        //foreach (MediaDeviceInfo info in devices) {
+        //    bool hasLabel = false;
+        //    foreach(Dropdown.OptionData data in videoDropdown.options)
+        //    {
+        //        if (data.text == info.label)
+        //            hasLabel = true;
+        //    }
+        //    if(!hasLabel)
+        //    videoDeviceLabels.Add(info.label);
+        //}
+
+        //if (videoDropdown.options.Count == 0)
+        //{
+        //    videoDropdown.AddOptions(videoDeviceLabels);
+        //}
+
+        videoDeviceButton.interactable = (currentVideoDeviceIndex != _videoDeviceIndex);
+        //videoDropdown.interactable = !joinedChannel && previewing;
         videoDeviceText.gameObject.SetActive(!joinedChannel);
         joinChannelButton.interactable = !joinedChannel;
         leaveChannelButton.interactable = joinedChannel;
-        
+        startPreviewButton.interactable = (!previewing && !joinedChannel);
+        stopPreviewButton.interactable = (previewing && !joinedChannel);
+
     }
 
     bool CheckAppId()
@@ -76,17 +105,36 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void playbackUpdate(){
         _playbackDeviceIndex = playbackDropdown.value;
+        SetAndReleasePlaybackDevice();
     }
 
     public void recordingUpdate(){
         _recordingDeviceIndex = recordingDropdown.value;
+        SetAndReleaseRecordingDevice();
     }
 
     public void videoUpdate(){
         _videoDeviceIndex = videoDropdown.value;
+        SetAndReleaseVideoDevice();
     }
 
+    public void startPreview()
+    {
+        previewing = true;
+        _logger.UpdateLog(_videoDeviceIndex.ToString());
+        makeVideoView(CHANNEL_NAME, 0);
+        _videoDeviceIndex = videoDropdown.value;
+        SetAndReleaseVideoDevice();
+    }
 
+    public void stopPreview()
+    {
+        previewing = false;
+        DestroyVideoView(CHANNEL_NAME, 0);
+        _rtcEngine.StopPreview();
+        //videoDropdown.value = _videoDeviceManagerDic.Count;
+        //videoDropdown.RefreshShownValue();
+    }
 
     public void volumeUpdate(){
         SetCurrentDeviceVolume();
@@ -166,29 +214,33 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         string videoDeviceName = "";
         string videoDeviceId = "";
-		/// If you want to getVideoDeviceManager, you need to call startPreview() first;
-		_rtcEngine.StartPreview();
-        _videoDeviceManager = (VideoDeviceManager)_rtcEngine.GetVideoDeviceManager();
-        _videoDeviceManager.CreateAVideoDeviceManager();
-        int count = _videoDeviceManager.GetVideoDeviceCount();
-        _logger.UpdateLog(string.Format("VideoDevice count: {0}", count));
-        videoDropdown.ClearOptions();
-        _videoDeviceManagerDic.Clear();
-        _videoDeviceManagerNamesDic.Clear();
-        for (int i = 0; i < count; i++)
+        /// If you want to getVideoDeviceManager, you need to call startPreview() first;
+        _rtcEngine.StartPreview();
+        if (_videoDeviceManager == null)
         {
-            _videoDeviceManager.GetVideoDevice(i, ref videoDeviceName, ref videoDeviceId);
-            if (!_videoDeviceManagerDic.ContainsKey(i))
+            _videoDeviceManager = (VideoDeviceManager)_rtcEngine.GetVideoDeviceManager();
+            _videoDeviceManager.CreateAVideoDeviceManager();
+            int count = _videoDeviceManager.GetVideoDeviceCount();
+            _logger.UpdateLog(string.Format("VideoDevice count: {0}", count));
+            videoDropdown.ClearOptions();
+            _videoDeviceManagerDic.Clear();
+            _videoDeviceManagerNamesDic.Clear();
+            for (int i = 0; i < count; i++)
             {
-                _videoDeviceManagerDic.Add(i, videoDeviceId);
-                _videoDeviceManagerNamesDic.Add(i, videoDeviceName);
+                _videoDeviceManager.GetVideoDevice(i, ref videoDeviceName, ref videoDeviceId);
+                if (!_videoDeviceManagerDic.ContainsKey(i))
+                {
+                    _videoDeviceManagerDic.Add(i, videoDeviceId);
+                    _videoDeviceManagerNamesDic.Add(i, videoDeviceName);
+                }
+
+                _logger.UpdateLog(string.Format("VideoDeviceManager device index: {0}, name: {1}, id: {2}", i, videoDeviceName, videoDeviceId));
             }
 
-            _logger.UpdateLog(string.Format("VideoDeviceManager device index: {0}, name: {1}, id: {2}", i, videoDeviceName, videoDeviceId));
+            videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
         }
-        
-        videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
-        videoDropdown.value = _videoDeviceManagerNamesDic.Count - 1;
+        _videoDeviceIndex = videoDropdown.value;
+        SetAndReleaseVideoDevice();
     }
 
     void SetCurrentDevice()
@@ -222,20 +274,24 @@ public class AgoraDeviceManager : MonoBehaviour
     }
 
     public void SetAndReleaseVideoDevice(){
-       _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
-       _videoDeviceManager.ReleaseAVideoDeviceManager();
+        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
+        _videoDeviceManager.ReleaseAVideoDeviceManager();
     }
 
     public void JoinChannel()
     {
         _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
         makeVideoView(CHANNEL_NAME, 0);
+        GetVideoDeviceManager();
+        SetAndReleaseVideoDevice();
     }
 
     public void LeaveChannel()
     {
         _rtcEngine.LeaveChannel();
         DestroyVideoView(CHANNEL_NAME, 0);
+        GetVideoDeviceManager();
+        SetAndReleaseVideoDevice();
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
@@ -280,8 +336,18 @@ public class AgoraDeviceManager : MonoBehaviour
         _logger.UpdateLog(string.Format("onJoinChannelSuccess channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
         joinedChannel = true;
         GetAudioPlaybackDevice();
-        GetVideoDeviceManager();
         GetAudioRecordingDevice();
+        if (!previewing)
+        {
+            GetVideoDeviceManager();
+            _rtcEngine.StopPreview();
+            SetAndReleaseVideoDevice();
+        } else
+        {
+            DestroyVideoView(CHANNEL_NAME, uid);
+            _rtcEngine.StopPreview();
+            SetAndReleaseVideoDevice();
+        }
         //SetCurrentDevice();
         //SetCurrentDeviceVolume();
         //ReleaseDeviceManager();

@@ -21,6 +21,7 @@ class ClientManager {
     this._streamMessageRetry = false;
     this.is_screensharing = false;
     this.tempLocalTracks = null;
+    this.previewVideoTrack;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
@@ -645,28 +646,43 @@ class ClientManager {
     this.videoEnabled = enabled;
   }
 
+  
   async startPreview() {
-
+    console.log(localTracks.videoTrack);
     if(localTracks.videoTrack){
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      // localTracks.videoTrack.stop();
+      // localTracks.videoTrack.close();
+      if(this._inChannel){
+        await this.client.unpublish(localTracks.videoTrack);
+      }
     }
-
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack().catch(e => {
-        event_manager.raiseHandleUserError(e.code, e.msg);
-      }),
-    ]);
+    
+    if(localTracks.videoTrack == null){
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
+      ]);
+    }
     localTracks.videoTrack.play("local-player");
-    await this.client.publish(localTracks.videoTrack);
+    
   }
 
-  stopPreview() {
-    if (localTracks.videoTrack) {
+  async stopPreview() {
+
+    if(localTracks.videoTrack != null){
       localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
+      //localTracks.videoTrack.close();
     }
+
+    localTracks.videoTrack.play("local-player");
+    if(this._inChannel){
+      await this.client.publish(localTracks.videoTrack);
+    }
+  }
+
+  async publishPreview(){
+    await this.client.publish(localTracks.videoTrack);
   }
 
   async setBeautyEffectOn(lighteningLevel, rednessLevel, smoothnessLevel) {
