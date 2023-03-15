@@ -10,7 +10,7 @@ class ClientManager {
     this.videoEnabled = false; // if true then camera is created, if false then not
     this.audioEnabled = true; // if true then mic access is created, if false then not
     this.audioPublishing = true; 
-    this.videoPublishing = false;
+    this.videoPublishing = true;
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
     this.remoteUserAudioMuted = {};
