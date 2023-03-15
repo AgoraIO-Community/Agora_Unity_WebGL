@@ -53,16 +53,16 @@ public class AgoraDeviceManager : MonoBehaviour
         if (CheckAppId())
         {
             InitRtcEngine();
-            
+
         }
     }
 
-    void Update() 
+    void Update()
     {
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
 
-        List<MediaDeviceInfo> devices = AgoraWebGLEventHandler.GetCacheManager().GetCachedCameras();
+        List<MediaDeviceInfo> devices = AgoraWebGLEventHandler.GetCachedCameras();
         List<string> videoDeviceLabels = new List<string>();
 
         if (_videoDeviceManagerNamesDic.Count != devices.Count)
@@ -105,17 +105,20 @@ public class AgoraDeviceManager : MonoBehaviour
         return _logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in Canvas!!!!!");
     }
 
-    public void playbackUpdate(){
+    public void playbackUpdate()
+    {
         _playbackDeviceIndex = playbackDropdown.value;
         SetAndReleasePlaybackDevice();
     }
 
-    public void recordingUpdate(){
+    public void recordingUpdate()
+    {
         _recordingDeviceIndex = recordingDropdown.value;
         SetAndReleaseRecordingDevice();
     }
 
-    public void videoUpdate(){
+    public void videoUpdate()
+    {
         _videoDeviceIndex = videoDropdown.value;
         SetAndReleaseVideoDevice();
     }
@@ -138,7 +141,8 @@ public class AgoraDeviceManager : MonoBehaviour
         //videoDropdown.RefreshShownValue();
     }
 
-    public void volumeUpdate(){
+    public void volumeUpdate()
+    {
         SetCurrentDeviceVolume();
     }
 
@@ -163,7 +167,7 @@ public class AgoraDeviceManager : MonoBehaviour
         _rtcEngine.OnPlaybackChanged += OnPlaybackChangedHandler;
     }
 
-    void GetAudioRecordingDevice() 
+    void GetAudioRecordingDevice()
     {
         string audioRecordingDeviceName = "";
         string audioRecordingDeviceId = "";
@@ -174,15 +178,17 @@ public class AgoraDeviceManager : MonoBehaviour
         recordingDropdown.ClearOptions();
         _audioRecordingDeviceDic.Clear();
         _audioRecordingDeviceNamesDic.Clear();
-        for (int i = 0; i < count ; i ++) {
+        for (int i = 0; i < count; i++)
+        {
             _audioRecordingDeviceManager.GetAudioRecordingDevice(i, ref audioRecordingDeviceName, ref audioRecordingDeviceId);
-            if (!_audioRecordingDeviceDic.ContainsKey(i)) {
+            if (!_audioRecordingDeviceDic.ContainsKey(i))
+            {
                 _audioRecordingDeviceDic.Add(i, audioRecordingDeviceId);
                 _audioRecordingDeviceNamesDic.Add(i, audioRecordingDeviceName);
             }
             _logger.UpdateLog(string.Format("AudioRecordingDevice device index: {0}, name: {1}, id: {2}", i, audioRecordingDeviceName, audioRecordingDeviceId));
         }
-        
+
         recordingDropdown.AddOptions(_audioRecordingDeviceNamesDic.Values.ToList());
         recordingDropdown.value = _audioRecordingDeviceNamesDic.Count - 1;
     }
@@ -198,7 +204,8 @@ public class AgoraDeviceManager : MonoBehaviour
         playbackDropdown.ClearOptions();
         _audioPlaybackDeviceDic.Clear();
         _audioPlaybackDeviceNamesDic.Clear();
-        for (int i = 0; i < count ; i ++) {
+        for (int i = 0; i < count; i++)
+        {
             _audioPlaybackDeviceManager.GetAudioPlaybackDevice(i, ref audioPlaybackDeviceName, ref audioPlaybackDeviceId);
             if (!_audioPlaybackDeviceDic.ContainsKey(i))
             {
@@ -207,7 +214,7 @@ public class AgoraDeviceManager : MonoBehaviour
             }
             _logger.UpdateLog(string.Format("AudioPlaybackDevice device index: {0}, name: {1}, id: {2}", i, audioPlaybackDeviceName, audioPlaybackDeviceId));
         }
-        
+
         playbackDropdown.AddOptions(_audioPlaybackDeviceNamesDic.Values.ToList());
         playbackDropdown.value = _audioPlaybackDeviceNamesDic.Count - 1;
     }
@@ -265,17 +272,20 @@ public class AgoraDeviceManager : MonoBehaviour
         _videoDeviceManager.ReleaseAVideoDeviceManager();
     }
 
-    public void SetAndReleaseRecordingDevice(){
+    public void SetAndReleaseRecordingDevice()
+    {
         _audioRecordingDeviceManager.SetAudioRecordingDevice(_audioRecordingDeviceDic[_recordingDeviceIndex]);
         _audioRecordingDeviceManager.ReleaseAAudioRecordingDeviceManager();
     }
 
-    public void SetAndReleasePlaybackDevice(){
+    public void SetAndReleasePlaybackDevice()
+    {
         _audioPlaybackDeviceManager.SetAudioPlaybackDevice(_audioPlaybackDeviceDic[_playbackDeviceIndex]);
         _audioPlaybackDeviceManager.ReleaseAAudioPlaybackDeviceManager();
     }
 
-    public void SetAndReleaseVideoDevice(){
+    public void SetAndReleaseVideoDevice()
+    {
         _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
         _videoDeviceManager.ReleaseAVideoDeviceManager();
     }
@@ -344,7 +354,8 @@ public class AgoraDeviceManager : MonoBehaviour
             GetVideoDeviceManager();
             _rtcEngine.StopPreview();
             SetAndReleaseVideoDevice();
-        } else
+        }
+        else
         {
             DestroyVideoView(CHANNEL_NAME, uid);
             _rtcEngine.StopPreview();
@@ -370,12 +381,12 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         _logger.UpdateLog(string.Format("OnSDKWarning warn: {0}, msg: {1}", warn, msg));
     }
-    
+
     void OnSDKErrorHandler(int error, string msg)
     {
         _logger.UpdateLog(string.Format("OnSDKError error: {0}, msg: {1}", error, msg));
     }
-    
+
     void OnConnectionLostHandler()
     {
         _logger.UpdateLog(string.Format("OnConnectionLost "));
