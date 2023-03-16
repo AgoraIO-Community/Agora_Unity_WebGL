@@ -2485,7 +2485,7 @@ MonoBehaviour:
   CHANNEL_NAME: unity3d
   SCREEN_SHARE_ID: 1000
   logText: {fileID: 1416670727}
-  screenShareIDText: {fileID: 529277992}
+  screenShareIDText: {fileID: 636575011}
   joinButton: {fileID: 1102350104}
   leaveButton: {fileID: 1338097253}
   startScreenShareButton: {fileID: 1632797613}
@@ -2495,10 +2495,6 @@ MonoBehaviour:
   newScreenShareToggle: {fileID: 1970231432}
   publishCameraToggle: {fileID: 1597797635}
   screenShareIDInput: {fileID: 2128742213}
-  muteLocalVideoButton: {fileID: 1606089214}
-  muteRemoteVideoButton: {fileID: 127096345}
-  muteLocalAudioButton: {fileID: 14138835}
-  muteRemoteAudioButton: {fileID: 1168503683}
   muteLocalVideoText: {fileID: 433751574}
   muteRemoteVideoText: {fileID: 1934486155}
   muteLocalAudioText: {fileID: 1346064492}
@@ -2578,6 +2574,7 @@ RectTransform:
   - {fileID: 192015511}
   - {fileID: 361832584}
   - {fileID: 402936240}
+  - {fileID: 1349182163}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2586,6 +2583,84 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!1 &1349182162
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1349182163}
+  - component: {fileID: 1349182165}
+  - component: {fileID: 1349182164}
+  m_Layer: 5
+  m_Name: Title Text
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1349182163
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349182162}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1348336709}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: -86, y: -41}
+  m_SizeDelta: {x: 432.72095, y: 66.712036}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1349182164
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349182162}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 0.9198064, b: 0.06132078, a: 1}
+  m_RaycastTarget: 1
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 24
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 3
+    m_MaxSize: 40
+    m_Alignment: 1
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: Screen Sharing Demo
+--- !u!222 &1349182165
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1349182162}
+  m_CullTransparentMesh: 0
 --- !u!1 &1416670726
 GameObject:
   m_ObjectHideFlags: 0
@@ -2661,8 +2736,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 298, y: -251}
-  m_SizeDelta: {x: 566.2769, y: 490.90344}
+  m_AnchoredPosition: {x: 284.9, y: -185.27}
+  m_SizeDelta: {x: 540.0555, y: 359.45178}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1434811977
 GameObject:
@@ -3557,7 +3632,7 @@ MonoBehaviour:
   onValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1348336705}
+      - m_Target: {fileID: 0}
         m_MethodName: updateScreenShareNew
         m_Mode: 1
         m_Arguments:

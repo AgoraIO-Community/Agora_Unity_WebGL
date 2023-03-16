@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
 
-public class AgoraClientManager : MonoBehaviour
+public class AgoraScreenSharingClientManager : MonoBehaviour
 {
     [SerializeField] private AppInfoObject appInfo;
 
@@ -29,10 +29,8 @@ public class AgoraClientManager : MonoBehaviour
     public InputField screenShareIDInput;
 
     [Header("Mute Function Buttons")]
-    public Button muteLocalVideoButton;
-    public Button muteRemoteVideoButton;
-    public Button muteLocalAudioButton, muteRemoteAudioButton;
-    public Text muteLocalVideoText, muteRemoteVideoText;
+    public Text muteLocalVideoText;
+    public Text muteRemoteVideoText;
     public Text muteLocalAudioText, muteRemoteAudioText;
 
     bool localVideoMuted, remoteVideoMuted, localAudioMuted, remoteAudioMuted;
@@ -165,7 +163,11 @@ public class AgoraClientManager : MonoBehaviour
     //for starting/stopping a screen share through IRtcEngine class.
     public void startScreenShare(bool audioEnabled)
     {
+#if UNITY_EDITOR
+        mRtcEngine.StartScreenCaptureByDisplayId(0, default, default);
+#else
         mRtcEngine.StartScreenCaptureForWeb(audioEnabled);
+#endif
     }
 
     public void stopScreenShare()
@@ -383,8 +385,8 @@ public class AgoraClientManager : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+        float xPos = Random.Range(Offset - Screen.width / 4f, Screen.width / 4f - Offset);
+        float yPos = Random.Range(Offset, Screen.height / 4f - Offset);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
 
