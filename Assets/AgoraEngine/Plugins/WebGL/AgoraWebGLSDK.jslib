@@ -890,13 +890,13 @@ var LibraryAgoraWebGLSDK = {
   freeObject: function (obj) {},
   createAVideoDeviceManager: function () {},
   createMediaRecorder: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("createMediaRecorder")
   },
   enableContentInspect: function (enabled, extraInfo, modulesInfo, modulesCount) {
-    SendNotImplementedError()
+    SendNotImplementedError("enableContentInspect")
   },
   enableLocalVoicePitchCallback: function (interval) {
-    SendNotImplementedError()
+    SendNotImplementedError("enableLocalVoicePitchCallback")
   },
   enableSpatialAudio: function (enabled) {
     enableSpatialAudio(enabled);
@@ -905,142 +905,142 @@ var LibraryAgoraWebGLSDK = {
     enableSpatialAudio_MC(enabled);
   },
   enableWirelessAccelerate: function (enabled) {
-    SendNotImplementedError()
+    SendNotImplementedError("enableWirelessAccelerate")
   },
   followSystemPlaybackDevice: function (enabled) {
-    SendNotImplementedError()
+    SendNotImplementedError("followSystemPlaybackDevice")
   },
   followSystemRecordingDevice: function (enabled) {
-    SendNotImplementedError()
+    SendNotImplementedError("followSystemRecordingDevice")
   },
   getAudioFileInfo: function (filePath) {
-    SendNotImplementedError()
+    SendNotImplementedError("getAudioFileInfo")
   },
   getAudioPlaybackDefaultDevice: function (deviceName, deviceId) {
-    SendNotImplementedError()
+    SendNotImplementedError("getAudioPlaybackDefaultDevice")
   },
   getAudioRecordingDefaultDevice: function (deviceName, deviceId) {
-    SendNotImplementedError()
+    SendNotImplementedError("getAudioRecordingDefaultDevice")
   },
   getAudioTrackCount: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("getAudioTrackCount")
   },
   getCameraMaxZoomFactor: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("getCameraMaxZoomFactor")
   },
   getScreenCaptureIconImage: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureIconImage")
   },
   getScreenCaptureIsPrimaryMonitor: function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureIsPrimaryMonitor")
   },
   getScreenCaptureSourceId : function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSourceId")
   },
   getScreenCaptureSourceName : function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSourceName")
   },
   getScreenCaptureSourceProcessPath : function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSourceProcessPath")
   },
   getScreenCaptureSourceTitle : function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSourceTitle")
   },
   getScreenCaptureSourceType : function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSourceType")
   },
   getScreenCaptureSources : function (thumbHeight, thumbWidth, iconHeight, iconWidth, includeScreen) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSources")
   },
   getScreenCaptureSourcesCount: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureSourcesCount")
   },
   getScreenCaptureThumbImage: function (index, buffer) {
-    SendNotImplementedError()
+    SendNotImplementedError("getScreenCaptureThumbImage")
   },
   isCameraAutoFocusFaceModeSupported: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("isCameraAutoFocusFaceModeSupported")
   },
   isCameraExposurePositionSupported: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("isCameraExposurePositionSupported")
   },
   isCameraFocusSupported: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("isCameraFocusSupported")
   },
   isCameraZoomSupported: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("isCameraZoomSupported")
   },
   pauseAllChannelMediaRelay: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("pauseAllChannelMediaRelay")
   },
   pauseAllChannelMediaRelay: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("pauseAllChannelMediaRelay")
   },
   pushAudioFrame3_: function (sourcePos, audioFrameType, samples, bytesPerSample, channels, samplesPerSec, buffer, renderTimeMs, avsync_type) {
-    SendNotImplementedError()
+    SendNotImplementedError("pushAudioFrame3_")
   },
   pushVideoFrame2: function (type, format, bufferPtr, stride, height, cropLeft, cropTop, cropRight, cropBottom, rotation, timestamp) {
-    SendNotImplementedError()
+    SendNotImplementedError("pushVideoFrame2")
   },
   releaseMediaRecorder: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("releaseMediaRecorder")
   },
   resumeAllChannelMediaRelay: function () {
-    SendNotImplementedError()
+    SendNotImplementedError("resumeAllChannelMediaRelay")
   },
   initEventOnMediaRecorderCallback: function (onRecorderStateChanged, onRecorderInfoUpdated) {
-    SendNotImplementedError()
+    SendNotImplementedError("initEventOnMediaRecorderCallback")
   },
   selectAudioTrack : function (index) {
-    SendNotImplementedError()
+    SendNotImplementedError("selectAudioTrack")
   },
   setAVSyncSource : function (channelId, uid) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAVSyncSource")
   },
   setAVSyncSource2 : function (channel, channelId, uid) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAVSyncSource2")
   },
   setAudioMixingDualMonoMode : function (mode) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAudioMixingDualMonoMode")
   },
   setAudioMixingDualMonoMode : function (speed) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAudioMixingDualMonoMode")
   },
   setAudioMixingDualMonoMode : function (speed) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAudioMixingDualMonoMode")
   },
   setCameraAutoFocusFaceModeEnabled : function (enabled) {
-    SendNotImplementedError()
+    SendNotImplementedError("setCameraAutoFocusFaceModeEnabled")
   },
   setCameraExposurePosition : function (positionXinView, positionYinView) {
-    SendNotImplementedError()
+    SendNotImplementedError("setCameraExposurePosition")
   },
   setCameraExposurePosition : function (positionXinView, positionYinView) {
-    SendNotImplementedError()
+    SendNotImplementedError("setCameraExposurePosition")
   },
   setCameraFocusPositionInPreview : function (positionX, positionY) {
-    SendNotImplementedError()
+    SendNotImplementedError("setCameraFocusPositionInPreview")
   },
   setAudioMixingPlaybackSpeed : function (speed) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAudioMixingPlaybackSpeed")
   },
   setAudioMixingPlaybackSpeed : function (speed) {
-    SendNotImplementedError()
+    SendNotImplementedError("setAudioMixingPlaybackSpeed")
   },
   setCameraZoomFactor : function (factor) {
-    SendNotImplementedError()
+    SendNotImplementedError("setCameraZoomFactor")
   },
   setColorEnhanceOptions : function (enabled, strengthLevel, skinProtectLevel) {
-    SendNotImplementedError()
+    SendNotImplementedError("setColorEnhanceOptions")
   },
   setExternalAudioSourceVolume : function (sourcePos, volume) {
-    SendNotImplementedError()
+    SendNotImplementedError("setExternalAudioSourceVolume")
   },
   setLowlightEnhanceOptions : function (enabled, mode, level) {
-    SendNotImplementedError()
+    SendNotImplementedError("setLowlightEnhanceOptions")
   },
   setLowlightEnhanceOptions : function (enabled, mode, level) {
-    SendNotImplementedError()
+    SendNotImplementedError("setLowlightEnhanceOptions")
   },
   setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
     uid_Str = Pointer_stringify(uid); 
@@ -1057,52 +1057,52 @@ var LibraryAgoraWebGLSDK = {
     setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setScreenCaptureScenario : function () {
-    SendNotImplementedError()
+    SendNotImplementedError("setScreenCaptureScenario")
   },
   setVideoDenoiserOptions : function (enabled, mode, level) {
-    SendNotImplementedError()
+    SendNotImplementedError("setVideoDenoiserOptions")
   },
   startAudioDeviceLoopbackTest : function (indicationInterval) {
-    SendNotImplementedError()
+    SendNotImplementedError("startAudioDeviceLoopbackTest")
   },
   startEchoTest3  : function (view, enableAudio, enableVideo, token, channelId) {
-    SendNotImplementedError()
+    SendNotImplementedError("startEchoTest3")
   },
   startRecording  : function () {
-    SendNotImplementedError()
+    SendNotImplementedError("startRecording")
   },
   startRtmpStreamWithTranscoding  : function (url, width, height, videoBitrate, videoFramerate, lowLatency, videoGroup, video_codec_profile, backgroundColor, userCount, transcodingUserInfo, transcodingExtraInfo, metaData, watermarkRtcImageUrl, watermarkRtcImageX, watermarkRtcImageY, watermarkRtcImageWidth, watermarkRtcImageHeight, watermarkImageZorder, watermarkImageAlpha, watermarkCount, backgroundImageRtcImageUrl, backgroundImageRtcImageX, backgroundImageRtcImageY, backgroundImageRtcImageWidth, backgroundImageRtcImageHeight, backgroundImageRtcImageZorder, backgroundImageRtcImageAlpha, backgroundImageRtcImageCount, audioSampleRate, audioBitrate, audioChannels, audioCodecProfile, advancedFeatures, advancedFeatureCount) {
-    SendNotImplementedError()
+    SendNotImplementedError("startRtmpStreamWithTranscoding")
   },
   startRtmpStreamWithTranscoding2  : function (channel, url, width, height, videoBitrate, videoFramerate, lowLatency, videoGroup, video_codec_profile, backgroundColor, userCount, transcodingUserInfo, transcodingExtraInfo, metaData, watermarkRtcImageUrl, watermarkRtcImageX, watermarkRtcImageY, watermarkRtcImageWidth, watermarkRtcImageHeight, watermarkImageZorder, watermarkImageAlpha, watermarkCount, backgroundImageRtcImageUrl, backgroundImageRtcImageX, backgroundImageRtcImageY, backgroundImageRtcImageWidth, backgroundImageRtcImageHeight, backgroundImageRtcImageZorder, backgroundImageRtcImageAlpha, backgroundImageRtcImageCount, audioSampleRate, audioBitrate, audioChannels, audioCodecProfile, advancedFeatures, advancedFeatureCount) {
-    SendNotImplementedError()
+    SendNotImplementedError("startRtmpStreamWithTranscoding2")
   },
   startRtmpStreamWithoutTranscoding  : function (url) {
-    SendNotImplementedError()
+    SendNotImplementedError("startRtmpStreamWithoutTranscoding")
   },
   startRtmpStreamWithoutTranscoding2  : function (channel, url) {
-    SendNotImplementedError()
+    SendNotImplementedError("startRtmpStreamWithoutTranscoding2")
   },
   stopAudioDeviceLoopbackTest  : function () {
-    SendNotImplementedError()
+    SendNotImplementedError("stopAudioDeviceLoopbackTest")
   },
   stopRecording  : function () {
-    SendNotImplementedError()
+    SendNotImplementedError("stopRecording")
   },
   stopRtmpStream  : function (url) {
-    SendNotImplementedError()
+    SendNotImplementedError("stopRtmpStream")
   },
   stopRtmpStream2  : function (channel, url) {
-    SendNotImplementedError()
+    SendNotImplementedError("stopRtmpStream2")
   },
   takeSnapshot  : function (channel, uid, filePath) {
-    SendNotImplementedError()
+    SendNotImplementedError("takeSnapshot")
   },
   updateRtmpTranscoding  : function (width, height, videoBitrate, videoFramerate, lowLatency, videoGroup, video_codec_profile, backgroundColor, userCount, transcodingUserInfo, transcodingExtraInfo, metaData, watermarkRtcImageUrl, watermarkRtcImageX, watermarkRtcImageY, watermarkRtcImageWidth, watermarkRtcImageHeight, watermarkImageZorder, watermarkImageAlpha, watermarkCount, backgroundImageRtcImageUrl, backgroundImageRtcImageX, backgroundImageRtcImageY, backgroundImageRtcImageWidth, backgroundImageRtcImageHeight, backgroundImageRtcImageZorder, backgroundImageRtcImageAlpha, backgroundImageRtcImageCount, audioSampleRate, audioBitrate, audioChannels, audioCodecProfile, advancedFeatures, advancedFeatureCount) {
-    SendNotImplementedError()
+    SendNotImplementedError("updateRtmpTranscoding")
   },
   updateRtmpTranscoding2  : function (channel, width, height, videoBitrate, videoFramerate, lowLatency, videoGroup, video_codec_profile, backgroundColor, userCount, transcodingUserInfo, transcodingExtraInfo, metaData, watermarkRtcImageUrl, watermarkRtcImageX, watermarkRtcImageY, watermarkRtcImageWidth, watermarkRtcImageHeight, watermarkImageZorder, watermarkImageAlpha, watermarkCount, backgroundImageRtcImageUrl, backgroundImageRtcImageX, backgroundImageRtcImageY, backgroundImageRtcImageWidth, backgroundImageRtcImageHeight, backgroundImageRtcImageZorder, backgroundImageRtcImageAlpha, backgroundImageRtcImageCount, audioSampleRate, audioBitrate, audioChannels, audioCodecProfile, advancedFeatures, advancedFeatureCount) {
-    SendNotImplementedError()
+    SendNotImplementedError("updateRtmpTranscoding2")
   },
   adjustAudioMixingPlayoutVolume: function (volume) {
     AdjustAudioMixingPlayoutVolume(volume);
