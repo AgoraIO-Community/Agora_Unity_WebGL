@@ -1675,11 +1675,11 @@ namespace agora_gaming_rtc
          * -    OnScreenShareCanceled
          * 
          */
-        public void StartNewScreenCaptureForWeb2(uint uid, bool audioEnabled = false)
+        public void StartNewScreenCaptureForWeb2(uint uid, bool audioEnabled = false, string screenShareToken = "")
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
             IRtcEngineNative.setCurrentChannel_WGL(_channelId);
-            IRtcEngineNative.startNewScreenCaptureForWeb2(uid, audioEnabled);
+            IRtcEngineNative.startNewScreenCaptureForWeb2(uid, audioEnabled, screenShareToken);
 #else
             Debug.LogWarning("StartScreenCaptureForWeb is called in non-WebGL environment. Ignored.");
 #endif
