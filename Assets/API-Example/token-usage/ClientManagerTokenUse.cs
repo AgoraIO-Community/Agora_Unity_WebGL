@@ -11,9 +11,7 @@ using agora_utilities;
 /// </summary>
 public class ClientManagerTokenUse : MonoBehaviour
 {
-    [SerializeField] private string APP_ID = "YOUR_APPID";
-
-    [SerializeField] private string RTC_TOKEN = "";
+    [SerializeField] private AppInfoObject appInfo;
 
     [SerializeField] private string CHANNEL_NAME = "YOUR_CHANNEL_NAME_1";
 
@@ -75,8 +73,8 @@ public class ClientManagerTokenUse : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
-        return (APP_ID.Length > 10);
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
+        return (appInfo.appID.Length > 10);
     }
 
     /// <summary>
@@ -107,7 +105,7 @@ public class ClientManagerTokenUse : MonoBehaviour
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
@@ -131,7 +129,7 @@ public class ClientManagerTokenUse : MonoBehaviour
 
         if (!useToken)
         {
-            mRtcEngine.JoinChannel(RTC_TOKEN, CHANNEL_NAME, "", 0, options);
+            mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME, "", 0, options);
         }
         else
         {
@@ -139,9 +137,9 @@ public class ClientManagerTokenUse : MonoBehaviour
             TokenClient.Instance.SetRtcEngineInstance(mRtcEngine);
             TokenClient.Instance.GetRtcToken(CHANNEL_NAME, 0, (token) =>
             {
-                RTC_TOKEN = token;
-                Debug.Log(gameObject.name + " Got rtc token:" + RTC_TOKEN);
-                mRtcEngine.JoinChannel(RTC_TOKEN, CHANNEL_NAME, "", 0, options);
+                appInfo.token = token;
+                Debug.Log(gameObject.name + " Got rtc token:" + appInfo.token);
+                mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME, "", 0, options);
             });
         }
         joinedChannel = true;

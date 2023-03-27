@@ -24,7 +24,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>Temp\bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;UNITY_2019_4_32;UNITY_2019_4;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;PLATFORM_ARCH_64;UNITY_64;UNITY_INCLUDE_TESTS;ENABLE_AR;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_MICROPHONE;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_LZMA;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_NATIVE_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;INCLUDE_DYNAMIC_GI;ENABLE_MONO_BDWGC;ENABLE_SCRIPTING_GC_WBARRIERS;PLATFORM_SUPPORTS_MONO;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_STANDALONE;PLATFORM_STANDALONE_OSX;UNITY_STANDALONE_OSX;UNITY_STANDALONE;ENABLE_GAMECENTER;ENABLE_RUNTIME_GI;ENABLE_MOVIES;ENABLE_NETWORK;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_CLUSTER_SYNC;ENABLE_CLUSTERINPUT;ENABLE_SPATIALTRACKING;ENABLE_WEBSOCKET_HOST;ENABLE_MONO;NET_STANDARD_2_0;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;UNITY_2019_4_32;UNITY_2019_4;UNITY_2019;UNITY_5_3_OR_NEWER;UNITY_5_4_OR_NEWER;UNITY_5_5_OR_NEWER;UNITY_5_6_OR_NEWER;UNITY_2017_1_OR_NEWER;UNITY_2017_2_OR_NEWER;UNITY_2017_3_OR_NEWER;UNITY_2017_4_OR_NEWER;UNITY_2018_1_OR_NEWER;UNITY_2018_2_OR_NEWER;UNITY_2018_3_OR_NEWER;UNITY_2018_4_OR_NEWER;UNITY_2019_1_OR_NEWER;UNITY_2019_2_OR_NEWER;UNITY_2019_3_OR_NEWER;UNITY_2019_4_OR_NEWER;UNITY_INCLUDE_TESTS;ENABLE_AUDIO;ENABLE_CACHING;ENABLE_CLOTH;ENABLE_MULTIPLE_DISPLAYS;ENABLE_PHYSICS;ENABLE_TEXTURE_STREAMING;ENABLE_UNET;ENABLE_UNITYEVENTS;ENABLE_VR;ENABLE_WEBCAM;ENABLE_UNITYWEBREQUEST;ENABLE_WWW;ENABLE_CLOUD_SERVICES;ENABLE_CLOUD_SERVICES_COLLAB;ENABLE_CLOUD_SERVICES_COLLAB_SOFTLOCKS;ENABLE_CLOUD_SERVICES_ADS;ENABLE_CLOUD_SERVICES_USE_WEBREQUEST;ENABLE_CLOUD_SERVICES_CRASH_REPORTING;ENABLE_CLOUD_SERVICES_PURCHASING;ENABLE_CLOUD_SERVICES_ANALYTICS;ENABLE_CLOUD_SERVICES_UNET;ENABLE_CLOUD_SERVICES_BUILD;ENABLE_CLOUD_LICENSE;ENABLE_EDITOR_HUB_LICENSE;ENABLE_WEBSOCKET_CLIENT;ENABLE_DIRECTOR_AUDIO;ENABLE_DIRECTOR_TEXTURE;ENABLE_MANAGED_JOBS;ENABLE_MANAGED_TRANSFORM_JOBS;ENABLE_MANAGED_ANIMATION_JOBS;ENABLE_MANAGED_AUDIO_JOBS;ENABLE_ENGINE_CODE_STRIPPING;ENABLE_MONO_BDWGC;RENDER_SOFTWARE_CURSOR;ENABLE_VIDEO;PLATFORM_WEBGL;UNITY_WEBGL;UNITY_WEBGL_API;UNITY_DISABLE_WEB_VERIFICATION;UNITY_GFX_USE_PLATFORM_VSYNC;ENABLE_CRUNCH_TEXTURE_COMPRESSION;ENABLE_SPATIALTRACKING;ENABLE_MONO;NET_STANDARD_2_0;ENABLE_PROFILER;UNITY_ASSERTIONS;UNITY_EDITOR;UNITY_EDITOR_64;UNITY_EDITOR_OSX;ENABLE_UNITY_COLLECTIONS_CHECKS;ENABLE_BURST_AOT;UNITY_TEAM_LICENSE;ENABLE_CUSTOM_RENDER_TEXTURE;ENABLE_DIRECTOR;ENABLE_LOCALIZATION;ENABLE_SPRITES;ENABLE_TERRAIN;ENABLE_TILEMAP;ENABLE_TIMELINE;ENABLE_LEGACY_INPUT_MANAGER;CSHARP_7_OR_LATER;CSHARP_7_3_OR_NEWER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <NoWarn>0169</NoWarn>
@@ -55,30 +55,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-     <Compile Include="Assets\API-Example\DeviceManager\AgoraDeviceManager.cs" />
      <Compile Include="Assets\API-Example\Home Menu\Drag.cs" />
      <Compile Include="Assets\API-Example\Home Menu\RootMenu.cs" />
      <Compile Include="Assets\API-Example\Home Menu\RootMenuControl.cs" />
      <Compile Include="Assets\API-Example\Home Menu\RootMenuPanel.cs" />
-     <Compile Include="Assets\API-Example\SpatialAudioForClientManager\SpatialAudioForClientManager.cs" />
-     <Compile Include="Assets\API-Example\SpatialAudioForMultichannel\SpatialAudioforMultichannel.cs" />
-     <Compile Include="Assets\API-Example\VirtualBackgroundClientManager\VirtualBackgroundClientDemo.cs" />
-     <Compile Include="Assets\API-Example\VirtualBackgroundMultichannel\VirtualBackgroundMultichannelDemo.cs" />
      <Compile Include="Assets\API-Example\_AppIDInfo\AppInfoObject.cs" />
-     <Compile Include="Assets\API-Example\app-screenshare-sample\AgoraScreenShare.cs" />
      <Compile Include="Assets\API-Example\datastream-sample\TestDataStream.cs" />
-     <Compile Include="Assets\API-Example\desktop-screenshare-sample\WebScreenShare.cs" />
+     <Compile Include="Assets\API-Example\device-manager\AgoraDeviceManager.cs" />
      <Compile Include="Assets\API-Example\geo-area-sample\HelloVideoAgora2.cs" />
-     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanel.cs" />
-     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\AgoraChannelPanelNew.cs" />
-     <Compile Include="Assets\API-Example\multi-channel-sample\Scripts\MultiChannelSceneCtrl.cs" />
-     <Compile Include="Assets\API-Example\rtmp-streaming-sample\RtmpStreaming.cs" />
-     <Compile Include="Assets\API-Example\token-usage-sample\ClientManagerTokenUse.cs" />
+     <Compile Include="Assets\API-Example\multi-channel\Scripts\AgoraChannelPanel.cs" />
+     <Compile Include="Assets\API-Example\multi-channel\Scripts\AgoraChannelPanelNew.cs" />
+     <Compile Include="Assets\API-Example\multi-channel\Scripts\MultiChannelSceneCtrl.cs" />
+     <Compile Include="Assets\API-Example\push-video-frame\AgoraScreenShare.cs" />
+     <Compile Include="Assets\API-Example\rtmp-streaming\RtmpStreaming.cs" />
+     <Compile Include="Assets\API-Example\screen-sharing\AgoraScreenSharingClientManager.cs" />
+     <Compile Include="Assets\API-Example\spatial-audio-effect\SpatialAudioForClientManager.cs" />
+     <Compile Include="Assets\API-Example\token-usage\ClientManagerTokenUse.cs" />
      <Compile Include="Assets\API-Example\tools\Logger.cs" />
      <Compile Include="Assets\API-Example\tools\PermissionHelper.cs" />
      <Compile Include="Assets\API-Example\tools\ToggleStateButton.cs" />
      <Compile Include="Assets\API-Example\tools\UIElementDragger.cs" />
      <Compile Include="Assets\API-Example\video-encoder-configuration\video_encoder_configuration.cs" />
+     <Compile Include="Assets\API-Example\virtual-background\VirtualBackgroundClientDemo.cs" />
      <Compile Include="Assets\AgoraEngine\Demo\AudioVideoStateControl.cs" />
      <Compile Include="Assets\AgoraEngine\Demo\ButtonHandler.cs" />
      <Compile Include="Assets\AgoraEngine\Demo\TestHelloUnityVideo.cs" />
@@ -141,41 +139,16 @@
      <Compile Include="Assets\FunctionalTest\DevDemo\Web\ImplTesterBeforeJoin.cs" />
      <Compile Include="Assets\FunctionalTest\DevDemo\Web\TestApiImplementor.cs" />
      <Compile Include="Assets\FunctionalTest\JoinMultipleChannel\AgoraMultiChannel.cs" />
-     <Compile Include="Assets\FunctionalTest\NewScreenShareClientManager\AgoraClientManager.cs" />
      <Compile Include="Assets\FunctionalTest\NewScreenShareMChannel\AgoraMultiChannel2.cs" />
      <Compile Include="Assets\FunctionalTest\Respawn\TestVideoRespawn.cs" />
-     <Compile Include="Assets\Prefabs\ColorChanger.cs" />
-     <Compile Include="Assets\Prefabs\ScreenScaler.cs" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraMediaIO.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraRtcEngineKit.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraRtcChannel.h" />
+     <Compile Include="Assets\FunctionalTest\SpatialAudioForMultichannel\SpatialAudioforMultichannel.cs" />
+     <Compile Include="Assets\FunctionalTest\VirtualBackgroundMultichannel\VirtualBackgroundMultichannelDemo.cs" />
      <None Include="Assets\AgoraEngine\Plugins\Android\AgoraRtcEngineKit.plugin\AndroidManifest.xml" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraVideoFrame.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraSpatialAudioKit.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\IAgoraRtcEngine.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\IAgoraRtcChannel.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraObjects.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\IAgoraSpatialAudio.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\IAgoraLog.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraLogWriter.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraAudioFrame.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\IAgoraService.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraBase.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraReplayKitExtension.framework\Headers\AgoraReplayKitHandler.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraEnumerates.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraOptional.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\IAgoraMediaEngine.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraReplayKitExtension.framework\Headers\AgoraReplayKitExt.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraMediaMetadata.h" />
-     <None Include="Assets\AgoraEngine\Plugins\iOS\AgoraRtcKit.framework\Headers\AgoraConstants.h" />
  <Reference Include="UnityEngine">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AIModule">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AIModule.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.ARModule">
- <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ARModule.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.AccessibilityModule">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.AccessibilityModule.dll</HintPath>
@@ -194,12 +167,6 @@
  </Reference>
  <Reference Include="UnityEngine.ClothModule">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ClothModule.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.ClusterInputModule">
- <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ClusterInputModule.dll</HintPath>
- </Reference>
- <Reference Include="UnityEngine.ClusterRendererModule">
- <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.ClusterRendererModule.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.CoreModule">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.CoreModule.dll</HintPath>
@@ -341,6 +308,9 @@
  </Reference>
  <Reference Include="UnityEngine.VideoModule">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.VideoModule.dll</HintPath>
+ </Reference>
+ <Reference Include="UnityEngine.WebGLModule">
+ <HintPath>/Applications/2019.4.32f1/PlaybackEngines/WebGLSupport/Managed/UnityEngine.WebGLModule.dll</HintPath>
  </Reference>
  <Reference Include="UnityEngine.WindModule">
  <HintPath>/Applications/2019.4.32f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.WindModule.dll</HintPath>
