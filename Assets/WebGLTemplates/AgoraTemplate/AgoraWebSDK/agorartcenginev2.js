@@ -110,6 +110,11 @@ function getUserInfoByUid_WGL(uid) {
   }
 }
 
+function SendNotImplementedError(api) {
+  event_manager.raiseHandleUserError("9001", "The API：" +  api + " is not supported."); 
+  console.warn("The API：" +  api + " is not supported.");
+}
+
 // Stops/Resumes sending the local video stream.
 async function enableLocalVideo(enabled) {
   client_manager.enableLocalVideo(enabled);
@@ -330,9 +335,9 @@ async function startScreenCaptureForWeb(enableAudio) {
   client_manager.startScreenCapture(enableAudio);
 }
 
-function startNewScreenCaptureForWeb(uid, enableAudio) {
+function startNewScreenCaptureForWeb(uid, enableAudio, token) {
   console.log("agora engine startNewScreenCaptureForWeb");
-  client_manager.startNewScreenCaptureForWeb(uid, enableAudio);
+  client_manager.startNewScreenCaptureForWeb(uid, enableAudio, token);
 }
 
 function stopNewScreenCaptureForWeb(){

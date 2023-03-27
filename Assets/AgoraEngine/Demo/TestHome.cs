@@ -7,7 +7,8 @@ using UnityEngine.Android;
 using System.Collections;
 
 /// <summary>
-///    TestHome serves a game controller object for this application.
+///    TestHome serves a game controller object for this application. More 
+/// Agora API logic should be observed in TestHelloUnityVideo.cs.
 /// </summary>
 public class TestHome : MonoBehaviour
 {
@@ -24,8 +25,10 @@ public class TestHome : MonoBehaviour
 
     // PLEASE KEEP THIS App ID IN SAFE PLACE
     // Get your own App ID at https://dashboard.agora.io/
+    public string AppID = "your_appid";
+
     [SerializeField]
-    private string AppID = "your_appid";
+    private AppInfoObject appInfo;
 
     private string ChannelName
     {
@@ -49,14 +52,28 @@ public class TestHome : MonoBehaviour
     [SerializeField]
     private InputField inputField;
 
+    static TestHome Instance { get; set; }
+
     void Awake()
     {
+        if (Instance != null)
+        {
+            Destroy(Instance.gameObject);
+        }
 #if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
 		permissionList.Add(Permission.Microphone);         
 		permissionList.Add(Permission.Camera);               
 #endif
         // keep this alive across scenes
-        DontDestroyOnLoad(this.gameObject);
+        if (!RootMenuControl.instance)
+        {
+            DontDestroyOnLoad(this.gameObject);
+        }
+        else
+        {
+            this.transform.SetParent(RootMenuControl.instance.transform);
+        }
+        Instance = this;
     }
 
     void Start()
@@ -102,6 +119,11 @@ public class TestHome : MonoBehaviour
 
     private void CheckAppId()
     {
+        if (appInfo != null && appInfo.appID.Length > 10)
+        {
+            AppID = appInfo.appID;
+        }
+
         Debug.Assert(AppID.Length > 10, "Please fill in your AppId first on Game Controller object.");
         GameObject go = GameObject.Find("AppIDText");
         if (go != null)
@@ -181,7 +203,7 @@ public class TestHome : MonoBehaviour
         Destroy(gameObject);
     }
 
-    public void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
         if (scene.name == PlaySceneName)
         {
@@ -201,7 +223,7 @@ public class TestHome : MonoBehaviour
         }
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         if (!ReferenceEquals(app, null))
         {

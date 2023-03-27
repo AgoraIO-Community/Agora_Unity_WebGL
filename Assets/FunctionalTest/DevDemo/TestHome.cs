@@ -36,7 +36,12 @@ namespace agora_gs_test
 		permissionList.Add(Permission.Camera);               
 #endif
             // keep this alive across scenes
-            DontDestroyOnLoad(this.gameObject);
+            if (!RootMenuControl.instance)
+                DontDestroyOnLoad(this.gameObject);
+            else
+            {
+                RootMenuControl.instance.exit = OnApplicationQuit;
+            }
         }
 
         void Start()

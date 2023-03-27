@@ -25,6 +25,14 @@ public class HelloVideoAgora2 : MonoBehaviour
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
 
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
+
     // Use this for initialization
     void Start()
     {
@@ -114,7 +122,7 @@ public class HelloVideoAgora2 : MonoBehaviour
         logger.UpdateLog(string.Format("OnConnectionLost "));
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

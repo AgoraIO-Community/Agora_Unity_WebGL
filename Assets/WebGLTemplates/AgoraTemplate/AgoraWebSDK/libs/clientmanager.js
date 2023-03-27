@@ -8,7 +8,9 @@ class ClientManager {
       token: null,
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
-    this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.audioEnabled = true; // if true then mic access is created, if false then not
+    this.audioPublishing = true; 
+    this.videoPublishing = true;
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
     this.remoteUserAudioMuted = {};
@@ -19,6 +21,7 @@ class ClientManager {
     this._streamMessageRetry = false;
     this.is_screensharing = false;
     this.tempLocalTracks = null;
+    this.previewVideoTrack;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
@@ -88,8 +91,8 @@ class ClientManager {
   }
 
   setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
-    this.audioEnabled = pubAudio;
-    this.videoEnabled = pubVideo;
+    this.audioPublishing = pubAudio;
+    this.videoPublishing = pubVideo;
     this.audioSubscribing = subAudio;
     this.videoSubscribing = subVideo;
   }
@@ -286,6 +289,14 @@ class ClientManager {
     console.log(e);
   }
   //============================================================================== 
+  resetClient() {
+    this.is_screensharing = false; // set to default
+    this.videoSubscribing = true; 
+    this.audioSubscribing = true; 
+    this.videoPublishing = true;
+    this.audioPublishing = true;
+    localTracks.audioMixingTrack = null;
+  }
 
   async leave() {
     for (var trackName in localTracks) {
@@ -322,10 +333,7 @@ class ClientManager {
       await stopNewScreenCaptureForWeb();
     }
 
-    this.is_screensharing = false; // set to default
-    this.videoEnabled = false; // set to default
-    this.audioEnabled = false; // set to default
-    localTracks.audioMixingTrack = null;
+    this.resetClient();
 
     if (_isCopyVideoToMainCanvasOn) {
       _isCopyVideoToMainCanvasOn = false;
@@ -542,7 +550,10 @@ class ClientManager {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
         if (track) {
-          await this.client.publish(track);
+          if ((trackName == "videoTrack" && this.videoPublishing) || (trackName == "audioTrack" && this.audioPublishing))
+          {
+            await this.client.publish(track);
+          }
         }
       }
     }
@@ -568,6 +579,7 @@ class ClientManager {
 
   async enableAudio(enabled) {
     this.audioEnabled = enabled;
+    this.audioPublishing = enabled;
     this.audioSubscribing = enabled;
   }
 
@@ -595,6 +607,7 @@ class ClientManager {
       } else {
         await this.client.publish(localTracks.videoTrack);
       }
+      this.videoPublishing = !mute;
     }
   }
 
@@ -608,6 +621,7 @@ class ClientManager {
         await this.client.publish(localTracks.audioTrack);
       }
     }
+    this.audioPublishing = !mute;
   }
 
   async enableLocalVideo(enabled) {
@@ -632,28 +646,43 @@ class ClientManager {
     this.videoEnabled = enabled;
   }
 
+  
   async startPreview() {
-
+    console.log(localTracks.videoTrack);
     if(localTracks.videoTrack){
-      localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
-      await this.client.unpublish(localTracks.videoTrack);
+      // localTracks.videoTrack.stop();
+      // localTracks.videoTrack.close();
+      if(this._inChannel){
+        await this.client.unpublish(localTracks.videoTrack);
+      }
     }
-
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack().catch(e => {
-        event_manager.raiseHandleUserError(e.code, e.msg);
-      }),
-    ]);
+    
+    if(localTracks.videoTrack == null){
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
+      ]);
+    }
     localTracks.videoTrack.play("local-player");
-    await this.client.publish(localTracks.videoTrack);
+    
   }
 
-  stopPreview() {
-    if (localTracks.videoTrack) {
+  async stopPreview() {
+
+    if(localTracks.videoTrack != null){
       localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
+      //localTracks.videoTrack.close();
     }
+
+    localTracks.videoTrack.play("local-player");
+    if(this._inChannel){
+      await this.client.publish(localTracks.videoTrack);
+    }
+  }
+
+  async publishPreview(){
+    await this.client.publish(localTracks.videoTrack);
   }
 
   async setBeautyEffectOn(lighteningLevel, rednessLevel, smoothnessLevel) {
@@ -939,7 +968,7 @@ class ClientManager {
     }
   }
 
-  async startNewScreenCaptureForWeb(uid, enableAudio) {
+  async startNewScreenCaptureForWeb(uid, enableAudio, token) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
     var screenShareUID = uid;
@@ -960,7 +989,7 @@ class ClientManager {
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.tempLocalTracks = screenShareTrack;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, token || null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
@@ -970,7 +999,7 @@ class ClientManager {
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.tempLocalTracks = screenShareTrack;
         this.enableLoopbackAudio = enableAudio;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, token || null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
