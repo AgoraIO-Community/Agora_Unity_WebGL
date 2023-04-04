@@ -35,7 +35,7 @@ var LibraryAgoraWebGLSDK = {
     }
     return false;
   },
-  updateLocalTexture: function (tex) {
+  updateLocalTexture: function (tex, isLinearColor) {
     var lVid = undefined; // set null initially
     if (localTracks != undefined) {
       if (localTracks.videoTrack != undefined) {
@@ -82,10 +82,12 @@ var LibraryAgoraWebGLSDK = {
       GLctx.TEXTURE_MIN_FILTER,
       GLctx.LINEAR
     );
+    var internalformat = GLctx.RGBA;
+    if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
     GLctx.texImage2D(
       GLctx.TEXTURE_2D,
       0,
-      GLctx.RGBA,
+      internalformat,
       GLctx.RGBA,
       GLctx.UNSIGNED_BYTE,
       v
@@ -110,7 +112,7 @@ var LibraryAgoraWebGLSDK = {
     return 1;
   }, 
 
-  updateRemoteTexture: function (userId, tex) {
+  updateRemoteTexture: function (userId, tex, isLinearColor) {
     var ch_userId = Pointer_stringify(userId);
 
     var lVid = undefined; // set null initially
@@ -160,10 +162,12 @@ var LibraryAgoraWebGLSDK = {
         GLctx.TEXTURE_MIN_FILTER,
         GLctx.LINEAR
       );
+      var internalformat = GLctx.RGBA;
+      if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
       GLctx.texImage2D(
         GLctx.TEXTURE_2D,
         0,
-        GLctx.RGBA,
+        internalformat,
         GLctx.RGBA,
         GLctx.UNSIGNED_BYTE,
         v
@@ -217,6 +221,9 @@ var LibraryAgoraWebGLSDK = {
 
     // v.lastUpdateTextureTime = v.currentTime;
 
+    var internalformat = GLctx.RGBA;
+    if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+
     if ( 1 
       // v.previousUploadedWidth != v.videoWidth ||
       // v.previousUploadedHeight != v.videoHeight
@@ -244,7 +251,7 @@ var LibraryAgoraWebGLSDK = {
       GLctx.texImage2D(
         GLctx.TEXTURE_2D,
         0,
-        GLctx.RGBA,
+        internalformat,
         GLctx.RGBA,
         GLctx.UNSIGNED_BYTE,
         v
@@ -256,7 +263,7 @@ var LibraryAgoraWebGLSDK = {
       GLctx.texImage2D(
         GLctx.TEXTURE_2D,
         0,
-        GLctx.RGBA,
+        internalformat,
         GLctx.RGBA,
         GLctx.UNSIGNED_BYTE,
         v
