@@ -1084,7 +1084,7 @@ namespace agora_gaming_rtc
         protected static extern bool isLocalVideoReady();
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern void updateLocalTexture(IntPtr texture);
+        protected static extern void updateLocalTexture(IntPtr texture, bool isLinearColor);
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int createRemoteTexture(string userId);
 
@@ -1094,10 +1094,10 @@ namespace agora_gaming_rtc
         protected static extern bool isRemoteVideoReady_MC(string channelId, string videoID);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        public static extern void updateRemoteTexture(string videoID, IntPtr texture);
+        public static extern void updateRemoteTexture(string videoID, IntPtr texture, bool isLinearColor);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        public static extern void updateRemoteTexture_MC(string channel, string videoID, IntPtr texture);
+        public static extern void updateRemoteTexture_MC(string channel, string videoID, IntPtr texture, bool isLinearColor);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         public static extern void setCurrentChannel_WGL(string channelId);
