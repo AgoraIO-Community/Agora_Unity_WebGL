@@ -363,7 +363,7 @@ namespace agora_gaming_rtc
         } 
 
         [MonoPInvokeCallback(typeof(EngineEventOnPlaybackAudioFrameBeforeMixing))]
-        private static void OnPlaybackAudioFrameBeforeMixingCallback(uint uid, int type, int samples, int bytesPerSample, int channels, int samplesPerSec, IntPtr buffer, long renderTimeMs, int avsync_type)
+        private static void OnPlaybackAudioFrameBeforeMixingCallback(uint uid, int type, int samples, int bytesPerSample, int channels, int samplesPerSec, IntPtr buffer, int renderTimeMs, int avsync_type)
         {
             if (_irtcEngine != null && _audioRawDataManagerInstance != null && _audioRawDataManagerInstance.OnPlaybackAudioFrameBeforeMixing != null)
             {
