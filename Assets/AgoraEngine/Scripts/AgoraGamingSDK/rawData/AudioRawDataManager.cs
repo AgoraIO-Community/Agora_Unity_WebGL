@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System;
 using AOT;
+using UnityEngine;
 
 namespace agora_gaming_rtc
 {
@@ -143,6 +144,7 @@ namespace agora_gaming_rtc
             }
             else
             {
+                
                 OnPlaybackAudioFrame = action;
                 IRtcEngineNative.initEventOnPlaybackAudioFrame(OnPlaybackAudioFrameCallback);
             }
@@ -203,6 +205,7 @@ namespace agora_gaming_rtc
             }
             else
             {
+                Debug.Log("Setting Callback");
                 OnPlaybackAudioFrameBeforeMixing = action;
                 IRtcEngineNative.initEventOnPlaybackAudioFrameBeforeMixing(OnPlaybackAudioFrameBeforeMixingCallback);
             }
