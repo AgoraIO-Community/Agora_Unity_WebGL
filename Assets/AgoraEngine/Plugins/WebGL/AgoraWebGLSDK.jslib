@@ -1141,9 +1141,8 @@ var LibraryAgoraWebGLSDK = {
     var buffer = _malloc(bufferSize);
     stringToUTF8(bufferString, buffer, bufferSize);
     UnityHooks.data = buffer;
-    console.log("is this working?");
     //Module['dynCall_viiiiiiii'](UnityHooks.onPlaybackAudioFrameBeforeMixing, uid, 0, audioFrame.length, 32, audioFrame.channels, audioFrame.samplesPerSec, buffer, 0, 0);
-    Module['dynCall_viiiiiiiii'](UnityHooks.onPlaybackAudioFrameBeforeMixing, uid, 0, audioFrame.length, 32, audioFrame.channels, audioFrame.samplesPerSec, buffer, 0, 0);
+    Module['dynCall_viiiiiiiii'](UnityHooks.onPlaybackAudioFrameBeforeMixing, uid, 0, audioFrame.length, 32, audioFrame.numberOfChannels, audioFrame.samplesPerSec, buffer, audioFrame.duration, 0);
     };
   },
   setAudioPlaybackDeviceMute: function (mute) {

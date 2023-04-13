@@ -82,8 +82,8 @@ namespace agora_sample_code
         {
             _rtcEngine = IRtcEngine.GetEngine(APP_ID);
             _rtcEngine.SetLogFile("log.txt");
-            //_rtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-            //_rtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+            _rtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
+            _rtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
             _rtcEngine.OnJoinChannelSuccess += OnJoinChannelSuccessHandler;
             _rtcEngine.OnLeaveChannel += OnLeaveChannelHandler;
             _rtcEngine.OnWarning += OnSDKWarningHandler;
@@ -100,8 +100,8 @@ namespace agora_sample_code
         void JoinChannel()
         {
             _rtcEngine.EnableAudio();
-            _rtcEngine.EnableVideo();
-            _rtcEngine.EnableLocalVideo(false);
+            //_rtcEngine.EnableVideo();
+            _rtcEngine.EnableLocalVideo(true);
             _rtcEngine.EnableVideoObserver();
             _rtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
 
@@ -111,7 +111,7 @@ namespace agora_sample_code
             _logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
             _logger.UpdateLog(string.Format("onJoinChannelSuccess channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
             // makeVideoView(0);
-            _logger.UpdateLog("Jumanji");
+
             _audioRawDataManager.SetOnPlaybackAudioFrameBeforeMixingCallback(OnPlaybackAudioFrameBeforeMixingHandler);
 
         }
@@ -185,6 +185,7 @@ namespace agora_sample_code
         const int MAXAUC = 5;
         void OnPlaybackAudioFrameBeforeMixingHandler(uint uid, AudioFrame audioFrame)
         {
+            
             // limited log
             if (count < MAXAUC)
                 Debug.LogWarning("count(" + count + "): OnPlaybackAudioFrameBeforeMixingHandler =============+> " + audioFrame);
