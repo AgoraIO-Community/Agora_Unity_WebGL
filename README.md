@@ -6,12 +6,13 @@ This project is the open source WebGL SDK for Unity, a wrapper to the Agora Web 
 
 ## Important Notice
 
-1. **This is a community supported SDK in open beta.**  Do not assume everything works correctly as an official product. Do not expect the same behaviors from the original Unity SDK. Please accept the risk to use this in a production environment.
-2. This project is **NOT** compatible with the current Agora Unity SDK ver. **4.x**
+1. **This is a community supported SDK in open beta.**  Do not assume everything works correctly as an official product. Do not expect the same behaviors from the original Unity SDK. **The Agora Support team does not assume responsibility in solving your issues.**
+2. This project is **NOT** compatible with the current official Agora Unity SDK ver. **4.x**
 3. If your just want to get the SDK, **do not clone this project** unless you plan to contribute code.  Instead, go to the [Release](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/releases) section download the package.
-4. Check the [Wiki page](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/wiki) to understand this SDK some more before proceeding to download or asking questions.
-5. If it is not a bug or improvement request, your question probably should be asked in the [Discussions](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/discussions) page instead. 
-6. Do press the Star to show respect to people who work hard on creation of this SDK on your demand.** 
+4. Check the [Wiki page](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/wiki) to understand this SDK some more before proceeding to download or asking questions.  
+5. Spatial Audio may not work.
+6. If it is not a bug or improvement request, your question probably should be asked in the [Discussions](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/discussions) page instead. 
+7. Do press the Star to show respect to people who work hard on creation of this SDK on your demand.** 
 
 ## Prerequisites
 - Unity 2019 and up
@@ -46,11 +47,13 @@ Before you can build and run any Agora project, you will need to add your AppID 
 5. Next, go into your Hierarchy window and select  ****GameController****, in the Inspector add your  ****App ID****  to to the  ****AppID****  Input field.
 
 ### API-Examples
-This repository includes a set of API-Examples that shows how to use a particular feature.
-For the most demos, please use the Canvas game object to fill the AppID instead of the GameController.
+This repository includes a set of API-Examples that shows how to use a particular feature. Starting from Refactor 8 release, these demo scene are grouped into the Home Scene for build.  Use the AppIDInfo asset to input the AppID (and token if using certificate enabled AppIDs)
+![WebGL_-_WebGL_-appID](https://user-images.githubusercontent.com/1261195/232563068-f61d4d5c-b3a8-4f0c-b6a6-d7abbe9ec253.jpg)
+![Screenshot 2023-04-17 at 10 25 10 AM](https://user-images.githubusercontent.com/1261195/232563080-e4055c69-7bb8-43bf-9cc0-1d7a4ef8f59f.png)
 
-### [optional] Test in Editor
-You must download the "Complete" package from the Release.  The package includes native plugins that support the Editor environment.
+
+### Testing in Editor
+You must download the "Complete" package from the Release.  The package includes native plugins (Windows/MacOS) that support the Editor environment.  Some may confuse on why certain functionalities work differently on Web verses "Editor".  That is because the platform differences between the WebGL and the native.
 
 ### Build and Run
 
@@ -69,4 +72,5 @@ Please see [the Wiki page](https://github.com/AgoraIO-Community/Agora_Unity_WebG
 
 ## License
 The MIT License (MIT).  [See doc.](LICENSE)
+
 
