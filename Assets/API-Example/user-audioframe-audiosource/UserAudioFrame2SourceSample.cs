@@ -2,6 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
+using agora_utilities;
 
 namespace agora_sample_code
 {
@@ -21,15 +22,12 @@ namespace agora_sample_code
 
         [SerializeField]
         public Transform RootSpace;
-        [SerializeField]
-        public GameObject UserPrefab;
 
         private IAudioRawDataManager _audioRawDataManager;
         public AudioRawDataManager.OnPlaybackAudioFrameBeforeMixingHandler HandleAudioFrameForUser
         {
             get; set;
         }
-
 
         private Queue<System.Action> _queue;
         private Dictionary<uint, GameObject> _remoteUserObject = new Dictionary<uint, GameObject>();
@@ -38,11 +36,6 @@ namespace agora_sample_code
         private void Awake()
         {
             _queue = new Queue<System.Action>();
-            if (UserPrefab == null)
-            {
-                Debug.LogWarning("User prefab wasn't assigned, generating primitive object as prefab.");
-                MakePrefab();
-            }
         }
 
         void Start()
@@ -67,13 +60,12 @@ namespace agora_sample_code
                 }
             }
         }
-
         bool CheckAppId()
         {
             _logger = new Logger(_logText);
-            _logger.UpdateLog(appInfo.appID);
-            return _logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+            return _logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
         }
+
 
         void InitEngine()
         {
@@ -98,7 +90,7 @@ namespace agora_sample_code
         {
             _rtcEngine.EnableAudio();
             _rtcEngine.EnableVideo();
-            //_rtcEngine.EnableLocalVideo(true);
+            //_rtcEngine.EnableLocalVideo(true);  // not needed for WebGL
             _rtcEngine.EnableVideoObserver();
             _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
 
@@ -107,10 +99,9 @@ namespace agora_sample_code
         {
             _logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
             _logger.UpdateLog(string.Format("onJoinChannelSuccess channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
-            // makeVideoView(0);
 
             _audioRawDataManager.SetOnPlaybackAudioFrameBeforeMixingCallback(OnPlaybackAudioFrameBeforeMixingHandler);
-
+            makeVideoView(CHANNEL_NAME, 0);
         }
 
         void OnLeaveChannelHandler(RtcStats stats)
@@ -121,17 +112,9 @@ namespace agora_sample_code
         int userCount = 0;
         void OnUserJoinedHandler(uint uid, int elapsed)
         {
-            _logger.UpdateLog(string.Format("OnUserJoined uid: ${0} elapsed: ${1}", uid, elapsed));
-            GameObject go = Instantiate(UserPrefab);
-            _remoteUserObject[uid] = go;
-            go.transform.SetParent(RootSpace);
-            go.transform.localScale = Vector3.one;
-            go.transform.localPosition = new Vector3(userCount * 2, 0, 0);
-
-            VideoSurface v = go.AddComponent<VideoSurface>();
-            v.SetForUser(uid);
-            v.SetEnable(true);
-            v.SetVideoSurfaceType(AgoraVideoSurfaceType.Renderer);
+            _logger.UpdateLog(string.Format("OnUserJoinedHandler channelId: {0} uid: ${1} elapsed: ${2}", CHANNEL_NAME,
+                uid, elapsed));
+            _remoteUserObject[uid] = makeVideoView(CHANNEL_NAME, uid);
             userCount++;
         }
 
@@ -170,7 +153,7 @@ namespace agora_sample_code
             _logger.UpdateLog(string.Format("OnConnectionLost "));
         }
 
-        public void Dispatch(System.Action action)
+        void Dispatch(System.Action action)
         {
             lock (_queue)
             {
@@ -179,10 +162,10 @@ namespace agora_sample_code
         }
 
         int count = 0;
-        const int MAXAUC = 5;
+        const int MAXAUC = 5; // debug print count
         void OnPlaybackAudioFrameBeforeMixingHandler(uint uid, AudioFrame audioFrame)
         {
-            
+
             // limited log
             if (count < MAXAUC)
                 Debug.LogWarning("count(" + count + "): OnPlaybackAudioFrameBeforeMixingHandler =============+> " + audioFrame);
@@ -245,18 +228,79 @@ namespace agora_sample_code
             }
         }
 
-        protected virtual void MakePrefab()
+
+        private GameObject makeVideoView(string channelId, uint uid)
         {
-            Debug.LogWarning("Generating cube as prefab.");
-            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            UserPrefab = go;
-            go.transform.SetPositionAndRotation(Vector3.zero, Quaternion.Euler(0, 45f, 45f));
-            MeshRenderer mesh = GetComponent<MeshRenderer>();
-            if (mesh != null)
+            string objName = channelId + "_" + uid.ToString();
+            GameObject go = GameObject.Find(objName);
+            if (!ReferenceEquals(go, null))
             {
-                mesh.material = new Material(Shader.Find("Unlit/Texture"));
+                return go; // reuse
             }
-            go.SetActive(false);
+
+            // create a GameObject and assign to this new user
+            VideoSurface videoSurface = makeImageSurface(objName);
+            if (!ReferenceEquals(videoSurface, null))
+            {
+                // configure videoSurface
+                videoSurface.SetForUser(uid);
+                videoSurface.SetEnable(true);
+                videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+                // make the object draggable
+                videoSurface.gameObject.AddComponent<UIElementDragger>();
+            }
+            videoSurface.transform.SetParent(RootSpace);
+            return videoSurface.gameObject;
+        }
+        private const float Offset = 100;
+        // Video TYPE 2: RawImage
+        public VideoSurface makeImageSurface(string goName)
+        {
+            GameObject go = new GameObject();
+
+            if (go == null)
+            {
+                return null;
+            }
+
+            go.name = goName;
+            // make the object draggable
+            go.AddComponent<UIElementDrag>();
+            // to be renderered onto
+            go.AddComponent<RawImage>();
+
+            GameObject canvas = GameObject.Find("VideoPanel");
+            if (canvas != null)
+            {
+                go.transform.SetParent(canvas.transform);
+                Debug.Log("add video view");
+            }
+            else
+            {
+                Debug.Log("Canvas is null video view");
+            }
+
+            // set up transform
+            go.transform.Rotate(0f, 0.0f, 180.0f);
+            float xPos = Random.Range(Screen.width / 2f - Offset, Screen.width / 2f + Offset);
+            float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+            //Debug.Log("position x " + xPos + " y: " + yPos);
+            go.transform.localPosition = new Vector3(xPos, yPos, 0f);
+            go.transform.localScale = new Vector3(1.5f, 1f, 1f);
+
+            // configure videoSurface
+            VideoSurface videoSurface = go.AddComponent<VideoSurface>();
+            return videoSurface;
+        }
+
+        private void DestroyVideoView(string channelId, uint uid)
+        {
+            string objName = channelId + "_" + uid.ToString();
+            GameObject go = GameObject.Find(objName);
+            if (!ReferenceEquals(go, null))
+            {
+                Object.Destroy(go);
+            }
         }
     }
 }
