@@ -11,11 +11,7 @@ namespace agora_sample_code
     /// </summary>
     public class UserAudioFrame2SourceSample : MonoBehaviour, IUserAudioFrameDelegate
     {
-        [SerializeField]
-        private string APP_ID = "";
-
-        [SerializeField]
-        private string TOKEN = "";
+        public AppInfoObject appInfo;
 
         [SerializeField]
         private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
@@ -75,12 +71,13 @@ namespace agora_sample_code
         bool CheckAppId()
         {
             _logger = new Logger(_logText);
-            return _logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+            _logger.UpdateLog(appInfo.appID);
+            return _logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
         }
 
         void InitEngine()
         {
-            _rtcEngine = IRtcEngine.GetEngine(APP_ID);
+            _rtcEngine = IRtcEngine.GetEngine(appInfo.appID);
             _rtcEngine.SetLogFile("log.txt");
             _rtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
             _rtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
@@ -100,10 +97,10 @@ namespace agora_sample_code
         void JoinChannel()
         {
             _rtcEngine.EnableAudio();
-            //_rtcEngine.EnableVideo();
-            _rtcEngine.EnableLocalVideo(true);
+            _rtcEngine.EnableVideo();
+            //_rtcEngine.EnableLocalVideo(true);
             _rtcEngine.EnableVideoObserver();
-            _rtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+            _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
 
         }
         void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)

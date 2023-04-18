@@ -321,8 +321,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0eb6f71d9e68458f9345532385db684, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: 1b7169aa24254eedac880575b52c96f3
-  TOKEN: 
+  appInfo: {fileID: 11400000, guid: 7ee9bb1787fc94e81b7466561e7df94b, type: 2}
   CHANNEL_NAME: unity3d
   _logText: {fileID: 1845656356}
   RootSpace: {fileID: 234665810}
