@@ -630,7 +630,11 @@ class ClientManager {
       if (enabled == false) {
         localTracks.videoTrack?.stop();
         localTracks.videoTrack?.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if(localTracks.videoTrack != null)
+        {
+           await this.client.unpublish(localTracks.videoTrack);
+           localTracks.videoTrack = null;
+        }
       } else {
         [localTracks.videoTrack] = await Promise.all([
           AgoraRTC.createCameraVideoTrack().catch(e => {
