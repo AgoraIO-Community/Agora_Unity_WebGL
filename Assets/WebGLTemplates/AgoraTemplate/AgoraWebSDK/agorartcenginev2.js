@@ -12,7 +12,7 @@ async function wglw_joinChannel(channelkey, channelName, info, uid) {
   client_manager.setOptions(channelkey, channelName, uid);
   await client_manager.joinAgoraChannel(uid);
   wrapper.initStats();
-  cacheDevices();
+  //cacheDevices();
 }
 
 async function wglw_joinChannel_withOption(

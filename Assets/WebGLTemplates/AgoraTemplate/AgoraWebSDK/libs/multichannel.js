@@ -406,7 +406,7 @@ function leaveChannel2_WGL() {
   }
 }
 
-function wgl_mc_joinChannel2(
+async function wgl_mc_joinChannel2(
   token,
   uid,
   autoSubscribeAudio, autoSubscribeVideo,
@@ -416,7 +416,7 @@ function wgl_mc_joinChannel2(
     return 0;
   } else {
     var c = clients[selectedCurrentChannel];
-    c.setAVControl(autoSubscribeAudio, autoSubscribeVideo, autoPublishAudio, autoPublishVideo);
+    await c.setAVControl(autoSubscribeAudio, autoSubscribeVideo, autoPublishAudio, autoPublishVideo);
     c.joinChannel2(selectedCurrentChannel, token, uid);
   }
 }

@@ -106,13 +106,13 @@ class ClientManager {
 
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
+      //cacheDevices();
 
       return true;
     } else {
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
+      //cacheDevices();
       return false;
     }
   }
@@ -481,18 +481,6 @@ class ClientManager {
       }),
     ])
 
-    AgoraRTC.onCameraChanged = async (info) => {
-      console.log("onCameraChanged fired", info);
-      await cacheVideoDevices();
-      event_manager.raiseOnCameraChanged(info);
-    };
-
-    AgoraRTC.onMicrophoneChanged = async (info) => {
-      console.log("onMicrophoneChanged fired", info);
-      await cacheMicrophones();
-      event_manager.raiseOnMicrophoneChanged(info);
-    };
-
     AgoraRTC.onPlaybackDeviceChanged = async (info) => {
       console.log("onPlaybackChanged fired", info);
       await cachePlaybackDevices();
@@ -510,7 +498,14 @@ class ClientManager {
 
   // Help function for JoinChannel
   async processJoinChannelAVTrack() {  
-    if (this.videoEnabled && this.isHosting()) {
+    if (this.videoEnabled == true && this.isHosting()) {
+      AgoraRTC.onCameraChanged = async (info) => {
+        if(this.videoEnabled == true && this.isHosting()){
+          console.log("onCameraChanged fired", info);
+          //await cacheVideoDevices();
+          event_manager.raiseOnCameraChanged(info);
+        }
+      };
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack(this._customVideoConfiguration).catch(
           e => {
@@ -526,6 +521,13 @@ class ClientManager {
     }
 
     if (this.audioEnabled && this.isHosting()) {
+      AgoraRTC.onMicrophoneChanged = async (info) => {
+        if(this.audioEnabled == true && this.isHosting()){
+          console.log("onMicrophoneChanged fired", info);
+          //await cacheMicrophones();
+          event_manager.raiseOnMicrophoneChanged(info);
+        }
+      };
       [localTracks.audioTrack] = await Promise.all([
         AgoraRTC.createMicrophoneAudioTrack()
       ]);

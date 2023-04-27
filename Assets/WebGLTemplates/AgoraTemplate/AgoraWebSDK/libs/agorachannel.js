@@ -47,7 +47,7 @@ class AgoraChannel {
     this.options.uid = uid;
   }
 
-  setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
+  async setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
     this.audioEnabled = pubAudio;
     this.videoEnabled = pubVideo;
     this.audioSubscribing = subAudio;
@@ -305,7 +305,9 @@ class AgoraChannel {
       ),
     ]);
 
+    await cachePlaybackDevices();
     if (this.client_role === 1 && this.videoEnabled) {
+      await cacheVideoDevices();
       await this.setupLocalVideoTrack();
       if (localTracks != undefined && localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
@@ -315,6 +317,7 @@ class AgoraChannel {
     }
 
     if (this.client_role === 1 && this.audioEnabled) {
+      await cacheMicrophones();
       await this.setupLocalAudioTrack();
       if (localTracks != undefined && localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);

@@ -64,21 +64,22 @@ public class AgoraVoiceChannel : MonoBehaviour
         mRtcEngine.EnableAudio();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
-        channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        //channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
+        //channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        channel1.ChannelOnJoinChannelSuccess = Channel1OnJoinChannelSuccessHandler;
-        channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
-        channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
-        channel1.ChannelOnError = Channel1OnErrorHandler;
-        channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
-        channel1.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
+        //channel1.ChannelOnJoinChannelSuccess = Channel1OnJoinChannelSuccessHandler;
+        //channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
+        //channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
+        //channel1.ChannelOnError = Channel1OnErrorHandler;
+        //channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        //channel1.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
     }
 
     public void JoinChannel1()
     {
-        channel1.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, false, true, false));
+        mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, false, true, false));
+        //channel1.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, false, true, false));
         if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
         {
             joinChannelButtons[0].interactable = false;
@@ -87,7 +88,8 @@ public class AgoraVoiceChannel : MonoBehaviour
 
     public void LeaveChannel1()
     {
-        channel1.LeaveChannel();
+        mRtcEngine.LeaveChannel();
+        //channel1.LeaveChannel();
         if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
         {
             joinChannelButtons[0].interactable = true;
