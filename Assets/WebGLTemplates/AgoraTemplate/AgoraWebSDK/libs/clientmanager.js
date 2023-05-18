@@ -98,21 +98,20 @@ class ClientManager {
   }
 
   createEngine(appID) {
+    console.log("working here instead....");
     if (this.client == undefined) {
       var mode = this.getChannelProfileMode();
       wrapper.log("using mode: " + mode);
       this.client = AgoraRTC.createClient({ mode: mode, codec: "vp8" });
       this.options.appid = appID;
-
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
-
+      //cacheDevices();
       return true;
     } else {
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
+      //cacheDevices();
       return false;
     }
   }
