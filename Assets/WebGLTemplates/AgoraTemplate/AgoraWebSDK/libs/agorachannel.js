@@ -186,7 +186,7 @@ class AgoraChannel {
   async setupLocalAudioTrack() {
     if (localTracks != undefined && localTracks.audioTrack == undefined) {
       [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
           event_manager.raiseHandleChannelError(e.code, e.message);
         }),
       ]);
@@ -339,6 +339,8 @@ class AgoraChannel {
       }
       this.is_publishing = true;
     }
+
+    
 
     multiclient_connections++;
     event_manager.raiseJoinChannelSuccess_MC(

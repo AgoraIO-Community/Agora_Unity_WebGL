@@ -186,7 +186,7 @@ class ClientManager {
       || mediaType == "audio" && this.screenShareClient != null
       && id != this.screenShareClient.uid)) {
       await this.subscribe_remoteuser(user, mediaType);
-    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
+    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers != undefined) {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
       this.getRemoteVideoStats(id);
@@ -501,6 +501,8 @@ class ClientManager {
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
 
+   
+
     event_manager.raiseJoinChannelSuccess(
       this.options.uid.toString(),
       this.options.channel
@@ -526,7 +528,7 @@ class ClientManager {
 
     if (this.audioEnabled && this.isHosting()) {
       [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack()
+        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,})
       ]);
       currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
           localTracks.audioTrack._deviceName
@@ -640,6 +642,7 @@ class ClientManager {
         localTracks.videoTrack.play("local-player");
 
         await this.client.publish(localTracks.videoTrack);
+        console.log(localTracks.videoTrack.getStats().captureResolutionWidth, localTracks.videoTrack.getStats().captureResolutionHeight);
       }
     }
     this.videoEnabled = enabled;
@@ -750,7 +753,7 @@ class ClientManager {
       await this.client.unpublish(localTracks.audioTrack);
 
       [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack(),
+        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}),
       ]);
 
       await this.client.publish(localTracks.audioTrack);
