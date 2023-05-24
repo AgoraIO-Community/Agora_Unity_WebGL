@@ -526,6 +526,7 @@ class ClientManager {
       }
     }
 
+    
     if (this.audioEnabled && this.isHosting()) {
       [localTracks.audioTrack] = await Promise.all([
         AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,})
