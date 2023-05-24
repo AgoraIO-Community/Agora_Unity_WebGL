@@ -52,7 +52,6 @@ class AgoraChannel {
     this.videoEnabled = pubVideo;
     this.audioSubscribing = subAudio;
     this.videoSubscribing = subVideo;
-    console.log("AV control set");
   }
 
   getConnectionState() {
@@ -186,7 +185,7 @@ class AgoraChannel {
   async setupLocalAudioTrack() {
     if (localTracks != undefined && localTracks.audioTrack == undefined) {
       [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+        AgoraRTC.createMicrophoneAudioTrack().catch(e => {
           event_manager.raiseHandleChannelError(e.code, e.message);
         }),
       ]);
@@ -284,6 +283,7 @@ class AgoraChannel {
     // this.client.removeAllListeners("error");
     // this.client.removeAllListeners("volume-indicator");
     // this.client.removeAllListeners("stream-message");
+
     // add event listener to play remote tracks when remote user publishs.
     this.client.on("user-joined", this.userJoinedHandle);
     this.client.on("user-published", this.userPublishedHandle);
@@ -305,24 +305,6 @@ class AgoraChannel {
       ),
     ]);
 
-    AgoraRTC.onCameraChanged = async (info) => {
-      console.log("onCameraChanged fired", info);
-      await cacheVideoDevices();
-      event_manager.raiseOnCameraChanged(info);
-    };
-
-    AgoraRTC.onMicrophoneChanged = async (info) => {
-      console.log("onMicrophoneChanged fired", info);
-      await cacheMicrophones();
-      event_manager.raiseOnMicrophoneChanged(info);
-    };
-
-    AgoraRTC.onPlaybackDeviceChanged = async (info) => {
-      console.log("onPlaybackChanged fired", info);
-      await cachePlaybackDevices();
-      event_manager.raiseOnPlaybackDeviceChanged(info);
-    };
-
     if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks != undefined && localTracks.videoTrack != undefined) {
@@ -339,8 +321,6 @@ class AgoraChannel {
       }
       this.is_publishing = true;
     }
-
-    
 
     multiclient_connections++;
     event_manager.raiseJoinChannelSuccess_MC(
