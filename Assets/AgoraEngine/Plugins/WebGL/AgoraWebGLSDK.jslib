@@ -191,7 +191,7 @@ var LibraryAgoraWebGLSDK = {
     return true;
   },
 
-  updateRemoteTexture_MC: function (channel, userId, tex, isLinearColor) {
+  updateRemoteTexture_MC: function (channel, userId, tex) {
     var ch_userId = Pointer_stringify(userId);
     var channelId_str = Pointer_stringify(channel);
 
