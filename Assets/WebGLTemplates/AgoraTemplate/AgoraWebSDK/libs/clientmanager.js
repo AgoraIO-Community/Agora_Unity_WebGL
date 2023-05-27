@@ -98,7 +98,6 @@ class ClientManager {
   }
 
   createEngine(appID) {
-    console.log("working here instead....");
     if (this.client == undefined) {
       var mode = this.getChannelProfileMode();
       wrapper.log("using mode: " + mode);
@@ -106,12 +105,10 @@ class ClientManager {
       this.options.appid = appID;
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      //cacheDevices();
       return true;
     } else {
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      //cacheDevices();
       return false;
     }
   }
@@ -528,9 +525,19 @@ class ClientManager {
 
     
     if (this.audioEnabled && this.isHosting()) {
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,})
-      ]);
+      if(audio_profile != undefined){
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          }),
+        ]);
+        } else {
+          [localTracks.audioTrack] = await Promise.all([
+            AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+              event_manager.raiseHandleChannelError(e.code, e.message);
+            })
+          ])
+        }
       currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
           localTracks.audioTrack._deviceName
       );
@@ -753,9 +760,19 @@ class ClientManager {
 
       await this.client.unpublish(localTracks.audioTrack);
 
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}),
-      ]);
+      if(audio_profile != undefined){
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          }),
+        ]);
+        } else {
+          [localTracks.audioTrack] = await Promise.all([
+            AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+              event_manager.raiseHandleChannelError(e.code, e.message);
+            })
+          ])
+        }
 
       await this.client.publish(localTracks.audioTrack);
     }
