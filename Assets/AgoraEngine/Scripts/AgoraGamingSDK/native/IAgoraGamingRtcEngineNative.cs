@@ -177,6 +177,9 @@ namespace agora_gaming_rtc
         protected static extern int setLocalVideoMirrorMode(int mirrorMode);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int cacheVideoDevices();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int startPreview();
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

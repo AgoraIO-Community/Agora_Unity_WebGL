@@ -895,6 +895,10 @@ var LibraryAgoraWebGLSDK = {
   setLocalRenderMode: function (renderMode) {},
   complain: function (callId, desc) {},
   freeObject: function (obj) {},
+  cacheVideoDevices : function () {
+    console.log("caching video devices");
+    cacheVideoDevices();
+  },
   createAVideoDeviceManager: function () {},
   createMediaRecorder: function () {
     SendNotImplementedError("createMediaRecorder")

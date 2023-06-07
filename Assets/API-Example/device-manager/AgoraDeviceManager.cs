@@ -51,7 +51,7 @@ public class AgoraDeviceManager : MonoBehaviour
         if (CheckAppId())
         {
             InitRtcEngine();
-
+            _rtcEngine.cacheVideoDevices();
         }
     }
 
@@ -65,27 +65,29 @@ public class AgoraDeviceManager : MonoBehaviour
 
         if (_videoDeviceManagerNamesDic.Count != devices.Count)
         {
+            Debug.Log("is getting video devices?");
             GetVideoDeviceManager();
             SetAndReleaseVideoDevice();
         }
 
 
 
-        //foreach (MediaDeviceInfo info in devices) {
-        //    bool hasLabel = false;
-        //    foreach(Dropdown.OptionData data in videoDropdown.options)
-        //    {
-        //        if (data.text == info.label)
-        //            hasLabel = true;
-        //    }
-        //    if(!hasLabel)
-        //    videoDeviceLabels.Add(info.label);
-        //}
+        foreach (MediaDeviceInfo info in devices)
+        {
+            bool hasLabel = false;
+            foreach (Dropdown.OptionData data in videoDropdown.options)
+            {
+                if (data.text == info.label)
+                    hasLabel = true;
+            }
+            if (!hasLabel)
+                videoDeviceLabels.Add(info.label);
+        }
 
-        //if (videoDropdown.options.Count == 0)
-        //{
-        //    videoDropdown.AddOptions(videoDeviceLabels);
-        //}
+        if (videoDropdown.options.Count == 0)
+        {
+            videoDropdown.AddOptions(videoDeviceLabels);
+        }
 
         videoDeviceButton.interactable = (currentVideoDeviceIndex != _videoDeviceIndex);
         //videoDropdown.interactable = !joinedChannel && previewing;
@@ -125,6 +127,7 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         previewing = true;
         _logger.UpdateLog(_videoDeviceIndex.ToString());
+        _rtcEngine.StartPreview();
         makeVideoView(CHANNEL_NAME, 0);
         _videoDeviceIndex = videoDropdown.value;
         SetAndReleaseVideoDevice();
