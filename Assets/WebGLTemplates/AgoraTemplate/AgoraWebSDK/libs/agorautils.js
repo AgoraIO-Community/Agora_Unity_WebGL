@@ -155,8 +155,3 @@ async function cacheVideoDevices(){
       //console.log("get cameras error!", e);
     });
 }
-
-async function clearVideoDevices(){
-    console.log("caching Video Devices");
-    wrapper.clearCameras();
-}

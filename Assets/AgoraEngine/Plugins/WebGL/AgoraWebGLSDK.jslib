@@ -899,6 +899,13 @@ var LibraryAgoraWebGLSDK = {
     console.log("caching video devices");
     cacheVideoDevices();
   },
+  cacheRecordingDevices : function () {
+    cacheMicrophones();
+  },
+  cachePlaybackDevices : function () {
+    console.log("caching video devices");
+    cachePlaybackDevices();
+  },
   createAVideoDeviceManager: function () {},
   createMediaRecorder: function () {
     SendNotImplementedError("createMediaRecorder")

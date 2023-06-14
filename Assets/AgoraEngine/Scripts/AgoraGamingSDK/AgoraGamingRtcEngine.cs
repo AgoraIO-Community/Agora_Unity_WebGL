@@ -2024,9 +2024,19 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableVideoObserver();
         }
 
-        public int cacheVideoDevices()
+        public int CacheVideoDevices()
         {
             return IRtcEngineNative.cacheVideoDevices();
+        }
+
+        public int CacheRecordingDevices()
+        {
+            return IRtcEngineNative.cacheRecordingDevices();
+        }
+
+        public int CachePlaybackDevices()
+        {
+            return IRtcEngineNative.cachePlaybackDevices();
         }
 
         /** Disables the video observer.

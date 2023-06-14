@@ -99,7 +99,7 @@ public class AgoraDeviceManager : MonoBehaviour
         videoDeviceButton.interactable = (currentVideoDeviceIndex != _videoDeviceIndex);
         videoDropdown.interactable = devices.Count > 0;
         videoDeviceText.gameObject.SetActive(!joinedChannel);
-        joinChannelButton.interactable = !joinedChannel;
+        joinChannelButton.interactable = !joinedChannel && devices.Count > 0;
         leaveChannelButton.interactable = joinedChannel;
         startPreviewButton.interactable = (!previewing && !joinedChannel && devices.Count > 0);
         stopPreviewButton.interactable = (previewing && !joinedChannel && devices.Count > 0);
@@ -117,10 +117,7 @@ public class AgoraDeviceManager : MonoBehaviour
         Invoke("GetAudioRecordingDevice", .2f);
     }
 
-    public void clearVideoDevices()
-    {
-        _rtcEngine.ClearVideoDevices();
-    }
+   
 
     public void cachePlaybackDevices()
     {
@@ -323,10 +320,10 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void JoinChannel()
     {
-        _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
-        makeVideoView(CHANNEL_NAME, 0);
-        GetVideoDeviceManager();
-        SetAndReleaseVideoDevice();
+            _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
+            makeVideoView(CHANNEL_NAME, 0);
+            GetVideoDeviceManager();
+            SetAndReleaseVideoDevice();
     }
 
     public void LeaveChannel()
@@ -398,6 +395,9 @@ public class AgoraDeviceManager : MonoBehaviour
     void OnLeaveChannelHandler(RtcStats stats)
     {
         _logger.UpdateLog("OnLeaveChannelSuccess");
+        DestroyVideoView(CHANNEL_NAME, 0);
+        _rtcEngine.DisableVideo();
+        _rtcEngine.DisableVideoObserver();
         joinedChannel = false;
     }
 
