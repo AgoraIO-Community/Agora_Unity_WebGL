@@ -27,6 +27,10 @@ var WglWrapper = function () {
     });
   };
 
+  self.clearCameras = function () {
+    self.savedCameras = Array();
+  };
+
   self.saveMicrophones = function (cameras) {
     self.savedMicrophones = Array();
     cameras.forEach((cam) => {

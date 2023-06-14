@@ -20,7 +20,12 @@ class EventManager {
     unityInstance.SendMessage("AgoraEventHandler", "onCamerasListing", fstr);
   }
 
+  raiseonCamerasClear(fstr) {
+    unityInstance.SendMessage("AgoraEventHandler", "onCamerasClear", fstr);
+  }
+
   raiseonRecordingDevicesListing(fstr) {
+    console.log("raising message");
     unityInstance.SendMessage(
       "AgoraEventHandler",
       "onRecordingDevicesListing",
