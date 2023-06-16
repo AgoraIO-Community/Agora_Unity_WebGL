@@ -68,9 +68,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
             if (_videoDeviceManagerNamesDic.Count != devices.Count)
             {
-                Debug.Log("is getting video devices?");
-                GetVideoDeviceManager();
-                SetAndReleaseVideoDevice();
+                //GetVideoDeviceManager();
             }
 
 
@@ -109,6 +107,7 @@ public class AgoraDeviceManager : MonoBehaviour
     public void cacheVideoDevices()
     {
         _rtcEngine.CacheVideoDevices();
+        //Invoke("GetVideoDeviceManager", .2f);
     }
 
     public void cacheRecordingDevices()
@@ -315,23 +314,26 @@ public class AgoraDeviceManager : MonoBehaviour
     public void SetAndReleaseVideoDevice()
     {
         _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
-        _videoDeviceManager.ReleaseAVideoDeviceManager();
+        //_videoDeviceManager.ReleaseAVideoDeviceManager();
     }
 
     public void JoinChannel()
     {
-            _rtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
-            makeVideoView(CHANNEL_NAME, 0);
-            GetVideoDeviceManager();
-            SetAndReleaseVideoDevice();
+        GetVideoDeviceManager();
+        //SetAndReleaseVideoDevice();
+        Invoke("startJoiningChannel", 1f);
+    }
+
+    public void startJoiningChannel()
+    {
+        _rtcEngine.JoinChannel(CHANNEL_NAME);
+        makeVideoView(CHANNEL_NAME, 0);
     }
 
     public void LeaveChannel()
     {
         _rtcEngine.LeaveChannel();
         DestroyVideoView(CHANNEL_NAME, 0);
-        _rtcEngine.DisableVideo();
-        _rtcEngine.DisableVideoObserver();
     }
 
     void EngineOnUserJoinedHandler(uint uid, int elapsed)
@@ -366,6 +368,8 @@ public class AgoraDeviceManager : MonoBehaviour
         if (_rtcEngine != null)
         {
             LeaveChannel();
+            _rtcEngine.DisableVideo();
+            _rtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
         }
     }
@@ -377,17 +381,16 @@ public class AgoraDeviceManager : MonoBehaviour
         joinedChannel = true;
         if (!previewing)
         {
-            GetVideoDeviceManager();
-            _rtcEngine.StopPreview();
-            SetAndReleaseVideoDevice();
+            //GetVideoDeviceManager();
+            //_rtcEngine.StopPreview();
+            //SetAndReleaseVideoDevice();
         }
         else
         {
-            DestroyVideoView(CHANNEL_NAME, uid);
-            _rtcEngine.StopPreview();
-            SetAndReleaseVideoDevice();
+            //DestroyVideoView(CHANNEL_NAME, uid);
+            //_rtcEngine.StopPreview();
+            //SetAndReleaseVideoDevice();
         }
-        //SetCurrentDevice();
         //SetCurrentDeviceVolume();
         //ReleaseDeviceManager();
     }
@@ -396,8 +399,6 @@ public class AgoraDeviceManager : MonoBehaviour
     {
         _logger.UpdateLog("OnLeaveChannelSuccess");
         DestroyVideoView(CHANNEL_NAME, 0);
-        _rtcEngine.DisableVideo();
-        _rtcEngine.DisableVideoObserver();
         joinedChannel = false;
     }
 

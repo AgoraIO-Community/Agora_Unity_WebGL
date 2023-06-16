@@ -1354,7 +1354,9 @@ var LibraryAgoraWebGLSDK = {
   setRemoteSubscribeFallbackOption: function (option) {
     setRemoteSubscribeFallbackOption_WGL(option);
   },
-  releaseAVideoDeviceManager: function () {},
+  releaseAVideoDeviceManager: function () {
+    releaseVideoDeviceManager();
+  },
   addPublishStreamUrl2: function (channel, url, transcodingEnabled) {},
   setRemoteDefaultVideoStreamType: function (remoteVideoStreamType) {
     setRemoteDefaultVideoStreamType(remoteVideoStreamType);
