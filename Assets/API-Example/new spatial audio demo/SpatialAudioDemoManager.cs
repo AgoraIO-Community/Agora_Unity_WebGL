@@ -36,7 +36,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public GameObject loginScreen, player;
 
-    Vector3[] directions = {Vector3.right, Vector3.down, Vector3.left, Vector3.up};
+    Vector3[] directions = { Vector3.right, Vector3.down, Vector3.left, Vector3.up };
 
     void Awake()
     {
@@ -50,15 +50,15 @@ public class SpatialAudioDemoManager : MonoBehaviour
         {
             return;
         }
-        
-        InitEngine();
-        
 
-       
+        InitEngine();
+
+
+
         //channel setup.
-         appIdText.text = APP_ID;
-         tokenText.text = TOKEN_1;
-         channelNameText.text = CHANNEL_NAME_1;
+        appIdText.text = APP_ID;
+        tokenText.text = TOKEN_1;
+        channelNameText.text = CHANNEL_NAME_1;
 
     }
 
@@ -101,7 +101,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
         }
 
-        
+
     }
 
     bool CheckAppId()
@@ -145,8 +145,9 @@ public class SpatialAudioDemoManager : MonoBehaviour
     public void JoinChannel()
     {
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
-        for(uint i = 0; i < soundFiles.Length; i++) {
-            mRtcEngine.EnableLocalMediaSpatialAudio(((uint)1000+i).ToString(), true, "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3");
+        for (uint i = 0; i < soundFiles.Length; i++)
+        {
+            mRtcEngine.EnableLocalMediaSpatialAudio(((uint)1000 + i).ToString(), true, "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3");
         }
         joinedChannel = true;
         loginScreen.SetActive(false);
@@ -173,10 +174,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public void updateSpatialAudio()
     {
-        mRtcEngine.SetRemoteUserSpatialAudioParams("0", azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+        mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
     }
-
-
-
 }
 
