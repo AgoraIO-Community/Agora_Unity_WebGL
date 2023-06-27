@@ -9,10 +9,7 @@ public class TestDataStream : MonoBehaviour
 {
 
     [SerializeField]
-    private string APP_ID = "";
-
-    [SerializeField]
-    private string TOKEN = "";
+    private AppInfoObject appInfo;
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
@@ -25,6 +22,14 @@ public class TestDataStream : MonoBehaviour
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
     private int StreamId { get; set; }
+
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME = RootMenuControl.instance.channel;
+        }
+    }
 
     // Use this for initialization
     void Start()
@@ -44,13 +49,13 @@ public class TestDataStream : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        logger.DebugAssert(appInfo.appID.Length > 10, "<color=red>[STOP] Please fill in your appId in your AppIDInfo Object!!!! \n (Assets/API-Example/_AppIDInfo/AppIDInfo)</color>");
     }
 
     void InitEngine()
     {
         // NOTE LogConfig is discarded in WebGL
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
 
         mRtcEngine.SetLogFile("log.txt");
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
@@ -78,13 +83,14 @@ public class TestDataStream : MonoBehaviour
                 string msg = inputField.text;
                 byte[] data = System.Text.Encoding.UTF8.GetBytes(msg);
                 mRtcEngine.SendStreamMessage(StreamId, data);
+                logger.UpdateLog("Test DataStream sending " + msg);
             });
         }
     }
 
     void JoinChannel()
     {
-        mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
@@ -133,7 +139,7 @@ public class TestDataStream : MonoBehaviour
         logger.UpdateLog(data);
     }
 
-    void OnApplicationQuit()
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

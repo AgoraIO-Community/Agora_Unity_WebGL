@@ -97,10 +97,10 @@ function stopScreenCapture2() {
   }
 }
 
-function startNewScreenCaptureForWeb2(uid, audioEnabled) {
+function startNewScreenCaptureForWeb2(uid, audioEnabled, token) {
   console.log("Multichannel startNewScreenCaptureForWeb2");
   var c = clients[selectedCurrentChannel];
-  c.startNewScreenCaptureForWeb2(uid, audioEnabled);
+  c.startNewScreenCaptureForWeb2(uid, audioEnabled, token);
 }
 
 function stopNewScreenCaptureForWeb2(){
@@ -457,6 +457,7 @@ function setVirtualBackgroundBlur_MC(blurDegree){
 }
 
 function setVirtualBackgroundColor_MC(hexColor){
+  console.log(hexColor);
   var c = clients[selectedCurrentChannel];
   c.setVirtualBackgroundColor(hexColor);
 }

@@ -16,7 +16,7 @@ namespace agora_gaming_rtc
                 return;
             if (tex != null)
             {
-                updateLocalTexture(tex.GetNativeTexturePtr());
+                updateLocalTexture(tex.GetNativeTexturePtr(), QualitySettings.activeColorSpace == ColorSpace.Linear);
             }
         }
 
@@ -38,7 +38,9 @@ namespace agora_gaming_rtc
         {
             if (isRemoteVideoReady_MC(channel, uid + ""))
             {
-                updateRemoteTexture_MC(channel, "" + uid, tex.GetNativeTexturePtr());
+                updateRemoteTexture_MC(
+                    channel, "" + uid, tex.GetNativeTexturePtr(),
+                    QualitySettings.activeColorSpace == ColorSpace.Linear);
             }
         }
 
@@ -47,7 +49,9 @@ namespace agora_gaming_rtc
         {
             if (!isRemoteVideoReady(""+uid))
                 return;
-            updateRemoteTexture(""+uid, tex.GetNativeTexturePtr());
+            updateRemoteTexture(
+                "" + uid, tex.GetNativeTexturePtr(),
+                QualitySettings.activeColorSpace == ColorSpace.Linear);
         }
 
         // initialize remote video surface

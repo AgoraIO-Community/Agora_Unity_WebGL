@@ -35,7 +35,7 @@ async function joinChannelWithUserAccount_WGL(
   client_manager.setOptions(token_str, channelId_str);
   await client_manager.joinAgoraChannel(userAccount_str);
   wrapper.initStats();
-  cacheDevices();
+  await cacheDevices();
 }
 
 async function joinChannelWithUserAccount_engine_WGL(
@@ -108,6 +108,11 @@ function getUserInfoByUid_WGL(uid) {
   } else {
     return uid;
   }
+}
+
+function SendNotImplementedError(api) {
+  event_manager.raiseHandleUserError("9001", "The API：" +  api + " is not supported."); 
+  console.warn("The API：" +  api + " is not supported.");
 }
 
 // Stops/Resumes sending the local video stream.
@@ -287,7 +292,8 @@ async function setLocalAudioTrackMicrophone(deviceId) {
 
 async function setLocalTrackCamera(deviceId) {
   if (localTracks.videoTrack) {
-    localTracks.videoTrack.setDevice(deviceId);
+    await localTracks.videoTrack.setDevice(deviceId);
+    localTracks.videoTrack.play("local-player");
   }
 }
 
@@ -298,7 +304,7 @@ async function setVideoDeviceCollectionDeviceWGL(deviceId) {
   } else {
     currentVideoDevice = deviceId;
     event_manager.raiseGetCurrentVideoDevice(currentVideoDevice);
-    setLocalTrackCamera(currentVideoDevice);
+    await setLocalTrackCamera(currentVideoDevice);
   }
 }
 
@@ -329,9 +335,9 @@ async function startScreenCaptureForWeb(enableAudio) {
   client_manager.startScreenCapture(enableAudio);
 }
 
-function startNewScreenCaptureForWeb(uid, enableAudio) {
+function startNewScreenCaptureForWeb(uid, enableAudio, token) {
   console.log("agora engine startNewScreenCaptureForWeb");
-  client_manager.startNewScreenCaptureForWeb(uid, enableAudio);
+  client_manager.startNewScreenCaptureForWeb(uid, enableAudio, token);
 }
 
 function stopNewScreenCaptureForWeb(){

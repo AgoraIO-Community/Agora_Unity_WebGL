@@ -200,6 +200,11 @@ namespace agora_gs_test
 
         }
 
+        void OnDestroy()
+        {
+            leave();
+        }
+
         // When a remote user joined, this delegate will be called. Typically
         // create a GameObject to render video on it
         private void onUserJoined(uint uid, int elapsed)
@@ -225,7 +230,6 @@ namespace agora_gs_test
                 videoSurface.SetEnable(true);
                 // TODO: call this before set enable in webgl, creates error
                 videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-                videoSurface.SetGameFps(30);
             }
         }
 

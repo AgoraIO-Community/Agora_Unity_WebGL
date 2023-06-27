@@ -12,9 +12,6 @@ public class AgoraMultiChannel2 : MonoBehaviour
     [SerializeField] private string TOKEN_1 = "";
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
-
-    [SerializeField] private string TOKEN_2 = "";
-
     [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
     [SerializeField] private string CHANNEL_NAME_3 = "YOUR_CHANNEL_NAME_3";
     [SerializeField] private string CHANNEL_NAME_4 = "YOUR_CHANNEL_NAME_4";
@@ -39,13 +36,16 @@ public class AgoraMultiChannel2 : MonoBehaviour
     protected Dictionary<uint, VideoSurface> UserVideoDict = new Dictionary<uint, VideoSurface>();
     private List<GameObject> remoteUserDisplays = new List<GameObject>();
 
-    public VirtualBackgroundSource myVirtualBackground;
-    public int blurDegrees = 2;
-    public string hexColor = "#00FF00";
-    public string imgFile = "seinfeld.jpg";
-    public string videoFile = "movie.mp4";
-    public InputField screenShareIDInput; 
-    
+
+    public InputField screenShareIDInput;
+
+    private void Awake()
+    {
+        if (RootMenuControl.instance)
+        {
+            CHANNEL_NAME_1 = RootMenuControl.instance.channel;
+        }
+    }
 
     // Use this for initialization
     void Start()
@@ -89,7 +89,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
         useScreenShareAudio = loopbackAudioToggle.isOn;
     }
 
-    public void updateScreenShareID(){
+    public void updateScreenShareID()
+    {
         uint.TryParse(screenShareIDInput.text, out SCREEN_SHARE_ID);
     }
 
@@ -126,25 +127,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
 
-    public void enableVirtualBackground(){
-        channel1.enableVirtualBackground(true, myVirtualBackground);
-    }
 
-    public void setVirtualBackgroundBlur(){
-        mRtcEngine.SetVirtualBackgroundBlur_MC(blurDegrees);
-    }
-
-    public void setVirtualBackgroundColor(){
-        mRtcEngine.SetVirtualBackgroundColor_MC(hexColor);
-    }
-
-    public void setVirtualBackgroundImage(){
-        mRtcEngine.SetVirtualBackgroundImage_MC(imgFile);
-    }
-
-     public void setVirtualBackgroundVideo(){
-        mRtcEngine.SetVirtualBackgroundVideo_MC(videoFile);
-    }
 
     void InitEngine()
     {
@@ -299,7 +282,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
     }
 
 
-    void OnApplicationQuit()
+    void OnDestoy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)

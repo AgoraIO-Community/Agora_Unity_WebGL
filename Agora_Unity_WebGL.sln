@@ -1,7 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Agora_Unity_WebGL", "Assembly-CSharp.csproj", "{885A3DAA-1E51-87A4-E4C6-DD4176626251}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{885A3DAA-1E51-87A4-E4C6-DD4176626251}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{2D047345-BB11-A0E4-F155-37D0037590C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,11 +15,12 @@ Global
 		{885A3DAA-1E51-87A4-E4C6-DD4176626251}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{885A3DAA-1E51-87A4-E4C6-DD4176626251}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{885A3DAA-1E51-87A4-E4C6-DD4176626251}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2D047345-BB11-A0E4-F155-37D0037590C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2D047345-BB11-A0E4-F155-37D0037590C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2D047345-BB11-A0E4-F155-37D0037590C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2D047345-BB11-A0E4-F155-37D0037590C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Assembly-CSharp.csproj
 	EndGlobalSection
 EndGlobal

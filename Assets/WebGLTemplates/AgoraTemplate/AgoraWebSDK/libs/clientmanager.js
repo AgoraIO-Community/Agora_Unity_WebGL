@@ -8,7 +8,9 @@ class ClientManager {
       token: null,
     };
     this.videoEnabled = false; // if true then camera is created, if false then not
-    this.audioEnabled = false; // if true then mic access is created, if false then not
+    this.audioEnabled = true; // if true then mic access is created, if false then not
+    this.audioPublishing = true; 
+    this.videoPublishing = true;
     this.videoSubscribing = true; 
     this.audioSubscribing = true; 
     this.remoteUserAudioMuted = {};
@@ -19,6 +21,7 @@ class ClientManager {
     this._streamMessageRetry = false;
     this.is_screensharing = false;
     this.tempLocalTracks = null;
+    this.previewVideoTrack;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
@@ -89,8 +92,8 @@ class ClientManager {
   }
 
   setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
-    this.audioEnabled = pubAudio;
-    this.videoEnabled = pubVideo;
+    this.audioPublishing = pubAudio;
+    this.videoPublishing = pubVideo;
     this.audioSubscribing = subAudio;
     this.videoSubscribing = subVideo;
   }
@@ -287,17 +290,27 @@ class ClientManager {
     console.log(e);
   }
   //============================================================================== 
+  resetClient() {
+    this.is_screensharing = false; // set to default
+    this.videoSubscribing = true; 
+    this.audioSubscribing = true; 
+    this.videoPublishing = true;
+    this.audioPublishing = true;
+    localTracks.audioMixingTrack = null;
+  }
 
   async leave() {
     for (var trackName in localTracks) {
       var track = localTracks[trackName];
       if (track) {
         if(!Array.isArray(track)){
+          track.unpipe();
           track.stop();
           track.close();
           localTracks[trackName] = null;
         } else {
           for(var i = 0; i < track.length; i++){
+            track.unpipe();
             track[i].stop();
             track[i].close();
           }
@@ -312,15 +325,16 @@ class ClientManager {
       this.spatialAudio.localPlayerStopAll();
     }
 
+    if(this.virtualBackgroundProcessor !== null){
+      this.virtualBackgroundProcessor = null;
+    }
+
     if(this.screenShareClient && this.screenShareClient.uid != null){
       this.handleUserLeft(this.screenShareClient);
       await stopNewScreenCaptureForWeb();
     }
 
-    this.is_screensharing = false; // set to default
-    this.videoEnabled = false; // set to default
-    this.audioEnabled = false; // set to default
-    localTracks.audioMixingTrack = null;
+    this.resetClient();
 
     if (_isCopyVideoToMainCanvasOn) {
       _isCopyVideoToMainCanvasOn = false;
@@ -468,6 +482,24 @@ class ClientManager {
       }),
     ])
 
+    AgoraRTC.onCameraChanged = async (info) => {
+      console.log("onCameraChanged fired", info);
+      await cacheVideoDevices();
+      event_manager.raiseOnCameraChanged(info);
+    };
+
+    AgoraRTC.onMicrophoneChanged = async (info) => {
+      console.log("onMicrophoneChanged fired", info);
+      await cacheMicrophones();
+      event_manager.raiseOnMicrophoneChanged(info);
+    };
+
+    AgoraRTC.onPlaybackDeviceChanged = async (info) => {
+      console.log("onPlaybackChanged fired", info);
+      await cachePlaybackDevices();
+      event_manager.raiseOnPlaybackDeviceChanged(info);
+    };
+
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
 
@@ -519,7 +551,10 @@ class ClientManager {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
         if (track) {
-          await this.client.publish(track);
+          if ((trackName == "videoTrack" && this.videoPublishing) || (trackName == "audioTrack" && this.audioPublishing))
+          {
+            await this.client.publish(track);
+          }
         }
       }
     }
@@ -545,6 +580,7 @@ class ClientManager {
 
   async enableAudio(enabled) {
     this.audioEnabled = enabled;
+    this.audioPublishing = enabled;
     this.audioSubscribing = enabled;
   }
 
@@ -572,6 +608,7 @@ class ClientManager {
       } else {
         await this.client.publish(localTracks.videoTrack);
       }
+      this.videoPublishing = !mute;
     }
   }
 
@@ -585,6 +622,7 @@ class ClientManager {
         await this.client.publish(localTracks.audioTrack);
       }
     }
+    this.audioPublishing = !mute;
   }
 
   async enableLocalVideo(enabled) {
@@ -593,7 +631,11 @@ class ClientManager {
       if (enabled == false) {
         localTracks.videoTrack?.stop();
         localTracks.videoTrack?.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if(localTracks.videoTrack != null)
+        {
+           await this.client.unpublish(localTracks.videoTrack);
+           localTracks.videoTrack = null;
+        }
       } else {
         [localTracks.videoTrack] = await Promise.all([
           AgoraRTC.createCameraVideoTrack().catch(e => {
@@ -609,20 +651,43 @@ class ClientManager {
     this.videoEnabled = enabled;
   }
 
+  
   async startPreview() {
-    [localTracks.videoTrack] = await Promise.all([
-      AgoraRTC.createCameraVideoTrack().catch(e => {
-        event_manager.raiseHandleUserError(e.code, e.msg);
-      }),
-    ]);
+    console.log(localTracks.videoTrack);
+    if(localTracks.videoTrack){
+      // localTracks.videoTrack.stop();
+      // localTracks.videoTrack.close();
+      if(this._inChannel){
+        await this.client.unpublish(localTracks.videoTrack);
+      }
+    }
+    
+    if(localTracks.videoTrack == null){
+      [localTracks.videoTrack] = await Promise.all([
+        AgoraRTC.createCameraVideoTrack().catch(e => {
+          event_manager.raiseHandleUserError(e.code, e.msg);
+        }),
+      ]);
+    }
     localTracks.videoTrack.play("local-player");
+    
   }
 
-  stopPreview() {
-    if (localTracks.videoTrack) {
+  async stopPreview() {
+
+    if(localTracks.videoTrack != null){
       localTracks.videoTrack.stop();
-      localTracks.videoTrack.close();
+      //localTracks.videoTrack.close();
     }
+
+    localTracks.videoTrack.play("local-player");
+    if(this._inChannel){
+      await this.client.publish(localTracks.videoTrack);
+    }
+  }
+
+  async publishPreview(){
+    await this.client.publish(localTracks.videoTrack);
   }
 
   async setBeautyEffectOn(lighteningLevel, rednessLevel, smoothnessLevel) {
@@ -908,7 +973,7 @@ class ClientManager {
     }
   }
 
-  async startNewScreenCaptureForWeb(uid, enableAudio) {
+  async startNewScreenCaptureForWeb(uid, enableAudio, token) {
     var screenShareTrack = null;
     var enableAudioStr = enableAudio? "auto" : "disable";
     var screenShareUID = uid;
@@ -929,7 +994,7 @@ class ClientManager {
         screenShareTrack[0].on("track-ended", this.handleStopNewScreenShare.bind());
         this.enableLoopbackAudio = enableAudio;
         this.tempLocalTracks = screenShareTrack;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, token || null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
@@ -939,7 +1004,7 @@ class ClientManager {
         screenShareTrack.on("track-ended", this.handleStopNewScreenShare.bind());
         this.tempLocalTracks = screenShareTrack;
         this.enableLoopbackAudio = enableAudio;
-        this.screenShareClient.join(this.options.appid, this.options.channel, null, uid).then(u => {
+        this.screenShareClient.join(this.options.appid, this.options.channel, token || null, uid).then(u => {
           this.screenShareClient.publish(screenShareTrack);
           event_manager.raiseScreenShareStarted(this.options.channel, this.options.uid);
         });
@@ -1068,19 +1133,27 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
 }
 
 async setVirtualBackgroundBlur(blurDegree){
-  setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundBlurring(localTracks.videoTrack, blurDegree);
+  }
 }
 
 async setVirtualBackgroundColor(hexColor){
-  setBackgroundColor(localTracks.videoTrack, hexColor);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundColor(localTracks.videoTrack, hexColor);
+  }
 }
 
 async setVirtualBackgroundImage(imgFile){
-  setBackgroundImage(localTracks.videoTrack, imgFile);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundImage(localTracks.videoTrack, imgFile);
+  }
 }
 
 async setVirtualBackgroundVideo(videoFile){
-  setBackgroundVideo(localTracks.videoTrack, videoFile);
+  if(this.virtualBackgroundProcessor !== null){
+    setBackgroundVideo(localTracks.videoTrack, videoFile);
+  }
 }
 
   SetRemoteUserPriority(uid, userPriority) {
@@ -1128,18 +1201,31 @@ async setVirtualBackgroundVideo(videoFile){
     if (config.bitrateMax) this._customVideoConfiguration.bitrateMax = config.bitrateMax;
   }
 
-
+  // Retrieve the remote video stats
+  // if uid is undefined, send back the stats for every online user
   async getRemoteVideoStats(uid) {
     let Client = this.client;
+    let timeout = uid ? 2500: 100;
     setTimeout(function () {
       var stats = Client.getRemoteVideoStats();
-      console.log(stats);
-      if (stats[uid]) {
+      //console.log(stats);
+      //Note that stats may contains user who are offline
+      if (uid == undefined)
+      {
+        // get all users
+        for (let id in remoteUsers) {
+          if (stats[id]) {
+            const width = stats[id].receiveResolutionWidth;
+            const height = stats[id].receiveResolutionHeight;
+            event_manager.raiseOnClientVideoSizeChanged(id, width, height);
+          }
+        }
+      } else if (stats[uid]) {
         const width = stats[uid].receiveResolutionWidth;
         const height = stats[uid].receiveResolutionHeight;
         event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
       }
-    }, 2000);
+    }, timeout);
   }
 
   async enableSpatialAudio(enabled, client = this.client){

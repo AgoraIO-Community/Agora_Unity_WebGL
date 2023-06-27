@@ -4,10 +4,15 @@
 
 此项目是Unity WebGL的开源项目，包装了Agora Web SDK4.x版本。
 
-**请注意到此项目还处于Beta阶段，不能保证所有功能没有错误和非预期行为，可能存在跟Agora Unity SDK版本行为不一致的情况。在下载和正式使用之前，请仔细阅读README文件。如果您喜欢这个项目，请点击Star，谢谢！** 
+1. **这是一个社区支持的公开测试版 SDK。** 可能存在跟Agora Unity SDK版本行为不一致的情况, 不要指望原始 Unity SDK 具有相同的行为。 请评估在生产环境中使用它的风险。
+2. 这个项目**不**兼容当前最新的 Agora Unity SDK 官方版本。 **4.x**
+3. 如果你只是想获得SDK，**不要克隆这个项目**，除非你打算贡献代码。 请到 [Release](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/releases) 部分下载包。
+4. 在继续下载或提问之前，查看[Wiki 页面](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/wiki) 以进一步了解此SDK。
+5. 如果不是错误或改进请求，请把您的问题可能在[讨论](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/discussions) 页面中提出。
+6. 如果您喜欢这个项目，请点击右上角的星星，谢谢
 
 ## 前置条件
-- Unity 2017 以上版本
+- Unity 2019 以上版本
 - Agora 开发者账号
 - 理解如何部署、调试Unity WebGL项目
 - Google Chrome 浏览器
@@ -32,18 +37,18 @@
 
 ### 运行Demo程序
 
-1. 即可以克隆此仓库,  也可以直接下载发布的unity package文件, 移步至 [发布页面](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/releases) ，下载最新版本.
-2. [可选] 下载并导入Agora Video SDK
-3. 导入WebGL SDK 包(Unity Editor-> Assets -> Import Package -> Custom Package). 如果第2步已经做了，这里会覆盖之前的所有文件。
-4. 在 Project 窗口, 打开 Asset/AgoraEngine/Demo/Main.scene
-5. 下一步, 找到 Hierarchy window 并选择  ****GameController****, 在Inspector 中添加 ****App ID****  到  ****AppID****  输入框.
+1. 请移步至 [发布页面](https://github.com/AgoraIO-Community/Agora_Unity_WebGL/releases) ，下载最新版本.
+2. 导入WebGL SDK 包(Unity Editor-> Assets -> Import Package -> Custom Package). 
+3. 在 Project 窗口, 打开 Asset/AgoraEngine/Demo/Main.scene
+4. 下一步, 找到 Hierarchy window 并选择  ****GameController****, 在Inspector 中添加 ****App ID****  到  ****AppID****  输入框.
 
 ### API-Examples
-这个仓库包括了API-Examples的的子集，其编译版本来自 [主板SDK版本](https://github.com/AgoraIO/Agora-Unity-Quickstart/tree/master/API-Example-Unity).
-请使用Canvas game object来填写App ID，而不是GameController.
+该存储库包含一组 API 示例，展示了如何使用特定功能。
+对于大多数演示，请使用 Canvas 游戏对象来填充 AppID 而不是 GameController。
+
 
 ### [可选] 使用Editor测试
-您必须在第2步下载Agora Video SDK
+您必须从发行版下载“完整”包(complete package)。 该软件包包括支持编辑器环境的本机插件。
 
 ### 编译和运行
 
@@ -53,7 +58,7 @@
 
 模板的差别: 如果是Unity Editor 2020以及以上版本，使用 AgoraTemplate2020模板.
 
- 3. 对于Unity Editor 2020以及以上版本，您可以直接编译和运行。对于Unity 2017,需要先编译，然后从本地Http服务器上运行。
+ 3. 对于Unity Editor 2020以及以上版本，您可以直接编译和运行。其它版本需要先编译，然后从本地Http服务器上运行。
 
 
 
