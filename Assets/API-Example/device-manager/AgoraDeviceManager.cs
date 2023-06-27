@@ -107,7 +107,7 @@ public class AgoraDeviceManager : MonoBehaviour
     public void cacheVideoDevices()
     {
         _rtcEngine.CacheVideoDevices();
-        //Invoke("GetVideoDeviceManager", .2f);
+        Invoke("GetVideoDeviceManager", .2f);
     }
 
     public void cacheRecordingDevices()
@@ -145,17 +145,16 @@ public class AgoraDeviceManager : MonoBehaviour
     public void videoUpdate()
     {
         _videoDeviceIndex = videoDropdown.value;
-        SetAndReleaseVideoDevice();
+        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
     }
 
     public void startPreview()
     {
         previewing = true;
-        _logger.UpdateLog(_videoDeviceIndex.ToString());
-        _rtcEngine.StartPreview();
         makeVideoView(CHANNEL_NAME, 0);
         _videoDeviceIndex = videoDropdown.value;
-        SetAndReleaseVideoDevice();
+        _logger.UpdateLog(_videoDeviceManagerDic[_videoDeviceIndex]);
+        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
     }
 
     public void stopPreview()
@@ -276,7 +275,7 @@ public class AgoraDeviceManager : MonoBehaviour
             videoDropdown.AddOptions(_videoDeviceManagerNamesDic.Values.ToList());
         }
         _videoDeviceIndex = videoDropdown.value;
-        SetAndReleaseVideoDevice();
+        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
     }
 
     void SetCurrentDevice()
@@ -313,8 +312,8 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void SetAndReleaseVideoDevice()
     {
-        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
-        //_videoDeviceManager.ReleaseAVideoDeviceManager();
+        _videoDeviceManager.ReleaseAVideoDeviceManager();
+        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);        
     }
 
     public void JoinChannel()
