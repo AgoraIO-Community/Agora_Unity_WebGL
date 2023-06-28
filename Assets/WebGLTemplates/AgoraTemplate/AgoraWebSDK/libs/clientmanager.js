@@ -659,13 +659,6 @@ class ClientManager {
   
   async startPreview() {
     console.log(localTracks.videoTrack);
-    if(localTracks.videoTrack){
-      // localTracks.videoTrack.stop();
-      // localTracks.videoTrack.close();
-      if(this._inChannel){
-        await this.client.unpublish(localTracks.videoTrack);
-      }
-    }
     
     if(localTracks.videoTrack == null){
       [localTracks.videoTrack] = await Promise.all([
@@ -682,13 +675,8 @@ class ClientManager {
 
     if(localTracks.videoTrack != null){
       localTracks.videoTrack.stop();
-      //localTracks.videoTrack.close();
     }
 
-    localTracks.videoTrack.play("local-player");
-    if(this._inChannel){
-      await this.client.publish(localTracks.videoTrack);
-    }
   }
 
   async publishPreview(){
