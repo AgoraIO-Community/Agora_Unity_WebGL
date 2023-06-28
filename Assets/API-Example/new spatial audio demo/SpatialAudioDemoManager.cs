@@ -87,7 +87,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
             // joinButton.interactable = false;
             // leaveButton.interactable = true;
             mRtcEngine.updatePlayerPositionInfo("1000", peter.position * 8, directions[peter.gameObject.GetComponent<AIWaypointMovement>().waypointIndex]);
-            mRtcEngine.updateSelfPosition(player.transform.position * 8, player.GetComponent<SpatialAudioAvatar>().arrow.eulerAngles);
+            mRtcEngine.updateSelfPosition(player.transform.position * 8, player.GetComponent<SpatialAudioAvatar>().arrow.eulerAngles, new Vector3(1, 0, 0), new Vector3(0, 1, 0));
         }
         else
         {

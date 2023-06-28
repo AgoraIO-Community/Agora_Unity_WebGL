@@ -1540,6 +1540,7 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableLocalVoicePitchCallback(int interval);
 
+#if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio(bool enabled);
 
@@ -1553,14 +1554,32 @@ namespace agora_gaming_rtc
         protected static extern int updateRemotePosition(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int updateSelfPosition(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
+        protected static extern int updateSelfPosition_wgl(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ, float rightX, float rightY, float rightZ, float upX, float upY, float upZ);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int removeRemotePosition(string uid);
 
-#if UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio_MC(bool enabled);
+#else 
+        protected static int enableSpatialAudio(bool enabled)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+        protected static int enableLocalMediaSpatialAudio(string uid, bool enabled, string media)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+        protected static int updatePlayerPositionInfo(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+        protected static int updateRemotePosition(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+
+        protected static int updateSelfPosition_wgl(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ, float rightX, float rightY, float rightZ, float upX, float upY, float upZ)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+
+        protected static int removeRemotePosition(string uid)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+
+        protected static int enableSpatialAudio_MC(bool enabled)
+        { UnityEngine.Debug.Log("this function is for WebGL only!"); return -1; }
+
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

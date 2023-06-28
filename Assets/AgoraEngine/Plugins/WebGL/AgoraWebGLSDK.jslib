@@ -1098,12 +1098,15 @@ var LibraryAgoraWebGLSDK = {
     newUID = parseInt(uid_Str);
     updateRemotePosition(newUID, localPosition.position, localPosition.forward);
   },
-  updateSelfPosition: function(posX, posY, posZ, forwardX, forwardY, forwardZ){
+  updateSelfPosition_wgl: function(posX, posY, posZ, forwardX, forwardY, forwardZ, rightX, rightY, rightZ, upX, upY, upZ){
     const localPosition = {
       position: [posX, posY, posZ],
       forward: [forwardX, forwardY, forwardZ],
+      right: [rightX, rightY, rightZ],
+      up: [upX, upY, upZ]
     };
-    updateSelfPosition(localPosition.position, localPosition.forward);
+    console.log("[JS] --> updateSelfPosition, posX = " + posX + " upZ = " + upZ);
+    updateSelfPosition(localPosition.position, localPosition.forward, localPosition.right, localPosition.up);
   },
   removeRemotePosition: function(uid){
     uid_Str = Pointer_stringify(uid);
@@ -2155,18 +2158,59 @@ muteLocalAudioStream_channel: function(channel, mute) {
   clearRemotePositions : function () {},
   enableRemoteSuperResolution3 : function (enabled, mode, uid) {},
   enableRemoteSuperResolution4 : function (chan_ptr, enabled, mode, uid) {},
-  localSpatialAudio_initialize : function () {},
-  localSpatialAudio_release  : function () {},
+  localSpatialAudio_initialize : function () {
+    enableSpatialAudio(true);
+  },
+  localSpatialAudio_release  : function () {
+    enableSpatialAudio(false);
+  },
   localSpatialAudio_setParameters  : function (params) {},
   muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
-  muteLocalAudioStream_spatialAudio   : function (mute) {},
-  removeRemotePosition   : function (uid) {},
-  setAudioRecvRange   : function (range) {},
-  setDistanceUnit   : function (unit) {},
+  muteLocalAudioStream_spatialAudio   : function (mute)  {},
+  removeRemotePosition   : function (uid) {
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
+    removeRemotePosition(newUID);
+  },
+  setAudioRecvRange   : function (range) {
+    //@NOT IMPLEMENTED 
+  },
+  setDistanceUnit   : function (unit) {
+    setDistanceUnit(unit);
+  },
   setMaxAudioRecvCount   : function (count) {},
-  updateRemotePosition : function (uid, pos, forward) {},
-  updateSelfPosition  : function (pos, forward, right, up) {}
-
+  updateRemotePosition : function (uid, pos, fwd) {
+    uid_Str = Pointer_stringify(uid);
+    newUID = parseInt(uid_Str);
+    
+    let _position = [];
+    let _forward = [];
+    const size = 3; // passing from an float array of 3 each argv
+    for(var i = 0; i < size; i++)
+    {
+      console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
+      _position.push((HEAPF32[(pos >> 2) + i]));
+      _forward.push((HEAPF32[(fwd >> 2) + i])); 
+    }
+    updateRemotePosition(newUID, _position, _forward);
+  },
+  updateSelfPosition  : function (pos, forward, right, up) {
+    const size = 3; // passing from an float array of 3 each argv
+    console.log("[JS] --> updateSelfPosition, local version");
+    let _position = [];
+    let _forward = [];
+    let _right = [];
+    let _up = []; 
+    for(var i = 0; i < size; i++)
+    {
+      console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
+      _position.push((HEAPF32[(pos >> 2) + i]));
+      _forward.push((HEAPF32[(forward >> 2) + i]));
+      _right.push((HEAPF32[(right >> 2) + i]));
+      _up.push((HEAPF32[(up >> 2) + i]));
+    }
+    updateSelfPosition(_position, _forward, _right, _up);
+  }
 };
 
 autoAddDeps(LibraryAgoraWebGLSDK, "$localVideo");

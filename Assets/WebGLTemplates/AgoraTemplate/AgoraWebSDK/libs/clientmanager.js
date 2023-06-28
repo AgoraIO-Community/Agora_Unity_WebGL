@@ -1234,24 +1234,18 @@ async setVirtualBackgroundVideo(videoFile){
   }
 
   async enableSpatialAudio(enabled, client = this.client){
-    
-    if(client.uid === this.client.uid){
-      if(this.spatialAudio == undefined){
+      if(this.spatialAudio == null){
         this.spatialAudio = window.createSpatialAudioManager();
       }
-    } else {
-      await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
-    }
   }
 
   async enableLocalMediaSpatialAudio(uid, enabled, media){
 
-    if(this.spatialAudio == undefined){
+    if(this.spatialAudio == null){
       this.spatialAudio = await window.createSpatialAudioManager();
     }
 
     this.spatialAudio.getLocalMediaSpatialAudioProcessor(uid, media, enabled);
-    
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
@@ -1265,26 +1259,32 @@ async setVirtualBackgroundVideo(videoFile){
   }
 
   async updatePlayerPositionInfo(uid, position, forward){
-    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+    if(this.spatialAudio) {
       this.spatialAudio.updatePlayerPositionInfo(uid, position, forward);
     }
   }
 
   async updateRemotePosition(uid, position, forward){
-    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+    if(this.spatialAudio) {
       this.spatialAudio.updateRemotePosition(uid, position, forward);
     }
   }
 
   async removeRemotePosition(uid){
-    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
+    if(this.spatialAudio) {
       this.spatialAudio.removeRemotePosition(uid);
     }
   }
 
-  async updateSelfPosition(position, forward){
-    if(this.spatialAudio !== undefined && this.spatialAudio !== null){
-      this.spatialAudio.updateSelfPosition(position, forward);
+  async updateSelfPosition(position, forward, right, up) {
+    if(this.spatialAudio) {
+      this.spatialAudio.updateSelfPosition(position, forward, right, up);
+    }
+  }
+
+  async setDistanceUnit(unit) {
+    if(this.spatialAudio) {
+      this.spatialAudio.setDistanceUnit(unit);
     }
   }
 }

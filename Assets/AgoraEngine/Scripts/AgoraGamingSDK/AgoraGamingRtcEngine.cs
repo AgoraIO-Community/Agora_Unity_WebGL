@@ -5452,7 +5452,7 @@ namespace agora_gaming_rtc
 
         /// @cond
         /** Enables or disables the spatial audio effect.
-         * @since 3.7.0
+         * @WebGL Only
          *
          * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
          * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
@@ -5546,7 +5546,7 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int removeRemotePosition(string uid)
+        public int RemoveRemotePosition(string uid)
         {
             return IRtcEngineNative.removeRemotePosition(uid);
         }
@@ -5566,9 +5566,10 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int updateSelfPosition(Vector3 position, Vector3 forward)
+        public int updateSelfPosition(Vector3 position, Vector3 forward, Vector3 right, Vector3 up)
         {
-           return IRtcEngineNative.updateSelfPosition(position.x, position.y, position.z, forward.x, forward.y, forward.z);
+            Debug.Log("Upddate selfPosition (engine)");
+            return IRtcEngineNative.updateSelfPosition_wgl(position.x, position.y, position.z, forward.x, forward.y, forward.z, right.x, right.y, right.z, up.x, up.y, up.z);
         }
 
         /** Sets the spatial audio effect parameters of the remote user.

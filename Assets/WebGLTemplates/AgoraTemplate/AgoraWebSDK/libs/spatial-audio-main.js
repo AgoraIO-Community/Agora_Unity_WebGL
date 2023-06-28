@@ -178,19 +178,13 @@ async localPlayerStopAll() {
   }
 }
 
-updateSelfPosition(position, forward){
-  const localPlayerPosition = {
-    position: [position[0], position[1], 1],
-    forward: forward,
-    right: [1, 0, 0],
-    up: [0, 1, 0]
-  };
+setDistanceUnit(unit) {
+   extension.setDistanceUnit(unit);
+}
 
-  
-  console.log("updating extension position");
-  extension.updateSelfPosition(localPlayerPosition);
-  
-
+updateSelfPosition(position, forward, right, up){
+  console.log("updating self position");
+  extension.updateSelfPosition(position, forward, right, up);
 }
 
 updatePlayerPositionInfo(uid, position, forward){
@@ -199,13 +193,10 @@ updatePlayerPositionInfo(uid, position, forward){
     forward: forward
   };
 
- 
-
   if(this.localPlayProcessors[uid] !== undefined){
     console.log(this.localPlayProcessors[uid].updatePlayerPositionInfo({position, forward}));
     this.localPlayProcessors[uid].updatePlayerPositionInfo(localPlayerPosition);
   }
-
 }
 
 updateRemotePosition(uid, position, forward){
@@ -213,8 +204,6 @@ updateRemotePosition(uid, position, forward){
     position: [position[0], position[1], 1],
     forward: forward,
   };
-
-  
 
   if(this.localPlayProcessors[uid] !== undefined){
     

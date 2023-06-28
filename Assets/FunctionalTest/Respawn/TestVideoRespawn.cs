@@ -19,6 +19,7 @@ public class TestVideoRespawn : MonoBehaviour
     private Logger logger;
     public Button button1;
     public Button button2;
+    public Button button3;
 
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
@@ -149,6 +150,26 @@ public class TestVideoRespawn : MonoBehaviour
             Destroy(lastRemoteUserObject);
             makeVideoView(lastUID);
         }
+    }
+
+    float posX = 0;
+    float posY = 0;
+    public void UpdateSelfPosition1()
+    {
+        posX += 2.5f;
+        mRtcEngine.updateSelfPosition(new Vector3(posX, 0, 0), new Vector3(20.5f, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 1, 0));
+    }
+
+    public void UpdateSelfPosition2()
+    {
+        posY += 2.5f;
+        var localSpatial = mRtcEngine.GetLocalSpatialAudioEngine();
+        localSpatial.Initialize();
+        float[] pos = new float[] { 0.0F, posY, 0.0F };
+        float[] forward = new float[] { 1.0F, 0.0F, 0.0F };
+        float[] right = new float[] { 0.0F, 1.0F, 0.0F };
+        float[] up = new float[] { 0.0F, 0.0F, 1.0F };
+        localSpatial.UpdateSelfPosition(pos, forward, right, up);
     }
 
     void OnDestroy()
