@@ -30,7 +30,12 @@ async function StartAudioMixing(FilePath, LoopBack, Replace, Cycle) {
         );
 
         if (Replace == false) {
-          localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+          
+          if(audio_profile != undefined)
+            localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,});
+          else
+            localTracks.audioTrack = await AgoraRTC.createMicrophoneAudioTrack();
+
           if (LoopBack == false)
             await client.publish([
               localTracks.audioTrack,

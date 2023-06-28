@@ -47,11 +47,12 @@ class AgoraChannel {
     this.options.uid = uid;
   }
 
-  async setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
+  setAVControl(subAudio, subVideo, pubAudio, pubVideo) {
     this.audioEnabled = pubAudio;
     this.videoEnabled = pubVideo;
     this.audioSubscribing = subAudio;
     this.videoSubscribing = subVideo;
+    console.log("AV control set");
   }
 
   getConnectionState() {
@@ -184,11 +185,19 @@ class AgoraChannel {
 
   async setupLocalAudioTrack() {
     if (localTracks != undefined && localTracks.audioTrack == undefined) {
+      if(audio_profile != undefined){
       [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+        AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
           event_manager.raiseHandleChannelError(e.code, e.message);
         }),
       ]);
+      } else {
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          })
+        ])
+      }
     }
   }
 
@@ -283,7 +292,6 @@ class AgoraChannel {
     // this.client.removeAllListeners("error");
     // this.client.removeAllListeners("volume-indicator");
     // this.client.removeAllListeners("stream-message");
-
     // add event listener to play remote tracks when remote user publishs.
     this.client.on("user-joined", this.userJoinedHandle);
     this.client.on("user-published", this.userPublishedHandle);
@@ -305,9 +313,25 @@ class AgoraChannel {
       ),
     ]);
 
-    await cachePlaybackDevices();
-    if (this.client_role === 1 && this.videoEnabled) {
+    AgoraRTC.onCameraChanged = async (info) => {
+      console.log("onCameraChanged fired", info);
       await cacheVideoDevices();
+      event_manager.raiseOnCameraChanged(info);
+    };
+
+    AgoraRTC.onMicrophoneChanged = async (info) => {
+      console.log("onMicrophoneChanged fired", info);
+      await cacheMicrophones();
+      event_manager.raiseOnMicrophoneChanged(info);
+    };
+
+    AgoraRTC.onPlaybackDeviceChanged = async (info) => {
+      console.log("onPlaybackChanged fired", info);
+      await cachePlaybackDevices();
+      event_manager.raiseOnPlaybackDeviceChanged(info);
+    };
+
+    if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks != undefined && localTracks.videoTrack != undefined) {
         localTracks.videoTrack.play("local-player");
@@ -317,13 +341,14 @@ class AgoraChannel {
     }
 
     if (this.client_role === 1 && this.audioEnabled) {
-      await cacheMicrophones();
       await this.setupLocalAudioTrack();
       if (localTracks != undefined && localTracks.audioTrack != undefined) {
         await this.client.publish(localTracks.audioTrack);
       }
       this.is_publishing = true;
     }
+
+    
 
     multiclient_connections++;
     event_manager.raiseJoinChannelSuccess_MC(

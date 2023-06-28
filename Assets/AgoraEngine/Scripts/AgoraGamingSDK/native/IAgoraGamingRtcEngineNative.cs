@@ -206,6 +206,15 @@ namespace agora_gaming_rtc
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableAudioVolumeIndication2();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int cacheVideoDevices();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int cacheRecordingDevices();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int cachePlaybackDevices();
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

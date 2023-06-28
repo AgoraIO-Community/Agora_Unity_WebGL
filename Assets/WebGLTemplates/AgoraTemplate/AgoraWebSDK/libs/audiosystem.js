@@ -3,7 +3,7 @@ var mediaRecorder;
 var audioChunks = [];
 var dest; /// empty audio dest
 var audioCtx = new AudioContext();
-
+var audio_profile;
 const kSampleRate = 44100; // Other sample rates might not work depending on the your browser's AudioContext
 const kNumSamples = 16834;
 const kFrequency = 440;
@@ -161,9 +161,10 @@ var AUDIO_PROFILE_TYPE = [
 
 // Sets the audio parameters and application scenarios.
 function SetAudioProfile(profile) {
-  AgoraRTC.createMicrophoneAudioTrack({
-    encoderConfig: AUDIO_PROFILE_TYPE[profile].value,
-  }).then(() => {
-    //console.log("JS Microphone audio track is set");
-  });
+  audio_profile = AUDIO_PROFILE_TYPE[profile].value;
+  // AgoraRTC.createMicrophoneAudioTrack({
+  //   encoderConfig: AUDIO_PROFILE_TYPE[profile].value,
+  // }).then(() => {
+  //   //console.log("JS Microphone audio track is set");
+  // });
 }

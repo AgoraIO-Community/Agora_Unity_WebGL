@@ -130,6 +130,11 @@ function stopPreview() {
   client_manager.stopPreview();
 }
 
+function releaseVideoDeviceManager(){
+  localTracks.videoTrack.stop();
+  localTracks.videoTrack.close();
+}
+
 // Gets a new token when the current token expires after a period of time.
 async function renewToken(token) {
   client_manager.renewToken(token);
