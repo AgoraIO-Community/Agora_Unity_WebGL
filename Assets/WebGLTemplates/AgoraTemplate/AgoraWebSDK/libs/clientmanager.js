@@ -315,9 +315,8 @@ class ClientManager {
       }
     }
 
-    console.log(this.spatialAudio);
-
-    if(this.spatialAudio !== undefined){
+    // console.log(this.spatialAudio);
+    if(this.spatialAudio){
       this.spatialAudio.localPlayerStopAll();
     }
 
@@ -570,7 +569,7 @@ class ClientManager {
   } 
 
   async setClientRole(role, optionLevel) {
-    if (this.client) {
+    if (this.client && this.getChannelProfileMode() == "live") {
       var wasAudience = (this.client_role == 2);
       this.client_role = role;
       if (role === 1) {
@@ -1233,19 +1232,37 @@ async setVirtualBackgroundVideo(videoFile){
     }, timeout);
   }
 
-  async enableSpatialAudio(enabled, client = this.client){
-      if(this.spatialAudio == null){
-        this.spatialAudio = window.createSpatialAudioManager();
-      }
+  //#region  ------- SPATIAL AUDIO ------------
+  // async enableSpatialAudio(enabled){
+  //     this.spatialAudio.enabled = enabled;
+  // }
+
+  async initializeSpatialAudioManager() {
+    if(this.spatialAudio == null){
+      this.spatialAudio = window.createSpatialAudioManager();
+    }
   }
 
-  async enableLocalMediaSpatialAudio(uid, enabled, media){
+  async releaseSpatialAudioManager() {
+    if (this.spatialAudio) {
+      this.spatialAudio.clearRemotePositions();
+      delete this.spatialAudio;
+    }
+  }
+
+  async clearRemotePositions() {
+    if (this.spatialAudio) {
+      this.spatialAudio.clearRemotePositions();
+    }
+  }
+
+  async startLocalMediaSpatialAudio(uid, media){
 
     if(this.spatialAudio == null){
       this.spatialAudio = await window.createSpatialAudioManager();
     }
 
-    this.spatialAudio.getLocalMediaSpatialAudioProcessor(uid, media, enabled);
+    this.spatialAudio.startLocalMedia(uid, media);
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
@@ -1287,4 +1304,5 @@ async setVirtualBackgroundVideo(videoFile){
       this.spatialAudio.setDistanceUnit(unit);
     }
   }
+  //#endregion --- SPATIAL AUDIO ---
 }

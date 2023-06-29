@@ -941,8 +941,23 @@ function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
 }
 
-function enableLocalMediaSpatialAudio(uid, enabled, media){
-  client_manager.enableLocalMediaSpatialAudio(uid, enabled, media);
+function initializeSpatialAudioManager() {
+  client_manager.initializeSpatialAudioManager();
+}
+
+function releaseSpatialAudioManager() {
+  client_manager.releaseSpatialAudioManager();
+}
+
+function setDistanceUnit(unit) {
+  client_manager.setDistanceUnit(unit);
+}
+function clearRemotePositions() {
+  client_manager.clearRemotePositions();
+}
+
+function startLocalMediaSpatialAudio(uid, media){
+  client_manager.startLocalMediaSpatialAudio(uid, media);
 }
 
 function updatePlayerPositionInfo(uid, position, forward){

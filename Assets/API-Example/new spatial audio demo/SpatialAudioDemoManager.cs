@@ -144,10 +144,11 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public void JoinChannel()
     {
+        string TEST_URL = "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3";
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         for (uint i = 0; i < soundFiles.Length; i++)
         {
-            mRtcEngine.EnableLocalMediaSpatialAudio(((uint)1000 + i).ToString(), true, "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3");
+            mRtcEngine.StartLocalMediaSpatialAudio(((uint)1000 + i).ToString(), TEST_URL);
         }
         joinedChannel = true;
         loginScreen.SetActive(false);

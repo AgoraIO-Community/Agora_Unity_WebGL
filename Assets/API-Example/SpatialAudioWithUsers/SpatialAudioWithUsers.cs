@@ -114,7 +114,6 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
         private void ConfigureSpatialAudioEngine()
         {
             RtcEngine.EnableAudio();
-            RtcEngine.EnableSpatialAudio(true);
             localSpatial = RtcEngine.GetLocalSpatialAudioEngine();
             localSpatial.Initialize();
 

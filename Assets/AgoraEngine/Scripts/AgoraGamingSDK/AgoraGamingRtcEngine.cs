@@ -5450,26 +5450,6 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableLocalVoicePitchCallback(interval);
         }
 
-        /// @cond
-        /** Enables or disables the spatial audio effect.
-         * @WebGL Only
-         *
-         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
-         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
-         * with a real sense of space.
-         * @note Call this method before joining a channel.
-         * @param enabled Whether to enable the spatial audio effect:
-         * - `true`: Yes.
-         * - `false`: No.
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         */
-        public int EnableSpatialAudio(bool enabled)
-        {
-            return IRtcEngineNative.enableSpatialAudio(enabled);
-        }
-
 
         /// @cond
         /** Enables or disables the spatial audio effect.
@@ -5486,9 +5466,9 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int EnableLocalMediaSpatialAudio(string uid, bool enabled, string media)
+        public int StartLocalMediaSpatialAudio(string uid, string media)
         {
-            return IRtcEngineNative.enableLocalMediaSpatialAudio(uid, enabled, media);
+            return IRtcEngineNative.startLocalMediaSpatialAudio(uid, media);
         }
 
         /// @cond

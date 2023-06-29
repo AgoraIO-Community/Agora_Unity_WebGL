@@ -919,11 +919,11 @@ var LibraryAgoraWebGLSDK = {
   enableSpatialAudio: function (enabled) {
     enableSpatialAudio(enabled);
   },
-  enableLocalMediaSpatialAudio: function (uid, enabled, media) {
+  startLocalMediaSpatialAudio: function (uid, media) {
     uid_Str = Pointer_stringify(uid);
     newUID = parseInt(uid_Str);
     file = Pointer_stringify(media);
-    enableLocalMediaSpatialAudio(newUID, enabled, file);
+    startLocalMediaSpatialAudio(newUID, file);
   },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
@@ -2155,14 +2155,16 @@ muteLocalAudioStream_channel: function(channel, mute) {
   switchChannel2: function() {},
   uploadLogFile: function() {},
   setCameraCaptureRotation: function (rotation) {},
-  clearRemotePositions : function () {},
+  clearRemotePositions : function () {
+    clearRemotePositions();
+  },
   enableRemoteSuperResolution3 : function (enabled, mode, uid) {},
   enableRemoteSuperResolution4 : function (chan_ptr, enabled, mode, uid) {},
   localSpatialAudio_initialize : function () {
-    enableSpatialAudio(true);
+    initializeSpatialAudioManager();
   },
   localSpatialAudio_release  : function () {
-    enableSpatialAudio(false);
+    releaseSpatialAudioManager();
   },
   localSpatialAudio_setParameters  : function (params) {},
   muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
@@ -2173,7 +2175,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
     removeRemotePosition(newUID);
   },
   setAudioRecvRange   : function (range) {
-    //@NOT IMPLEMENTED 
+    SendNotImplementedError("setAudioRecvRange");
   },
   setDistanceUnit   : function (unit) {
     setDistanceUnit(unit);

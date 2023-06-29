@@ -159,7 +159,6 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     public void JoinChannel()
     {
-        spatialAudioChannel.EnableSpatialAudio_MC(enableToggle.isOn);
         spatialAudioChannel.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, false, true, false));
         joinedChannel = true;
     }
@@ -167,7 +166,6 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     public void LeaveChannel()
     {
 
-        spatialAudioChannel.EnableSpatialAudio_MC(false);
         spatialAudioChannel.LeaveChannel();
         joinedChannel = false;
 
