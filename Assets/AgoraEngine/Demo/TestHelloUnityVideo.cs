@@ -80,6 +80,7 @@ public class TestHelloUnityVideo
     {
         Debug.Log("calling join (channel = " + channel + ")");
 
+        SetupInitState();
 
         if (mRtcEngine == null)
             return;
@@ -97,8 +98,8 @@ public class TestHelloUnityVideo
         mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
-        mRtcEngine.EnableVideo();
-        mRtcEngine.EnableVideoObserver();
+        mRtcEngine.DisableVideo();
+        mRtcEngine.DisableVideoObserver();
         mRtcEngine.JoinChannelByKey("", channel);
         mChannelName = channel;
         ClientRole = CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE;
@@ -167,8 +168,8 @@ public class TestHelloUnityVideo
         }
         else
         {
-            AudioVideoState.subVideo = false;
-            AudioVideoState.pubVideo = false;
+            //AudioVideoState.subVideo = false;
+            //AudioVideoState.pubVideo = false;
         }
 
         // NOTE, we use the third button to invoke JoinChannelByKey
@@ -301,11 +302,13 @@ public class TestHelloUnityVideo
                 onStateText: "Mute Local video", offStateText: "Unmute Local video",
                 callOnAction: () =>
                 {
-                    mRtcEngine.MuteLocalVideoStream(true);
+                    Debug.Log("muting video");
+                    mRtcEngine.MuteLocalVideoStream(false);
                 },
                 callOffAction: () =>
                 {
-                    mRtcEngine.MuteLocalVideoStream(false);
+                    Debug.Log("unmuting video");
+                    mRtcEngine.MuteLocalVideoStream(true);
                 }
             );
         }
@@ -348,7 +351,7 @@ public class TestHelloUnityVideo
                      MuteAudioButton.Reset();
                      MuteVideoButton.Reset();
                      MuteVideoButton.GetComponent<Button>().interactable = true;
-                     MuteAudioButton.GetComponent<Button>().interactable = true;
+                     MuteAudioButton.GetComponent<Button>().interactable = true;             
                  },
                  callOffAction: () =>
                  {
@@ -365,6 +368,31 @@ public class TestHelloUnityVideo
     void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
     {
         Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
+        if(newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER)
+        {
+            if (AudioVideoState.pubVideo)
+            {
+                mRtcEngine.EnableLocalVideo(true);
+                mRtcEngine.EnableVideoObserver();
+            }
+
+            if (AudioVideoState.pubAudio)
+            {
+                mRtcEngine.EnableLocalAudio(true);
+            }
+        } else
+        {
+            if (AudioVideoState.pubVideo)
+            {
+                mRtcEngine.EnableLocalVideo(false);
+                mRtcEngine.DisableVideoObserver();
+            }
+
+            if (AudioVideoState.pubAudio)
+            {
+                mRtcEngine.EnableLocalAudio(false);
+            }
+        }
     }
     void OnClientRoleChangeFailedHandler(CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
     {

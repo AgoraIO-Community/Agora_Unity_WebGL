@@ -610,6 +610,7 @@ class ClientManager {
   // can still be on
   // if wanting both off, call disableLocalVideo
   async muteLocalVideoStream(mute) {
+    console.log(localTracks.videoTrack);
     if (localTracks.videoTrack) {
       if (mute) {
         await this.client.unpublish(localTracks.videoTrack);
@@ -637,9 +638,11 @@ class ClientManager {
     console.log("EnableLocalVideo (clientManager):" + enabled);
     if (this.client) {
       if (enabled == false) {
-        localTracks.videoTrack?.stop();
-        localTracks.videoTrack?.close();
-        await this.client.unpublish(localTracks.videoTrack);
+        if(localTracks.videoTrack != null){
+          await this.client.unpublish(localTracks.videoTrack);
+          localTracks.videoTrack?.stop();
+          localTracks.videoTrack?.close();
+        }
       } else {
         [localTracks.videoTrack] = await Promise.all([
           AgoraRTC.createCameraVideoTrack().catch(e => {
