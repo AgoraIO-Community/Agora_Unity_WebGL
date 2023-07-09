@@ -606,21 +606,16 @@ class ClientManager {
     this.audioEnabled = enabled;
   }
 
-  // mute the stream meaning unpublish, but local display 
-  // can still be on
-  // if wanting both off, call disableLocalVideo
+  // mutes the video stream by calling setMuted in the video track.
+  // if mute is equal to true, then the videoTrack will be muted
+  // true = enables video stream
   async muteLocalVideoStream(mute) {
-      if (mute) {
-        console.log(mute);
-        //await this.client.unpublish(localTracks.videoTrack);
-        await localTracks.videoTrack.setMuted(false);
-      } else {
-        console.log(mute);
-        await localTracks.videoTrack.setMuted(true);
-        //await this.client.publish(localTracks.videoTrack);
-      }
-      console.log(localTracks.videoTrack);
-      this.videoPublishing = !mute;
+    console.log(mute);
+    if(localTracks.videoTrack != undefined){
+      await localTracks.videoTrack.setMuted(mute);
+    }
+    console.log(localTracks.videoTrack.muted, mute);
+    this.videoPublishing = !mute;
   }
 
   async muteLocalAudioStream(mute) {
@@ -633,7 +628,6 @@ class ClientManager {
         await this.client.publish(localTracks.audioTrack);
       }
     }
-    console.log(localTracks.audioTrack);
     this.audioPublishing = !mute;
   }
 

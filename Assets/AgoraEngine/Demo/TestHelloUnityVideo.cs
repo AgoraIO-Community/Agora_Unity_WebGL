@@ -306,12 +306,12 @@ public class TestHelloUnityVideo
                 callOnAction: () =>
                 {
                     Debug.Log("muting video");
-                    mRtcEngine.MuteLocalVideoStream(false);
+                    mRtcEngine.MuteLocalVideoStream(true);
                 },
                 callOffAction: () =>
                 {
                     Debug.Log("unmuting video");
-                    mRtcEngine.MuteLocalVideoStream(true);
+                    mRtcEngine.MuteLocalVideoStream(false);
                 }
             );
         }
