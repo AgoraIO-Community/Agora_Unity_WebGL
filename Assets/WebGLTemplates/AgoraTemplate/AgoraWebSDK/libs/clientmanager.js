@@ -610,15 +610,17 @@ class ClientManager {
   // can still be on
   // if wanting both off, call disableLocalVideo
   async muteLocalVideoStream(mute) {
-    console.log(localTracks.videoTrack);
-    if (localTracks.videoTrack) {
       if (mute) {
-        await this.client.unpublish(localTracks.videoTrack);
+        console.log(mute);
+        //await this.client.unpublish(localTracks.videoTrack);
+        await localTracks.videoTrack.setMuted(false);
       } else {
-        await this.client.publish(localTracks.videoTrack);
+        console.log(mute);
+        await localTracks.videoTrack.setMuted(true);
+        //await this.client.publish(localTracks.videoTrack);
       }
+      console.log(localTracks.videoTrack);
       this.videoPublishing = !mute;
-    }
   }
 
   async muteLocalAudioStream(mute) {
@@ -631,6 +633,7 @@ class ClientManager {
         await this.client.publish(localTracks.audioTrack);
       }
     }
+    console.log(localTracks.audioTrack);
     this.audioPublishing = !mute;
   }
 
