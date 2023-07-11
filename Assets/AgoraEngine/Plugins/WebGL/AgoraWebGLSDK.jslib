@@ -895,6 +895,17 @@ var LibraryAgoraWebGLSDK = {
   setLocalRenderMode: function (renderMode) {},
   complain: function (callId, desc) {},
   freeObject: function (obj) {},
+  cacheVideoDevices : function () {
+    console.log("caching video devices");
+    cacheVideoDevices();
+  },
+  cacheRecordingDevices : function () {
+    cacheMicrophones();
+  },
+  cachePlaybackDevices : function () {
+    console.log("caching video devices");
+    cachePlaybackDevices();
+  },
   createAVideoDeviceManager: function () {},
   createMediaRecorder: function () {
     SendNotImplementedError("createMediaRecorder")
@@ -1363,7 +1374,9 @@ var LibraryAgoraWebGLSDK = {
   setRemoteSubscribeFallbackOption: function (option) {
     setRemoteSubscribeFallbackOption_WGL(option);
   },
-  releaseAVideoDeviceManager: function () {},
+  releaseAVideoDeviceManager: function () {
+    releaseVideoDeviceManager();
+  },
   addPublishStreamUrl2: function (channel, url, transcodingEnabled) {},
   setRemoteDefaultVideoStreamType: function (remoteVideoStreamType) {
     setRemoteDefaultVideoStreamType(remoteVideoStreamType);

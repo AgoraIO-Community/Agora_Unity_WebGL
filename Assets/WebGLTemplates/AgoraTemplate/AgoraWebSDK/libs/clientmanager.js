@@ -103,16 +103,12 @@ class ClientManager {
       wrapper.log("using mode: " + mode);
       this.client = AgoraRTC.createClient({ mode: mode, codec: "vp8" });
       this.options.appid = appID;
-
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
-
       return true;
     } else {
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
       return false;
     }
   }
@@ -187,7 +183,7 @@ class ClientManager {
       || mediaType == "audio" && this.screenShareClient != null
       && id != this.screenShareClient.uid)) {
       await this.subscribe_remoteuser(user, mediaType);
-    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
+    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers != undefined) {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
       this.getRemoteVideoStats(id);
@@ -502,6 +498,8 @@ class ClientManager {
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
 
+   
+
     event_manager.raiseJoinChannelSuccess(
       this.options.uid.toString(),
       this.options.channel
@@ -525,10 +523,21 @@ class ClientManager {
       }
     }
 
+    
     if (this.audioEnabled && this.isHosting()) {
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack()
-      ]);
+      if(audio_profile != undefined){
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          }),
+        ]);
+        } else {
+          [localTracks.audioTrack] = await Promise.all([
+            AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+              event_manager.raiseHandleChannelError(e.code, e.message);
+            })
+          ])
+        }
       currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
           localTracks.audioTrack._deviceName
       );
@@ -645,6 +654,7 @@ class ClientManager {
         localTracks.videoTrack.play("local-player");
 
         await this.client.publish(localTracks.videoTrack);
+        console.log(localTracks.videoTrack.getStats().captureResolutionWidth, localTracks.videoTrack.getStats().captureResolutionHeight);
       }
     }
     this.videoEnabled = enabled;
@@ -653,13 +663,6 @@ class ClientManager {
   
   async startPreview() {
     console.log(localTracks.videoTrack);
-    if(localTracks.videoTrack){
-      // localTracks.videoTrack.stop();
-      // localTracks.videoTrack.close();
-      if(this._inChannel){
-        await this.client.unpublish(localTracks.videoTrack);
-      }
-    }
     
     if(localTracks.videoTrack == null){
       [localTracks.videoTrack] = await Promise.all([
@@ -676,13 +679,8 @@ class ClientManager {
 
     if(localTracks.videoTrack != null){
       localTracks.videoTrack.stop();
-      //localTracks.videoTrack.close();
     }
 
-    localTracks.videoTrack.play("local-player");
-    if(this._inChannel){
-      await this.client.publish(localTracks.videoTrack);
-    }
   }
 
   async publishPreview(){
@@ -754,9 +752,19 @@ class ClientManager {
 
       await this.client.unpublish(localTracks.audioTrack);
 
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack(),
-      ]);
+      if(audio_profile != undefined){
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          }),
+        ]);
+        } else {
+          [localTracks.audioTrack] = await Promise.all([
+            AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+              event_manager.raiseHandleChannelError(e.code, e.message);
+            })
+          ])
+        }
 
       await this.client.publish(localTracks.audioTrack);
     }

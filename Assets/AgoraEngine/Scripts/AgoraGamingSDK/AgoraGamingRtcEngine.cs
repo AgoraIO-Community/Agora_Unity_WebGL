@@ -2024,6 +2024,21 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableVideoObserver();
         }
 
+        public int CacheVideoDevices()
+        {
+            return IRtcEngineNative.cacheVideoDevices();
+        }
+
+        public int CacheRecordingDevices()
+        {
+            return IRtcEngineNative.cacheRecordingDevices();
+        }
+
+        public int CachePlaybackDevices()
+        {
+            return IRtcEngineNative.cachePlaybackDevices();
+        }
+
         /** Disables the video observer.
          *
          * This method disables sending video directly to the app.
