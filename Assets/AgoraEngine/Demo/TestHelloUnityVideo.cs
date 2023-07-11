@@ -80,6 +80,7 @@ public class TestHelloUnityVideo
     {
         Debug.Log("calling join (channel = " + channel + ")");
 
+        SetupInitState();
 
         if (mRtcEngine == null)
             return;
@@ -94,7 +95,9 @@ public class TestHelloUnityVideo
         };
         mRtcEngine.OnError = HandleError;
         mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
+        mRtcEngine.OnRemoteVideoStateChanged += handleOnUserEnableVideo;
         mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
+        mRtcEngine.OnVideoSizeChanged += OnVideoSizeChangedHandler;
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
         mRtcEngine.EnableVideo();
@@ -135,6 +138,7 @@ public class TestHelloUnityVideo
         mRtcEngine.OnUserMuteVideo = OnUserMutedVideo;
         //   mRtcEngine.OnVolumeIndication = OnVolumeIndicationHandler;
         mRtcEngine.OnClientRoleChanged += handleOnClientRoleChanged;
+        mRtcEngine.OnRemoteVideoStateChanged += handleOnUserEnableVideo;
         mRtcEngine.OnClientRoleChangeFailed += OnClientRoleChangeFailedHandler;
         mRtcEngine.OnVideoSizeChanged += OnVideoSizeChangedHandler;
 
@@ -167,8 +171,8 @@ public class TestHelloUnityVideo
         }
         else
         {
-            AudioVideoState.subVideo = false;
-            AudioVideoState.pubVideo = false;
+            //AudioVideoState.subVideo = false;
+            //AudioVideoState.pubVideo = false;
         }
 
         // NOTE, we use the third button to invoke JoinChannelByKey
@@ -301,10 +305,12 @@ public class TestHelloUnityVideo
                 onStateText: "Mute Local video", offStateText: "Unmute Local video",
                 callOnAction: () =>
                 {
+                    Debug.Log("muting video");
                     mRtcEngine.MuteLocalVideoStream(true);
                 },
                 callOffAction: () =>
                 {
+                    Debug.Log("unmuting video");
                     mRtcEngine.MuteLocalVideoStream(false);
                 }
             );
@@ -348,7 +354,7 @@ public class TestHelloUnityVideo
                      MuteAudioButton.Reset();
                      MuteVideoButton.Reset();
                      MuteVideoButton.GetComponent<Button>().interactable = true;
-                     MuteAudioButton.GetComponent<Button>().interactable = true;
+                     MuteAudioButton.GetComponent<Button>().interactable = true;             
                  },
                  callOffAction: () =>
                  {
@@ -365,7 +371,58 @@ public class TestHelloUnityVideo
     void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
     {
         Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
+        if(newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER)
+        {
+            if (AudioVideoState.pubVideo)
+            {
+                mRtcEngine.EnableVideo();
+                mRtcEngine.EnableVideoObserver();
+                //mRtcEngine.EnableLocalVideo(true);
+            }
+
+            if (AudioVideoState.pubAudio)
+            {
+                mRtcEngine.EnableLocalAudio(true);
+            }
+        } else
+        {
+            if (AudioVideoState.pubVideo)
+            {
+                //mRtcEngine.EnableLocalVideo(false);
+                mRtcEngine.EnableVideo();
+                mRtcEngine.EnableVideoObserver();
+            }
+
+            if (AudioVideoState.pubAudio)
+            {
+                mRtcEngine.EnableLocalAudio(false);
+            }
+        }
     }
+
+    void handleOnUserEnableVideo(uint uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
+    {
+        Debug.Log("remote video" + state.ToString());
+        if (state == REMOTE_VIDEO_STATE.REMOTE_VIDEO_STATE_STARTING)
+        {
+            // create a GameObject and assign to this new user
+            VideoSurface videoSurface = makeImageSurface(uid.ToString());
+            if (!ReferenceEquals(videoSurface, null))
+            {
+                // configure videoSurface
+                videoSurface.SetForUser(uid);
+                videoSurface.SetEnable(true);
+                videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+
+                remoteUserDisplays.Add(videoSurface.gameObject);
+                UserVideoDict[uid] = videoSurface;
+            }
+        } else
+        {
+
+        }
+    }
+
     void OnClientRoleChangeFailedHandler(CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
     {
         Debug.Log("Engine OnClientRoleChangeFaile: " + reason + " c-> " + currentRole);

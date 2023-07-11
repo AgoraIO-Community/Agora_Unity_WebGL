@@ -12,7 +12,7 @@ async function wglw_joinChannel(channelkey, channelName, info, uid) {
   client_manager.setOptions(channelkey, channelName, uid);
   await client_manager.joinAgoraChannel(uid);
   wrapper.initStats();
-  cacheDevices();
+  //cacheDevices();
 }
 
 async function wglw_joinChannel_withOption(
@@ -498,7 +498,9 @@ function muteLocalAudioStream(mute) {
 
 // Stops/Resumes sending the local video stream.
 function muteLocalVideoTrack(mute) {
-  client_manager.muteLocalVideoStream(mute);
+  enable = mute == 1 ? true : false;
+  console.log(mute,enable);
+  client_manager.muteLocalVideoStream(enable);
 }
 
 // Sets the stream type for all remote users
