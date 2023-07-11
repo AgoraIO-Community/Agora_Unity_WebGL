@@ -158,6 +158,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void stopPreview()
     {
+        previewing = false;
         _rtcEngine.StopPreview();
         ReleaseVideoDevice();
     }

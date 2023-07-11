@@ -635,6 +635,7 @@ class ClientManager {
     console.log("EnableLocalVideo (clientManager):" + enabled);
     if (this.client) {
       if (enabled == false) {
+
         if(localTracks.videoTrack != null){
           await this.client.unpublish(localTracks.videoTrack);
           localTracks.videoTrack?.stop();
