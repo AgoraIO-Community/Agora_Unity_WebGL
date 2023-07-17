@@ -1,18 +1,13 @@
-import {
-  SpatialAudioExtension
-}
-from "./index.esm.js";
+import { SpatialAudioExtension } from "./index.esm.js";
 
 AgoraRTC.setLogLevel(1);
 let extension = new SpatialAudioExtension({
-  assetPath: './AgoraWebSDK/libs/spatial'
+  assetsPath: "./AgoraWebSDK/libs/spatial",
 });
 AgoraRTC.registerExtensions([extension]);
 
 class spatialAudioManager {
-
   constructor() {
-
     this.spatialAudioSettings = {
       azimuth: 0,
       elevation: 0,
@@ -20,92 +15,79 @@ class spatialAudioManager {
       orientation: 0,
       attenuation: 0,
       blur: false,
-      airAbsorb: false
+      airAbsorb: false,
     };
 
-    this.remoteUsersSound = ['./AgoraWebSDK/libs/resources/3.mp3'];
+    this.remoteUsersSound = ["./AgoraWebSDK/libs/resources/3.mp3"];
 
-    this.localPlayerSound = ['./AgoraWebSDK/libs/resources/2.mp3'];
+    this.localPlayerSound = ["./AgoraWebSDK/libs/resources/2.mp3"];
 
-    this.localPlayTracks = {},
-
-    this.localPlayProcessors = {},
-
-    this.enabled = true;
+    (this.localPlayTracks = {}),
+      (this.localPlayProcessors = {}),
+      (this.enabled = true);
 
     this.processor = null;
-
   }
 
   async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
-    setTimeout(async() =>{
+    setTimeout(async () => {
       try {
         console.log(client);
-        var isOn = enabled == 1 ? true: false;
+        var isOn = enabled == 1 ? true : false;
         var processor = await extension.createProcessor();
         client.spatialAudioProcessor = processor;
         this.localPlayProcessors.push(processor);
-        await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
+        await client.audioTrack
+          .pipe(processor)
+          .pipe(client.audioTrack.processorDestination);
         client.audioTrack.uid = client.uid;
         this.enabled = isOn;
         return processor;
-      } catch(error) {
+      } catch (error) {
         console.error(`${processor} with microphone track play fail: ${error}`);
       }
-    },
-    1000);
-
+    }, 1000);
   }
 
   // each media track will be assigned a UID
   async startLocalMedia(uid, soundSrc) {
-    setTimeout(async() =>{
+    setTimeout(async () => {
       try {
         var processor = await extension.createProcessor();
         const track = await AgoraRTC.createBufferSourceAudioTrack({
-          source: soundSrc
+          source: soundSrc,
         });
         await track.pipe(processor).pipe(track.processorDestination);
         track.startProcessAudioBuffer({
-          loop: true
+          loop: true,
         });
         track.play();
         this.localPlayProcessors[uid] = processor;
         this.localPlayTracks[uid] = track;
-      } catch(error) {
+      } catch (error) {
         console.error(`${processor} with buffer track play fail: ${error}`);
       }
-    },
-    1000);
+    }, 1000);
   }
 
-  async getRemoteUserSpatialAudioProcessor(client, enabled) {
-    setTimeout(async() => {
+  async pipeRemoteUserSpatialAudioProcessor(user) {
+    setTimeout(async () => {
       try {
+        var processor = await extension.createProcessor();
 
-        var processor = undefined;
-
-        if (enabled === true) {
-          processor = await extension.createProcessor();
-          await client.audioTrack.pipe(processor).pipe(client.audioTrack.processorDestination);
-          this.localPlayProcessors[client.uid] = processor;
-          this.localPlayTracks[client.uid] = client.audioTrack;
-        } else {
-          //disable spatial audio code would go here.
-        }
-
-        this.enabled = enabled;
-
-      } catch(error) {
+        this.localPlayProcessors[user.uid] = processor;
+        this.localPlayTracks[user.uid] = user.audioTrack;
+        // Inject the SpatialAudioProcessor into the audio track
+        const track = user.audioTrack;
+        track.pipe(processor).pipe(track.processorDestination);
+      } catch (error) {
         console.error(`${processor} with microphone track play fail: ${error}`);
       }
-    },
-    1000);
-
+    }, 1000);
   }
 
   async localPlayerStop(user) {
-    if (this.localPlayTracks[user.uid] ) {
+    if (this.localPlayTracks[user.uid]) {
       await this.localPlayTracks[user.uid].stop();
       await this.localPlayTracks[user.uid].close();
       delete this.localPlayTracks[user.uid];
@@ -114,7 +96,7 @@ class spatialAudioManager {
 
   async localPlayerStopAll() {
     if (Object.keys(this.localPlayTracks).length > 0) {
-      Object.values(this.localPlayTracks).forEach(e => {
+      Object.values(this.localPlayTracks).forEach((e) => {
         e.stop();
         e.close();
       });
@@ -141,15 +123,19 @@ class spatialAudioManager {
     const localPlayerPosition = {
       //position: [position[0], position[1], position[2]],
       position: position,
-      forward: forward
+      forward: forward,
     };
 
-    if (this.localPlayProcessors[uid] ) {
-      console.log(this.localPlayProcessors[uid].updatePlayerPositionInfo({
-        position,
-        forward
-      }));
-      this.localPlayProcessors[uid].updatePlayerPositionInfo(localPlayerPosition);
+    if (this.localPlayProcessors[uid]) {
+      console.log(
+        this.localPlayProcessors[uid].updatePlayerPositionInfo({
+          position,
+          forward,
+        })
+      );
+      this.localPlayProcessors[uid].updatePlayerPositionInfo(
+        localPlayerPosition
+      );
     }
   }
 
@@ -157,7 +143,7 @@ class spatialAudioManager {
     const localPlayerPosition = {
       //position: [position[0], position[1], 1],
       position: position,
-      forward: forward
+      forward: forward,
     };
 
     if (this.localPlayProcessors[uid]) {
@@ -221,12 +207,10 @@ class spatialAudioManager {
       this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
     }
   }
-
 }
 
-
 function createSpatialAudioManager() {
-   return new spatialAudioManager();
+  return new spatialAudioManager();
 }
 
 window.createSpatialAudioManager = createSpatialAudioManager;
