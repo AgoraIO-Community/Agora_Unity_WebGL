@@ -26,6 +26,14 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
         // Fill in the temporary token you obtained from Agora Console.
         string _token = "";
 
+        [SerializeField]
+        Button DecreaseBtn;
+        [SerializeField]
+        Button IncreaseBtn;
+        [SerializeField]
+        Text DistanceLabel;
+
+
         // A variable to save the remote user uid.
         private uint remoteUid;
         internal VideoSurface LocalView;
@@ -33,6 +41,17 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
         internal IRtcEngine RtcEngine;
         private ILocalSpatialAudioEngine localSpatial;
         // Slider control for spatial audio.
+        float _xDistance = 0;
+        float XDistance
+        {
+            get { return _xDistance; }
+            set
+            {
+                _xDistance = value;
+                DistanceLabel.text = _xDistance.ToString();
+            }
+        }
+
         private Slider distanceSlider;
 
         // Start is called before the first frame update
@@ -98,17 +117,23 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             remoteUid = uid;
             RemoteView.SetForUser(uid);
             RemoteView.SetEnable(true);
+            IncreaseBtn.interactable = true;
+            DecreaseBtn.interactable = true;
         }
 
         void EngineOnLeaveChannelHandler(RtcStats stats)
         {
             Debug.Log($"Left channel. ");
+            remoteUid = 0;
         }
 
         void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
         {
             Debug.Log($"User {uid} is offline now:{reason}. ");
             RemoteView.SetEnable(false);
+            IncreaseBtn.interactable = false;
+            DecreaseBtn.interactable = false;
+            remoteUid = 0;
         }
 
         private void ConfigureSpatialAudioEngine()
@@ -139,7 +164,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             // Set the unit vector of the x axis in the coordinate system.
             // This parameter is an array of length 3,
             // The three values represent the front, right, and top coordinates
-            float[] forward = new float[] { sourceDistance, 0.0F, 0.0F };
+            float[] forward = new float[] { 1, 0.0F, 0.0F };
             // Update the spatial position of the specified remote user
             RemoteVoicePositionInfo remotePosInfo = new RemoteVoicePositionInfo
             {
@@ -166,6 +191,11 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             go = GameObject.Find("Join");
             go.GetComponent<Button>().onClick.AddListener(Join);
 
+            DecreaseBtn.onClick.AddListener(DecreaseDistance);
+            IncreaseBtn.onClick.AddListener(IncreaseDistance);
+            DecreaseBtn.interactable = false;
+            IncreaseBtn.interactable = false;
+
             // Reference the slider from the UI
             go = GameObject.Find("distanceSlider");
             distanceSlider = go.GetComponent<Slider>();
@@ -174,6 +204,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             distanceSlider.minValue = 0;
             // Add a listener to the slider and which invokes distanceSlider when the slider is dragged left or right.
             distanceSlider.onValueChanged.AddListener(delegate { updateSpatialAudioPosition((int)distanceSlider.value); });
+
+
+            distanceSlider.interactable = false;
 
         }
 
@@ -203,6 +236,18 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             RemoteView.SetEnable(false);
             // Stops rendering the local video.
             LocalView.SetEnable(false);
+        }
+
+        const float DIST_DELTA = 5;
+        void DecreaseDistance()
+        {
+            XDistance -= DIST_DELTA;
+            updateSpatialAudioPosition(XDistance);
+        }
+        void IncreaseDistance()
+        {
+            XDistance += DIST_DELTA;
+            updateSpatialAudioPosition(XDistance);
         }
 
     }

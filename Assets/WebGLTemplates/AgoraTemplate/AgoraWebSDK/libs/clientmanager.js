@@ -166,6 +166,11 @@ class ClientManager {
       } 
     } else {
       if (mediaType === "audio" && user.hasAudio && user.audioTrack && !this.remoteUserAudioMuted[user.uid]) {
+
+        if(this.spatialAudio && this.spatialAudio.enabled){
+            await this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
+        }
+
         user.audioTrack.play();
         // for Voice only subscription only, the raise won't happen above
         if (remoteUsers[user.uid] == null) {
@@ -199,9 +204,7 @@ class ClientManager {
     const id = user.uid;
     console.log("remote user id" , id);
 
-    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
-      this.enableSpatialAudio(true, user);
-    }
+
   }
 
   handleUserUnpublished(user, mediaType) {
@@ -554,7 +557,7 @@ class ClientManager {
       });
     }
 
-    $("#local-player-name").text(`localVideo(${this.options.uid})`);
+    // $("#local-player-name").text(`localVideo(${this.options.uid})`);
     if (this.isHosting() && this._inChannel) {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
@@ -1233,12 +1236,16 @@ async setVirtualBackgroundVideo(videoFile){
   }
 
   //#region  ------- SPATIAL AUDIO ------------
-  // async enableSpatialAudio(enabled){
-  //     this.spatialAudio.enabled = enabled;
-  // }
+  async enableSpatialAudio(enabled){
+    if (enabled && this.spatialAudio === null || this.spatialAudio === undefined)
+    {
+      await this.initializeSpatialAudioManager();
+    }
+    this.spatialAudio.enabled = enabled;
+  }
 
   async initializeSpatialAudioManager() {
-    if(this.spatialAudio == null){
+    if(this.spatialAudio === null || this.spatialAudio === undefined){
       this.spatialAudio = window.createSpatialAudioManager();
     }
   }

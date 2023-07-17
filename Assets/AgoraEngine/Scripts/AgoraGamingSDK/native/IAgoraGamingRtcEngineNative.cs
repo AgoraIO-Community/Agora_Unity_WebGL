@@ -1551,9 +1551,6 @@ namespace agora_gaming_rtc
         protected static extern int updatePlayerPositionInfo(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int updateRemotePosition(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
-
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updateSelfPosition_wgl(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ, float rightX, float rightY, float rightZ, float upX, float upY, float upZ);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

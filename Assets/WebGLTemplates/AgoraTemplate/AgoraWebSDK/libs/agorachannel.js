@@ -1018,15 +1018,12 @@ class AgoraChannel {
     setBackgroundVideo(this.virtualBackgroundProcessor, localTracks.videoTrack, videoFile);
   }
 
-  async enableSpatialAudio(enabled, client = this.client){
-    
-    if(client.uid === this.client.uid){
-      if(this.spatialAudio == undefined){
+  async enableSpatialAudio(user)
+  {
+    if(this.spatialAudio){
         this.spatialAudio = window.createSpatialAudioManager();
-      }
-    } else {
-      await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
     }
+    await this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){

@@ -920,9 +920,8 @@ var LibraryAgoraWebGLSDK = {
     enableSpatialAudio(enabled);
   },
   startLocalMediaSpatialAudio: function (uid, media) {
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
-    file = Pointer_stringify(media);
+    let newUID = UTF8ToString(uid);
+    file = UTF8ToString(media);
     startLocalMediaSpatialAudio(newUID, file);
   },
   enableSpatialAudio_MC: function (enabled) {
@@ -1085,8 +1084,7 @@ var LibraryAgoraWebGLSDK = {
       position: [posX, posY, posZ],
       forward: [forwardX, forwardY, forwardZ],
     };
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
+    let newUID = UTF8ToString(uid);
     updatePlayerPositionInfo(newUID, localPosition.position, localPosition.forward);
   },
   updateRemotePosition: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
@@ -1094,8 +1092,7 @@ var LibraryAgoraWebGLSDK = {
       position: [posX, posY, posZ],
       forward: [forwardX, forwardY, forwardZ],
     };
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
+    let newUID = UTF8ToString(uid);
     updateRemotePosition(newUID, localPosition.position, localPosition.forward);
   },
   updateSelfPosition_wgl: function(posX, posY, posZ, forwardX, forwardY, forwardZ, rightX, rightY, rightZ, upX, upY, upZ){
@@ -1109,8 +1106,7 @@ var LibraryAgoraWebGLSDK = {
     updateSelfPosition(localPosition.position, localPosition.forward, localPosition.right, localPosition.up);
   },
   removeRemotePosition: function(uid){
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
+    let newUID = UTF8ToString(uid);
     removeRemotePosition(newUID);
   },
   setScreenCaptureScenario : function () {
@@ -2170,8 +2166,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
   muteLocalAudioStream_spatialAudio   : function (mute)  {},
   removeRemotePosition   : function (uid) {
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
+    let newUID = UTF8ToString(uid);
     removeRemotePosition(newUID);
   },
   setAudioRecvRange   : function (range) {
@@ -2182,8 +2177,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
   setMaxAudioRecvCount   : function (count) {},
   updateRemotePosition : function (uid, pos, fwd) {
-    uid_Str = Pointer_stringify(uid);
-    newUID = parseInt(uid_Str);
+    let newUID = UTF8ToString(uid);
     
     let _position = [];
     let _forward = [];
@@ -2194,7 +2188,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
       _position.push((HEAPF32[(pos >> 2) + i]));
       _forward.push((HEAPF32[(fwd >> 2) + i])); 
     }
-    updateRemotePosition(newUID, _position, _forward);
+    updateRemotePosition(uid, _position, _forward);
   },
   updateSelfPosition  : function (pos, forward, right, up) {
     const size = 3; // passing from an float array of 3 each argv
