@@ -1540,22 +1540,18 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableLocalVoicePitchCallback(int interval);
 
-#if  UNITY_WEBGL
+#if  UNITY_WEBGL && !UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio(bool enabled);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int startLocalMediaSpatialAudio(string uid, string media);
+        protected static extern int startLocalMediaSpatialAudio(uint uid, string media);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updatePlayerPositionInfo(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updateSelfPosition_wgl(float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ, float rightX, float rightY, float rightZ, float upX, float upY, float upZ);
-
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int removeRemotePosition(string uid);
-
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

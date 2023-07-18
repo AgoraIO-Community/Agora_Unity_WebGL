@@ -14,6 +14,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
     public class SpatialAudioWithUsers : MonoBehaviour
     {
 
+        [Header("Application Info")]
         [SerializeField]
         private AppInfoObject appInfo;
 
@@ -26,33 +27,31 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
         // Fill in the temporary token you obtained from Agora Console.
         string _token = "";
 
-        [SerializeField]
-        Button DecreaseBtn;
-        [SerializeField]
-        Button IncreaseBtn;
-        [SerializeField]
-        Text DistanceLabel;
+        [SerializeField] uint MediaUID = 666666;
+        [SerializeField] string MediaURL;
 
+        [Header("UI Controls")]
+        [SerializeField] Button DecreaseBtn;
+        [SerializeField] Button IncreaseBtn;
+        [SerializeField] Button UserOffBtn;
+        [SerializeField] Text DistanceLabel;
+        [SerializeField] Toggle MediaToggle;
+        [SerializeField] Slider DistanceSlider;
+        [SerializeField] GameObject MediaObject;
 
         // A variable to save the remote user uid.
-        private uint remoteUid;
-        internal VideoSurface LocalView;
-        internal VideoSurface RemoteView;
-        internal IRtcEngine RtcEngine;
-        private ILocalSpatialAudioEngine localSpatial;
-        // Slider control for spatial audio.
-        float _xDistance = 0;
-        float XDistance
-        {
-            get { return _xDistance; }
-            set
-            {
-                _xDistance = value;
-                DistanceLabel.text = _xDistance.ToString();
-            }
-        }
+        uint RemoteUid { get; set; }
 
-        private Slider distanceSlider;
+        VideoSurface LocalView;
+        VideoSurface RemoteView;
+
+        IRtcEngine RtcEngine;
+        ILocalSpatialAudioEngine localSpatial;
+
+        bool MediaPlaying { get { return MediaToggle.isOn; } }
+        float XDistance { get; set; }
+        const float MAX_DISTANCE = 50;
+
 
         // Start is called before the first frame update
         void Start()
@@ -64,6 +63,10 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             _appID = appInfo.appID;
             _token = appInfo.token;
 
+            if (RootMenuControl.instance)
+            {
+                _channelName = RootMenuControl.instance.channel;
+            }
             SetupVideoSDKEngine();
             ConfigureSpatialAudioEngine();
 
@@ -87,6 +90,11 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             if (RtcEngine != null)
             {
                 Leave();
+                if (localSpatial != null)
+                {
+                    localSpatial.Release();
+                }
+
                 if (RtcEngine != null)
                 {
                     RtcEngine.DisableVideoObserver();
@@ -105,36 +113,49 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             RtcEngine.OnLeaveChannel += EngineOnLeaveChannelHandler;
         }
 
+        #region --- Agora Event Handlers ---
 
         void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
         {
             Debug.Log($"Joined Channel {channelId} uid:{uid}");
+            MediaToggle.interactable = false;
+            if (MediaPlaying)
+            {
+                RtcEngine.StartLocalMediaSpatialAudio(MediaUID, MediaURL);
+                RemoteUid = MediaUID;
+                EnableDistanceControl(true);
+                updateSpatialAudioPosition(0);
+            }
         }
 
         void EngineOnUserJoinedHandler(uint uid, int elapsed)
         {
             Debug.Log($"User {uid} joined. ");
-            remoteUid = uid;
+            if (RemoteUid != 0 && uid != RemoteUid)
+            {
+                Debug.LogWarning($"User {uid} joined, but this test is already ongoing with another user ${RemoteUid}");
+                return;
+            }
+            RemoteUid = uid;
             RemoteView.SetForUser(uid);
             RemoteView.SetEnable(true);
-            IncreaseBtn.interactable = true;
-            DecreaseBtn.interactable = true;
+            EnableDistanceControl(true);
         }
 
         void EngineOnLeaveChannelHandler(RtcStats stats)
         {
-            Debug.Log($"Left channel. ");
-            remoteUid = 0;
+            RemoteUid = 0;
+            MediaToggle.interactable = true;
         }
 
         void EngineOnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
         {
             Debug.Log($"User {uid} is offline now:{reason}. ");
             RemoteView.SetEnable(false);
-            IncreaseBtn.interactable = false;
-            DecreaseBtn.interactable = false;
-            remoteUid = 0;
+            EnableDistanceControl(false);
+            RemoteUid = 0;
         }
+        #endregion
 
         private void ConfigureSpatialAudioEngine()
         {
@@ -154,13 +175,15 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             localSpatial.UpdateSelfPosition(pos, forward, right, up);
         }
 
+        Vector3 RemotePosition = new Vector3(0, 4, 0);
 
         public void updateSpatialAudioPosition(float sourceDistance)
         {
+            RemotePosition = new Vector3(sourceDistance, RemotePosition.y, RemotePosition.z);
             // Set the coordinates in the world coordinate system.
             // This parameter is an array of length 3
             // The three values represent the front, right, and top coordinates
-            float[] position = new float[] { sourceDistance, 4.0F, 0.0F };
+            float[] position = new float[] { RemotePosition.x, RemotePosition.y, RemotePosition.z };
             // Set the unit vector of the x axis in the coordinate system.
             // This parameter is an array of length 3,
             // The three values represent the front, right, and top coordinates
@@ -171,7 +194,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
                 position = position,
                 forward = forward
             };
-            var rc = localSpatial.UpdateRemotePosition((uint)remoteUid, remotePosInfo);
+            var rc = localSpatial.UpdateRemotePosition(RemoteUid, remotePosInfo);
             Debug.Log("Remote user spatial position updated, rc = " + rc);
         }
 
@@ -193,23 +216,43 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
 
             DecreaseBtn.onClick.AddListener(DecreaseDistance);
             IncreaseBtn.onClick.AddListener(IncreaseDistance);
-            DecreaseBtn.interactable = false;
-            IncreaseBtn.interactable = false;
+            UserOffBtn.onClick.AddListener(RemoveRemoteUserSpatial);
+
+            EnableDistanceControl(false);
+            DistanceSlider.maxValue = MAX_DISTANCE;
+            DistanceSlider.minValue = -MAX_DISTANCE;
+            XDistance = 0;
+            UpdateUI();
 
             // Reference the slider from the UI
-            go = GameObject.Find("distanceSlider");
-            distanceSlider = go.GetComponent<Slider>();
-            // Specify a minimum and maximum value for slider.
-            distanceSlider.maxValue = 10;
-            distanceSlider.minValue = 0;
             // Add a listener to the slider and which invokes distanceSlider when the slider is dragged left or right.
-            distanceSlider.onValueChanged.AddListener(delegate { updateSpatialAudioPosition((int)distanceSlider.value); });
+            DistanceSlider.onValueChanged.AddListener(delegate
+            {
+                var dist = (int)DistanceSlider.value;
+                updateSpatialAudioPosition(dist);
+                XDistance = dist;
+                DistanceLabel.text = RemotePosition.ToString();
+            });
 
-
-            distanceSlider.interactable = false;
-
+            MediaToggle.onValueChanged.AddListener(delegate
+            {
+                MediaObject.SetActive(MediaToggle.isOn);
+            });
         }
 
+        void UpdateUI()
+        {
+            DistanceSlider.value = XDistance;
+            DistanceLabel.text = RemotePosition.ToString();
+        }
+
+        void EnableDistanceControl(bool enabled)
+        {
+            DecreaseBtn.interactable = enabled;
+            IncreaseBtn.interactable = enabled;
+            UserOffBtn.interactable = enabled;
+            DistanceSlider.interactable = enabled;
+        }
         void Join()
         {
             // Enable the video module.
@@ -238,16 +281,37 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
             LocalView.SetEnable(false);
         }
 
-        const float DIST_DELTA = 5;
+        const float DIST_DELTA = 10;
         void DecreaseDistance()
         {
             XDistance -= DIST_DELTA;
+            if (XDistance < -MAX_DISTANCE)
+            {
+                XDistance = -MAX_DISTANCE;
+            }
             updateSpatialAudioPosition(XDistance);
+            UpdateUI();
         }
+
         void IncreaseDistance()
         {
             XDistance += DIST_DELTA;
+            if (XDistance > MAX_DISTANCE)
+            {
+                XDistance = MAX_DISTANCE;
+            }
             updateSpatialAudioPosition(XDistance);
+            UpdateUI();
+        }
+
+        void RemoveRemoteUserSpatial()
+        {
+            Debug.Log($"Removing user {RemoteUid} from Spatial Audio Positional effect");
+            localSpatial.RemoveRemotePosition(RemoteUid);
+            XDistance = 0;
+            RemotePosition = Vector3.zero;
+            UpdateUI();
+            EnableDistanceControl(false);
         }
 
     }

@@ -25,7 +25,6 @@ class ClientManager {
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
     this.spatialAudio = undefined;
-    this.spatialAudioProcessor = null;
     this._customVideoConfiguration = {
       bitrateMax:undefined,
       bitrateMin:undefined,
@@ -1284,32 +1283,37 @@ async setVirtualBackgroundVideo(videoFile){
 
   async updatePlayerPositionInfo(uid, position, forward){
     if(this.spatialAudio) {
-      this.spatialAudio.updatePlayerPositionInfo(uid, position, forward);
+      return this.spatialAudio.updatePlayerPositionInfo(uid, position, forward);
     }
+    return -1;
   }
 
   async updateRemotePosition(uid, position, forward){
     if(this.spatialAudio) {
-      this.spatialAudio.updateRemotePosition(uid, position, forward);
+      return this.spatialAudio.updateRemotePosition(uid, position, forward);
     }
+    return -1;
   }
 
   async removeRemotePosition(uid){
     if(this.spatialAudio) {
-      this.spatialAudio.removeRemotePosition(uid);
+      return this.spatialAudio.removeRemotePosition(uid);
     }
+    return -1;
   }
 
   async updateSelfPosition(position, forward, right, up) {
     if(this.spatialAudio) {
-      this.spatialAudio.updateSelfPosition(position, forward, right, up);
+      return this.spatialAudio.updateSelfPosition(position, forward, right, up);
     }
+    return -1;
   }
 
   async setDistanceUnit(unit) {
     if(this.spatialAudio) {
-      this.spatialAudio.setDistanceUnit(unit);
+      return this.spatialAudio.setDistanceUnit(unit);
     }
+    return -1;
   }
   //#endregion --- SPATIAL AUDIO ---
 }

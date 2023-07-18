@@ -154,11 +154,6 @@ public class TestVideoRespawn : MonoBehaviour
 
     float posX = 0;
     float posY = 0;
-    public void UpdateSelfPosition1()
-    {
-        posX += 2.5f;
-        mRtcEngine.updateSelfPosition(new Vector3(posX, 0, 0), new Vector3(20.5f, 0, 0), new Vector3(1, 0, 0), new Vector3(0, 1, 0));
-    }
 
     public void UpdateSelfPosition2()
     {

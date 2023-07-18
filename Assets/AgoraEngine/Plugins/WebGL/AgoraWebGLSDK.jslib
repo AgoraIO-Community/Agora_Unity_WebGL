@@ -920,9 +920,8 @@ var LibraryAgoraWebGLSDK = {
     enableSpatialAudio(enabled);
   },
   startLocalMediaSpatialAudio: function (uid, media) {
-    let newUID = UTF8ToString(uid);
     file = UTF8ToString(media);
-    startLocalMediaSpatialAudio(newUID, file);
+    startLocalMediaSpatialAudio(uid, file);
   },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
@@ -2166,8 +2165,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
   muteLocalAudioStream_spatialAudio   : function (mute)  {},
   removeRemotePosition   : function (uid) {
-    let newUID = UTF8ToString(uid);
-    removeRemotePosition(newUID);
+    removeRemotePosition(uid);
   },
   setAudioRecvRange   : function (range) {
     SendNotImplementedError("setAudioRecvRange");
@@ -2177,8 +2175,6 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
   setMaxAudioRecvCount   : function (count) {},
   updateRemotePosition : function (uid, pos, fwd) {
-    let newUID = UTF8ToString(uid);
-    
     let _position = [];
     let _forward = [];
     const size = 3; // passing from an float array of 3 each argv

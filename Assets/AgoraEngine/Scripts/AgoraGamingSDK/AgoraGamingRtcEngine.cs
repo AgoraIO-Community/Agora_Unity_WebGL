@@ -5466,9 +5466,13 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int StartLocalMediaSpatialAudio(string uid, string media)
+        public int StartLocalMediaSpatialAudio(uint uid, string media)
         {
+#if UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.startLocalMediaSpatialAudio(uid, media);
+#else
+            return -1;
+#endif
         }
 
         /// @cond

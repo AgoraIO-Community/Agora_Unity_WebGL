@@ -950,10 +950,13 @@ function releaseSpatialAudioManager() {
 }
 
 function setDistanceUnit(unit) {
-  client_manager.setDistanceUnit(unit);
+  let rc = client_manager.setDistanceUnit(unit);
+  console.log("setDistanceUnity rc = " + rc);
 }
+
 function clearRemotePositions() {
-  client_manager.clearRemotePositions();
+  let rc = client_manager.clearRemotePositions();
+  console.log("clearRemotePositions rc = " + rc);
 }
 
 function startLocalMediaSpatialAudio(uid, media){
@@ -961,17 +964,20 @@ function startLocalMediaSpatialAudio(uid, media){
 }
 
 function updatePlayerPositionInfo(uid, position, forward){
-  client_manager.updatePlayerPositionInfo(uid, position, forward);
+  let rc = client_manager.updatePlayerPositionInfo(uid, position, forward);
 }
 
 function updateRemotePosition(uid, position, forward){
-  client_manager.updateRemotePosition(uid, position, forward);
+  let rc = client_manager.updateRemotePosition(uid, position, forward);
+  console.log("updateRemotePosition, rc = " + rc);
 }
 
 function removeRemotePosition(uid){
-  client_manager.removeRemotePosition(uid);
+  let rc = client_manager.removeRemotePosition(uid);
+  console.log("removeRemotePosition rc = " + rc);
 }
 
 function updateSelfPosition(position, forward, right, up){
-  client_manager.updateSelfPosition(position, forward, right, up);
+  let rc = client_manager.updateSelfPosition(position, forward, right, up);
+  console.log("updateSelfPosition rc = " + rc);
 }

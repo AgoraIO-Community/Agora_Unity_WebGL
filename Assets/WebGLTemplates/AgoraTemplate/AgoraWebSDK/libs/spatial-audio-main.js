@@ -29,26 +29,6 @@ class spatialAudioManager {
     this.processor = null;
   }
 
-  async getLocalUserSpatialAudioProcessor(client, soundSrc, enabled) {
-    setTimeout(async () => {
-      try {
-        console.log(client);
-        var isOn = enabled == 1 ? true : false;
-        var processor = await extension.createProcessor();
-        client.spatialAudioProcessor = processor;
-        this.localPlayProcessors.push(processor);
-        await client.audioTrack
-          .pipe(processor)
-          .pipe(client.audioTrack.processorDestination);
-        client.audioTrack.uid = client.uid;
-        this.enabled = isOn;
-        return processor;
-      } catch (error) {
-        console.error(`${processor} with microphone track play fail: ${error}`);
-      }
-    }, 1000);
-  }
-
   // each media track will be assigned a UID
   async startLocalMedia(uid, soundSrc) {
     setTimeout(async () => {
@@ -107,7 +87,7 @@ class spatialAudioManager {
   }
 
   setDistanceUnit(unit) {
-    extension.setDistanceUnit(unit);
+    return extension.setDistanceUnit(unit);
   }
 
   clearRemotePositions() {
@@ -155,7 +135,6 @@ class spatialAudioManager {
     if (this.localPlayProcessors[uid]) {
       this.localPlayProcessors[uid].removeRemotePosition();
       delete this.localPlayProcessors[uid];
-      delete this.localPlayTracks[uid];
     }
   }
 

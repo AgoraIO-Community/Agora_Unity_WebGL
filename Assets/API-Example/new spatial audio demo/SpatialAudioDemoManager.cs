@@ -86,8 +86,8 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
             // joinButton.interactable = false;
             // leaveButton.interactable = true;
-            mRtcEngine.updatePlayerPositionInfo("1000", peter.position * 8, directions[peter.gameObject.GetComponent<AIWaypointMovement>().waypointIndex]);
-            mRtcEngine.updateSelfPosition(player.transform.position * 8, player.GetComponent<SpatialAudioAvatar>().arrow.eulerAngles, new Vector3(1, 0, 0), new Vector3(0, 1, 0));
+            // mRtcEngine.updatePlayerPositionInfo("1000", peter.position * 8, directions[peter.gameObject.GetComponent<AIWaypointMovement>().waypointIndex]);
+            // mRtcEngine.updateSelfPosition(player.transform.position * 8, player.GetComponent<SpatialAudioAvatar>().arrow.eulerAngles, new Vector3(1, 0, 0), new Vector3(0, 1, 0));
         }
         else
         {
@@ -148,7 +148,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         for (uint i = 0; i < soundFiles.Length; i++)
         {
-            mRtcEngine.StartLocalMediaSpatialAudio(((uint)1000 + i).ToString(), TEST_URL);
+            mRtcEngine.StartLocalMediaSpatialAudio(((uint)1000 + i), TEST_URL);
         }
         joinedChannel = true;
         loginScreen.SetActive(false);
