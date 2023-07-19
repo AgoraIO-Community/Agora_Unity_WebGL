@@ -6074,16 +6074,21 @@ namespace agora_gaming_rtc
                     {
                         if (instance != null && instance.OnVolumeIndication != null)
                         {
+                            
                             string[] sArray = volumeInfo.Split('\t');
                             int j = 1;
                             AudioVolumeInfo[] infos = new AudioVolumeInfo[speakerNumber];
+                            
                             if (speakerNumber > 0)
                             {
                                 for (int i = 0; i < speakerNumber; i++)
                                 {
-                                    uint uids = (uint)int.Parse(sArray[j++]);
-                                    uint vol = (uint)int.Parse(sArray[j++]);
-                                    uint vad = (uint)int.Parse(sArray[j++]);
+                                    uint uids;
+                                    uint.TryParse(sArray[j++], out uids);
+                                    uint vol;
+                                    uint.TryParse(sArray[j++], out vol);
+                                    uint vad;
+                                    uint.TryParse(sArray[j++], out vad);
                                     string channelId = sArray[j++];
                                     infos[i].uid = uids;
                                     infos[i].volume = vol;
@@ -6091,6 +6096,7 @@ namespace agora_gaming_rtc
                                     infos[i].channelId = channelId;
                                 }
                             }
+                            
                             instance.OnVolumeIndication(infos, speakerNumber, totalVolume);
                         }
                     });
