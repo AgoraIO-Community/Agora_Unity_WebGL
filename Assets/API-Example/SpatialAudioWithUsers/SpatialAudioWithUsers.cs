@@ -107,6 +107,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
         private void SetupVideoSDKEngine()
         {
             RtcEngine = IRtcEngine.GetEngine(_appID);
+            RtcEngine.SetLogFile("agora_log.txt");
             RtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
             RtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
             RtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
@@ -159,20 +160,24 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
 
         private void ConfigureSpatialAudioEngine()
         {
+            int rc = 0;
             RtcEngine.EnableAudio();
             localSpatial = RtcEngine.GetLocalSpatialAudioEngine();
             localSpatial.Initialize();
 
             // Set the audio reception range, in meters, of the local user
-            localSpatial.SetAudioRecvRange(50);
+            rc = localSpatial.SetAudioRecvRange(50);
+            Debug.Assert(rc == 0, "SetAudioRecvRange ------> " + rc);
             // Set the length, in meters, of unit distance
-            localSpatial.SetDistanceUnit(1);
+            rc = localSpatial.SetDistanceUnit(1);
+            Debug.Assert(rc == 0, "SetDistanceUnit ------> " + rc);
             // Update self position
             float[] pos = new float[] { 0.0F, 0.0F, 0.0F };
             float[] forward = new float[] { 1.0F, 0.0F, 0.0F };
             float[] right = new float[] { 0.0F, 1.0F, 0.0F };
             float[] up = new float[] { 0.0F, 0.0F, 1.0F };
-            localSpatial.UpdateSelfPosition(pos, forward, right, up);
+            rc = localSpatial.UpdateSelfPosition(pos, forward, right, up);
+            Debug.Assert(rc == 0, "SetDistanceUnit ------> " + rc);
         }
 
         Vector3 RemotePosition = new Vector3(0, 4, 0);

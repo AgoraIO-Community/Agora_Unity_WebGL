@@ -18,10 +18,6 @@ class spatialAudioManager {
       airAbsorb: false,
     };
 
-    this.remoteUsersSound = ["./AgoraWebSDK/libs/resources/3.mp3"];
-
-    this.localPlayerSound = ["./AgoraWebSDK/libs/resources/2.mp3"];
-
     (this.localPlayTracks = {}),
       (this.localPlayProcessors = {}),
       (this.enabled = true);
@@ -95,8 +91,7 @@ class spatialAudioManager {
   }
 
   updateSelfPosition(position, forward, right, up) {
-    console.log("[EXT] updating self position");
-    extension.updateSelfPosition(position, forward, right, up);
+    return extension.updateSelfPosition(position, forward, right, up);
   }
 
   updatePlayerPositionInfo(uid, position, forward) {
@@ -113,9 +108,11 @@ class spatialAudioManager {
           forward,
         })
       );
-      this.localPlayProcessors[uid].updatePlayerPositionInfo(
+      return this.localPlayProcessors[uid].updatePlayerPositionInfo(
         localPlayerPosition
       );
+    } else {
+      return -1;
     }
   }
 
@@ -127,63 +124,82 @@ class spatialAudioManager {
     };
 
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateRemotePosition(localPlayerPosition);
+      return this.localPlayProcessors[uid].updateRemotePosition(localPlayerPosition);
+    } else {
+      return -1;
     }
   }
 
   removeRemotePosition(uid) {
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].removeRemotePosition();
+      let rc = this.localPlayProcessors[uid].removeRemotePosition();
       delete this.localPlayProcessors[uid];
+      return rc;
+    } else {
+      return -1;
     }
   }
 
   updateSpatialAzimuth(uid, value) {
     this.spatialAudioSettings.azimuth = value;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialAzimuth(value);
+      return this.localPlayProcessors[uid].updateSpatialAzimuth(value);
+    } else {
+      return -1;
     }
   }
 
   updateSpatialElevation(uid, value) {
     this.spatialAudioSettings.elevation = value;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialElevation(value);
+      return this.localPlayProcessors[uid].updateSpatialElevation(value);
+    } else {
+      return -1;
     }
   }
 
   updateSpatialDistance(uid, value) {
     this.spatialAudioSettings.distance = value;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialDistance(value);
+      return this.localPlayProcessors[uid].updateSpatialDistance(value);
+    } else {
+      return -1;
     }
   }
 
   updateSpatialOrientation(uid, value) {
     this.spatialAudioSettings.orientation = value;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialOrientation(value);
+      return this.localPlayProcessors[uid].updateSpatialOrientation(value);
+    } else {
+      return -1;
     }
   }
 
   updateSpatialAttenuation(uid, value) {
     this.spatialAudioSettings.attenuation = value;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialAttenuation(value);
+      return this.localPlayProcessors[uid].updateSpatialAttenuation(value);
+    } else {
+      return -1;
     }
   }
 
   updateSpatialBlur(uid, checked) {
     this.spatialAudioSettings.blur = checked;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialBlur(checked);
+      return this.localPlayProcessors[uid].updateSpatialBlur(checked);
+    } else {
+      return -1;
     }
   }
 
   updateSpatialAirAbsorb(uid, checked) {
     this.spatialAudioSettings.airAbsorb = checked;
     if (this.localPlayProcessors[uid]) {
-      this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
+      return this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
+    } else {
+      return -1;
     }
   }
 }

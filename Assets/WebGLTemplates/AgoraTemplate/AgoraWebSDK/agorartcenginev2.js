@@ -965,6 +965,7 @@ function startLocalMediaSpatialAudio(uid, media){
 
 function updatePlayerPositionInfo(uid, position, forward){
   let rc = client_manager.updatePlayerPositionInfo(uid, position, forward);
+  console.log("updatePlayerPositionInfo, rc = " + rc);
 }
 
 function updateRemotePosition(uid, position, forward){

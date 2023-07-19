@@ -2161,9 +2161,15 @@ muteLocalAudioStream_channel: function(channel, mute) {
   localSpatialAudio_release  : function () {
     releaseSpatialAudioManager();
   },
-  localSpatialAudio_setParameters  : function (params) {},
-  muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
-  muteLocalAudioStream_spatialAudio   : function (mute)  {},
+  localSpatialAudio_setParameters  : function (params) {
+    SendNotImplementedError("localSpatialAudio_setParameters");
+  },
+  muteAllRemoteAudioStreams_spatialAudio  : function (mute) {
+    muteAllRemoteAudioStreams(mute);
+  },
+  muteLocalAudioStream_spatialAudio   : function (mute)  {
+    muteLocalAudioStream(mute);
+  },
   removeRemotePosition   : function (uid) {
     removeRemotePosition(uid);
   },
@@ -2173,7 +2179,9 @@ muteLocalAudioStream_channel: function(channel, mute) {
   setDistanceUnit   : function (unit) {
     setDistanceUnit(unit);
   },
-  setMaxAudioRecvCount   : function (count) {},
+  setMaxAudioRecvCount   : function (count) {
+    SendNotImplementedError("setMaxAudioRecvCount");
+  },
   updateRemotePosition : function (uid, pos, fwd) {
     let _position = [];
     let _forward = [];
@@ -2188,14 +2196,13 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
   updateSelfPosition  : function (pos, forward, right, up) {
     const size = 3; // passing from an float array of 3 each argv
-    console.log("[JS] --> updateSelfPosition, local version");
     let _position = [];
     let _forward = [];
     let _right = [];
     let _up = []; 
     for(var i = 0; i < size; i++)
     {
-      console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
+      // console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
       _position.push((HEAPF32[(pos >> 2) + i]));
       _forward.push((HEAPF32[(forward >> 2) + i]));
       _right.push((HEAPF32[(right >> 2) + i]));

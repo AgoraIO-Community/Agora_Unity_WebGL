@@ -46,8 +46,6 @@ class ClientManager {
     this.userTokenDidExpireHandle = this.handleTokenPrivilegeDidExpire.bind(this);
   }
 
-  manipulate() {}
-
   setVideoEnabled(enabled) {
     // not publishing if it is Live Audience
     this.videoEnabled = this.client_role == 2 ? false : enabled;
@@ -202,8 +200,6 @@ class ClientManager {
   handleUserJoined(user, mediaType) {
     const id = user.uid;
     console.log("remote user id" , id);
-
-
   }
 
   handleUserUnpublished(user, mediaType) {
@@ -1138,25 +1134,25 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
   }
 }
 
-async setVirtualBackgroundBlur(blurDegree){
+setVirtualBackgroundBlur(blurDegree){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundBlurring(localTracks.videoTrack, blurDegree);
   }
 }
 
-async setVirtualBackgroundColor(hexColor){
+setVirtualBackgroundColor(hexColor){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundColor(localTracks.videoTrack, hexColor);
   }
 }
 
-async setVirtualBackgroundImage(imgFile){
+setVirtualBackgroundImage(imgFile){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundImage(localTracks.videoTrack, imgFile);
   }
 }
 
-async setVirtualBackgroundVideo(videoFile){
+setVirtualBackgroundVideo(videoFile){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundVideo(localTracks.videoTrack, videoFile);
   }
@@ -1249,14 +1245,14 @@ async setVirtualBackgroundVideo(videoFile){
     }
   }
 
-  async releaseSpatialAudioManager() {
+  releaseSpatialAudioManager() {
     if (this.spatialAudio) {
       this.spatialAudio.clearRemotePositions();
       delete this.spatialAudio;
     }
   }
 
-  async clearRemotePositions() {
+  clearRemotePositions() {
     if (this.spatialAudio) {
       this.spatialAudio.clearRemotePositions();
     }
@@ -1271,7 +1267,7 @@ async setVirtualBackgroundVideo(videoFile){
     this.spatialAudio.startLocalMedia(uid, media);
   }
 
-  async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+  setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
      this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
      this.spatialAudio.updateSpatialElevation(uid, elevation);
      this.spatialAudio.updateSpatialDistance(uid, distance);
@@ -1281,35 +1277,35 @@ async setVirtualBackgroundVideo(videoFile){
      this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
   }
 
-  async updatePlayerPositionInfo(uid, position, forward){
+  updatePlayerPositionInfo(uid, position, forward){
     if(this.spatialAudio) {
       return this.spatialAudio.updatePlayerPositionInfo(uid, position, forward);
     }
     return -1;
   }
 
-  async updateRemotePosition(uid, position, forward){
+  updateRemotePosition(uid, position, forward){
     if(this.spatialAudio) {
       return this.spatialAudio.updateRemotePosition(uid, position, forward);
     }
     return -1;
   }
 
-  async removeRemotePosition(uid){
+  removeRemotePosition(uid){
     if(this.spatialAudio) {
       return this.spatialAudio.removeRemotePosition(uid);
     }
     return -1;
   }
 
-  async updateSelfPosition(position, forward, right, up) {
+  updateSelfPosition(position, forward, right, up) {
     if(this.spatialAudio) {
       return this.spatialAudio.updateSelfPosition(position, forward, right, up);
     }
     return -1;
   }
 
-  async setDistanceUnit(unit) {
+  setDistanceUnit(unit) {
     if(this.spatialAudio) {
       return this.spatialAudio.setDistanceUnit(unit);
     }
