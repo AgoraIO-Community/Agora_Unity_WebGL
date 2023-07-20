@@ -110,22 +110,28 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void cacheVideoDevices()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CacheVideoDevices();
         Invoke("GetVideoDeviceManager", .2f);
+#endif
     }
 
     public void cacheRecordingDevices()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CacheRecordingDevices();
         Invoke("GetAudioRecordingDevice", .2f);
+#endif
     }
 
-   
+
 
     public void cachePlaybackDevices()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CachePlaybackDevices();
         Invoke("GetAudioPlaybackDevice", .2f);
+#endif
     }
 
     bool CheckAppId()
