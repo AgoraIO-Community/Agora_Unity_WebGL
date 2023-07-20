@@ -24,8 +24,6 @@ public class UserAudioFrameHandler : MonoBehaviour
     private RingBuffer<float> _audioBuffer;
     private AudioClip _audioClip = null;
 
-    private bool _startSignal;
-
 
     // Use this for initialization (runs after Init)
     void Start()
@@ -74,7 +72,6 @@ public class UserAudioFrameHandler : MonoBehaviour
 
     void ResetHandler()
     {
-        _startSignal = false;
         if (_audioBuffer != null)
         {
             _audioBuffer.Clear();

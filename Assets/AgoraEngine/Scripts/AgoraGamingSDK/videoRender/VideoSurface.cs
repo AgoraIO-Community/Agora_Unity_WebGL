@@ -244,7 +244,12 @@ namespace agora_gaming_rtc
                             */
                             defWidth = width;
                             defHeight = height;
+#if UNITY_2021_2_OR_NEWER
                             nativeTexture.Reinitialize(defWidth, defHeight);
+#else
+                            nativeTexture.Resize(defWidth, defHeight);
+#endif
+
                             nativeTexture.LoadRawTextureData(data, (int)width * (int)height * 4);
                             nativeTexture.Apply();
                         }

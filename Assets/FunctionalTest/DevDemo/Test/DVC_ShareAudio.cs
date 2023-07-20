@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using agora_gaming_rtc;
 using agora_utilities;
 using System;
@@ -22,21 +23,27 @@ public class DVC_ShareAudio : MonoBehaviour
 
     private IEnumerator PlaySoundFromURL(string url)
     {
-        Debug.Log(url);
-        WWW www = new WWW(url);
-        while (!www.isDone)
-            yield return null;
-        //yield return www;
+        Debug.Log("PlaySoundfromRUL:" + url);
 
-        Debug.Log("The file has been downloaded, playing it");
+        using (var uwr = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+        {
+            yield return uwr.SendWebRequest();
+            if (uwr.isNetworkError || uwr.isHttpError)
+            {
+                Debug.LogError(uwr.error);
+                yield break;
+            }
 
-        audioSource.clip = (AudioClip)www.GetAudioClip();
-        audioSource.volume = 1;
-        audioSource.Play();
+            AudioClip clip = DownloadHandlerAudioClip.GetContent(uwr);
+            // use audio clip
+            Debug.Log("The file has been downloaded, playing it");
 
-        StartCoroutine(CoAudioRender());
+            audioSource.clip = clip;
+            audioSource.volume = 1;
+            audioSource.Play();
 
-        Debug.Log("Audio played");
+            StartCoroutine(CoAudioRender());
+        }
     }
 
     public void StartSendingNow()
