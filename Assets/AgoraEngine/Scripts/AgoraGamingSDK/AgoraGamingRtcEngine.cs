@@ -5475,67 +5475,6 @@ namespace agora_gaming_rtc
 #endif
         }
 
-        /// @cond
-        /** Enables or disables the spatial audio effect.
-         * @since 3.7.0
-         *
-         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
-         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
-         * with a real sense of space.
-         * @note Call this method before joining a channel.
-         * @param enabled Whether to enable the spatial audio effect:
-         * - `true`: Yes.
-         * - `false`: No.
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         */
-        public int updatePlayerPositionInfo(string uid, Vector3 position, Vector3 forward)
-        {
-            return IRtcEngineNative.updatePlayerPositionInfo(uid, position.x, position.y, position.z, forward.x, forward.y, forward.z);
-        }
-
-        /// @cond
-        /** Enables or disables the spatial audio effect.
-         * @since 3.7.0
-         *
-         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
-         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
-         * with a real sense of space.
-         * @note Call this method before joining a channel.
-         * @param enabled Whether to enable the spatial audio effect:
-         * - `true`: Yes.
-         * - `false`: No.
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         */
-        public int RemoveRemotePosition(string uid)
-        {
-            return IRtcEngineNative.removeRemotePosition(uid);
-        }
-
-        /// @cond
-        /** Enables or disables the spatial audio effect.
-         * @since 3.7.0
-         *
-         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams` to set the spatial
-         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
-         * with a real sense of space.
-         * @note Call this method before joining a channel.
-         * @param enabled Whether to enable the spatial audio effect:
-         * - `true`: Yes.
-         * - `false`: No.
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         */
-        public int updateSelfPosition(Vector3 position, Vector3 forward, Vector3 right, Vector3 up)
-        {
-            Debug.Log("Upddate selfPosition (engine)");
-            return IRtcEngineNative.updateSelfPosition_wgl(position.x, position.y, position.z, forward.x, forward.y, forward.z, right.x, right.y, right.z, up.x, up.y, up.z);
-        }
-
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
          *
@@ -6140,11 +6079,11 @@ namespace agora_gaming_rtc
                     {
                         if (instance != null && instance.OnVolumeIndication != null)
                         {
-                            
+
                             string[] sArray = volumeInfo.Split('\t');
                             int j = 1;
                             AudioVolumeInfo[] infos = new AudioVolumeInfo[speakerNumber];
-                            
+
                             if (speakerNumber > 0)
                             {
                                 for (int i = 0; i < speakerNumber; i++)
@@ -6162,7 +6101,7 @@ namespace agora_gaming_rtc
                                     infos[i].channelId = channelId;
                                 }
                             }
-                            
+
                             instance.OnVolumeIndication(infos, speakerNumber, totalVolume);
                         }
                     });

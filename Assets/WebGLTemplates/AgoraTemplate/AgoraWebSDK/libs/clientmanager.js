@@ -639,18 +639,7 @@ class ClientManager {
           localTracks.videoTrack?.stop();
           localTracks.videoTrack?.close();
         }
-      } else {
-        [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack().catch(e => {
-            event_manager.raiseHandleUserError(e.code, e.msg);
-          }),
-        ]);
-
-        localTracks.videoTrack.play("local-player");
-
-        await this.client.publish(localTracks.videoTrack);
-        console.log(localTracks.videoTrack.getStats().captureResolutionWidth, localTracks.videoTrack.getStats().captureResolutionHeight);
-      }
+      } 
     }
     this.videoEnabled = enabled;
   }
