@@ -8,7 +8,7 @@ namespace Agora_RTC_Plugin.API_Example.Editor
         List<SceneAsset> m_SceneAssets = new List<SceneAsset>();
 
         // Add menu item named "Example Window" to the Window menu
-        [MenuItem("Build/List Scenes", false, 1)]
+        [MenuItem("Agora/Build/List Scenes", false, 1)]
         public static void ShowWindow()
         {
             //Show existing window instance. If one doesn't exist, make one.
@@ -25,7 +25,10 @@ namespace Agora_RTC_Plugin.API_Example.Editor
                 {
                     string scenePath = file.Remove(0, 2);
                     UnityEngine.Debug.Log(scenePath);
-                    editorBuildSettingsScenes.Add(new EditorBuildSettingsScene(scenePath, true));
+                    if (!scenePath.Contains("FunctionalTest"))
+                    {
+                        editorBuildSettingsScenes.Add(new EditorBuildSettingsScene(scenePath, true));
+                    }
                 }
                 EditorBuildSettings.scenes = editorBuildSettingsScenes.ToArray();
             }

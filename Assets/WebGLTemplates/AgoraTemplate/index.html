@@ -1,82 +1,80 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Basic Video Call -- Agora</title>
-  <link rel="stylesheet" href="./vendor/bootstrap.min.css">
-  <link rel="stylesheet" href="./index.css">
-</head>
-<body>
-  <div class="container-fluid banner">
-    <p class="banner-text">Basic Video Call</p>
-    <a style="color: rgb(255, 255, 255);fill: rgb(255, 255, 255);fill-rule: evenodd; position: absolute; right: 10px; top: 4px;"
-      class="Header-link " href="https://github.com/AgoraIO-Community/AgoraWebSDK-NG/tree/master/Demo">
-      <svg class="octicon octicon-mark-github v-align-middle" height="32" viewBox="0 0 16 16" version="1.1" width="32" aria-hidden="true"><path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg>
-    </a>
-  </div>
+﻿<!DOCTYPE html>
+<html lang="en-us">
+   <head>
+      <meta charset="utf-8" />
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+      <title>Unity WebGL Player | %UNITY_WEB_NAME%</title>
+      <link rel="stylesheet" href="AgoraWebSDK/style.css">
+      <script src="Build/UnityLoader.js"></script>
+	  <script src="AgoraWebSDK/libs/databuilder.js"></script>
+	  <script src="AgoraWebSDK/libs/agora-extension-virtual-background.js"></script>
+	  <script src="AgoraWebSDK/libs/virtualbackground.js"></script>
+	  <script src="AgoraWebSDK/libs/clientmanager.js"></script>
+	  <script src="AgoraWebSDK/libs/wglwrapper.js"></script>	  
+	  <script src="AgoraWebSDK/libs/audioeffects.js"></script>
+	  <script src="AgoraWebSDK/libs/eventmanager.js"></script>
+	  <script src="AgoraWebSDK/libs/engineglobals.js"></script>	  
+	  <script src="AgoraWebSDK/libs/watermark.js"></script>	  
+	  <script src="AgoraWebSDK/libs/customvideo.js"></script>
+	  <script src="AgoraWebSDK/libs/agorachannel.js"></script>
+	  <script src="AgoraWebSDK/libs/multichannel.js"></script>
+	  <script src="AgoraWebSDK/libs/audiosystem.js"></script>
+	  <script src="AgoraWebSDK/libs/testing.js"></script>
+	  <script src="AgoraWebSDK/libs/agorautils.js"></script>
+	  <script src="AgoraWebSDK/libs/audiomixing.js"></script>
+	  <script src="AgoraWebSDK/agorartcenginev2.js"></script>
+	  <script src="AgoraRTC_N.js"></script>
+	  <script src="AgoraWebSDK/libs/spatial-audio-main.js" type="module"></script>
 
-  <div id="success-alert" class="alert alert-success alert-dismissible fade show" role="alert">
-    <strong>Congratulations!</strong><span> You can invite others join this channel by click </span><a href="" target="_blank">here</a>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div id="success-alert-with-token" class="alert alert-success alert-dismissible fade show" role="alert">
-    <strong>Congratulations!</strong><span> Joined room successfully. </span>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div id="success-alert-with-token" class="alert alert-success alert-dismissible fade show" role="alert">
-    <strong>Congratulations!</strong><span> Joined room successfully. </span>
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  
-  <div class="container">
-    <form id="join-form">
-      <div class="row join-info-group">
-          <div class="col-sm">
-            <p class="join-info-text">AppID</p>
-            <input id="appid" type="text" placeholder="enter appid" required>
-            <p class="tips">If you don`t know what is your appid, checkout <a href="https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#a-nameappidaapp-id">this</a></p>
-          </div>
-          <div class="col-sm">
-            <p class="join-info-text">Token(optional)</p>
-            <input id="token" type="text" placeholder="enter token">
-            <p class="tips">If you don`t know what is your token, checkout <a href="https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#a-namekeyadynamic-key">this</a></p>
-          </div>
-          <div class="col-sm">
-            <p class="join-info-text">Channel</p>
-            <input id="channel" type="text" placeholder="enter channel name" required>
-            <p class="tips">If you don`t know what is your channel, checkout <a href="https://docs.agora.io/en/Agora%20Platform/terms?platform=All%20Platforms#channel">this</a></p>
-          </div>
+   </head>
+
+   <body>
+      <h2>Agora Unity WebGL</h2>
+
+	  <!-- <div id="info"></div> -->
+      <!-- Unity Container -->
+      <div class="webgl-content">
+         <div class="centered" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px">
+            <div id="unity-container" style="width: %UNITY_WIDTH%px; height: %UNITY_HEIGHT%px"></div>
+         </div>
       </div>
 
-      <div class="button-group">
-        <button id="join" type="submit" class="btn btn-primary btn-sm">Join</button>
-        <button id="leave" type="button" class="btn btn-primary btn-sm" disabled>Leave</button>
-      </div>
-    </form>
+	<!-- Required, please do not delete -->
+	<canvas id="inMem_Canvas" height="450" width="450"  style="display: none;"></canvas>
+	<canvas id="myCanvas" height="450" width="450"  style="position: absolute; left: 1px; top: 500px;display: none; border: 2px solid red"></canvas>
+	<div>
+		<div id="client-stats" class="stats"></div>
+		<div class="row video-group">
+		  <div class="col">
+			<p id="local-player-name" class="player-name"></p>
+			<div class="player-with-stats">
+			  <div id="local-player" class="player"></div>
+			  <div id="local-stats" class="stream-stats stats"></div>
+			</div>
+		  </div>
+		  <div class="w-100"></div>
+		  <div class="col">
+			<div id="remote-playerlist"></div>
+		  </div>
+		</div>
+	  </div>
 
-    <div class="row video-group">
-      <div class="col">
-        <p id="local-player-name" class="player-name"></p>
-        <div id="local-player" class="player"></div>
-      </div>
-      <div class="w-100"></div>
-      <div class="col">
-        <div id="remote-playerlist"></div>
-      </div>
-    </div>
-  </div>
+	<script type="text/javascript">
+		// Unity Initialization
+		var unityInstance = UnityLoader.instantiate(
+		"unity-container",
+		"%UNITY_WEBGL_BUILD_URL%"
+		);
 
-  <script src="./vendor/jquery-3.4.1.min.js"></script>
-  <script src="./vendor/bootstrap.bundle.min.js"></script>
-  <script src="./AgoraRTC_N-4.18.1.js"></script>
-  <script src="./index.js"></script>
-</body>
+		// REQUIRED - PLEASE DONT DELETE
+		var mainCanvas = document.getElementById("myCanvas");
+		var mainContext = mainCanvas.getContext("2d");
+		var inMemCanvas = document.getElementById("inMem_Canvas");
+		var inMemContext = inMemCanvas.getContext("2d");
+		var canvasWidth = mainCanvas.width;
+		var canvasHeight = mainCanvas.height;
+	</script>
+	<p><a href="https://github.com/AgoraIO-Community/Agora_Unity_WebGL">Code</a> | <a href="https://github.com/AgoraIO-Community/Agora_Unity_WebGL/wiki">Wiki</a> | <a href="https://github.com/AgoraIO-Community/Agora_Unity_WebGL/discussions">Discussions</a></p>
+
+   </body>
 </html>
