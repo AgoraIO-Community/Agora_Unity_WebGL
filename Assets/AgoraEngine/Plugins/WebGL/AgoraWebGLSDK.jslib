@@ -83,7 +83,7 @@ var LibraryAgoraWebGLSDK = {
       GLctx.LINEAR
     );
     var internalformat = GLctx.RGBA;
-    if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+    if (isLinearColor) { internalformat = GLctx.SRGB8_ALPHA8; }
     GLctx.texImage2D(
       GLctx.TEXTURE_2D,
       0,
@@ -95,7 +95,6 @@ var LibraryAgoraWebGLSDK = {
 
     return true;
   },
-  
   createRemoteTexture: function (userId) {
     var ch_userId = UTF8ToString(userId);
 
@@ -110,8 +109,7 @@ var LibraryAgoraWebGLSDK = {
         }
     }, 200);
     return 1;
-  }, 
-
+  },
   updateRemoteTexture: function (userId, tex, isLinearColor) {
     var ch_userId = UTF8ToString(userId);
 
@@ -131,7 +129,7 @@ var LibraryAgoraWebGLSDK = {
 
     var v = lVid;
 
-    if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
+    if (!(v.videoWidth > 0 && v.videoHeight > 0)) { return false; }
 
     //if (v.lastUpdateTextureTime === v.currentTime) return false;
 
@@ -163,7 +161,7 @@ var LibraryAgoraWebGLSDK = {
         GLctx.LINEAR
       );
       var internalformat = GLctx.RGBA;
-      if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+      if (isLinearColor) { internalformat = GLctx.SRGB8_ALPHA8; }
       GLctx.texImage2D(
         GLctx.TEXTURE_2D,
         0,
@@ -215,16 +213,16 @@ var LibraryAgoraWebGLSDK = {
 
     var v = lVid;
 
-    if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
+    if (!(v.videoWidth > 0 && v.videoHeight > 0)) { return false; }
 
     // if (v.lastUpdateTextureTime === v.currentTime) return false;
 
     // v.lastUpdateTextureTime = v.currentTime;
 
     var internalformat = GLctx.RGBA;
-    if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+    if (isLinearColor) { internalformat = GLctx.SRGB8_ALPHA8; }
 
-    if ( 1 
+    if ( 1
       // v.previousUploadedWidth != v.videoWidth ||
       // v.previousUploadedHeight != v.videoHeight
     ) {
@@ -1081,32 +1079,9 @@ var LibraryAgoraWebGLSDK = {
   updatePlayerPositionInfo: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
     const localPosition = {
       position: [posX, posY, posZ],
-      forward: [forwardX, forwardY, forwardZ],
+      forward: [forwardX, forwardY, forwardZ]
     };
-    let newUID = UTF8ToString(uid);
-    updatePlayerPositionInfo(newUID, localPosition.position, localPosition.forward);
-  },
-  updateRemotePosition: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
-    const localPosition = {
-      position: [posX, posY, posZ],
-      forward: [forwardX, forwardY, forwardZ],
-    };
-    let newUID = UTF8ToString(uid);
-    updateRemotePosition(newUID, localPosition.position, localPosition.forward);
-  },
-  updateSelfPosition_wgl: function(posX, posY, posZ, forwardX, forwardY, forwardZ, rightX, rightY, rightZ, upX, upY, upZ){
-    const localPosition = {
-      position: [posX, posY, posZ],
-      forward: [forwardX, forwardY, forwardZ],
-      right: [rightX, rightY, rightZ],
-      up: [upX, upY, upZ]
-    };
-    console.log("[JS] --> updateSelfPosition, posX = " + posX + " upZ = " + upZ);
-    updateSelfPosition(localPosition.position, localPosition.forward, localPosition.right, localPosition.up);
-  },
-  removeRemotePosition: function(uid){
-    let newUID = UTF8ToString(uid);
-    removeRemotePosition(newUID);
+    updatePlayerPositionInfo(uid, localPosition.position, localPosition.forward);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError("setScreenCaptureScenario")
@@ -1162,7 +1137,6 @@ var LibraryAgoraWebGLSDK = {
   adjustAudioMixingPublishVolume: function (volume) {
     AdjustAudioMixingPublishVolume(volume);
   },
-  
   creatAAudioPlaybackDeviceManager: function () {},
   initEventOnPacketCallback: function (
     onReceiveAudioPacket,
@@ -1607,7 +1581,7 @@ var LibraryAgoraWebGLSDK = {
   setRemoteVoicePosition2: function (channel, uid, pan, gain) {},
   channelId: function (channel) {},
   sendStreamMessage: function (streamId, data, length) {
-      // there is no notion of streamId 
+      // there is no notion of streamId
       const newArray =new ArrayBuffer(length);
       const newByteArray = new Uint8Array(newArray);
       for(var i = 0; i < length; i++) {
@@ -1629,22 +1603,22 @@ var LibraryAgoraWebGLSDK = {
     var userAccount_str = UTF8ToString(userAccount);
     joinChannelWithUserAccount_WGL(token_str, channelId_str, userAccount_str);
   },
-  joinChannelWithUserAccount_engine: function (token, channelId, userAccount, 
+  joinChannelWithUserAccount_engine: function (token, channelId, userAccount,
       autoSubscribeAudio, autoSubscribeVideo,
       publishLocalAudio, publishLocalVideo) {
     var token_str = UTF8ToString(token);
     var channelId_str = UTF8ToString(channelId);
-    var userAccount_str = UTF8ToString(userAccount); 
-    joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str, 
+    var userAccount_str = UTF8ToString(userAccount);
+    joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str,
       autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
 
-  joinChannelWithMediaOption : function (token, channelId, info, uid, 
+  joinChannelWithMediaOption : function (token, channelId, info, uid,
       autoSubscribeAudio, autoSubscribeVideo,
       publishLocalAudio, publishLocalVideo) {
     var token_str = UTF8ToString(token);
     var channelId_str = UTF8ToString(channelId);
-    wglw_joinChannel_withOption(token_str,channelId_str, info, uid, 
+    wglw_joinChannel_withOption(token_str,channelId_str, info, uid,
       autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
 
@@ -2183,23 +2157,23 @@ muteLocalAudioStream_channel: function(channel, mute) {
     SendNotImplementedError("setMaxAudioRecvCount");
   },
   updateRemotePosition : function (uid, pos, fwd) {
-    let _position = [];
-    let _forward = [];
+    const _position = [];
+    const _forward = [];
     const size = 3; // passing from an float array of 3 each argv
     for(var i = 0; i < size; i++)
     {
       console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
       _position.push((HEAPF32[(pos >> 2) + i]));
-      _forward.push((HEAPF32[(fwd >> 2) + i])); 
+      _forward.push((HEAPF32[(fwd >> 2) + i]));
     }
     updateRemotePosition(uid, _position, _forward);
   },
   updateSelfPosition  : function (pos, forward, right, up) {
     const size = 3; // passing from an float array of 3 each argv
-    let _position = [];
-    let _forward = [];
-    let _right = [];
-    let _up = []; 
+    const _position = [];
+    const _forward = [];
+    const _right = [];
+    const _up = []; 
     for(var i = 0; i < size; i++)
     {
       // console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
