@@ -4,14 +4,14 @@ using UnityEngine.Networking.Types;
 using agora_gaming_rtc;
 
 
-namespace Agora_RTC_Plugin.API_Example.Examples.Advanced.SpatialAudioWithUsers
+namespace Agora_RTC_Plugin.API_Example.Examples.Advanced
 {
     /// <summary>
     ///   This scene shows a quick demo of the spatial audio effect on a remote
     /// user with respect to the local user.  Move the slider to change remote
     /// user's X value in the coordinate system.
     /// </summary>
-    public class SpatialAudioWithUsers : MonoBehaviour
+    public class SpatialAudioPosition : MonoBehaviour
     {
 
         [Header("Application Info")]
