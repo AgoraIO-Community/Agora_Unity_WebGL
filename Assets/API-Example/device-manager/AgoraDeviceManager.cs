@@ -60,20 +60,22 @@ public class AgoraDeviceManager : MonoBehaviour
         PermissionHelper.RequestMicrophontPermission();
         PermissionHelper.RequestCameraPermission();
 
-        List<MediaDeviceInfo> devices = AgoraWebGLEventHandler.GetCachedCameras();
+        List<MediaDeviceInfo> videoDevices = AgoraWebGLEventHandler.GetCachedCameras();
+        int recordingDevices = _audioRecordingDeviceDic.Count;
+        int playbackDevices = _audioPlaybackDeviceDic.Count;
         List<string> videoDeviceLabels = new List<string>();
 
-        if (devices.Count > 0)
+        if (videoDevices.Count > 0)
         {
 
-            if (_videoDeviceManagerNamesDic.Count != devices.Count)
+            if (_videoDeviceManagerNamesDic.Count != videoDevices.Count)
             {
                 //GetVideoDeviceManager();
             }
 
 
 
-            foreach (MediaDeviceInfo info in devices)
+            foreach (MediaDeviceInfo info in videoDevices)
             {
                 bool hasLabel = false;
                 foreach (Dropdown.OptionData data in videoDropdown.options)
@@ -95,33 +97,41 @@ public class AgoraDeviceManager : MonoBehaviour
         //recordingDropdown.interactable = numberOfMicrophones > 0;
         //playbackDropdown.interactable = numberOfPlaybacks > 0;
         videoDeviceButton.interactable = (currentVideoDeviceIndex != _videoDeviceIndex);
-        videoDropdown.interactable = devices.Count > 0;
+        videoDropdown.interactable = videoDevices.Count > 0;
+        recordingDropdown.interactable = recordingDevices > 0;
+        playbackDropdown.interactable = playbackDevices > 0;
         videoDeviceText.gameObject.SetActive(!joinedChannel);
-        joinChannelButton.interactable = !joinedChannel && devices.Count > 0 && !previewing;
+        joinChannelButton.interactable = !joinedChannel && videoDevices.Count > 0 && !previewing;
         leaveChannelButton.interactable = joinedChannel;
-        startPreviewButton.interactable = (!previewing && !joinedChannel && devices.Count > 0);
-        stopPreviewButton.interactable = (previewing && !joinedChannel && devices.Count > 0);
+        startPreviewButton.interactable = (!previewing && !joinedChannel && videoDevices.Count > 0);
+        stopPreviewButton.interactable = (previewing && !joinedChannel && videoDevices.Count > 0);
 
     }
 
     public void cacheVideoDevices()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CacheVideoDevices();
         Invoke("GetVideoDeviceManager", .2f);
+#endif
     }
 
     public void cacheRecordingDevices()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CacheRecordingDevices();
         Invoke("GetAudioRecordingDevice", .2f);
+#endif
     }
 
-   
+
 
     public void cachePlaybackDevices()
     {
+#if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CachePlaybackDevices();
         Invoke("GetAudioPlaybackDevice", .2f);
+#endif
     }
 
     bool CheckAppId()
