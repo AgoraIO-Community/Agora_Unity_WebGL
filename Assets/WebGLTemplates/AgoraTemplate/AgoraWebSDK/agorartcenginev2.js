@@ -940,3 +940,45 @@ function setVirtualBackgroundVideo(videoFile){
 function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
 }
+
+function initializeSpatialAudioManager() {
+  client_manager.initializeSpatialAudioManager();
+}
+
+function releaseSpatialAudioManager() {
+  client_manager.releaseSpatialAudioManager();
+}
+
+function setDistanceUnit(unit) {
+  let rc = client_manager.setDistanceUnit(unit);
+  console.log("setDistanceUnity rc = " + rc);
+}
+
+function clearRemotePositions() {
+  let rc = client_manager.clearRemotePositions();
+  console.log("clearRemotePositions rc = " + rc);
+}
+
+function startLocalMediaSpatialAudio(uid, media){
+  client_manager.startLocalMediaSpatialAudio(uid, media);
+}
+
+function updatePlayerPositionInfo(uid, position, forward){
+  let rc = client_manager.updatePlayerPositionInfo(uid, position, forward);
+  console.log("updatePlayerPositionInfo, rc = " + rc);
+}
+
+function updateRemotePosition(uid, position, forward){
+  let rc = client_manager.updateRemotePosition(uid, position, forward);
+  console.log("updateRemotePosition, rc = " + rc);
+}
+
+function removeRemotePosition(uid){
+  let rc = client_manager.removeRemotePosition(uid);
+  console.log("removeRemotePosition rc = " + rc);
+}
+
+function updateSelfPosition(position, forward, right, up){
+  let rc = client_manager.updateSelfPosition(position, forward, right, up);
+  console.log("updateSelfPosition rc = " + rc);
+}

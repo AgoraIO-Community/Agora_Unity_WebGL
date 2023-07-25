@@ -1837,31 +1837,6 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
         }
 
-        /// @cond
-        /** Enables or disables the spatial audio effect with agoraChannel.js
-         * @since 3.7.0
-         *
-         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams2` to set the spatial
-         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
-         * with a real sense of space.
-         * @note Call this method before joining a channel.
-         * @param enabled Whether to enable the spatial audio effect:
-         * - `true`: Yes.
-         * - `false`: No.
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         */
-        public int EnableSpatialAudio_MC(bool enabled)
-        {
-#if UNITY_WEBGL
-            return IRtcEngineNative.enableSpatialAudio_MC(enabled);
-#else
-            Debug.LogError("No supported for this platform:" + Application.platform);
-            return -1;
-#endif
-        }
-
         /**
         * Enables/Disables the super-resolution feature for a remote user's video stream. This is a beta feature.
         *

@@ -45,7 +45,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
         {
             CHANNEL_NAME_1 = RootMenuControl.instance.channel;
         }
-        
+
         UpdateDropDown();
     }
 
@@ -59,7 +59,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
         InitEngine();
 
-        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
+        // mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
         //channel setup.
         appIdText.text = appInfo.appID;
         tokenText.text = appInfo.token;

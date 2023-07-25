@@ -5450,6 +5450,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableLocalVoicePitchCallback(interval);
         }
 
+
         /// @cond
         /** Enables or disables the spatial audio effect.
          * @since 3.7.0
@@ -5465,9 +5466,13 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int EnableSpatialAudio(bool enabled)
+        public int StartLocalMediaSpatialAudio(uint uid, string media)
         {
-            return IRtcEngineNative.enableSpatialAudio(enabled);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return IRtcEngineNative.startLocalMediaSpatialAudio(uid, media);
+#else
+            return -1;
+#endif
         }
 
         /** Sets the spatial audio effect parameters of the remote user.
@@ -6074,11 +6079,11 @@ namespace agora_gaming_rtc
                     {
                         if (instance != null && instance.OnVolumeIndication != null)
                         {
-                            
+
                             string[] sArray = volumeInfo.Split('\t');
                             int j = 1;
                             AudioVolumeInfo[] infos = new AudioVolumeInfo[speakerNumber];
-                            
+
                             if (speakerNumber > 0)
                             {
                                 for (int i = 0; i < speakerNumber; i++)
@@ -6096,7 +6101,7 @@ namespace agora_gaming_rtc
                                     infos[i].channelId = channelId;
                                 }
                             }
-                            
+
                             instance.OnVolumeIndication(infos, speakerNumber, totalVolume);
                         }
                     });
