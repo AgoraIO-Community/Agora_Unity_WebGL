@@ -79,3 +79,11 @@ sysinfo.txt
 # Crashlytics generated file
 crashlytics-build.properties
 
+AgoraUnityWebGL.sln
+Assembly-CSharp.csproj
+Assembly-CSharp-Editor.csproj
+Assets/Resources.meta
+Assets/Resources/BillingMode.json
+Assets/Resources/BillingMode.json.meta
+UserSettings/EditorUserSettings.asset
+UserSettings/Layouts/default-2021.dwlt
