@@ -203,6 +203,7 @@ public class TestHome : MonoBehaviour
             SceneManager.LoadScene(HomeSceneName, LoadSceneMode.Single);
         }
         Destroy(gameObject);
+        SceneManager.sceneLoaded -= updateHomeMenu;
     }
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
@@ -223,9 +224,10 @@ public class TestHome : MonoBehaviour
     {
         if (scene.name == "HomeMenu")
         {
-            Debug.Log("Back to Home...");
             Destroy(gameObject);
+            SceneManager.sceneLoaded -= updateHomeMenu;
         }
+        
     }
 
     void OnApplicationPause(bool paused)
@@ -243,6 +245,7 @@ public class TestHome : MonoBehaviour
             app.leave(); // leave channel
             app.unloadEngine(); // delete engine
             app = null; // delete app
+            
         }
     }
 }
