@@ -101,7 +101,11 @@ public class AgoraDeviceManager : MonoBehaviour
         recordingDropdown.interactable = recordingDevices > 0;
         playbackDropdown.interactable = playbackDevices > 0;
         videoDeviceText.gameObject.SetActive(!joinedChannel);
+#if UNITY_WEBGL && !UNITY_EDITOR
         joinChannelButton.interactable = !joinedChannel && videoDevices.Count > 0 && !previewing;
+#elif UNITY_EDITOR
+        joinChannelButton.interactable = true;
+#endif
         leaveChannelButton.interactable = joinedChannel;
         startPreviewButton.interactable = (!previewing && !joinedChannel && videoDevices.Count > 0);
         stopPreviewButton.interactable = (previewing && !joinedChannel && videoDevices.Count > 0);
@@ -473,12 +477,10 @@ public class AgoraDeviceManager : MonoBehaviour
         }
 
         go.name = goName;
-        // make the object draggable
-        go.AddComponent<UIElementDrag>();
         // to be renderered onto
         go.AddComponent<RawImage>();
 
-        GameObject canvas = GameObject.Find("VideoPanel");
+        GameObject canvas = GameObject.Find("VideoGrid");
         if (canvas != null)
         {
             go.transform.SetParent(canvas.transform);
