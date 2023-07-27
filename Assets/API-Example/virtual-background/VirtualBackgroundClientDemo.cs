@@ -271,7 +271,10 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         joinedChannel = false;
     }
 
-
+    public void OnDestroy()
+    {
+        LeaveChannel();
+    }
 
     void userVideoMutedHandler(uint uid, bool muted)
     {
