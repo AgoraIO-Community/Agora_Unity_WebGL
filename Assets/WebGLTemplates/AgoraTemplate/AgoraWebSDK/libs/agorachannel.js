@@ -334,7 +334,6 @@ class AgoraChannel {
     if (this.client_role === 1 && this.videoEnabled) {
       await this.setupLocalVideoTrack();
       if (localTracks != undefined && localTracks.videoTrack != undefined) {
-        localTracks.videoTrack.play("local-player");
         await this.client.publish(localTracks.videoTrack);
       } 
       this.is_publishing = true;
@@ -374,18 +373,15 @@ class AgoraChannel {
         this.client.unpublish(localTracks.videoTrack);
         localTracks.videoTrack = undefined;
       }
-      if (localTracks != undefined) {
-
-        for (var i = 0; i < localTracks.length; i++) {
-          localTracks[i].unpipe();
-          localTracks[i].stop();
-          localTracks[i].close();
-          this.client.unpublish(localTracks[i])
-        }
-        //localTracks = undefined;
+      if (localTracks != undefined && localTracks.audioTrack != undefined) {
+        
+          localTracks.audioTrack.unpipe();
+          localTracks.audioTrack.stop();
+          localTracks.audioTrack.close();
+          this.client.unpublish(localTracks.audioTrack);
+          localTracks.audioTrack = undefined;
       }
 
-      
     }
 
     if(this.virtualBackgroundProcessor !== null){

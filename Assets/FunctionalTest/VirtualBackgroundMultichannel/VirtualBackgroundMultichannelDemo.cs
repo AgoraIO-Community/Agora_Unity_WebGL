@@ -153,9 +153,9 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
-        mRtcEngine.EnableAudio();
-        mRtcEngine.EnableVideo();
-        mRtcEngine.EnableVideoObserver();
+        //mRtcEngine.EnableAudio();
+        //mRtcEngine.EnableVideo();
+        //mRtcEngine.EnableVideoObserver();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.SetMultiChannelWant(true);
 
@@ -250,9 +250,15 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         channel.LeaveChannel();
         joinedChannel = false;
         virtualBackgroundOn = false;
+        mRtcEngine.DisableAudio();
+        mRtcEngine.DisableVideo();
+        mRtcEngine.DisableVideoObserver();
     }
 
-    
+    public void OnDestroy()
+    {
+        LeaveChannel();
+    }
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
