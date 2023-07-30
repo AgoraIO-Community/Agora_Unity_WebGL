@@ -170,6 +170,7 @@ class AgoraChannel {
   }
 
   async setupLocalVideoTrack() {
+    console.log(localTracks.videoTrack);
     if (localTracks != undefined && localTracks.videoTrack == undefined) {
       [localTracks.videoTrack] = await Promise.all([
         AgoraRTC.createCameraVideoTrack().catch(error => {

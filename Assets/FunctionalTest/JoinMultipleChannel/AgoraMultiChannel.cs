@@ -7,9 +7,7 @@ using agora_utilities;
 
 public class AgoraMultiChannel : MonoBehaviour
 {
-    [SerializeField] private string APP_ID = "YOUR_APPID";
-
-    [SerializeField] private string TOKEN_1 = "";
+    [SerializeField] private AppInfoObject appInfo;
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
 
@@ -48,12 +46,15 @@ public class AgoraMultiChannel : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        if(appInfo == null)
+            logger.DebugAssert(appInfo.appID.Length > 10, "Please assign an AppInfo Object to appInfo!!!!!");
+        else
+            logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in AppInfo Object!!!!!");
     }
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         // If you want to user Multi Channel Video, please call "SetMultiChannleWant to true"
         mRtcEngine.SetMultiChannelWant(true);
@@ -80,7 +81,7 @@ public class AgoraMultiChannel : MonoBehaviour
 
     void JoinChannel()
     {
-        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        channel1.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true));
         channel2.JoinChannel(TOKEN_2, "", 0, new ChannelMediaOptions(true, true, false, false));
     }
 
