@@ -228,6 +228,21 @@ namespace agora_sample_code
             }
         }
 
+        void OnDestroy()
+        {
+            Debug.Log("OnDestroy");
+            if (_rtcEngine != null)
+            {
+                _rtcEngine.LeaveChannel();
+                _rtcEngine.DisableVideoObserver();
+                if (_audioRawDataManager != null)
+                {
+                    AudioRawDataManager.ReleaseInstance();
+                }
+                IRtcEngine.Destroy();
+            }
+        }
+
 
         private GameObject makeVideoView(string channelId, uint uid)
         {
