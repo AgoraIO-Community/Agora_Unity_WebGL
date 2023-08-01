@@ -250,9 +250,15 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
         channel.LeaveChannel();
         joinedChannel = false;
         virtualBackgroundOn = false;
+        mRtcEngine.DisableAudio();
+        mRtcEngine.DisableVideo();
+        mRtcEngine.DisableVideoObserver();
     }
 
-    
+    public void OnDestroy()
+    {
+        LeaveChannel();
+    }
 
     void EngineOnJoinChannelSuccessHandler(string channelId, uint uid, int elapsed)
     {
@@ -372,8 +378,8 @@ public class VirtualBackgroundMultichannelDemo : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+        float xPos = Random.Range(0f, Screen.width / 3f - Offset);
+        float yPos = Random.Range(0f, Screen.height / 4f - Offset);
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
