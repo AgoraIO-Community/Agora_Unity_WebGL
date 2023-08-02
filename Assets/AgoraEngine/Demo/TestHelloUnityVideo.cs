@@ -427,10 +427,7 @@ public class TestHelloUnityVideo
                 }
             }
         }
-        else
-        {
 
-        }
     }
 
     void OnClientRoleChangeFailedHandler(CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
@@ -506,12 +503,17 @@ public class TestHelloUnityVideo
             remoteUserDisplays.Add(videoSurface.gameObject);
             UserVideoDict[uid] = videoSurface;
         }
+
+        // This will trigger OnVideoSizeChanged
+        mRtcEngine.GetRemoteVideoStats();
     }
 
     float EnforcingViewLength = 360f;
     void OnVideoSizeChangedHandler(uint uid, int width, int height, int rotation)
     {
         Debug.LogWarning(string.Format("OnVideoSizeChangedHandler, uid:{0}, width:{1}, height:{2}, rotation:{3}", uid, width, height, rotation));
+
+
         if (UserVideoDict.ContainsKey(uid))
         {
             GameObject go = UserVideoDict[uid].gameObject;
@@ -524,7 +526,21 @@ public class TestHelloUnityVideo
                 v2 = new Vector2(v2.y, v2.x);
             }
             image.rectTransform.sizeDelta = v2;
+
+            // if (0,0) we will get a default dimension. but let's still check for the actual dimension
+            if (width == 0 && height == 0)
+            {
+                go.GetComponent<MonoBehaviour>().StartCoroutine(CoGetVideoResolutionDelayed(1));
+            }
         }
+    }
+
+    IEnumerator CoGetVideoResolutionDelayed(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Debug.LogWarning("Triggering GetRemoteVideoStats");
+        // This will trigger OnVideoSizeChanged
+        mRtcEngine.GetRemoteVideoStats();
     }
 
     VideoSurface makePlaneSurface(string goName)
@@ -572,7 +588,7 @@ public class TestHelloUnityVideo
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        Vector3 pos = AgoraUIUtils.GetRandomPosition(50);
+        Vector3 pos = AgoraUIUtils.GetRandomPosition(60);
         go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
 
         // configure videoSurface
