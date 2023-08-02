@@ -204,8 +204,6 @@ class ClientManager {
 
   handleUserUnpublished(user, mediaType) {
     const id = user.uid;
-    // delete remoteUsers[id];
-    // $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
     event_manager.raiseOnRemoteUserMuted(strUID, mediaType, 1);
   }
@@ -213,7 +211,6 @@ class ClientManager {
   handleUserLeft(user, reason) {
     const id = user.uid;
     delete remoteUsers[id];
-    $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
     var rcode = 0; // QUIT
     if (reason === "ServerTimeOut") {
