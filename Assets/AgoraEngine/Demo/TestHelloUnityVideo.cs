@@ -588,7 +588,7 @@ public class TestHelloUnityVideo
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        Vector3 pos = AgoraUIUtils.GetRandomPosition(60);
+        Vector2 pos = AgoraUIUtils.GetRandomPosition(60);
         go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
 
         // configure videoSurface

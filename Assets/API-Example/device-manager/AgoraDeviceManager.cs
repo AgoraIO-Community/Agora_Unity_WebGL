@@ -51,7 +51,7 @@ public class AgoraDeviceManager : MonoBehaviour
         if (CheckAppId())
         {
             InitRtcEngine();
-            
+
         }
     }
 
@@ -72,8 +72,6 @@ public class AgoraDeviceManager : MonoBehaviour
             {
                 //GetVideoDeviceManager();
             }
-
-
 
             foreach (MediaDeviceInfo info in videoDevices)
             {
@@ -260,7 +258,7 @@ public class AgoraDeviceManager : MonoBehaviour
         string videoDeviceName = "";
         string videoDeviceId = "";
         /// If you want to getVideoDeviceManager, you need to call startPreview() first;
-        
+
         if (_videoDeviceManager == null)
         {
             _videoDeviceManager = (VideoDeviceManager)_rtcEngine.GetVideoDeviceManager();
@@ -286,7 +284,7 @@ public class AgoraDeviceManager : MonoBehaviour
         }
         _videoDeviceIndex = videoDropdown.value;
         SetVideoDevice();
-        
+
     }
 
     void SetCurrentDevice()
@@ -323,7 +321,10 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void SetVideoDevice()
     {
-        _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
+        if (_videoDeviceIndex < _videoDeviceManagerDic.Count)
+        {
+            _videoDeviceManager.SetVideoDevice(_videoDeviceManagerDic[_videoDeviceIndex]);
+        }
     }
 
     public void ReleaseVideoDevice()
@@ -382,13 +383,13 @@ public class AgoraDeviceManager : MonoBehaviour
 
     void OnDestroy()
     {
-        Debug.Log("OnApplicationQuit");
         if (_rtcEngine != null)
         {
             LeaveChannel();
             _rtcEngine.DisableVideo();
             _rtcEngine.DisableVideoObserver();
             IRtcEngine.Destroy();
+            _rtcEngine = null;
         }
     }
 
@@ -493,11 +494,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
-        Debug.Log("position x " + xPos + " y: " + yPos);
-        go.transform.localPosition = new Vector3(xPos, yPos, 0f);
-        go.transform.localScale = new Vector3(1.5f, 1f, 1f);
+        go.transform.localScale = Vector3.one;
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
