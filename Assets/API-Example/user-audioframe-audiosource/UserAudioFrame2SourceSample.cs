@@ -213,9 +213,8 @@ namespace agora_sample_code
             }
         }
 
-        void OnApplicationQuit()
+        void OnDestroy()
         {
-            Debug.Log("OnApplicationQuit");
             if (_rtcEngine != null)
             {
                 _rtcEngine.LeaveChannel();
@@ -225,6 +224,7 @@ namespace agora_sample_code
                     AudioRawDataManager.ReleaseInstance();
                 }
                 IRtcEngine.Destroy();
+                _rtcEngine = null;
             }
         }
 
