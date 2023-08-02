@@ -65,4 +65,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/FunctionalTest/DevDemo/SceneHome2.unity
     guid: 11e44933caff747879b06a78a609ddfe
+  - enabled: 1
+    path: Assets/FunctionalTest/NewScreenShareMChannel/MainSceneNew.unity
+    guid: 39e056144cfa246eb88df188c22cecf2
   m_configObjects: {}
