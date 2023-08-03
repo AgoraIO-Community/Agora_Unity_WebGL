@@ -243,10 +243,8 @@ public class AgoraMultiChannel : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
-        Debug.Log("position x " + xPos + " y: " + yPos);
-        go.transform.localPosition = new Vector3(xPos, yPos, 0f);
+        Vector2 pos = AgoraUIUtils.GetRandomPosition(60);
+        go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
 
         // configure videoSurface

@@ -240,10 +240,8 @@ public class video_encoder_configuration : MonoBehaviour
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(-Screen.width / 4f, Screen.width / 4f - Offset);
-        float yPos = Random.Range(-Screen.height / 4f, Screen.height / 4f - Offset);
-        Debug.Log("position x " + xPos + " y: " + yPos);
-        go.transform.localPosition = new Vector3(xPos, yPos, 0f);
+        Vector2 pos = AgoraUIUtils.GetRandomPosition(60);
+        go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
         go.transform.localScale = Vector3.one;
 
         // configure videoSurface
