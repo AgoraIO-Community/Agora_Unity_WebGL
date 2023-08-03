@@ -64,39 +64,63 @@ public class AgoraVoiceChannel : MonoBehaviour
         mRtcEngine.EnableAudio();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        //channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
-        //channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        channel1 = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
+        channel1.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
 
-        //channel1.ChannelOnJoinChannelSuccess = Channel1OnJoinChannelSuccessHandler;
-        //channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
-        //channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
-        //channel1.ChannelOnError = Channel1OnErrorHandler;
-        //channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
-        //channel1.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
+        channel1.ChannelOnJoinChannelSuccess = Channel1OnJoinChannelSuccessHandler;
+        channel1.ChannelOnLeaveChannel = Channel1OnLeaveChannelHandler;
+        channel1.ChannelOnUserJoined = Channel1OnUserJoinedHandler;
+        channel1.ChannelOnError = Channel1OnErrorHandler;
+        channel1.ChannelOnUserOffLine = ChannelOnUserOfflineHandler;
+        channel1.ChannelOnVideoSizeChanged = onVideoSizeChanged_MCHandler;
 
     }
 
     public void JoinChannel1()
     {
-        mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, false, true, false));
-        //channel1.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, false, true, false));
+        //mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, false, true, false));
+        channel1.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, false, true, false));
         if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
         {
             joinChannelButtons[0].interactable = false;
+            joinChannelButtons[1].interactable = true;
+        }
+    }
+
+    public void MuteAudio()
+    {
+        //mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, false, true, false));
+        channel1.MuteLocalAudioStream(true);
+        if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
+        {
+            muteButtons[0].interactable = false;
+            muteButtons[1].interactable = true;
         }
     }
 
     public void LeaveChannel1()
     {
-        mRtcEngine.LeaveChannel();
-        //channel1.LeaveChannel();
-        if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
+        //mRtcEngine.LeaveChannel();
+        channel1.LeaveChannel();
+        if (muteButtons.Length > 0 && muteButtons[0])
         {
             joinChannelButtons[0].interactable = true;
+            joinChannelButtons[1].interactable = false;
         }
     }
 
-    void OnDestoy()
+    public void UnmuteAudio()
+    {
+        //mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, false, true, false));
+        channel1.MuteLocalAudioStream(false);
+        if (muteButtons.Length > 0 && muteButtons[0])
+        {
+            muteButtons[0].interactable = true;
+            muteButtons[1].interactable = false;
+        }
+    }
+
+    void OnDestroy()
     {
         Debug.Log("OnApplicationQuit");
         if (mRtcEngine != null)
