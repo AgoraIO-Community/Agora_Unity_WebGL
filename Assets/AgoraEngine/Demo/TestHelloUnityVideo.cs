@@ -32,6 +32,8 @@ public class TestHelloUnityVideo
     private ToggleStateButton RoleButton { get; set; }
     private ToggleStateButton ChannelButton { get; set; }
     protected Dictionary<uint, VideoSurface> UserVideoDict = new Dictionary<uint, VideoSurface>();
+
+    private bool UserEnableVideo = true;
     // Testing Volume Indication
     private bool TestVolumeIndication = false;
 
@@ -120,6 +122,7 @@ public class TestHelloUnityVideo
         if (mRtcEngine == null)
             return;
 
+        UserEnableVideo = enableVideoOrNot;
 
         SetupInitState();
 
@@ -171,8 +174,9 @@ public class TestHelloUnityVideo
         }
         else
         {
-            //AudioVideoState.subVideo = false;
-            //AudioVideoState.pubVideo = false;
+            mRtcEngine.DisableVideo();
+            AudioVideoState.subVideo = false;
+            AudioVideoState.pubVideo = false;
         }
 
         // NOTE, we use the third button to invoke JoinChannelByKey
@@ -315,6 +319,7 @@ public class TestHelloUnityVideo
                 }
             );
         }
+        MuteVideoButton.gameObject.SetActive(UserEnableVideo);
 
         ChannelButton = GameObject.Find("ChannelButton").GetComponent<ToggleStateButton>();
         if (ChannelButton != null)
@@ -354,7 +359,7 @@ public class TestHelloUnityVideo
                      MuteAudioButton.Reset();
                      MuteVideoButton.Reset();
                      MuteVideoButton.GetComponent<Button>().interactable = true;
-                     MuteAudioButton.GetComponent<Button>().interactable = true;             
+                     MuteAudioButton.GetComponent<Button>().interactable = true;
                  },
                  callOffAction: () =>
                  {
@@ -371,7 +376,7 @@ public class TestHelloUnityVideo
     void handleOnClientRoleChanged(CLIENT_ROLE_TYPE oldRole, CLIENT_ROLE_TYPE newRole)
     {
         Debug.Log("Engine OnClientRoleChanged: " + oldRole + " -> " + newRole);
-        if(newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER)
+        if (newRole == CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER)
         {
             if (AudioVideoState.pubVideo)
             {
@@ -384,7 +389,8 @@ public class TestHelloUnityVideo
             {
                 mRtcEngine.EnableLocalAudio(true);
             }
-        } else
+        }
+        else
         {
             if (AudioVideoState.pubVideo)
             {
@@ -402,25 +408,26 @@ public class TestHelloUnityVideo
 
     void handleOnUserEnableVideo(uint uid, REMOTE_VIDEO_STATE state, REMOTE_VIDEO_STATE_REASON reason, int elapsed)
     {
-        Debug.Log("remote video" + state.ToString());
+        Debug.Log("remote video state:" + state.ToString());
         if (state == REMOTE_VIDEO_STATE.REMOTE_VIDEO_STATE_STARTING)
         {
-            // create a GameObject and assign to this new user
-            VideoSurface videoSurface = makeImageSurface(uid.ToString());
-            if (!ReferenceEquals(videoSurface, null))
+            if (!UserVideoDict.ContainsKey(uid))
             {
-                // configure videoSurface
-                videoSurface.SetForUser(uid);
-                videoSurface.SetEnable(true);
-                videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+                // create a GameObject and assign to this new user
+                VideoSurface videoSurface = makeImageSurface(uid.ToString());
+                if (!ReferenceEquals(videoSurface, null))
+                {
+                    // configure videoSurface
+                    videoSurface.SetForUser(uid);
+                    videoSurface.SetEnable(true);
+                    videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
 
-                remoteUserDisplays.Add(videoSurface.gameObject);
-                UserVideoDict[uid] = videoSurface;
+                    remoteUserDisplays.Add(videoSurface.gameObject);
+                    UserVideoDict[uid] = videoSurface;
+                }
             }
-        } else
-        {
-
         }
+
     }
 
     void OnClientRoleChangeFailedHandler(CLIENT_ROLE_CHANGE_FAILED_REASON reason, CLIENT_ROLE_TYPE currentRole)
@@ -479,14 +486,14 @@ public class TestHelloUnityVideo
 
         // find a game object to render video stream from 'uid'
         GameObject go = GameObject.Find(uid.ToString());
-        if (!ReferenceEquals(go, null))
+        if (go != null)
         {
             return; // reuse
         }
 
         // create a GameObject and assign to this new user
         VideoSurface videoSurface = makeImageSurface(uid.ToString());
-        if (!ReferenceEquals(videoSurface, null))
+        if (videoSurface != null)
         {
             // configure videoSurface
             videoSurface.SetForUser(uid);
@@ -496,12 +503,17 @@ public class TestHelloUnityVideo
             remoteUserDisplays.Add(videoSurface.gameObject);
             UserVideoDict[uid] = videoSurface;
         }
+
+        // This will trigger OnVideoSizeChanged
+        mRtcEngine.GetRemoteVideoStats();
     }
 
     float EnforcingViewLength = 360f;
     void OnVideoSizeChangedHandler(uint uid, int width, int height, int rotation)
     {
         Debug.LogWarning(string.Format("OnVideoSizeChangedHandler, uid:{0}, width:{1}, height:{2}, rotation:{3}", uid, width, height, rotation));
+
+
         if (UserVideoDict.ContainsKey(uid))
         {
             GameObject go = UserVideoDict[uid].gameObject;
@@ -514,7 +526,21 @@ public class TestHelloUnityVideo
                 v2 = new Vector2(v2.y, v2.x);
             }
             image.rectTransform.sizeDelta = v2;
+
+            // if (0,0) we will get a default dimension. but let's still check for the actual dimension
+            if (width == 0 && height == 0)
+            {
+                go.GetComponent<MonoBehaviour>().StartCoroutine(CoGetVideoResolutionDelayed(1));
+            }
         }
+    }
+
+    IEnumerator CoGetVideoResolutionDelayed(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        Debug.LogWarning("Triggering GetRemoteVideoStats");
+        // This will trigger OnVideoSizeChanged
+        mRtcEngine.GetRemoteVideoStats();
     }
 
     VideoSurface makePlaneSurface(string goName)
@@ -547,7 +573,7 @@ public class TestHelloUnityVideo
         {
             return null;
         }
-
+        Debug.Log("Making GameObject:" + goName);
         go.name = goName;
 
         // to be renderered onto
@@ -562,9 +588,8 @@ public class TestHelloUnityVideo
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
-        go.transform.localPosition = new Vector3(xPos, yPos, 0f);
+        Vector2 pos = AgoraUIUtils.GetRandomPosition(60);
+        go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
 
         // configure videoSurface
         VideoSurface videoSurface = go.AddComponent<VideoSurface>();
@@ -580,9 +605,13 @@ public class TestHelloUnityVideo
         Debug.Log("onUserOffline: uid = " + uid + " reason = " + reason);
         // this is called in main thread
         GameObject go = GameObject.Find(uid.ToString());
-        if (!ReferenceEquals(go, null))
+        if (go != null)
         {
             Object.Destroy(go);
+        }
+        else
+        {
+            Debug.Log(uid + " not found");
         }
     }
 
