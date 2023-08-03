@@ -7,9 +7,7 @@ using agora_utilities;
 
 public class AgoraMultiChannel2 : MonoBehaviour
 {
-    [SerializeField] private string APP_ID = "YOUR_APPID";
-
-    [SerializeField] private string TOKEN_1 = "";
+    [SerializeField] private AppInfoObject appInfo;
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     [SerializeField] private string CHANNEL_NAME_2 = "YOUR_CHANNEL_NAME_2";
@@ -97,8 +95,8 @@ public class AgoraMultiChannel2 : MonoBehaviour
     bool CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
-        return (APP_ID.Length > 10);
+        logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        return (appInfo.appID.Length > 10);
     }
 
 
@@ -131,7 +129,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
         // If you want to user Multi Channel Video, please call "SetMultiChannleWant to true"
         mRtcEngine.SetMultiChannelWant(true);
@@ -196,7 +194,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public void JoinChannel4()
     {
-        channel4.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        channel4.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true));
         if (joinChannelButtons.Length > 3 && joinChannelButtons[3])
         {
             joinChannelButtons[3].interactable = false;
@@ -217,7 +215,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public void JoinChannel3()
     {
-        channel3.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        channel3.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true));
         if (joinChannelButtons.Length > 2 && joinChannelButtons[2])
         {
             joinChannelButtons[2].interactable = false;
@@ -238,7 +236,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public void JoinChannel2()
     {
-        channel2.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        channel2.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true));
         if (joinChannelButtons.Length > 1 && joinChannelButtons[1])
         {
             joinChannelButtons[1].interactable = false;
@@ -258,7 +256,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     public void JoinChannel1()
     {
-        channel1.JoinChannel(TOKEN_1, "", 0, new ChannelMediaOptions(true, true));
+        channel1.JoinChannel(appInfo.token, "", 0, new ChannelMediaOptions(true, true));
         if (joinChannelButtons.Length > 0 && joinChannelButtons[0])
         {
             joinChannelButtons[0].interactable = false;
@@ -278,7 +276,7 @@ public class AgoraMultiChannel2 : MonoBehaviour
 
     void JoinChannel()
     {
-        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        mRtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
     }
 
 
