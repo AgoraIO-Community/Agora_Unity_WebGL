@@ -36,6 +36,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     public InputField appIdText, tokenText, channelNameText;
 
     AgoraChannel spatialAudioChannel;
+    ILocalSpatialAudioEngine spatialAudio;
 
     [SerializeField]
     private List<uint> remoteClientIDs;
@@ -135,13 +136,17 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     {
         mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-
+        
         mRtcEngine.EnableAudio();
+        
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.SetMultiChannelWant(true);
 
         spatialAudioChannel = mRtcEngine.CreateChannel(CHANNEL_NAME_1);
         spatialAudioChannel.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+
+        spatialAudio = mRtcEngine.GetLocalSpatialAudioEngine();
+        spatialAudio.Initialize_MC();
 
         spatialAudioChannel.ChannelOnJoinChannelSuccess += OnJoinChannelSuccessHandler;
         spatialAudioChannel.ChannelOnUserJoined += OnUserJoinedHandler;

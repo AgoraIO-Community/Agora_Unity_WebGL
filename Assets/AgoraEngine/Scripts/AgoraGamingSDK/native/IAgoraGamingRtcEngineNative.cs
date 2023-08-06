@@ -1545,6 +1545,9 @@ namespace agora_gaming_rtc
         protected static extern int enableSpatialAudio(bool enabled);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableSpatialAudio_MC(bool enabled);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int startLocalMediaSpatialAudio(uint uid, string media);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
@@ -1601,6 +1604,9 @@ namespace agora_gaming_rtc
         //spatialAudio
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize();
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int localSpatialAudio_initialize_mc();
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updateRemotePosition(uint uid, float[] position, float[] forward);

@@ -1023,6 +1023,11 @@ class AgoraChannel {
     await this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
   }
 
+  async initializeSpatialAudioManager_mc(){
+    this.spatialAudio = window.createSpatialAudioManager();
+    console.log("enabled multichannel spatial audio....");
+  }
+
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
     this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
     this.spatialAudio.updateSpatialElevation(uid, elevation);

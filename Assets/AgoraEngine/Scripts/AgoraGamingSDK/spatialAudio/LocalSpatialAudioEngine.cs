@@ -7,6 +7,8 @@ namespace agora_gaming_rtc
     {
         public abstract int Initialize();
 
+        public abstract int Initialize_MC();
+
         public abstract int UpdateRemotePosition(uint uid, RemoteVoicePositionInfo info);
 
         public abstract int RemoveRemotePosition(uint uid);
@@ -71,6 +73,14 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
             return IRtcEngineNative.localSpatialAudio_initialize();
+        }
+
+        public override int Initialize_MC()
+        {
+            if (mEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+            return IRtcEngineNative.localSpatialAudio_initialize_mc();
         }
 
         public override int UpdateRemotePosition(uint uid, RemoteVoicePositionInfo info)

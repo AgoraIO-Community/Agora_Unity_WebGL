@@ -1218,11 +1218,13 @@ setVirtualBackgroundVideo(videoFile){
 
   //#region  ------- SPATIAL AUDIO ------------
   async enableSpatialAudio(enabled){
+    
     if (enabled && this.spatialAudio === null || this.spatialAudio === undefined)
     {
       await this.initializeSpatialAudioManager();
     }
     this.spatialAudio.enabled = enabled;
+    console.log("enabling spatial audio....", this.spatialAudio);
   }
 
   async initializeSpatialAudioManager() {
@@ -1254,6 +1256,7 @@ setVirtualBackgroundVideo(videoFile){
   }
 
   setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+    console.log(this.spatialAudio);
      this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
      this.spatialAudio.updateSpatialElevation(uid, elevation);
      this.spatialAudio.updateSpatialDistance(uid, distance);

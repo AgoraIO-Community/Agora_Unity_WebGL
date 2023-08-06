@@ -10,6 +10,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
+    private ILocalSpatialAudioEngine spatialAudio;
 
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
@@ -148,6 +149,8 @@ public class SpatialAudioForClientManager : MonoBehaviour
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
+        spatialAudio = mRtcEngine.GetLocalSpatialAudioEngine();
+        spatialAudio.Initialize();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
         mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
