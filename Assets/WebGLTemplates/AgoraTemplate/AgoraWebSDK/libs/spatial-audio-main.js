@@ -56,6 +56,7 @@ class spatialAudioManager {
         // Inject the SpatialAudioProcessor into the audio track
         const track = user.audioTrack;
         track.pipe(processor).pipe(track.processorDestination);
+        console.log("processing track: ", this.localPlayProcessors);
       } catch (error) {
         console.error(`${processor} with microphone track play fail: ${error}`);
       }
@@ -178,6 +179,7 @@ class spatialAudioManager {
 
   updateSpatialAttenuation(uid, value) {
     this.spatialAudioSettings.attenuation = value;
+    console.log("local play processor", this.localPlayProcessors);
     if (this.localPlayProcessors[uid]) {
       return this.localPlayProcessors[uid].updateSpatialAttenuation(value);
     } else {
@@ -187,6 +189,7 @@ class spatialAudioManager {
 
   updateSpatialBlur(uid, checked) {
     this.spatialAudioSettings.blur = checked;
+    console.log("local play processor", this.localPlayProcessors);
     if (this.localPlayProcessors[uid]) {
       return this.localPlayProcessors[uid].updateSpatialBlur(checked);
     } else {

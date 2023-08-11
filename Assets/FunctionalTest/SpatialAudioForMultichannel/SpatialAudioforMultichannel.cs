@@ -207,6 +207,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     int prevDropSelect = 0;
     void OnDropDownSelect(int v)
     {
+        Debug.Log(v.ToString());
         if (v != prevDropSelect)
         {
             var uid = remoteClientIDs[prevDropSelect];
@@ -298,10 +299,11 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     public void updateSpatialAudio()
     {
-        Debug.Log("Updating spatial effect for uid:" + remoteClientIDs[0]);
+        Debug.Log("Updating spatial effect for uid:" + remoteClientIDs[userDropdown.value]);
         if (remoteClientIDs.Count > 0 && enableToggle.isOn)
         {
-            spatialAudioChannel.SetRemoteUserSpatialAudioParams(remoteClientIDs[prevDropSelect], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+            Debug.Log("Working");
+            spatialAudioChannel.SetRemoteUserSpatialAudioParams(remoteClientIDs[userDropdown.value], azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
         }
     }
 

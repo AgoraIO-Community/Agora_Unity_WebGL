@@ -141,7 +141,9 @@ class AgoraChannel {
         strUID
       );
     }
+    
     if (mediaType === "audio") {
+      console.log("working here...");
       user.audioTrack.play();
       this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
     }
@@ -1029,7 +1031,7 @@ class AgoraChannel {
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
-    console.log("set spatial audio params");
+    console.log("set spatial audio params", uid);
     this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
     this.spatialAudio.updateSpatialElevation(uid, elevation);
     this.spatialAudio.updateSpatialDistance(uid, distance);
