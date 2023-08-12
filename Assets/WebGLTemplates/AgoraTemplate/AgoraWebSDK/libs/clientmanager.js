@@ -20,7 +20,7 @@ class ClientManager {
     this._inChannel = false;
     this._streamMessageRetry = false;
     this.is_screensharing = false;
-    this.tempLocalTracks = null;
+    this.tempLocalTracks = {videoTrack: null, audioTrack: null};
     this.previewVideoTrack;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
@@ -609,36 +609,30 @@ class ClientManager {
     if(localTracks.videoTrack != undefined){
       await localTracks.videoTrack.setMuted(mute);
     }
-    console.log(localTracks.videoTrack.muted, mute);
+    
     this.videoPublishing = !mute;
   }
 
   async muteLocalAudioStream(mute) {
-    if (mute) {
+    var muted = mute == 1 ? true : false;
       if (localTracks.audioTrack) {
-        await this.client.unpublish(localTracks.audioTrack);
+        await localTracks.audioTrack.setMuted(muted);
       }
-    } else {
-      if (localTracks.audioTrack) {
-        await this.client.publish(localTracks.audioTrack);
-      }
-    }
+    
     this.audioPublishing = !mute;
   }
 
   async enableLocalVideo(enabled) {
-    console.log("EnableLocalVideo (clientManager):" + enabled);
+    var enable = enabled == 1 ? true : false;
+    console.log("EnableLocalVideo (clientManager):" + enable);
     if (this.client) {
-      if (enabled == false) {
 
-        if(localTracks.videoTrack != null){
-          await this.client.unpublish(localTracks.videoTrack);
-          localTracks.videoTrack?.stop();
-          localTracks.videoTrack?.close();
-        }
-      } 
+      if(localTracks.videoTrack != null){
+        localTracks.videoTrack.setEnabled(enable);
+      }
+
     }
-    this.videoEnabled = enabled;
+    this.videoEnabled = enable;
   }
 
   
