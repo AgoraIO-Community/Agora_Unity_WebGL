@@ -587,19 +587,8 @@ class ClientManager {
     this.audioSubscribing = enabled;
   }
 
-// Disables/Re-enables the local audio function.
-  async enableLocalAudio(enabled) {
-    if (enabled == false) {
-      if (localTracks.audioTrack) {
-        localTracks.audioTrack.setVolume(0);
-      }
-    } else {
-      if (localTracks.audioTrack) {
-        localTracks.audioTrack.setVolume(100);
-      }
-    }
-    this.audioEnabled = enabled;
-  }
+
+  
 
   // mutes the video stream by calling setMuted in the video track.
   // if mute is equal to true, then the videoTrack will be muted
@@ -633,6 +622,20 @@ class ClientManager {
 
     }
     this.videoEnabled = enable;
+  }
+
+  // Disables/Re-enables the local audio function.
+  async enableLocalAudio(enabled) {
+    var enable = enabled == 1 ? true : false;
+    console.log("EnableLocalAudio (clientManager):" + enable);
+    if (this.client) {
+
+      if(localTracks.audioTrack != null){
+        localTracks.audioTrack.setEnabled(enable);
+      }
+
+    }
+    this.audioEnabled = enable;
   }
 
   
