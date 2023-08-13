@@ -107,6 +107,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
                     attenuationSlider.interactable = true;
                     blurToggle.interactable = true;
                     airAbsorbToggle.interactable = true;
+                    userDropdown.interactable = true;
                 }
 
             }
@@ -128,7 +129,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
             attenuationSlider.interactable = false;
             blurToggle.interactable = false;
             airAbsorbToggle.interactable = false;
-
+            userDropdown.interactable = false;
         }
 
         azimuthText.text = azimuthSlider.value.ToString("F2");

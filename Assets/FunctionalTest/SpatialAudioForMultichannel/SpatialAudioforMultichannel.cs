@@ -100,13 +100,17 @@ public class SpatialAudioforMultichannel : MonoBehaviour
             tokenText.interactable = false;
             channelNameText.interactable = false;
 
-            azimuthSlider.interactable = true;
-            elevationSlider.interactable = true;
-            distanceSlider.interactable = true;
-            orientationSlider.interactable = true;
-            attenuationSlider.interactable = true;
-            blurToggle.interactable = true;
-            airAbsorbToggle.interactable = true;
+            if (remoteClientIDs.Count > 0)
+            {
+                azimuthSlider.interactable = true;
+                elevationSlider.interactable = true;
+                distanceSlider.interactable = true;
+                orientationSlider.interactable = true;
+                attenuationSlider.interactable = true;
+                blurToggle.interactable = true;
+                airAbsorbToggle.interactable = true;
+                userDropdown.interactable = true;
+            }
         }
         else
         {
@@ -124,6 +128,7 @@ public class SpatialAudioforMultichannel : MonoBehaviour
             attenuationSlider.interactable = false;
             blurToggle.interactable = false;
             airAbsorbToggle.interactable = false;
+            userDropdown.interactable = false;
         }
 
         azimuthText.text = azimuthSlider.value.ToString("F2");
