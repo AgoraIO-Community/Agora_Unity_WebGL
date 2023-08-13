@@ -323,6 +323,20 @@ function muteLocalVideoStream2_mc_WGL(channel, mute) {
   clients[channel].muteLocalVideoStream(mute);
 }
 
+function enableLocalVideoStream2_mc_WGL(channel, mute) {
+  if (typeof clients[channel] === "undefined") {
+    return 0;
+  } 
+  clients[channel].enableLocalVideo(mute);
+}
+
+function enableLocalAudioStream2_mc_WGL(channel, mute) {
+  if (typeof clients[channel] === "undefined") {
+    return 0;
+  } 
+  clients[channel].enableLocalAudio(mute);
+}
+
 function muteRemoteAudioStream2_mc_WGL(userId, mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;

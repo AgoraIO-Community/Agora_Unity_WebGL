@@ -1741,6 +1741,19 @@ namespace agora_gaming_rtc
 
         }
 
+        public int EnableLocalVideoStream(bool mute)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.muteLocalVideoStream_channel(_channelId, mute);
+#else
+            return IRtcEngineNative.muteLocalVideoStream_channel(_channelHandler, mute);
+#endif
+
+        }
+
         /** Stops or resumes publishing the local audio stream.
         *
         * This method only sets the publishing state of the audio stream in the channel of `AgoraChannel`.
@@ -1767,6 +1780,18 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.muteLocalAudioStream_channel(_channelId, mute);
 #else
             return IRtcEngineNative.muteLocalAudioStream_channel(_channelHandler, mute);
+#endif
+        }
+
+        public int EnableLocalAudioStream(bool mute)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.enableLocalAudioStream_channel(_channelId, mute);
+#else
+            return IRtcEngineNative.enableLocalAudioStream_channel(_channelHandler, mute);
 #endif
         }
 
