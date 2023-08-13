@@ -89,10 +89,7 @@ class AgoraChannel {
     const id = user.uid;
     event_manager.raiseChannelOnUserJoined_MC(id, this.options.channel);
     event_manager.raiseCustomMsg("New User Joined: " + id);
-    console.log("spatial audio user", this.spatialAudio);
-    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
-      this.enableSpatialAudio(true, user);
-    }
+    
   }
 
   async handleUserPublished(user, mediaType) {
@@ -143,8 +140,8 @@ class AgoraChannel {
     }
     
     if (mediaType === "audio") {
-      console.log("working here...");
       user.audioTrack.play();
+      console.log("working here...", this.spatialAudio);
       this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
     }
   }

@@ -2134,7 +2134,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
   localSpatialAudio_initialize_mc : function () {
     console.log("enabling....");
-    initializeSpatialAudioManager_mc();
+    initializeSpatialAudio_MC();
   },
   localSpatialAudio_release  : function () {
     releaseSpatialAudioManager();
