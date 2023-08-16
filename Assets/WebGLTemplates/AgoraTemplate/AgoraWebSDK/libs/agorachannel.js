@@ -89,10 +89,7 @@ class AgoraChannel {
     const id = user.uid;
     event_manager.raiseChannelOnUserJoined_MC(id, this.options.channel);
     event_manager.raiseCustomMsg("New User Joined: " + id);
-
-    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
-      this.enableSpatialAudio(true, user);
-    }
+    
   }
 
   async handleUserPublished(user, mediaType) {
@@ -141,8 +138,11 @@ class AgoraChannel {
         strUID
       );
     }
+    
     if (mediaType === "audio") {
       user.audioTrack.play();
+      console.log("working here...", this.spatialAudio);
+      this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
     }
   }
 
@@ -1020,10 +1020,15 @@ class AgoraChannel {
     if(this.spatialAudio){
         this.spatialAudio = window.createSpatialAudioManager();
     }
-    await this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
+  }
+
+  async initializeSpatialAudioManager_mc(){
+    this.spatialAudio = window.createSpatialAudioManager();
+    console.log("enabled multichannel spatial audio....");
   }
 
   async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+    console.log("set spatial audio params", uid);
     this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
     this.spatialAudio.updateSpatialElevation(uid, elevation);
     this.spatialAudio.updateSpatialDistance(uid, distance);

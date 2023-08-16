@@ -35,7 +35,7 @@ public class AgoraDeviceManager : MonoBehaviour
     private const float Offset = 100;
     GameObject LastRemote = null;
     public Slider recordingVolume, playbackVolume;
-    public bool joinedChannel, previewing;
+    public bool joinedChannel, previewing, pubAudio, subAudio, pubVideo, subVideo = true;
     public Button videoDeviceButton, joinChannelButton, leaveChannelButton, startPreviewButton, stopPreviewButton, cacheVideoButton;
     // Start is called before the first frame update
     private void Awake()
@@ -114,6 +114,7 @@ public class AgoraDeviceManager : MonoBehaviour
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CacheVideoDevices();
+        pubVideo = true;
         Invoke("GetVideoDeviceManager", .2f);
 #endif
     }
@@ -122,6 +123,7 @@ public class AgoraDeviceManager : MonoBehaviour
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CacheRecordingDevices();
+        pubAudio = true;
         Invoke("GetAudioRecordingDevice", .2f);
 #endif
     }
@@ -132,6 +134,7 @@ public class AgoraDeviceManager : MonoBehaviour
     {
 #if UNITY_WEBGL && !UNITY_EDITOR
         _rtcEngine.CachePlaybackDevices();
+        subAudio = true;
         Invoke("GetAudioPlaybackDevice", .2f);
 #endif
     }
@@ -145,19 +148,29 @@ public class AgoraDeviceManager : MonoBehaviour
     public void playbackUpdate()
     {
         _playbackDeviceIndex = playbackDropdown.value;
+        subAudio = true;
         SetAndReleasePlaybackDevice();
     }
 
     public void recordingUpdate()
     {
         _recordingDeviceIndex = recordingDropdown.value;
+        pubAudio = true;
         SetAndReleaseRecordingDevice();
     }
 
     public void videoUpdate()
     {
         _videoDeviceIndex = videoDropdown.value;
+        pubVideo = true;
         SetVideoDevice();
+    }
+
+    public void updateAll()
+    {
+        videoUpdate();
+        recordingUpdate();
+        playbackUpdate();
     }
 
     public void startPreview()
@@ -345,7 +358,7 @@ public class AgoraDeviceManager : MonoBehaviour
 
     public void startJoiningChannel()
     {
-        _rtcEngine.JoinChannel(CHANNEL_NAME);
+        _rtcEngine.JoinChannel(appInfo.token, CHANNEL_NAME, "", 0, new ChannelMediaOptions(subAudio, subVideo, pubAudio, pubVideo));
         makeVideoView(CHANNEL_NAME, 0);
     }
 
