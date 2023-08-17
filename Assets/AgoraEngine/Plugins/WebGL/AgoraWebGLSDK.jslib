@@ -1637,9 +1637,17 @@ muteLocalVideoStream_channel: function(channel, mute) {
   var str_chan = UTF8ToString(channel);
   muteLocalVideoStream2_mc_WGL(str_chan, mute);
 },
+enableLocalVideoStream_channel: function(channel, mute) {
+  var str_chan = UTF8ToString(channel);
+  enableLocalVideoStream2_mc_WGL(str_chan, mute);
+},
 muteLocalAudioStream_channel: function(channel, mute) {
   var str_chan = UTF8ToString(channel);
   muteLocalAudioStream2_mc_WGL(str_chan, mute);
+},
+enableLocalAudioStream_channel: function(channel, mute) {
+  var str_chan = UTF8ToString(channel);
+  enableLocalAudioStream2_mc_WGL(str_chan, mute);
 },
   joinChannelWithUserAccount2: function (
     channel,

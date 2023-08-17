@@ -668,37 +668,52 @@ class AgoraChannel {
 
   // Must/Unmute local audio (mic)
   async muteLocalAudioStream(mute) {
-    if (mute) {
-      if (localTracks.audioTrack) {
-        await this.client.unpublish(localTracks.audioTrack);
-      }
-    } else {
-      if (localTracks.audioTrack) {
-        await this.client.publish(localTracks.audioTrack);
-      }
+    var muted = mute == 1 ? true : false;
+    if (localTracks.audioTrack) {
+      await localTracks.audioTrack.setMuted(muted);
     }
-    this.audioEnabled = !mute;
+    
+    this.audioEnabled = !muted;
   }
 
   // Stops/Resumes sending the local video stream.
   async muteLocalVideoStream(mute) {
+    var muted = mute == 1 ? true : false;
     if (this.client && !this.is_screensharing) {
-      if (mute) {
-        if (localTracks.videoTrack) {
-         await localTracks.videoTrack.setMuted(true);
-        }
-        
-      } else {
-        
-        if (localTracks.videoTrack) {
-          await localTracks.videoTrack.setMuted(false);
-        }
-        
-        await localTracks.videoTrack.setMuted(false);
+      if (localTracks.videoTrack) {
+        await localTracks.videoTrack.setMuted(muted);
       }
-      this.videoEnabled = !mute;
+        
     }
+      this.videoEnabled = !muted;
   }
+
+  async enableLocalVideo(enabled) {
+    var enable = enabled == 1 ? true : false;
+    console.log("EnableLocalVideo (agoraChannel):" + enable);
+    if (this.client) {
+
+      if(localTracks.videoTrack != null){
+        localTracks.videoTrack.setEnabled(enable);
+      }
+
+    }
+    this.videoEnabled = enable;
+  }
+
+  async enableLocalAudio(enabled) {
+    var enable = enabled == 1 ? true : false;
+    console.log("EnableLocalVideo (agoraChannel):" + enable);
+    if (this.client) {
+
+      if(localTracks.audioTrack != null){
+        localTracks.audioTrack.setEnabled(enable);
+      }
+
+    }
+    this.audioEnabled = enable;
+  }
+
   muteRemoteAudioStream(uid, mute) {
     Object.keys(this.remoteUsers).forEach((uid2) => {
 

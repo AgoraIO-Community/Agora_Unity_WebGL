@@ -1401,18 +1401,31 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setLocalAccessPoint(string ips, int ipSize, string domainList, int domainListSize, string verifyDomainName, int mode, string serverDomain, string serverPath, int serverPort, bool serverHttps);
 
+
 #if !UNITY_EDITOR && UNITY_WEBGL
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalAudioStream_channel(string channel, bool mute);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableLocalAudioStream_channel(string channel, bool mute);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalVideoStream_channel(string channel, bool mute);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableLocalVideoStream_channel(string channel, bool mute);
 #else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalAudioStream_channel(IntPtr channel, bool mute);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableLocalAudioStream_channel(IntPtr channel, bool mute);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalVideoStream_channel(IntPtr channel, bool mute);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int enableLocalVideoStream_channel(IntPtr channel, bool mute);
 #endif
 
 #if UNITY_WEBGL
