@@ -101,6 +101,7 @@ class ClientManager {
       wrapper.log("using mode: " + mode);
       this.client = AgoraRTC.createClient({ mode: mode, codec: "vp8" });
       this.options.appid = appID;
+
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
       return true;
@@ -186,7 +187,7 @@ class ClientManager {
       || mediaType == "audio" && this.screenShareClient != null
       && id != this.screenShareClient.uid)) {
       await this.subscribe_remoteuser(user, mediaType);
-    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers != undefined) {
+    } else if(this.videoSubscribing && mediaType == "video" && remoteUsers) {
       await this.subscribe_remoteuser(user, mediaType);
       event_manager.raiseOnRemoteUserMuted(id.toString(), mediaType, 0);
       this.getRemoteVideoStats(id);
@@ -492,8 +493,6 @@ class ClientManager {
 
     this._inChannel = true;
     await this.processJoinChannelAVTrack();
-
-   
 
     event_manager.raiseJoinChannelSuccess(
       this.options.uid.toString(),

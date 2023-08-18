@@ -3,7 +3,7 @@ var mediaRecorder;
 var audioChunks = [];
 var dest; /// empty audio dest
 var audioCtx = new AudioContext();
-var audio_profile;
+
 const kSampleRate = 44100; // Other sample rates might not work depending on the your browser's AudioContext
 const kNumSamples = 16834;
 const kFrequency = 440;
