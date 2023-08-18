@@ -9,6 +9,12 @@ EditorBuildSettings:
     path: Assets/API-Example/HomeMenu.unity
     guid: 701a86b09780447ccb69174ea6d02344
   - enabled: 1
+    path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
+    guid: 5a4d72265ca2c1b4393e31ef58d0988d
+  - enabled: 1
+    path: Assets/AgoraEngine/Demo/SceneHome.unity
+    guid: 04457f7085d109e45b51dd81bae1a412
+  - enabled: 1
     path: Assets/API-Example/datastream-sample/DataStreamScene.unity
     guid: a8a42917fcf914940a9a8df22ed398f0
   - enabled: 1
@@ -47,25 +53,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/API-Example/virtual-background/VirtualBackground.unity
     guid: c17ee52ac0699fe4daedac81c4db2c4e
-  - enabled: 1
-    path: Assets/AgoraEngine/Demo/SceneHome.unity
-    guid: 04457f7085d109e45b51dd81bae1a412
-  - enabled: 1
-    path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
-    guid: 5a4d72265ca2c1b4393e31ef58d0988d
-  - enabled: 1
-    path: Assets/FunctionalTest/SpatialAudioForMultichannel/SpatialAudioScene.unity
-    guid: 04cfcb3deed02204ab61de68f097a240
-  - enabled: 1
-    path: Assets/FunctionalTest/JoinMultipleChannel/MainScene.unity
-    guid: 253acdf0e3d6a43c792d3b1e6534584c
-  - enabled: 1
-    path: Assets/FunctionalTest/DevDemo/MultiChannel.unity
-    guid: 5b584fa3e853bf549a336db818b8b3f0
-  - enabled: 1
-    path: Assets/FunctionalTest/DevDemo/SceneHome2.unity
-    guid: 11e44933caff747879b06a78a609ddfe
-  - enabled: 1
-    path: Assets/FunctionalTest/NewScreenShareMChannel/MainSceneNew.unity
-    guid: 39e056144cfa246eb88df188c22cecf2
   m_configObjects: {}

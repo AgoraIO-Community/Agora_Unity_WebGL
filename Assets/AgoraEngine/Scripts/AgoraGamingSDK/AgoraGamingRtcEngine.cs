@@ -2026,17 +2026,30 @@ namespace agora_gaming_rtc
 
         public int CacheVideoDevices()
         {
+#if UNITY_WEBGL
             return IRtcEngineNative.cacheVideoDevices();
+#else 
+            return -1;
+#endif
+
         }
 
         public int CacheRecordingDevices()
         {
+#if UNITY_WEBGL
             return IRtcEngineNative.cacheRecordingDevices();
+#else 
+            return -1;
+#endif
         }
 
         public int CachePlaybackDevices()
         {
+#if UNITY_WEBGL
             return IRtcEngineNative.cachePlaybackDevices();
+#else 
+            return -1;
+#endif
         }
 
         /** Disables the video observer.
