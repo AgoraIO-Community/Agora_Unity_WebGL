@@ -75,6 +75,10 @@
      <Compile Include="Assets\API-Example\tools\PermissionHelper.cs" />
      <Compile Include="Assets\API-Example\tools\ToggleStateButton.cs" />
      <Compile Include="Assets\API-Example\tools\UIElementDragger.cs" />
+     <Compile Include="Assets\API-Example\user-audioframe-audiosource\IUserAudioFrameDelegate.cs" />
+     <Compile Include="Assets\API-Example\user-audioframe-audiosource\RingBuffer.cs" />
+     <Compile Include="Assets\API-Example\user-audioframe-audiosource\UserAudioFrame2SourceSample.cs" />
+     <Compile Include="Assets\API-Example\user-audioframe-audiosource\UserAudioFrameHandler.cs" />
      <Compile Include="Assets\API-Example\video-encoder-configuration\video_encoder_configuration.cs" />
      <Compile Include="Assets\API-Example\virtual-background\VirtualBackgroundClientDemo.cs" />
      <Compile Include="Assets\AgoraEngine\Demo\AudioVideoStateControl.cs" />

@@ -20,7 +20,7 @@ class ClientManager {
     this._inChannel = false;
     this._streamMessageRetry = false;
     this.is_screensharing = false;
-    this.tempLocalTracks = null;
+    this.tempLocalTracks = {videoTrack: null, audioTrack: null};
     this.previewVideoTrack;
     this.enableLoopbackAudio = false;
     this.virtualBackgroundProcessor = null;
@@ -45,8 +45,6 @@ class ClientManager {
     this.userTokenWillExpireHandle = this.handleTokenPrivilegeWillExpire.bind(this);
     this.userTokenDidExpireHandle = this.handleTokenPrivilegeDidExpire.bind(this);
   }
-
-  manipulate() {}
 
   setVideoEnabled(enabled) {
     // not publishing if it is Live Audience
@@ -106,13 +104,10 @@ class ClientManager {
 
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
-
       return true;
     } else {
       wrapper.setup(this.client);
       audioEffects.initialize(this.client);
-      cacheDevices();
       return false;
     }
   }
@@ -169,6 +164,11 @@ class ClientManager {
       } 
     } else {
       if (mediaType === "audio" && user.hasAudio && user.audioTrack && !this.remoteUserAudioMuted[user.uid]) {
+
+        if(this.spatialAudio && this.spatialAudio.enabled){
+            await this.spatialAudio.pipeRemoteUserSpatialAudioProcessor(user);
+        }
+
         user.audioTrack.play();
         // for Voice only subscription only, the raise won't happen above
         if (remoteUsers[user.uid] == null) {
@@ -201,16 +201,10 @@ class ClientManager {
   handleUserJoined(user, mediaType) {
     const id = user.uid;
     console.log("remote user id" , id);
-
-    if(this.spatialAudio !== undefined && this.spatialAudio.enabled === true){
-      this.enableSpatialAudio(true, user);
-    }
   }
 
   handleUserUnpublished(user, mediaType) {
     const id = user.uid;
-    // delete remoteUsers[id];
-    // $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
     event_manager.raiseOnRemoteUserMuted(strUID, mediaType, 1);
   }
@@ -218,7 +212,6 @@ class ClientManager {
   handleUserLeft(user, reason) {
     const id = user.uid;
     delete remoteUsers[id];
-    $(`#player-wrapper-${id}`).remove();
     var strUID = id.toString();
     var rcode = 0; // QUIT
     if (reason === "ServerTimeOut") {
@@ -318,9 +311,8 @@ class ClientManager {
       }
     }
 
-    console.log(this.spatialAudio);
-
-    if(this.spatialAudio !== undefined){
+    // console.log(this.spatialAudio);
+    if(this.spatialAudio){
       this.spatialAudio.localPlayerStopAll();
     }
 
@@ -525,10 +517,21 @@ class ClientManager {
       }
     }
 
+    
     if (this.audioEnabled && this.isHosting()) {
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack()
-      ]);
+      if(audio_profile != undefined){
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          }),
+        ]);
+        } else {
+          [localTracks.audioTrack] = await Promise.all([
+            AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+              event_manager.raiseHandleChannelError(e.code, e.message);
+            })
+          ])
+        }
       currentAudioDevice = wrapper.getMicrophoneDeviceIdFromDeviceName(
           localTracks.audioTrack._deviceName
       );
@@ -545,7 +548,7 @@ class ClientManager {
       });
     }
 
-    $("#local-player-name").text(`localVideo(${this.options.uid})`);
+    // $("#local-player-name").text(`localVideo(${this.options.uid})`);
     if (this.isHosting() && this._inChannel) {
       for (var trackName in localTracks) {
         var track = localTracks[trackName];
@@ -560,7 +563,7 @@ class ClientManager {
   } 
 
   async setClientRole(role, optionLevel) {
-    if (this.client) {
+    if (this.client && this.getChannelProfileMode() == "live") {
       var wasAudience = (this.client_role == 2);
       this.client_role = role;
       if (role === 1) {
@@ -583,79 +586,60 @@ class ClientManager {
     this.audioSubscribing = enabled;
   }
 
-// Disables/Re-enables the local audio function.
-  async enableLocalAudio(enabled) {
-    if (enabled == false) {
-      if (localTracks.audioTrack) {
-        localTracks.audioTrack.setVolume(0);
-      }
-    } else {
-      if (localTracks.audioTrack) {
-        localTracks.audioTrack.setVolume(100);
-      }
-    }
-    this.audioEnabled = enabled;
-  }
 
-  // mute the stream meaning unpublish, but local display 
-  // can still be on
-  // if wanting both off, call disableLocalVideo
+  
+
+  // mutes the video stream by calling setMuted in the video track.
+  // if mute is equal to true, then the videoTrack will be muted
+  // true = enables video stream
   async muteLocalVideoStream(mute) {
-    if (localTracks.videoTrack) {
-      if (mute) {
-        await this.client.unpublish(localTracks.videoTrack);
-      } else {
-        await this.client.publish(localTracks.videoTrack);
-      }
-      this.videoPublishing = !mute;
+    console.log(mute);
+    if(localTracks.videoTrack != undefined){
+      await localTracks.videoTrack.setMuted(mute);
     }
+    
+    this.videoPublishing = !mute;
   }
 
   async muteLocalAudioStream(mute) {
-    if (mute) {
+    var muted = mute == 1 ? true : false;
       if (localTracks.audioTrack) {
-        await this.client.unpublish(localTracks.audioTrack);
+        await localTracks.audioTrack.setMuted(muted);
       }
-    } else {
-      if (localTracks.audioTrack) {
-        await this.client.publish(localTracks.audioTrack);
-      }
-    }
+    
     this.audioPublishing = !mute;
   }
 
   async enableLocalVideo(enabled) {
-    console.log("EnableLocalVideo (clientManager):" + enabled);
+    var enable = enabled == 1 ? true : false;
+    console.log("EnableLocalVideo (clientManager):" + enable);
     if (this.client) {
-      if (enabled == false) {
-        localTracks.videoTrack?.stop();
-        localTracks.videoTrack?.close();
-        await this.client.unpublish(localTracks.videoTrack);
-      } else {
-        [localTracks.videoTrack] = await Promise.all([
-          AgoraRTC.createCameraVideoTrack().catch(e => {
-            event_manager.raiseHandleUserError(e.code, e.msg);
-          }),
-        ]);
 
-        localTracks.videoTrack.play("local-player");
-
-        await this.client.publish(localTracks.videoTrack);
+      if(localTracks.videoTrack != null){
+        localTracks.videoTrack.setEnabled(enable);
       }
+
     }
-    this.videoEnabled = enabled;
+    this.videoEnabled = enable;
+  }
+
+  // Disables/Re-enables the local audio function.
+  async enableLocalAudio(enabled) {
+    var enable = enabled == 1 ? true : false;
+    console.log("EnableLocalAudio (clientManager):" + enable);
+    if (this.client) {
+
+      if(localTracks.audioTrack != null){
+        localTracks.audioTrack.setEnabled(enable);
+      }
+
+    }
+    this.audioEnabled = enable;
   }
 
   
   async startPreview() {
     console.log(localTracks.videoTrack);
-    if(localTracks.videoTrack){
-      // localTracks.videoTrack.stop();
-      // localTracks.videoTrack.close();
-      if(this._inChannel){
-        await this.client.unpublish(localTracks.videoTrack);
-      }
-    }
     
     if(localTracks.videoTrack == null){
       [localTracks.videoTrack] = await Promise.all([
@@ -672,13 +656,8 @@ class ClientManager {
 
     if(localTracks.videoTrack != null){
       localTracks.videoTrack.stop();
-      //localTracks.videoTrack.close();
     }
 
-    localTracks.videoTrack.play("local-player");
-    if(this._inChannel){
-      await this.client.publish(localTracks.videoTrack);
-    }
   }
 
   async publishPreview(){
@@ -750,9 +729,19 @@ class ClientManager {
 
       await this.client.unpublish(localTracks.audioTrack);
 
-      [localTracks.audioTrack] = await Promise.all([
-        AgoraRTC.createMicrophoneAudioTrack(),
-      ]);
+      if(audio_profile != undefined){
+        [localTracks.audioTrack] = await Promise.all([
+          AgoraRTC.createMicrophoneAudioTrack({encoderConfig: audio_profile,}).catch(e => {
+            event_manager.raiseHandleChannelError(e.code, e.message);
+          }),
+        ]);
+        } else {
+          [localTracks.audioTrack] = await Promise.all([
+            AgoraRTC.createMicrophoneAudioTrack().catch(e => {
+              event_manager.raiseHandleChannelError(e.code, e.message);
+            })
+          ])
+        }
 
       await this.client.publish(localTracks.audioTrack);
     }
@@ -1127,25 +1116,25 @@ async enableVirtualBackground(enabled, backgroundSourceType, color, source, blur
   }
 }
 
-async setVirtualBackgroundBlur(blurDegree){
+setVirtualBackgroundBlur(blurDegree){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundBlurring(localTracks.videoTrack, blurDegree);
   }
 }
 
-async setVirtualBackgroundColor(hexColor){
+setVirtualBackgroundColor(hexColor){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundColor(localTracks.videoTrack, hexColor);
   }
 }
 
-async setVirtualBackgroundImage(imgFile){
+setVirtualBackgroundImage(imgFile){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundImage(localTracks.videoTrack, imgFile);
   }
 }
 
-async setVirtualBackgroundVideo(videoFile){
+setVirtualBackgroundVideo(videoFile){
   if(this.virtualBackgroundProcessor !== null){
     setBackgroundVideo(localTracks.videoTrack, videoFile);
   }
@@ -1223,18 +1212,47 @@ async setVirtualBackgroundVideo(videoFile){
     }, timeout);
   }
 
-  async enableSpatialAudio(enabled, client = this.client){
+  //#region  ------- SPATIAL AUDIO ------------
+  async enableSpatialAudio(enabled){
     
-    if(client.uid === this.client.uid){
-      if(this.spatialAudio == undefined){
-        this.spatialAudio = window.createSpatialAudioManager();
-      }
-    } else {
-      await this.spatialAudio.getRemoteUserSpatialAudioProcessor(client, enabled);
+    if (enabled && this.spatialAudio === null || this.spatialAudio === undefined)
+    {
+      await this.initializeSpatialAudioManager();
+    }
+    this.spatialAudio.enabled = enabled;
+    console.log("enabling spatial audio....", this.spatialAudio);
+  }
+
+  async initializeSpatialAudioManager() {
+    if(this.spatialAudio === null || this.spatialAudio === undefined){
+      this.spatialAudio = window.createSpatialAudioManager();
     }
   }
 
-  async setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+  releaseSpatialAudioManager() {
+    if (this.spatialAudio) {
+      this.spatialAudio.clearRemotePositions();
+      delete this.spatialAudio;
+    }
+  }
+
+  clearRemotePositions() {
+    if (this.spatialAudio) {
+      this.spatialAudio.clearRemotePositions();
+    }
+  }
+
+  async startLocalMediaSpatialAudio(uid, media){
+
+    if(this.spatialAudio == null){
+      this.spatialAudio = await window.createSpatialAudioManager();
+    }
+
+    this.spatialAudio.startLocalMedia(uid, media);
+  }
+
+  setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
+    console.log(this.spatialAudio);
      this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
      this.spatialAudio.updateSpatialElevation(uid, elevation);
      this.spatialAudio.updateSpatialDistance(uid, distance);
@@ -1243,4 +1261,40 @@ async setVirtualBackgroundVideo(videoFile){
      this.spatialAudio.updateSpatialBlur(uid, blur);
      this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
   }
+
+  updatePlayerPositionInfo(uid, position, forward){
+    if(this.spatialAudio) {
+      return this.spatialAudio.updatePlayerPositionInfo(uid, position, forward);
+    }
+    return -1;
+  }
+
+  updateRemotePosition(uid, position, forward){
+    if(this.spatialAudio) {
+      return this.spatialAudio.updateRemotePosition(uid, position, forward);
+    }
+    return -1;
+  }
+
+  removeRemotePosition(uid){
+    if(this.spatialAudio) {
+      return this.spatialAudio.removeRemotePosition(uid);
+    }
+    return -1;
+  }
+
+  updateSelfPosition(position, forward, right, up) {
+    if(this.spatialAudio) {
+      return this.spatialAudio.updateSelfPosition(position, forward, right, up);
+    }
+    return -1;
+  }
+
+  setDistanceUnit(unit) {
+    if(this.spatialAudio) {
+      return this.spatialAudio.setDistanceUnit(unit);
+    }
+    return -1;
+  }
+  //#endregion --- SPATIAL AUDIO ---
 }

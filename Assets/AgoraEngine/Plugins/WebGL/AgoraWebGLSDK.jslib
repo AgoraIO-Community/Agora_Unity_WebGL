@@ -3,7 +3,7 @@ var LibraryAgoraWebGLSDK = {
   $localVideo: null,
 
   createEngine: function (appID) {
-    var app_id = Pointer_stringify(appID);
+    var app_id = UTF8ToString(appID);
     return createIRtcEngine(app_id);
   },
   createLocalTexture: function () {
@@ -12,15 +12,15 @@ var LibraryAgoraWebGLSDK = {
     }
   },
   setVideoDeviceCollectionDeviceWGL: function (deviceID) {
-    var deviceID_Str = Pointer_stringify(deviceID);
+    var deviceID_Str = UTF8ToString(deviceID);
     setVideoDeviceCollectionDeviceWGL(deviceID_Str);
   },
   setAudioRecordingCollectionDeviceWGL: function (deviceID) {
-    var deviceID_Str = Pointer_stringify(deviceID);
+    var deviceID_Str = UTF8ToString(deviceID);
     setAudioRecordingCollectionDeviceWGL(deviceID_Str);
   },
   setPlaybackCollectionDeviceWGL: function (deviceID) {
-    var deviceID_Str = Pointer_stringify(deviceID);
+    var deviceID_Str = UTF8ToString(deviceID);
     setPlaybackCollectionDeviceWGL(deviceID_Str);
   },
   isLocalVideoReady: function () {
@@ -83,7 +83,7 @@ var LibraryAgoraWebGLSDK = {
       GLctx.LINEAR
     );
     var internalformat = GLctx.RGBA;
-    if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+    if (isLinearColor) { internalformat = GLctx.SRGB8_ALPHA8; }
     GLctx.texImage2D(
       GLctx.TEXTURE_2D,
       0,
@@ -95,9 +95,8 @@ var LibraryAgoraWebGLSDK = {
 
     return true;
   },
-  
   createRemoteTexture: function (userId) {
-    var ch_userId = Pointer_stringify(userId);
+    var ch_userId = UTF8ToString(userId);
 
     // approximate 1~2 frames time delay to avoid race condition
     setTimeout(function(){
@@ -110,10 +109,9 @@ var LibraryAgoraWebGLSDK = {
         }
     }, 200);
     return 1;
-  }, 
-
+  },
   updateRemoteTexture: function (userId, tex, isLinearColor) {
-    var ch_userId = Pointer_stringify(userId);
+    var ch_userId = UTF8ToString(userId);
 
     var lVid = undefined; // set null initially
 
@@ -131,7 +129,7 @@ var LibraryAgoraWebGLSDK = {
 
     var v = lVid;
 
-    if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
+    if (!(v.videoWidth > 0 && v.videoHeight > 0)) { return false; }
 
     //if (v.lastUpdateTextureTime === v.currentTime) return false;
 
@@ -163,7 +161,7 @@ var LibraryAgoraWebGLSDK = {
         GLctx.LINEAR
       );
       var internalformat = GLctx.RGBA;
-      if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+      if (isLinearColor) { internalformat = GLctx.SRGB8_ALPHA8; }
       GLctx.texImage2D(
         GLctx.TEXTURE_2D,
         0,
@@ -191,9 +189,9 @@ var LibraryAgoraWebGLSDK = {
     return true;
   },
 
-  updateRemoteTexture_MC: function (channel, userId, tex) {
-    var ch_userId = Pointer_stringify(userId);
-    var channelId_str = Pointer_stringify(channel);
+  updateRemoteTexture_MC: function (channel, userId, tex, isLinearColor) {
+    var ch_userId = UTF8ToString(userId);
+    var channelId_str = UTF8ToString(channel);
 
     var clientmc = find_mc_client(channelId_str);
 
@@ -215,16 +213,16 @@ var LibraryAgoraWebGLSDK = {
 
     var v = lVid;
 
-    if (!(v.videoWidth > 0 && v.videoHeight > 0)) return false;
+    if (!(v.videoWidth > 0 && v.videoHeight > 0)) { return false; }
 
     // if (v.lastUpdateTextureTime === v.currentTime) return false;
 
     // v.lastUpdateTextureTime = v.currentTime;
 
     var internalformat = GLctx.RGBA;
-    if (isLinearColor) internalformat = GLctx.SRGB8_ALPHA8;
+    if (isLinearColor) { internalformat = GLctx.SRGB8_ALPHA8; }
 
-    if ( 1 
+    if ( 1
       // v.previousUploadedWidth != v.videoWidth ||
       // v.previousUploadedHeight != v.videoHeight
     ) {
@@ -274,8 +272,8 @@ var LibraryAgoraWebGLSDK = {
   },
 
   isRemoteVideoReady_MC: function (channelId, userId) {
-    var ch_userId = Pointer_stringify(userId);
-    var channelId_str = Pointer_stringify(channelId);
+    var ch_userId = UTF8ToString(userId);
+    var channelId_str = UTF8ToString(channelId);
 
     var clientmc = find_mc_client(channelId_str);
     if (clientmc != null) {
@@ -298,7 +296,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   isRemoteVideoReady: function (userId) {
-    var ch_userId = Pointer_stringify(userId);
+    var ch_userId = UTF8ToString(userId);
     var lVid = undefined; // set null initially
     if (remoteUsers[ch_userId] != undefined) {
       if (remoteUsers[ch_userId].videoTrack != undefined) {
@@ -331,7 +329,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   renewToken: function (token) {
-    var ch_token = Pointer_stringify(token);
+    var ch_token = UTF8ToString(token);
     renewToken(ch_token);
   },
 
@@ -344,12 +342,12 @@ var LibraryAgoraWebGLSDK = {
   },
 
   setEncryptionMode: function (mode) {
-    var ch_mode = Pointer_stringify(mode);
+    var ch_mode = UTF8ToString(mode);
     setEncryptionMode(ch_mode);
   },
 
   setEncryptionSecret: function (secret) {
-    var ch_secret = Pointer_stringify(secret);
+    var ch_secret = UTF8ToString(secret);
     setEncryptionSecret(ch_secret);
   },
 
@@ -394,9 +392,9 @@ var LibraryAgoraWebGLSDK = {
   },
 
   joinChannel: function (channelKey, channelName, info, uid) {
-    var channel_key = Pointer_stringify(channelKey);
-    var channel_name = Pointer_stringify(channelName);
-    var channel_info = Pointer_stringify(info);
+    var channel_key = UTF8ToString(channelKey);
+    var channel_name = UTF8ToString(channelName);
+    var channel_info = UTF8ToString(info);
     wglw_joinChannel(channel_key, channel_name, channel_info, uid);
   },
 
@@ -451,7 +449,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   startNewScreenCaptureForWeb: function(uid, enableAudio, token) {
-    var t = Pointer_stringify(token);
+    var t = UTF8ToString(token);
      startNewScreenCaptureForWeb(uid, enableAudio, t);
   },
 
@@ -461,7 +459,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   startNewScreenCaptureForWeb2: function(uid, audioEnabled, token) {
-    var t = Pointer_stringify(token);
+    var t = UTF8ToString(token);
      startNewScreenCaptureForWeb2(uid, audioEnabled, t);
   },
 
@@ -557,7 +555,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   startAudioMixing: function (filePath, loopBack, replace, cycle) {
-    var strFilePath = Pointer_stringify(filePath);
+    var strFilePath = UTF8ToString(filePath);
     StartAudioMixing(strFilePath, loopBack, replace, cycle);
   },
 
@@ -607,14 +605,14 @@ var LibraryAgoraWebGLSDK = {
     advancedFeatures,
     advancedFeatureCount
   ) {
-    var strTranscodingUserInfo = Pointer_stringify(transcodingUserInfo);
-    var strTranscodingExtraInfo = Pointer_stringify(transcodingExtraInfo);
-    var strMetaData = Pointer_stringify(metaData);
-    var strWatermarkRtcImageUrl = Pointer_stringify(watermarkRtcImageUrl);
-    var strBackgroundImageRtcImageUrl = Pointer_stringify(
+    var strTranscodingUserInfo = UTF8ToString(transcodingUserInfo);
+    var strTranscodingExtraInfo = UTF8ToString(transcodingExtraInfo);
+    var strMetaData = UTF8ToString(metaData);
+    var strWatermarkRtcImageUrl = UTF8ToString(watermarkRtcImageUrl);
+    var strBackgroundImageRtcImageUrl = UTF8ToString(
       backgroundImageRtcImageUrl
     );
-    var strAdvancedFeatures = Pointer_stringify(advancedFeatures);
+    var strAdvancedFeatures = UTF8ToString(advancedFeatures);
 
     SetLiveTranscoding(
       width,
@@ -649,12 +647,12 @@ var LibraryAgoraWebGLSDK = {
   },
 
   addPublishStreamUrl: function (url, transcodingEnabled) {
-    var strUrl = Pointer_stringify(url);
+    var strUrl = UTF8ToString(url);
     StartLiveTranscoding(strUrl, transcodingEnabled);
   },
 
   removePublishStreamUrl: function (url) {
-    var strUrl = Pointer_stringify(url);
+    var strUrl = UTF8ToString(url);
     sStopLiveTranscoding(strUrl);
   },
 
@@ -678,7 +676,7 @@ var LibraryAgoraWebGLSDK = {
     gain,
     publish
   ) {
-    var strFilePath = Pointer_stringify(filePath);
+    var strFilePath = UTF8ToString(filePath);
     PlayEffect(soundId, strFilePath, loopCount, pitch, pan, gain, publish);
   },
   stopEffect: function (soundId) {
@@ -688,7 +686,7 @@ var LibraryAgoraWebGLSDK = {
     StopAllEffects();
   },
   preloadEffect: function (soundId, filePath) {
-    var strFilePath = Pointer_stringify(filePath);
+    var strFilePath = UTF8ToString(filePath);
     PreloadEffect(soundId, strFilePath);
   },
 
@@ -735,13 +733,13 @@ var LibraryAgoraWebGLSDK = {
   muteRemoteVideoStream: function (uid, mute) {},
 
   muteRemoteVideoStream_WGLM: function (uid, mute) {
-    var uid_Str = Pointer_stringify(uid);
+    var uid_Str = UTF8ToString(uid);
     MuteRemoteVideoStream(uid_Str, mute);
   },
 
   muteRemoteAudioStream: function (uid, mute) {},
   muteRemoteAudioStream_WGLM: function (uid, mute) {
-    var uid_Str = Pointer_stringify(uid);
+    var uid_Str = UTF8ToString(uid);
     MuteRemoteAudioStream(uid_Str, mute);
   },
   getSdkVersion: function () {
@@ -818,7 +816,7 @@ var LibraryAgoraWebGLSDK = {
   removeInjectStreamUrl: function (url) {},
   setupLocalVideo: function (hwnd, renderMode, uid, priv) {},
   startAudioRecording: function (filePath, quality) {
-    var filePath_Str = Pointer_stringify(filePath);
+    var filePath_Str = UTF8ToString(filePath);
     startAudioRecording_WGL(filePath_Str, quality);
   },
   setSpeakerphoneVolume: function (volume) {},
@@ -868,7 +866,7 @@ var LibraryAgoraWebGLSDK = {
   ) {},
   getUserInfoByUid: function (uid) {},
   getUserInfoByUid_WGL: function (uid) {
-    var uid_Str = Pointer_stringify(uid);
+    var uid_Str = UTF8ToString(uid);
     var uinfo = getUserInfoByUid_WGL(uid_Str);
     uinfo = uinfo.toString();
     var bufferSize = lengthBytesUTF8(uinfo) + 1;
@@ -895,6 +893,17 @@ var LibraryAgoraWebGLSDK = {
   setLocalRenderMode: function (renderMode) {},
   complain: function (callId, desc) {},
   freeObject: function (obj) {},
+  cacheVideoDevices : function () {
+    console.log("caching video devices");
+    cacheVideoDevices();
+  },
+  cacheRecordingDevices : function () {
+    cacheMicrophones();
+  },
+  cachePlaybackDevices : function () {
+    console.log("caching video devices");
+    cachePlaybackDevices();
+  },
   createAVideoDeviceManager: function () {},
   createMediaRecorder: function () {
     SendNotImplementedError("createMediaRecorder")
@@ -907,6 +916,10 @@ var LibraryAgoraWebGLSDK = {
   },
   enableSpatialAudio: function (enabled) {
     enableSpatialAudio(enabled);
+  },
+  startLocalMediaSpatialAudio: function (uid, media) {
+    file = UTF8ToString(media);
+    startLocalMediaSpatialAudio(uid, file);
   },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
@@ -1050,18 +1063,25 @@ var LibraryAgoraWebGLSDK = {
     SendNotImplementedError("setLowlightEnhanceOptions")
   },
   setRemoteUserSpatialAudioParams : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
-    uid_Str = Pointer_stringify(uid); 
+    uid_Str = UTF8ToString(uid); 
     newUID = parseInt(uid_Str);
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
     setRemoteUserSpatialAudioParams(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
   setRemoteUserSpatialAudioParams2 : function (uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, enable_blur, enable_air_absorb) {
-    uid_Str = Pointer_stringify(uid);
+    uid_Str = UTF8ToString(uid);
     newUID = parseInt(uid_Str);
     blur = enable_blur == 0 ? false : true;
     airAbsorb = enable_air_absorb == 0 ? false : true;
     setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
+  },
+  updatePlayerPositionInfo: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
+    const localPosition = {
+      position: [posX, posY, posZ],
+      forward: [forwardX, forwardY, forwardZ]
+    };
+    updatePlayerPositionInfo(uid, localPosition.position, localPosition.forward);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError("setScreenCaptureScenario")
@@ -1117,7 +1137,6 @@ var LibraryAgoraWebGLSDK = {
   adjustAudioMixingPublishVolume: function (volume) {
     AdjustAudioMixingPublishVolume(volume);
   },
-  
   creatAAudioPlaybackDeviceManager: function () {},
   initEventOnPacketCallback: function (
     onReceiveAudioPacket,
@@ -1129,9 +1148,29 @@ var LibraryAgoraWebGLSDK = {
     stopChannelMediaRelay_MC();
   },
   startAudioRecordingDeviceTest: function (indicationInterval) {},
-  initEventOnPlaybackAudioFrameBeforeMixing: function (
-    onPlaybackAudioFrameBeforeMixing
-  ) {},
+  initEventOnPlaybackAudioFrameBeforeMixing: function (onPlaybackAudioFrameBeforeMixing) {
+    UnityHooks.onPlaybackAudioFrameBeforeMixing = onPlaybackAudioFrameBeforeMixing;
+    UnityHooks.InvokePlaybackAudioFrameBeforeMixing = function(uid, audioFrame) {
+      
+
+    _free(UnityHooks.data);
+
+
+      // This gives us the actual array that contains the data
+  
+    var channelBuffer = audioFrame.getChannelData(0);
+
+    var bufferString = channelBuffer.join(',');
+
+    var bufferSize = lengthBytesUTF8(bufferString) + 1;
+        
+    var buffer = _malloc(bufferSize);
+    stringToUTF8(bufferString, buffer, bufferSize);
+    UnityHooks.data = buffer;
+    //Module['dynCall_viiiiiiii'](UnityHooks.onPlaybackAudioFrameBeforeMixing, uid, 0, audioFrame.length, 32, audioFrame.channels, audioFrame.samplesPerSec, buffer, 0, 0);
+    Module['dynCall_viiiiiiiii'](UnityHooks.onPlaybackAudioFrameBeforeMixing, uid, 0, audioFrame.length, 32, audioFrame.numberOfChannels, audioFrame.samplesPerSec, buffer, audioFrame.duration, 0);
+    };
+  },
   setAudioPlaybackDeviceMute: function (mute) {
     setAudioPlaybackDeviceMute(mute);
   },
@@ -1236,7 +1275,7 @@ var LibraryAgoraWebGLSDK = {
   setAudioMixingPitch: function (pitch) {},
   adjustUserPlaybackSignalVolume: function (uid, volume) {},
   adjustUserPlaybackSignalVolume_WGLM: function (uid, volume) {
-    var uid_Str = Pointer_stringify(uid);
+    var uid_Str = UTF8ToString(uid);
     adjustUserPlaybackSignalVolume_WGL(uid_Str, volume);
   },
   setAudioPlaybackDevice: function (deviceId) {},
@@ -1264,7 +1303,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   muteRemoteAudioStream2_WGLM: function (channel, userId, mute) {
-    var userId_Str = Pointer_stringify(userId);
+    var userId_Str = UTF8ToString(userId);
     muteRemoteAudioStream2_mc_WGL(userId_Str, mute);
   },
 
@@ -1273,14 +1312,14 @@ var LibraryAgoraWebGLSDK = {
   },
 
   muteRemoteVideoStream2_WGLM: function (channel, userId, mute) {
-    var userId_Str = Pointer_stringify(userId);
+    var userId_Str = UTF8ToString(userId);
     muteRemoteVideoStream2_mc_WGL(userId_Str, mute);
   },
   setRemoteVideoStreamType2: function (channel, userId, streamType) {
     setRemoteVideoStreamType2_mc_WGL(userId, streamType);
   },
   setRemoteVideoStreamType2_WGLM: function (channel, userId, streamType) {
-    var userId_Str = Pointer_stringify(userId);
+    var userId_Str = UTF8ToString(userId);
     setRemoteVideoStreamType2_mc_WGL(userId_Str, streamType);
   },
 
@@ -1289,7 +1328,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   adjustUserPlaybackSignalVolume2_WGLM: function (channel, userId, volume) {
-    var userId_Str = Pointer_stringify(userId);
+    var userId_Str = UTF8ToString(userId);
     adjustUserPlaybackSignalVolume2_mc_WGL(userId_Str, volume);
   },
 
@@ -1302,7 +1341,7 @@ var LibraryAgoraWebGLSDK = {
   },
 
   setRemoteUserPriority2_WGLM: function (channel, userId, userPriority) {
-    var userId_Str = Pointer_stringify(userId);
+    var userId_Str = UTF8ToString(userId);
     setRemoteUserPriority2_mc_WGL(userId_Str, userPriority);
   },
 
@@ -1310,7 +1349,7 @@ var LibraryAgoraWebGLSDK = {
     setEncryptionMode2_mc_WGL(encryptionMode);
   },
   setEncryptionSecret2: function (channel, secret) {
-    var userId_Str = Pointer_stringify(secret);
+    var userId_Str = UTF8ToString(secret);
     setEncryptionSecret2_mc_WGL(userId_Str);
   },
 
@@ -1320,7 +1359,7 @@ var LibraryAgoraWebGLSDK = {
     encryptionKey,
     encryptionMode
   ) {
-    var encryptionKey_Str = Pointer_stringify(encryptionKey);
+    var encryptionKey_Str = UTF8ToString(encryptionKey);
     enableEncryption2_mc(enabled, encryptionKey_Str, encryptionMode);
   },
 
@@ -1329,7 +1368,7 @@ var LibraryAgoraWebGLSDK = {
   },
   unRegisterPacketObserver: function () {},
   createChannel: function (channelId) {
-    var channelId_Str = Pointer_stringify(channelId);
+    var channelId_Str = UTF8ToString(channelId);
     wgl_mc_createChannel(channelId_Str);
   },
 
@@ -1343,7 +1382,9 @@ var LibraryAgoraWebGLSDK = {
   setRemoteSubscribeFallbackOption: function (option) {
     setRemoteSubscribeFallbackOption_WGL(option);
   },
-  releaseAVideoDeviceManager: function () {},
+  releaseAVideoDeviceManager: function () {
+    releaseVideoDeviceManager();
+  },
   addPublishStreamUrl2: function (channel, url, transcodingEnabled) {},
   setRemoteDefaultVideoStreamType: function (remoteVideoStreamType) {
     setRemoteDefaultVideoStreamType(remoteVideoStreamType);
@@ -1351,7 +1392,7 @@ var LibraryAgoraWebGLSDK = {
   setLocalVoiceReverb: function (reverbKey, value) {},
 
   createEngine2: function (appID, areaCode, filePath, fileSize, level) {
-    var app_id = Pointer_stringify(appID);
+    var app_id = UTF8ToString(appID);
     return createIRtcEngine2(app_id, areaCode);
   },
 
@@ -1377,7 +1418,7 @@ var LibraryAgoraWebGLSDK = {
   getAudioRecordingDevice: function (index, deviceName, deviceId) {},
   setEnableSpeakerphone: function (enabled) {},
   startAudioRecording2: function (filePath, sampleRate, quality) {
-    var filePath_Str = Pointer_stringify(filePath);
+    var filePath_Str = UTF8ToString(filePath);
     startAudioRecording_WGL(filePath_Str, quality);
   },
   updateChannelMediaRelay2: function (
@@ -1400,13 +1441,13 @@ var LibraryAgoraWebGLSDK = {
     destUid,
     destCount
   ) {
-    var srcChannelNameStr = Pointer_stringify(srcChannelName);
-    var srcTokenStr = Pointer_stringify(srcToken);
-    var destChannelNameStr = Pointer_stringify(destChannelName);
-    var destTokenStr = Pointer_stringify(destToken);
+    var srcChannelNameStr = UTF8ToString(srcChannelName);
+    var srcTokenStr = UTF8ToString(srcToken);
+    var destChannelNameStr = UTF8ToString(destChannelName);
+    var destTokenStr = UTF8ToString(destToken);
 
-    var srcUid_Str = Pointer_stringify(srcUid);
-    var destUid_Str = Pointer_stringify(destUid);
+    var srcUid_Str = UTF8ToString(srcUid);
+    var destUid_Str = UTF8ToString(destUid);
 
     updateChannelMediaRelay_MC(
       srcChannelNameStr,
@@ -1457,7 +1498,7 @@ var LibraryAgoraWebGLSDK = {
     positionInPortraitWidth,
     positionInPortraitHeight
   ) {
-    var url_Str = Pointer_stringify(watermarkUrl);
+    var url_Str = UTF8ToString(watermarkUrl);
     startWaterMark_WGL(
       url_Str,
       positionInLandscapeX,
@@ -1540,7 +1581,7 @@ var LibraryAgoraWebGLSDK = {
   setRemoteVoicePosition2: function (channel, uid, pan, gain) {},
   channelId: function (channel) {},
   sendStreamMessage: function (streamId, data, length) {
-      // there is no notion of streamId 
+      // there is no notion of streamId
       const newArray =new ArrayBuffer(length);
       const newByteArray = new Uint8Array(newArray);
       for(var i = 0; i < length; i++) {
@@ -1553,31 +1594,31 @@ var LibraryAgoraWebGLSDK = {
   getAudioMixingPublishVolume: function () {},
   enableWebSdkInteroperability: function (enabled) {},
   renewToken2: function (channel, token) {
-    var token_str = Pointer_stringify(token);
+    var token_str = UTF8ToString(token);
     renewToken2_mc(token_str);
   },
   joinChannelWithUserAccount: function (token, channelId, userAccount) {
-    var token_str = Pointer_stringify(token);
-    var channelId_str = Pointer_stringify(channelId);
-    var userAccount_str = Pointer_stringify(userAccount);
+    var token_str = UTF8ToString(token);
+    var channelId_str = UTF8ToString(channelId);
+    var userAccount_str = UTF8ToString(userAccount);
     joinChannelWithUserAccount_WGL(token_str, channelId_str, userAccount_str);
   },
-  joinChannelWithUserAccount_engine: function (token, channelId, userAccount, 
+  joinChannelWithUserAccount_engine: function (token, channelId, userAccount,
       autoSubscribeAudio, autoSubscribeVideo,
       publishLocalAudio, publishLocalVideo) {
-    var token_str = Pointer_stringify(token);
-    var channelId_str = Pointer_stringify(channelId);
-    var userAccount_str = Pointer_stringify(userAccount); 
-    joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str, 
+    var token_str = UTF8ToString(token);
+    var channelId_str = UTF8ToString(channelId);
+    var userAccount_str = UTF8ToString(userAccount);
+    joinChannelWithUserAccount_engine_WGL(token_str,channelId_str, userAccount_str,
       autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
 
-  joinChannelWithMediaOption : function (token, channelId, info, uid, 
+  joinChannelWithMediaOption : function (token, channelId, info, uid,
       autoSubscribeAudio, autoSubscribeVideo,
       publishLocalAudio, publishLocalVideo) {
-    var token_str = Pointer_stringify(token);
-    var channelId_str = Pointer_stringify(channelId);
-    wglw_joinChannel_withOption(token_str,channelId_str, info, uid, 
+    var token_str = UTF8ToString(token);
+    var channelId_str = UTF8ToString(channelId);
+    wglw_joinChannel_withOption(token_str,channelId_str, info, uid,
       autoSubscribeAudio, autoSubscribeVideo, publishLocalAudio, publishLocalVideo );
   },
 
@@ -1588,17 +1629,25 @@ var LibraryAgoraWebGLSDK = {
     setAudioRecordingDeviceVolume(volume);
   },
   setCurrentChannel_WGL: function (channelId) {
-    var channelId_Str = Pointer_stringify(channelId);
+    var channelId_Str = UTF8ToString(channelId);
     setCurrentChannel_WGL(channelId_Str);
   },
 
 muteLocalVideoStream_channel: function(channel, mute) {
-  var str_chan = Pointer_stringify(channel);
+  var str_chan = UTF8ToString(channel);
   muteLocalVideoStream2_mc_WGL(str_chan, mute);
 },
+enableLocalVideoStream_channel: function(channel, mute) {
+  var str_chan = UTF8ToString(channel);
+  enableLocalVideoStream2_mc_WGL(str_chan, mute);
+},
 muteLocalAudioStream_channel: function(channel, mute) {
-  var str_chan = Pointer_stringify(channel);
+  var str_chan = UTF8ToString(channel);
   muteLocalAudioStream2_mc_WGL(str_chan, mute);
+},
+enableLocalAudioStream_channel: function(channel, mute) {
+  var str_chan = UTF8ToString(channel);
+  enableLocalAudioStream2_mc_WGL(str_chan, mute);
 },
   joinChannelWithUserAccount2: function (
     channel,
@@ -1608,8 +1657,8 @@ muteLocalAudioStream_channel: function(channel, mute) {
     publishLocalAudio, publishLocalVideo
   ) {
     _logger("joinChannelWithUserAccount2 in jslib");
-    var token_str = Pointer_stringify(token);
-    var userAccount_str = Pointer_stringify(userAccount);
+    var token_str = UTF8ToString(token);
+    var userAccount_str = UTF8ToString(userAccount);
     wgl_mc_joinChannel2(
       token_str,
       userAccount_str,
@@ -1625,8 +1674,8 @@ muteLocalAudioStream_channel: function(channel, mute) {
     autoSubscribeAudio, autoSubscribeVideo,
     publishLocalAudio, publishLocalVideo
   ) {
-    var token_Str = Pointer_stringify(token);
-    var info_Str = Pointer_stringify(info);
+    var token_Str = UTF8ToString(token);
+    var info_Str = UTF8ToString(info);
     wgl_mc_joinChannel2(
       token_Str,
       uid,
@@ -1635,7 +1684,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
     );
   },
   ReleaseChannel: function (channel) {
-    var channel_str = Pointer_stringify(channel);
+    var channel_str = UTF8ToString(channel);
     wgl_mc_releaseChannel(channel_str);
   },
   adjustRecordingSignalVolume: function (volume) {
@@ -1687,8 +1736,8 @@ muteLocalAudioStream_channel: function(channel, mute) {
   ) {},
   setRenderMode: function (renderMode) {},
   switchChannel: function (token, channelId) {
-    var token_str = Pointer_stringify(token);
-    var channelId_str = Pointer_stringify(channelId);
+    var token_str = UTF8ToString(token);
+    var channelId_str = UTF8ToString(channelId);
     switchChannel_WGL(token_str, channelId_str);
   },
   setAudioRecordingDevice: function (deviceId) {},
@@ -1696,7 +1745,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   isSpeakerphoneEnabled: function () {},
   setRemoteUserPriority: function (uid, userPriority) {},
   setRemoteUserPriority_WGL: function (uid, userPriority) {
-    var uid_Str = Pointer_stringify(uid);
+    var uid_Str = UTF8ToString(uid);
     SetRemoteUserPriority(uid_Str, userPriority);
   },
   startAudioPlaybackDeviceTest: function (testAudioFilePath) {},
@@ -1704,23 +1753,23 @@ muteLocalAudioStream_channel: function(channel, mute) {
   setParameters: function (options) {},
 
   setWebParametersInt: function (key, value) {
-    var key_Str = Pointer_stringify(key);
+    var key_Str = UTF8ToString(key);
     setWebParametersInt(key_Str, value);
   },
 
   setWebParametersDouble: function (key, value) {
-    var key_Str = Pointer_stringify(key);
+    var key_Str = UTF8ToString(key);
     setWebParametersDouble(key_Str, value);
   },
 
   setWebParametersBool: function (key, value) {
-    var key_Str = Pointer_stringify(key);
+    var key_Str = UTF8ToString(key);
     setWebParametersBool(key_Str, value);
   },
 
   setWebParametersString: function (key, value) {
-    var key_Str = Pointer_stringify(key);
-    var value_Str = Pointer_stringify(value);
+    var key_Str = UTF8ToString(key);
+    var value_Str = UTF8ToString(value);
     setWebParametersString(key_Str, value_Str);
   },
 
@@ -1908,13 +1957,13 @@ muteLocalAudioStream_channel: function(channel, mute) {
     destUid,
     destCount
   ) {
-    var srcChannelNameStr = Pointer_stringify(srcChannelName);
-    var srcTokenStr = Pointer_stringify(srcToken);
-    var destChannelNameStr = Pointer_stringify(destChannelName);
-    var destTokenStr = Pointer_stringify(destToken);
+    var srcChannelNameStr = UTF8ToString(srcChannelName);
+    var srcTokenStr = UTF8ToString(srcToken);
+    var destChannelNameStr = UTF8ToString(destChannelName);
+    var destTokenStr = UTF8ToString(destToken);
 
-    var srcUid_Str = Pointer_stringify(srcUid);
-    var destUid_Str = Pointer_stringify(destUid);
+    var srcUid_Str = UTF8ToString(srcUid);
+    var destUid_Str = UTF8ToString(destUid);
 
     startChannelMediaRelay(
       srcChannelNameStr,
@@ -1946,13 +1995,13 @@ muteLocalAudioStream_channel: function(channel, mute) {
     destUid,
     destCount
   ) {
-    var srcChannelNameStr = Pointer_stringify(srcChannelName);
-    var srcTokenStr = Pointer_stringify(srcToken);
-    var destChannelNameStr = Pointer_stringify(destChannelName);
-    var destTokenStr = Pointer_stringify(destToken);
+    var srcChannelNameStr = UTF8ToString(srcChannelName);
+    var srcTokenStr = UTF8ToString(srcToken);
+    var destChannelNameStr = UTF8ToString(destChannelName);
+    var destTokenStr = UTF8ToString(destToken);
 
-    var srcUid_Str = Pointer_stringify(srcUid);
-    var destUid_Str = Pointer_stringify(destUid);
+    var srcUid_Str = UTF8ToString(srcUid);
+    var destUid_Str = UTF8ToString(destUid);
 
     updateChannelMediaRelay(
       srcChannelNameStr,
@@ -1970,7 +2019,7 @@ muteLocalAudioStream_channel: function(channel, mute) {
   },
 
   addVideoWatermark: function (url, x, y, width, height) {
-    var url_Str = Pointer_stringify(url);
+    var url_Str = UTF8ToString(url);
     startWaterMark_WGL(url_Str, x, y, width, height);
   },
   startChannelMediaRelay2: function (
@@ -1993,13 +2042,13 @@ muteLocalAudioStream_channel: function(channel, mute) {
     destUid,
     destCount
   ) {
-    var srcChannelNameStr = Pointer_stringify(srcChannelName);
-    var srcTokenStr = Pointer_stringify(srcToken);
-    var destChannelNameStr = Pointer_stringify(destChannelName);
-    var destTokenStr = Pointer_stringify(destToken);
+    var srcChannelNameStr = UTF8ToString(srcChannelName);
+    var srcTokenStr = UTF8ToString(srcToken);
+    var destChannelNameStr = UTF8ToString(destChannelName);
+    var destTokenStr = UTF8ToString(destToken);
 
-    var srcUid_Str = Pointer_stringify(srcUid);
-    var destUid_Str = Pointer_stringify(destUid);
+    var srcUid_Str = UTF8ToString(srcUid);
+    var destUid_Str = UTF8ToString(destUid);
 
     startChannelMediaRelay_MC(
       srcChannelNameStr,
@@ -2027,44 +2076,44 @@ muteLocalAudioStream_channel: function(channel, mute) {
     enable = enabled == 0 ? false : true;
     muted = mute == 0 ? false : true;
     looped = loop == 0 ? false : true;
-    source_Str = Pointer_stringify(source);
+    source_Str = UTF8ToString(source);
     initVirtualBackground(enable, backgroundSourceType, color, source_Str, blurDegree, muted, looped);
   },
   setVirtualBackgroundBlur: function(blurDegree) {
     setVirtualBackgroundBlur(blurDegree);
   },
   setVirtualBackgroundColor: function(hexColor) {
-    var myColor = Pointer_stringify(hexColor);
+    var myColor = UTF8ToString(hexColor);
     setVirtualBackgroundColor(myColor);
   },
   setVirtualBackgroundImage: function(imageFile) {
-    var myImg = Pointer_stringify(imageFile);
+    var myImg = UTF8ToString(imageFile);
     setVirtualBackgroundImage(myImg);
   },
   setVirtualBackgroundVideo: function(videoFile) {
-    var myVideo = Pointer_stringify(videoFile);
+    var myVideo = UTF8ToString(videoFile);
     setVirtualBackgroundVideo(myVideo);
   },
   initVirtualBackground_MC: function(enabled, backgroundSourceType, color, source, blurDegree, mute, loop) {
     enable = enabled == 0 ? false : true;
     muted = mute == 0 ? false : true;
     looped = loop == 0 ? false : true;
-    source_Str = Pointer_stringify(source);
+    source_Str = UTF8ToString(source);
     initVirtualBackground_MC(enabled, backgroundSourceType, color, source_Str, blurDegree, mute, loop);
   },
   setVirtualBackgroundBlur_MC: function(blurDegree) {
     setVirtualBackgroundBlur_MC(blurDegree);
   },
   setVirtualBackgroundColor_MC: function(hexColor) {
-    myColor = Pointer_stringify(hexColor);
+    myColor = UTF8ToString(hexColor);
     setVirtualBackgroundColor_MC(myColor);
   },
   setVirtualBackgroundImage_MC: function(imageFile) {
-    var myImg = Pointer_stringify(imageFile);
+    var myImg = UTF8ToString(imageFile);
     setVirtualBackgroundImage_MC(myImg);
   },
   setVirtualBackgroundVideo_MC: function(videoFile) {
-    var myVideo = Pointer_stringify(videoFile);
+    var myVideo = UTF8ToString(videoFile);
     setVirtualBackgroundVideo_MC(myVideo);
   },
   getAudioMixingDuration2: function() {},
@@ -2083,21 +2132,70 @@ muteLocalAudioStream_channel: function(channel, mute) {
   switchChannel2: function() {},
   uploadLogFile: function() {},
   setCameraCaptureRotation: function (rotation) {},
-  clearRemotePositions : function () {},
+  clearRemotePositions : function () {
+    clearRemotePositions();
+  },
   enableRemoteSuperResolution3 : function (enabled, mode, uid) {},
   enableRemoteSuperResolution4 : function (chan_ptr, enabled, mode, uid) {},
-  localSpatialAudio_initialize : function () {},
-  localSpatialAudio_release  : function () {},
-  localSpatialAudio_setParameters  : function (params) {},
-  muteAllRemoteAudioStreams_spatialAudio  : function (mute) {},
-  muteLocalAudioStream_spatialAudio   : function (mute) {},
-  removeRemotePosition   : function (uid) {},
-  setAudioRecvRange   : function (range) {},
-  setDistanceUnit   : function (unit) {},
-  setMaxAudioRecvCount   : function (count) {},
-  updateRemotePosition : function (uid, pos, forward) {},
-  updateSelfPosition  : function (pos, forward, right, up) {}
-
+  localSpatialAudio_initialize : function () {
+    initializeSpatialAudioManager();
+  },
+  localSpatialAudio_initialize_mc : function () {
+    console.log("enabling....");
+    initializeSpatialAudio_MC();
+  },
+  localSpatialAudio_release  : function () {
+    releaseSpatialAudioManager();
+  },
+  localSpatialAudio_setParameters  : function (params) {
+    SendNotImplementedError("localSpatialAudio_setParameters");
+  },
+  muteAllRemoteAudioStreams_spatialAudio  : function (mute) {
+    muteAllRemoteAudioStreams(mute);
+  },
+  muteLocalAudioStream_spatialAudio   : function (mute)  {
+    muteLocalAudioStream(mute);
+  },
+  removeRemotePosition   : function (uid) {
+    removeRemotePosition(uid);
+  },
+  setAudioRecvRange   : function (range) {
+    SendNotImplementedError("setAudioRecvRange");
+  },
+  setDistanceUnit   : function (unit) {
+    setDistanceUnit(unit);
+  },
+  setMaxAudioRecvCount   : function (count) {
+    SendNotImplementedError("setMaxAudioRecvCount");
+  },
+  updateRemotePosition : function (uid, pos, fwd) {
+    const _position = [];
+    const _forward = [];
+    const size = 3; // passing from an float array of 3 each argv
+    for(var i = 0; i < size; i++)
+    {
+      console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
+      _position.push((HEAPF32[(pos >> 2) + i]));
+      _forward.push((HEAPF32[(fwd >> 2) + i]));
+    }
+    updateRemotePosition(uid, _position, _forward);
+  },
+  updateSelfPosition  : function (pos, forward, right, up) {
+    const size = 3; // passing from an float array of 3 each argv
+    const _position = [];
+    const _forward = [];
+    const _right = [];
+    const _up = []; 
+    for(var i = 0; i < size; i++)
+    {
+      // console.log("pos:" +i + ":" + (HEAPF32[(pos >> 2) + i]));
+      _position.push((HEAPF32[(pos >> 2) + i]));
+      _forward.push((HEAPF32[(forward >> 2) + i]));
+      _right.push((HEAPF32[(right >> 2) + i]));
+      _up.push((HEAPF32[(up >> 2) + i]));
+    }
+    updateSelfPosition(_position, _forward, _right, _up);
+  }
 };
 
 autoAddDeps(LibraryAgoraWebGLSDK, "$localVideo");

@@ -7,6 +7,8 @@ namespace agora_gaming_rtc
     {
         public abstract int Initialize();
 
+        public abstract int Initialize_MC();
+
         public abstract int UpdateRemotePosition(uint uid, RemoteVoicePositionInfo info);
 
         public abstract int RemoveRemotePosition(uint uid);
@@ -33,37 +35,37 @@ namespace agora_gaming_rtc
     public sealed class LocalSpatialAudioEngine : ILocalSpatialAudioEngine
     {
         private IRtcEngine mEngine = null;
-		private static LocalSpatialAudioEngine _localSpatialAudioEngine;
+        private static LocalSpatialAudioEngine _localSpatialAudioEngine;
 
-		private LocalSpatialAudioEngine(IRtcEngine rtcEngine)
-		{
-			mEngine = rtcEngine;
-		}
+        private LocalSpatialAudioEngine(IRtcEngine rtcEngine)
+        {
+            mEngine = rtcEngine;
+        }
 
-		~LocalSpatialAudioEngine()
-		{
+        ~LocalSpatialAudioEngine()
+        {
 
-		}
+        }
 
-		public static LocalSpatialAudioEngine GetInstance(IRtcEngine rtcEngine)
-		{
-			if (_localSpatialAudioEngine == null)
-			{
-				_localSpatialAudioEngine = new LocalSpatialAudioEngine(rtcEngine);
-			}
-			return _localSpatialAudioEngine;
-		}
+        public static LocalSpatialAudioEngine GetInstance(IRtcEngine rtcEngine)
+        {
+            if (_localSpatialAudioEngine == null)
+            {
+                _localSpatialAudioEngine = new LocalSpatialAudioEngine(rtcEngine);
+            }
+            return _localSpatialAudioEngine;
+        }
 
-     	public static void ReleaseInstance()
-		{
-			_localSpatialAudioEngine = null;
-		}
+        public static void ReleaseInstance()
+        {
+            _localSpatialAudioEngine = null;
+        }
 
-		// used internally
-		public void SetEngine (IRtcEngine engine)
-		{
-			mEngine = engine;
-		}
+        // used internally
+        public void SetEngine(IRtcEngine engine)
+        {
+            mEngine = engine;
+        }
 
         public override int Initialize()
         {
@@ -71,6 +73,14 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
             return IRtcEngineNative.localSpatialAudio_initialize();
+        }
+
+        public override int Initialize_MC()
+        {
+            if (mEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+            return IRtcEngineNative.localSpatialAudio_initialize_mc();
         }
 
         public override int UpdateRemotePosition(uint uid, RemoteVoicePositionInfo info)
@@ -134,6 +144,7 @@ namespace agora_gaming_rtc
             if (mEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
+            UnityEngine.Debug.Log("Upddate selfPosition (LocalSpatialAudio)");
             return IRtcEngineNative.updateSelfPosition(position, axisForward, axisRight, axisUp);
         }
 

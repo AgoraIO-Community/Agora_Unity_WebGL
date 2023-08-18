@@ -28,10 +28,6 @@ public class ButtonHandler : MonoBehaviour
             {
                 gameController.onJoinButtonClicked(false);
             }
-            else if (button.name == "JoinButton3")
-            {
-                gameController.onJoinButtonClicked(true, true);
-            }
             else if (button.name == "LeaveButton")
             {
                 gameController.onLeaveButtonClicked();

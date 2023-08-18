@@ -1741,6 +1741,19 @@ namespace agora_gaming_rtc
 
         }
 
+        public int EnableLocalVideoStream(bool mute)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.muteLocalVideoStream_channel(_channelId, mute);
+#else
+            return IRtcEngineNative.muteLocalVideoStream_channel(_channelHandler, mute);
+#endif
+
+        }
+
         /** Stops or resumes publishing the local audio stream.
         *
         * This method only sets the publishing state of the audio stream in the channel of `AgoraChannel`.
@@ -1767,6 +1780,18 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.muteLocalAudioStream_channel(_channelId, mute);
 #else
             return IRtcEngineNative.muteLocalAudioStream_channel(_channelHandler, mute);
+#endif
+        }
+
+        public int EnableLocalAudioStream(bool mute)
+        {
+            if (_rtcEngine == null)
+                return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.enableLocalAudioStream_channel(_channelId, mute);
+#else
+            return IRtcEngineNative.enableLocalAudioStream_channel(_channelHandler, mute);
 #endif
         }
 
@@ -1835,31 +1860,6 @@ namespace agora_gaming_rtc
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
             return IRtcEngineNative.enableRemoteSuperResolution2(_channelHandler, userId, enable);
-        }
-
-        /// @cond
-        /** Enables or disables the spatial audio effect with agoraChannel.js
-         * @since 3.7.0
-         *
-         * After enabling the spatial audio effect, you can call `SetRemoteUserSpatialAudioParams2` to set the spatial
-         * audio effect parameters of a remote user. After a successful setting, the local user can hear the remote user
-         * with a real sense of space.
-         * @note Call this method before joining a channel.
-         * @param enabled Whether to enable the spatial audio effect:
-         * - `true`: Yes.
-         * - `false`: No.
-         * @return
-         * - 0: Success.
-         * - < 0: Failure.
-         */
-        public int EnableSpatialAudio_MC(bool enabled)
-        {
-#if UNITY_WEBGL
-            return IRtcEngineNative.enableSpatialAudio_MC(enabled);
-#else
-            Debug.LogError("No supported for this platform:" + Application.platform);
-            return -1;
-#endif
         }
 
         /**

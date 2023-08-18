@@ -244,9 +244,8 @@ namespace agora_gs_test
             go.name = goName;
             // set up transform
             go.transform.Rotate(-90.0f, 0.0f, 0.0f);
-            float yPos = Random.Range(3.0f, 5.0f);
-            float xPos = Random.Range(-2.0f, 2.0f);
-            go.transform.position = new Vector3(xPos, yPos, 0f);
+            Vector2 pos = AgoraUIUtils.GetRandomPosition(60);
+            go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
             go.transform.localScale = new Vector3(0.25f, 0.5f, .5f);
 
             // configure videoSurface

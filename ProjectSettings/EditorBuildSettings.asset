@@ -9,22 +9,25 @@ EditorBuildSettings:
     path: Assets/API-Example/HomeMenu.unity
     guid: 701a86b09780447ccb69174ea6d02344
   - enabled: 1
+    path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
+    guid: 5a4d72265ca2c1b4393e31ef58d0988d
+  - enabled: 1
     path: Assets/AgoraEngine/Demo/SceneHome.unity
     guid: 04457f7085d109e45b51dd81bae1a412
   - enabled: 1
     path: Assets/API-Example/datastream-sample/DataStreamScene.unity
     guid: a8a42917fcf914940a9a8df22ed398f0
   - enabled: 1
-    path: Assets/API-Example/device-manager/MainScene.unity
+    path: Assets/API-Example/device-manager/DeviceManager.unity
     guid: f976011f359c6414cb634a9a98278002
   - enabled: 1
-    path: Assets/API-Example/geo-area-sample/MainScene.unity
+    path: Assets/API-Example/geo-area-sample/GeoArea.unity
     guid: 334df5f9846c14b19ba711cd7b9e9319
   - enabled: 1
     path: Assets/API-Example/multi-channel/Scenes/MultipleChannelDemoNew.unity
     guid: f84308a8218374c829db9f2c27da72da
   - enabled: 1
-    path: Assets/API-Example/push-video-frame/MainScene.unity
+    path: Assets/API-Example/push-video-frame/PushVideoFrame.unity
     guid: c57883c4b54ea4984b722542d3f4a76f
   - enabled: 1
     path: Assets/API-Example/rtmp-streaming/MainScene.unity
@@ -35,40 +38,19 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/API-Example/spatial-audio-effect/SpatialAudioScene.unity
     guid: 9b5f437855cd6ee468f48354227c74a7
-  - enabled: 0
-    path: Assets/API-Example/token-usage/MainSceneNew.unity
+  - enabled: 1
+    path: Assets/API-Example/spatial-audio-positional/SpatialAudioPosition.unity
+    guid: 2a502d8ef5f184030ad6986a054099ae
+  - enabled: 1
+    path: Assets/API-Example/token-usage/TokenUse.unity
     guid: aa26dfc4784713b45b3d621e4a1c8ae8
   - enabled: 1
-    path: Assets/API-Example/video-encoder-configuration/MainScene.unity
+    path: Assets/API-Example/user-audioframe-audiosource/AudioFrameScene.unity
+    guid: 54cf96ee6f472409394e0c238b911b80
+  - enabled: 1
+    path: Assets/API-Example/video-encoder-configuration/VideoEncodeSize.unity
     guid: 5c01eb765ee294766a2926c4d0861fdf
   - enabled: 1
-    path: Assets/API-Example/virtual-background/ClientManagerTest.unity
+    path: Assets/API-Example/virtual-background/VirtualBackground.unity
     guid: c17ee52ac0699fe4daedac81c4db2c4e
-  - enabled: 1
-    path: Assets/AgoraEngine/Demo/SceneHelloVideo.unity
-    guid: 5a4d72265ca2c1b4393e31ef58d0988d
-  - enabled: 0
-    path: Assets/FunctionalTest/DevDemo/MultiChannel.unity
-    guid: 5b584fa3e853bf549a336db818b8b3f0
-  - enabled: 0
-    path: Assets/FunctionalTest/DevDemo/SceneFuncTests.unity
-    guid: 38239e0a3e78848d8a1e3b083920e199
-  - enabled: 0
-    path: Assets/FunctionalTest/DevDemo/SceneHome2.unity
-    guid: 11e44933caff747879b06a78a609ddfe
-  - enabled: 0
-    path: Assets/FunctionalTest/JoinMultipleChannel/MainScene.unity
-    guid: 253acdf0e3d6a43c792d3b1e6534584c
-  - enabled: 0
-    path: Assets/FunctionalTest/NewScreenShareMChannel/MainSceneNew.unity
-    guid: 39e056144cfa246eb88df188c22cecf2
-  - enabled: 0
-    path: Assets/FunctionalTest/Respawn/RespawnScene.unity
-    guid: 7c75fab2b3919497985d82ee73a24bea
-  - enabled: 0
-    path: Assets/FunctionalTest/SpatialAudioForMultichannel/SpatialAudioScene.unity
-    guid: 04cfcb3deed02204ab61de68f097a240
-  - enabled: 0
-    path: Assets/FunctionalTest/VirtualBackgroundMultichannel/MultichannelTest.unity
-    guid: 96e7f0bcf4ad4a64f8528f192c223ca1
   m_configObjects: {}

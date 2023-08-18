@@ -161,9 +161,10 @@ var AUDIO_PROFILE_TYPE = [
 
 // Sets the audio parameters and application scenarios.
 function SetAudioProfile(profile) {
-  AgoraRTC.createMicrophoneAudioTrack({
-    encoderConfig: AUDIO_PROFILE_TYPE[profile].value,
-  }).then(() => {
-    //console.log("JS Microphone audio track is set");
-  });
+  audio_profile = AUDIO_PROFILE_TYPE[profile].value;
+  // AgoraRTC.createMicrophoneAudioTrack({
+  //   encoderConfig: AUDIO_PROFILE_TYPE[profile].value,
+  // }).then(() => {
+  //   //console.log("JS Microphone audio track is set");
+  // });
 }

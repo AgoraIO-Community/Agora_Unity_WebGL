@@ -2024,6 +2024,34 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableVideoObserver();
         }
 
+        public int CacheVideoDevices()
+        {
+#if UNITY_WEBGL
+            return IRtcEngineNative.cacheVideoDevices();
+#else 
+            return -1;
+#endif
+
+        }
+
+        public int CacheRecordingDevices()
+        {
+#if UNITY_WEBGL
+            return IRtcEngineNative.cacheRecordingDevices();
+#else 
+            return -1;
+#endif
+        }
+
+        public int CachePlaybackDevices()
+        {
+#if UNITY_WEBGL
+            return IRtcEngineNative.cachePlaybackDevices();
+#else 
+            return -1;
+#endif
+        }
+
         /** Disables the video observer.
          *
          * This method disables sending video directly to the app.
@@ -5435,6 +5463,7 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.enableLocalVoicePitchCallback(interval);
         }
 
+
         /// @cond
         /** Enables or disables the spatial audio effect.
          * @since 3.7.0
@@ -5450,9 +5479,13 @@ namespace agora_gaming_rtc
          * - 0: Success.
          * - < 0: Failure.
          */
-        public int EnableSpatialAudio(bool enabled)
+        public int StartLocalMediaSpatialAudio(uint uid, string media)
         {
-            return IRtcEngineNative.enableSpatialAudio(enabled);
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return IRtcEngineNative.startLocalMediaSpatialAudio(uid, media);
+#else
+            return -1;
+#endif
         }
 
         /** Sets the spatial audio effect parameters of the remote user.
@@ -6059,16 +6092,21 @@ namespace agora_gaming_rtc
                     {
                         if (instance != null && instance.OnVolumeIndication != null)
                         {
+
                             string[] sArray = volumeInfo.Split('\t');
                             int j = 1;
                             AudioVolumeInfo[] infos = new AudioVolumeInfo[speakerNumber];
+
                             if (speakerNumber > 0)
                             {
                                 for (int i = 0; i < speakerNumber; i++)
                                 {
-                                    uint uids = (uint)int.Parse(sArray[j++]);
-                                    uint vol = (uint)int.Parse(sArray[j++]);
-                                    uint vad = (uint)int.Parse(sArray[j++]);
+                                    uint uids;
+                                    uint.TryParse(sArray[j++], out uids);
+                                    uint vol;
+                                    uint.TryParse(sArray[j++], out vol);
+                                    uint vad;
+                                    uint.TryParse(sArray[j++], out vad);
                                     string channelId = sArray[j++];
                                     infos[i].uid = uids;
                                     infos[i].volume = vol;
@@ -6076,6 +6114,7 @@ namespace agora_gaming_rtc
                                     infos[i].channelId = channelId;
                                 }
                             }
+
                             instance.OnVolumeIndication(infos, speakerNumber, totalVolume);
                         }
                     });

@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class VirtualBackgroundClientDemo : MonoBehaviour
 {
@@ -35,6 +35,9 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     public Toggle muteToggle, loopToggle;
     public string imgFile = "bedroom.png";
     public string videoFile = "outside.mp4";
+
+    [SerializeField]
+    RawImage SelfView;
 
     private void Awake()
     {
@@ -268,7 +271,10 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         joinedChannel = false;
     }
 
-    
+    public void OnDestroy()
+    {
+        LeaveChannel();
+    }
 
     void userVideoMutedHandler(uint uid, bool muted)
     {
@@ -304,7 +310,8 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
     void EngineOnLeaveChannelHandler(RtcStats rtcStats)
     {
         logger.UpdateLog(string.Format("OnLeaveChannelHandler channelId: {0}", CHANNEL_NAME));
-        DestroyVideoView(CHANNEL_NAME, 0);
+        //DestroyVideoView(CHANNEL_NAME, 0);
+        makeSelfView(false);
         foreach (var remoteuser in remoteClientIDs)
         {
             DestroyVideoView(CHANNEL_NAME, remoteuser);
@@ -358,10 +365,36 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
         }
     }
 
+    void makeSelfView(bool onOff)
+    {
+        if (onOff)
+        {
+            var face = SelfView.gameObject.AddComponent<VideoSurface>();
+            face.SetForUser(0);
+            face.SetEnable(true);
+            face.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+        }
+        else
+        {
+            var face = SelfView.GetComponent<VideoSurface>();
+            if (face != null)
+            {
+                face.SetEnable(false);
+                Destroy(face);
+            }
+        }
+    }
+
     GameObject LastRemote = null;
 
     private void makeVideoView(string channelId, uint uid)
     {
+        if (uid == 0)
+        {
+            makeSelfView(true);
+            return;
+        }
+
         string objName = channelId + "_" + uid.ToString();
         GameObject go = GameObject.Find(objName);
         if (!ReferenceEquals(go, null))
@@ -417,8 +450,8 @@ public class VirtualBackgroundClientDemo : MonoBehaviour
 
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
+        float xPos = Random.Range(-Screen.width / 8f, Screen.width / 8f);
+        float yPos = Random.Range(Offset, Screen.height / 4f);
         Debug.Log("position x " + xPos + " y: " + yPos);
         go.transform.localPosition = new Vector3(xPos, yPos, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);

@@ -323,6 +323,20 @@ function muteLocalVideoStream2_mc_WGL(channel, mute) {
   clients[channel].muteLocalVideoStream(mute);
 }
 
+function enableLocalVideoStream2_mc_WGL(channel, mute) {
+  if (typeof clients[channel] === "undefined") {
+    return 0;
+  } 
+  clients[channel].enableLocalVideo(mute);
+}
+
+function enableLocalAudioStream2_mc_WGL(channel, mute) {
+  if (typeof clients[channel] === "undefined") {
+    return 0;
+  } 
+  clients[channel].enableLocalAudio(mute);
+}
+
 function muteRemoteAudioStream2_mc_WGL(userId, mute) {
   if (typeof clients[selectedCurrentChannel] === "undefined") {
     return 0;
@@ -472,9 +486,9 @@ function setVirtualBackgroundVideo_MC(videoFile){
   c.setVirtualBackgroundVideo(videoFile);
 }
 
-function enableSpatialAudio_MC(enabled){
+function initializeSpatialAudio_MC(enabled){
   var c = clients[selectedCurrentChannel];
-  c.enableSpatialAudio(enabled);
+  c.initializeSpatialAudioManager_mc(enabled);
 }
 
 function setRemoteUserSpatialAudioParams2(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb){

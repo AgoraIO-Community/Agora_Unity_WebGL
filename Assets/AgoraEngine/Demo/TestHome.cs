@@ -171,6 +171,7 @@ public class TestHome : MonoBehaviour
         ChannelName = inputField.text;
         app.joinAudience(ChannelName);
         SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
+        SceneManager.sceneLoaded += updateHomeMenu;
         SceneManager.LoadScene(PlaySceneName, LoadSceneMode.Single);
     }
 
@@ -188,6 +189,7 @@ public class TestHome : MonoBehaviour
         // join channel and jump to next scene
         app.join(ChannelName, enableVideo, muted);
         SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
+        SceneManager.sceneLoaded += updateHomeMenu;
         SceneManager.LoadScene(PlaySceneName, LoadSceneMode.Single);
     }
 
@@ -201,6 +203,7 @@ public class TestHome : MonoBehaviour
             SceneManager.LoadScene(HomeSceneName, LoadSceneMode.Single);
         }
         Destroy(gameObject);
+        SceneManager.sceneLoaded -= updateHomeMenu;
     }
 
     void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
@@ -213,6 +216,18 @@ public class TestHome : MonoBehaviour
             }
             SceneManager.sceneLoaded -= OnLevelFinishedLoading;
         }
+
+        
+    }
+
+    public void updateHomeMenu(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "HomeMenu")
+        {
+            Destroy(gameObject);
+            SceneManager.sceneLoaded -= updateHomeMenu;
+        }
+        
     }
 
     void OnApplicationPause(bool paused)
@@ -227,7 +242,10 @@ public class TestHome : MonoBehaviour
     {
         if (!ReferenceEquals(app, null))
         {
-            app.unloadEngine();
+            app.leave(); // leave channel
+            app.unloadEngine(); // delete engine
+            app = null; // delete app
+            
         }
     }
 }

@@ -7,10 +7,7 @@ public class TestVideoRespawn : MonoBehaviour
 {
 
     [SerializeField]
-    private string APP_ID = "";
-
-    [SerializeField]
-    private string TOKEN = "";
+    private AppInfoObject appInfo;
 
     [SerializeField]
     private string CHANNEL_NAME = "YOUR_CHANNEL_NAME";
@@ -19,6 +16,7 @@ public class TestVideoRespawn : MonoBehaviour
     private Logger logger;
     public Button button1;
     public Button button2;
+    public Button button3;
 
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
@@ -52,13 +50,13 @@ public class TestVideoRespawn : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        logger.DebugAssert(appInfo.appID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
     }
 
     void InitEngine()
     {
         // NOTE LogConfig is discarded in WebGL
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
 
         mRtcEngine.SetLogFile("log.txt");
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
@@ -87,7 +85,7 @@ public class TestVideoRespawn : MonoBehaviour
 
     void JoinChannel()
     {
-        mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
+        mRtcEngine.JoinChannelByKey(appInfo.token, CHANNEL_NAME, "", 0);
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
@@ -149,6 +147,21 @@ public class TestVideoRespawn : MonoBehaviour
             Destroy(lastRemoteUserObject);
             makeVideoView(lastUID);
         }
+    }
+
+    // float posX = 0;
+    float posY = 0;
+
+    public void UpdateSelfPosition2()
+    {
+        posY += 2.5f;
+        var localSpatial = mRtcEngine.GetLocalSpatialAudioEngine();
+        localSpatial.Initialize();
+        float[] pos = new float[] { 0.0F, posY, 0.0F };
+        float[] forward = new float[] { 1.0F, 0.0F, 0.0F };
+        float[] right = new float[] { 0.0F, 1.0F, 0.0F };
+        float[] up = new float[] { 0.0F, 0.0F, 1.0F };
+        localSpatial.UpdateSelfPosition(pos, forward, right, up);
     }
 
     void OnDestroy()
@@ -224,10 +237,8 @@ public class TestVideoRespawn : MonoBehaviour
         }
         // set up transform
         go.transform.Rotate(0f, 0.0f, 180.0f);
-        float xPos = Random.Range(Offset - Screen.width / 2f, Screen.width / 2f - Offset);
-        float yPos = Random.Range(Offset, Screen.height / 2f - Offset);
-        Debug.Log("position x " + xPos + " y: " + yPos);
-        go.transform.localPosition = new Vector3(xPos, yPos, 0f);
+        Vector2 pos = AgoraUIUtils.GetRandomPosition(60);
+        go.transform.localPosition = new Vector3(pos.x, pos.y, 0f);
         go.transform.localScale = new Vector3(1.5f, 1f, 1f);
 
         // configure videoSurface

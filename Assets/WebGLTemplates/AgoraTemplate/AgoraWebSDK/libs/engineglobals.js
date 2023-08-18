@@ -1,5 +1,5 @@
 // conversion to new engine
-var SDK_VERSION = "0.3.7.1.4130100.f8";
+var SDK_VERSION = "0.3.7.1.4180100.f9";
 
 let client_manager = new ClientManager();
 let dataBuilder = DataBuilder();

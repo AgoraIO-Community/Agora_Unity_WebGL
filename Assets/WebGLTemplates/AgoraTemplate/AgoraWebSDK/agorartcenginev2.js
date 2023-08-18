@@ -12,7 +12,7 @@ async function wglw_joinChannel(channelkey, channelName, info, uid) {
   client_manager.setOptions(channelkey, channelName, uid);
   await client_manager.joinAgoraChannel(uid);
   wrapper.initStats();
-  cacheDevices();
+  //cacheDevices();
 }
 
 async function wglw_joinChannel_withOption(
@@ -128,6 +128,11 @@ async function startPreview() {
 // Stops the local video preview and disables video.
 function stopPreview() {
   client_manager.stopPreview();
+}
+
+function releaseVideoDeviceManager(){
+  localTracks.videoTrack.stop();
+  localTracks.videoTrack.close();
 }
 
 // Gets a new token when the current token expires after a period of time.
@@ -493,7 +498,9 @@ function muteLocalAudioStream(mute) {
 
 // Stops/Resumes sending the local video stream.
 function muteLocalVideoTrack(mute) {
-  client_manager.muteLocalVideoStream(mute);
+  enable = mute == 1 ? true : false;
+  console.log(mute,enable);
+  client_manager.muteLocalVideoStream(enable);
 }
 
 // Sets the stream type for all remote users
@@ -932,4 +939,46 @@ function setVirtualBackgroundVideo(videoFile){
 
 function enableSpatialAudio(enabled){
   client_manager.enableSpatialAudio(enabled);
+}
+
+function initializeSpatialAudioManager() {
+  client_manager.initializeSpatialAudioManager();
+}
+
+function releaseSpatialAudioManager() {
+  client_manager.releaseSpatialAudioManager();
+}
+
+function setDistanceUnit(unit) {
+  let rc = client_manager.setDistanceUnit(unit);
+  console.log("setDistanceUnity rc = " + rc);
+}
+
+function clearRemotePositions() {
+  let rc = client_manager.clearRemotePositions();
+  console.log("clearRemotePositions rc = " + rc);
+}
+
+function startLocalMediaSpatialAudio(uid, media){
+  client_manager.startLocalMediaSpatialAudio(uid, media);
+}
+
+function updatePlayerPositionInfo(uid, position, forward){
+  let rc = client_manager.updatePlayerPositionInfo(uid, position, forward);
+  console.log("updatePlayerPositionInfo, rc = " + rc);
+}
+
+function updateRemotePosition(uid, position, forward){
+  let rc = client_manager.updateRemotePosition(uid, position, forward);
+  console.log("updateRemotePosition, rc = " + rc);
+}
+
+function removeRemotePosition(uid){
+  let rc = client_manager.removeRemotePosition(uid);
+  console.log("removeRemotePosition rc = " + rc);
+}
+
+function updateSelfPosition(position, forward, right, up){
+  let rc = client_manager.updateSelfPosition(position, forward, right, up);
+  console.log("updateSelfPosition rc = " + rc);
 }

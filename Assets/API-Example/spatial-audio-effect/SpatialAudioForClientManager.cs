@@ -10,6 +10,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
+    private ILocalSpatialAudioEngine spatialAudio;
 
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
@@ -45,7 +46,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
         {
             CHANNEL_NAME_1 = RootMenuControl.instance.channel;
         }
-        
+
         UpdateDropDown();
     }
 
@@ -59,7 +60,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
 
         InitEngine();
 
-        mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
+        // mRtcEngine.EnableSpatialAudio(enableToggle.isOn);
         //channel setup.
         appIdText.text = appInfo.appID;
         tokenText.text = appInfo.token;
@@ -106,6 +107,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
                     attenuationSlider.interactable = true;
                     blurToggle.interactable = true;
                     airAbsorbToggle.interactable = true;
+                    userDropdown.interactable = true;
                 }
 
             }
@@ -127,7 +129,7 @@ public class SpatialAudioForClientManager : MonoBehaviour
             attenuationSlider.interactable = false;
             blurToggle.interactable = false;
             airAbsorbToggle.interactable = false;
-
+            userDropdown.interactable = false;
         }
 
         azimuthText.text = azimuthSlider.value.ToString("F2");
@@ -148,6 +150,8 @@ public class SpatialAudioForClientManager : MonoBehaviour
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
         mRtcEngine.EnableAudio();
+        spatialAudio = mRtcEngine.GetLocalSpatialAudioEngine();
+        spatialAudio.Initialize();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
         mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
