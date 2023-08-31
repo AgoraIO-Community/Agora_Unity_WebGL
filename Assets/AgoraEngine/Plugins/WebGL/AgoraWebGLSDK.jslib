@@ -921,6 +921,11 @@ var LibraryAgoraWebGLSDK = {
     file = UTF8ToString(media);
     startLocalMediaSpatialAudio(uid, file);
   },
+  muteLocalMediaSpatialAudio: function (uid, mute) {
+    console.log("muting spatial audio media");
+    mute_val = mute == 1 ? true : false;
+    muteLocalMediaSpatialAudio(uid, mute_val);
+  },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
   },
@@ -1076,12 +1081,22 @@ var LibraryAgoraWebGLSDK = {
     airAbsorb = enable_air_absorb == 0 ? false : true;
     setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
+  setRemoteUserSpatialAudioAttenuation: function(uid, attenuation){
+    setRemoteUserSpatialAudioAttenuation(uid, attenuation);
+  },
+  setRemoteUserSpatialAudioBlur: function(uid, blur){
+    setRemoteUserSpatialAudioBlur(uid, blur);
+  },
+  setRemoteUserSpatialAudioAirAbsorb: function(uid, airAbsorb){
+    setRemoteUserSpatialAudioAirAbsorb(uid, airAbsorb);
+  },
   updatePlayerPositionInfo: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
+    strUID = UTF8ToString(uid);
     const localPosition = {
       position: [posX, posY, posZ],
       forward: [forwardX, forwardY, forwardZ]
     };
-    updatePlayerPositionInfo(uid, localPosition.position, localPosition.forward);
+    updatePlayerPositionInfo(strUID, localPosition.position, localPosition.forward);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError("setScreenCaptureScenario")

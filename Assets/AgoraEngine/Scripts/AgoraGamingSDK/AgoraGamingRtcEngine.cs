@@ -5488,6 +5488,15 @@ namespace agora_gaming_rtc
 #endif
         }
 
+        public int muteLocalMediaSpatialAudio(uint uid, bool mute)
+        {
+#if UNITY_WEBGL && !UNITY_EDITOR
+            return IRtcEngineNative.muteLocalMediaSpatialAudio(uid, mute);
+#else
+            return -1;
+#endif
+        }
+
         /** Sets the spatial audio effect parameters of the remote user.
          * @since 3.7.0
          *
@@ -5543,6 +5552,54 @@ namespace agora_gaming_rtc
             return IRtcEngineNative.setRemoteUserSpatialAudioParams(uid, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, enable_blur, enable_air_absorb);
 #endif
         }
+
+        public int SetRemoteUserSpatialAudioAttenuation(uint uid, double attenuation)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.setRemoteUserSpatialAudioAttenuation(uid + "", attenuation);
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioAttenuation(uid.ToString(), attenuation);
+#endif
+        }
+
+        public int SetRemoteUserSpatialAudioBlur(uint uid, bool blur)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.setRemoteUserSpatialAudioBlur(uid + "", blur);
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioBlur(uid.ToString(), blur);
+#endif
+        }
+
+        public int SetRemoteUserSpatialAudioAirAbsorb(uint uid, bool airAbsorb)
+        {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.setRemoteUserSpatialAudioAirAbsorb(uid + "", airAbsorb);
+#else
+            return IRtcEngineNative.setRemoteUserSpatialAudioAirAbsorb(uid.ToString(), airAbsorb);
+#endif
+        }
+
+        public void updatePlayerPositionInfo(string uid, Vector3 pos, Vector3 dir)
+        {
+            IRtcEngineNative.updatePlayerPositionInfo(uid, pos.x, pos.y, pos.z, dir.x, dir.y, dir.z);
+        }
+
+        public void updateRemotePositionInfo(string uid, Vector3 pos, Vector3 dir)
+        {
+            IRtcEngineNative.updateRemotePosition(uid, pos.x, pos.y, pos.z, dir.x, dir.y, dir.z);
+        }
+
+        public void updateSelfPosition(Vector3 position, Vector3 forward, Vector3 right, Vector3 up)
+        {
+            float[] posFloat = { position.x, position.y, position.z };
+            float[] forwardFloat = { forward.x, forward.y, forward.z };
+            float[] rightFloat = { right.x, right.y, right.z };
+            float[] topFloat = { up.x, up.y, up.z };
+            IRtcEngineNative.updateSelfPosition(posFloat,
+                forwardFloat, rightFloat,
+                topFloat);
+        }
         /// @endcond
         /**
          * Sets the screen sharing scenario.
@@ -5560,6 +5617,8 @@ namespace agora_gaming_rtc
         {
             return IRtcEngineNative.setScreenCaptureScenario(screenScenario);
         }
+
+
 
         /**
          * Sets the camera zoom ratio.

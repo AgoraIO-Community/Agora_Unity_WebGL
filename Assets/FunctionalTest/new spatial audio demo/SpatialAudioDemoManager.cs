@@ -12,6 +12,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
+    private ILocalSpatialAudioEngine spatialAudio;
 
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
@@ -31,12 +32,27 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public Transform peter;
 
+    public Transform[] NPCs;
+    public float[] NPCDistanceMod, NPCSoundRange;
+
     [SerializeField]
     private List<uint> remoteClientIDs = new List<uint>();
 
     public GameObject loginScreen, player;
 
+    public SpatialAudioAvatar avatar;
+
     Vector3[] directions = { Vector3.right, Vector3.down, Vector3.left, Vector3.up };
+
+    public static bool isHoveringOverButton;
+
+    public Dictionary<uint, NPCEffectParams> NPCEffects = new Dictionary<uint, NPCEffectParams>();
+
+    public bool NPCSettingsEnabled = false;
+
+    public NPCSettings npcSettings;
+
+    public static SpatialAudioDemoManager demo;
 
     void Awake()
     {
@@ -50,7 +66,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
         {
             return;
         }
-
+        demo = this;
         InitEngine();
 
 
@@ -86,8 +102,19 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
             // joinButton.interactable = false;
             // leaveButton.interactable = true;
-            // mRtcEngine.updatePlayerPositionInfo("1000", peter.position * 8, directions[peter.gameObject.GetComponent<AIWaypointMovement>().waypointIndex]);
-            // mRtcEngine.updateSelfPosition(player.transform.position * 8, player.GetComponent<SpatialAudioAvatar>().arrow.eulerAngles, new Vector3(1, 0, 0), new Vector3(0, 1, 0));
+            mRtcEngine.updateSelfPosition(player.transform.position, -player.transform.forward, player.transform.right, player.transform.up);
+            for (int x = 0; x < soundFiles.Length; x++)
+            {
+                if (NPCs.Length > x)
+                {
+                    mRtcEngine.updatePlayerPositionInfo((1000 + x).ToString(), NPCs[x].position * NPCDistanceMod[x], (NPCs[x].transform.position - player.transform.position).normalized);
+                    float posDiff = Vector3.Distance(player.transform.position, NPCs[x].transform.position);
+                    if (posDiff > NPCSoundRange[x])
+                        mRtcEngine.muteLocalMediaSpatialAudio((uint)(1000 + x), true);
+                    else
+                        mRtcEngine.muteLocalMediaSpatialAudio((uint)(1000 + x), false);
+                }
+            }
         }
         else
         {
@@ -114,7 +141,9 @@ public class SpatialAudioDemoManager : MonoBehaviour
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
-        //mRtcEngine.EnableAudio();
+        mRtcEngine.EnableAudio();
+        spatialAudio = mRtcEngine.GetLocalSpatialAudioEngine();
+        spatialAudio.Initialize();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
         mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
@@ -148,7 +177,8 @@ public class SpatialAudioDemoManager : MonoBehaviour
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         for (uint i = 0; i < soundFiles.Length; i++)
         {
-            mRtcEngine.StartLocalMediaSpatialAudio(((uint)1000 + i), TEST_URL);
+            mRtcEngine.StartLocalMediaSpatialAudio(((uint)1000 + i), soundFiles[i]);
+            NPCEffects.Add((uint)1000 + i, new NPCEffectParams(NPCs[i].gameObject.name, (uint)1000 + i));
         }
         joinedChannel = true;
         loginScreen.SetActive(false);
@@ -176,6 +206,46 @@ public class SpatialAudioDemoManager : MonoBehaviour
     public void updateSpatialAudio()
     {
         mRtcEngine.SetRemoteUserSpatialAudioParams(0, azimuth, elevation, distance, orientation, attenuation, spatialBlur, spatialAirAbsorb);
+    }
+
+    public void updateIsHovering(bool setting)
+    {
+        isHoveringOverButton = setting;
+    }
+
+    public void updateNPCSettings(int index)
+    {
+        Debug.Log(NPCEffects[(uint)index]);
+        NPCSettingsEnabled = !NPCSettingsEnabled;
+        NPCSettings.instance.enableParamWindow(NPCSettingsEnabled, NPCEffects[(uint)index]);
+    }
+
+    public void updateSpatialAudioParams(NPCEffectParams newParams)
+    {
+        mRtcEngine.SetRemoteUserSpatialAudioAttenuation(newParams.uid, newParams.attenuation);
+        mRtcEngine.SetRemoteUserSpatialAudioBlur(newParams.uid, newParams.blur);
+        mRtcEngine.SetRemoteUserSpatialAudioAirAbsorb(newParams.uid, newParams.airAbsorb);
+    }
+
+    public void updateNPC(NPCEffectParams par)
+    {
+        NPCEffects[(uint)par.uid] = par;
+        updateSpatialAudioParams(par);
+    }
+
+    public class NPCEffectParams
+    {
+        public uint uid;
+        public string name;
+        public double attenuation = .5f;
+        public bool blur = false;
+        public bool airAbsorb = false;
+
+        public NPCEffectParams(string n, uint u)
+        {
+            name = n;
+            uid = u;
+        }
     }
 }
 
