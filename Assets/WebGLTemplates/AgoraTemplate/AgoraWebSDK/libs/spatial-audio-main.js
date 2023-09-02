@@ -205,6 +205,12 @@ class spatialAudioManager {
       return -1;
     }
   }
+
+  muteLocalMediaSpatialAudio (uid, mute) {
+    if(this.localPlayTracks[uid] != undefined){
+      return this.localPlayTracks[uid].setMuted(mute);
+    }
+  }
 }
 
 function createSpatialAudioManager() {

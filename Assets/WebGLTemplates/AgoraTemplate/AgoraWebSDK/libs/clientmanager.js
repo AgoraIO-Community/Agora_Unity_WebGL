@@ -1296,5 +1296,9 @@ setVirtualBackgroundVideo(videoFile){
     }
     return -1;
   }
+
+  muteLocalMediaSpatialAudio (uid, mute) {
+    return this.spatialAudio.muteLocalMediaSpatialAudio(uid, mute);
+  }
   //#endregion --- SPATIAL AUDIO ---
 }
