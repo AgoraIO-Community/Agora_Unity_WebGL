@@ -5556,6 +5556,7 @@ namespace agora_gaming_rtc
         public int SetRemoteUserSpatialAudioAttenuation(uint uid, double attenuation)
         {
 #if !UNITY_EDITOR && UNITY_WEBGL
+            Debug.Log("setting attenuation...");
             return IRtcEngineNative.setRemoteUserSpatialAudioAttenuation(uid + "", attenuation);
 #else
             return IRtcEngineNative.setRemoteUserSpatialAudioAttenuation(uid.ToString(), attenuation);

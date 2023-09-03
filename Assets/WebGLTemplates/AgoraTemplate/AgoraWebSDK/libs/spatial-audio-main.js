@@ -189,7 +189,7 @@ class spatialAudioManager {
 
   updateSpatialBlur(uid, checked) {
     this.spatialAudioSettings.blur = checked;
-    console.log("local play processor", this.localPlayProcessors);
+    console.log("updating spatial audio blur");
     if (this.localPlayProcessors[uid]) {
       return this.localPlayProcessors[uid].updateSpatialBlur(checked);
     } else {

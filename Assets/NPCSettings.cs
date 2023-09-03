@@ -33,7 +33,7 @@ public class NPCSettings : MonoBehaviour
 
     public void enableParamWindow(bool enabled, SpatialAudioDemoManager.NPCEffectParams temp)
     {
-        isOn = enabled;
+        isOn = !isOn;
         if (isOn)
         {
             tempParams = temp;
@@ -51,8 +51,8 @@ public class NPCSettings : MonoBehaviour
 
     public void enableParamWindow(bool enabled)
     {
-        isOn = enabled;
-        if (enabled)
+        isOn = !isOn;
+        if (isOn)
         {
             panel.gameObject.SetActive(isOn);
             avatarText.text = "Avatar: " + tempParams.name;
@@ -68,6 +68,18 @@ public class NPCSettings : MonoBehaviour
             SpatialAudioDemoManager.demo.updateNPC(tempParams);
             panel.gameObject.SetActive(isOn);
         }
+        Debug.Log("Enabling Window...." + isOn.ToString());
+    }
+
+    public void disableParamWindow()
+    {
+        isOn = false;
+        Debug.Log("Enabling Window...." + isOn.ToString());
+        tempParams.blur = blur.isOn;
+        tempParams.airAbsorb = airAbsorb.isOn;
+        tempParams.attenuation = attenuation.value;
+        SpatialAudioDemoManager.demo.updateNPC(tempParams);
+        panel.gameObject.SetActive(false);
     }
 
     public void cancelParamWindow()

@@ -5548,8 +5548,8 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 292382968}
         m_TargetAssemblyTypeName: NPCSettings, Assembly-CSharp
-        m_MethodName: enableParamWindow
-        m_Mode: 6
+        m_MethodName: disableParamWindow
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

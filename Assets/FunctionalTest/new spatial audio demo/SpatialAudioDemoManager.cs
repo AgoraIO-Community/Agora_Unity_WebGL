@@ -233,6 +233,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
         updateSpatialAudioParams(par);
     }
 
+    
     public class NPCEffectParams
     {
         public uint uid;

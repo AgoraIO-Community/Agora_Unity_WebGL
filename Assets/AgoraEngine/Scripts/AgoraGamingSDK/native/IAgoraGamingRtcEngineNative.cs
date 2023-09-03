@@ -1578,9 +1578,13 @@ namespace agora_gaming_rtc
 
 
 #if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserSpatialAudioAttenuation(string uid, double attenuation);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserSpatialAudioBlur(string uid, bool enable_blur);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserSpatialAudioAirAbsorb(string uid, bool enable_air_absorb);
 #else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
