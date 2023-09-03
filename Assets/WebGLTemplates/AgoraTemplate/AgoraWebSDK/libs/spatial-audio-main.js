@@ -103,7 +103,7 @@ class spatialAudioManager {
     };
 
     if (this.localPlayProcessors[uid]) {
-      console.log(
+      console.log("updating play processor...",
         this.localPlayProcessors[uid].updatePlayerPositionInfo({
           position,
           forward,
