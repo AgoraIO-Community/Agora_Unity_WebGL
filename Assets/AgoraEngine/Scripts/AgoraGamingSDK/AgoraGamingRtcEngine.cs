@@ -5488,6 +5488,15 @@ namespace agora_gaming_rtc
 #endif
         }
 
+        public int RemoveRemotePosition(uint uid)
+        {
+            #if UNITY_WEBGL && !UNITY_EDITOR
+                return IRtcEngineNative.removeRemotePosition(uid);
+            #else
+                return -1;
+            #endif
+        }
+
         public int muteLocalMediaSpatialAudio(uint uid, bool mute)
         {
 #if UNITY_WEBGL && !UNITY_EDITOR

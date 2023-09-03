@@ -141,13 +141,10 @@ public class SpatialAudioDemoManager : MonoBehaviour
         mRtcEngine = IRtcEngine.GetEngine(APP_ID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
 
-        mRtcEngine.EnableAudio();
         spatialAudio = mRtcEngine.GetLocalSpatialAudioEngine();
         spatialAudio.Initialize();
-        mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
+        mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
         mRtcEngine.OnJoinChannelSuccess += EngineOnJoinChannelSuccessHandler;
-        mRtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
-        mRtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
         mRtcEngine.OnLeaveChannel += EngineOnLeaveChannelHandler;
     }
 
@@ -233,7 +230,15 @@ public class SpatialAudioDemoManager : MonoBehaviour
         updateSpatialAudioParams(par);
     }
 
-    
+    void OnDestroy()
+    {
+        for (int x = 0; x < NPCs.Length; x++)
+        {
+            mRtcEngine.RemoveRemotePosition((uint)(1000 + x));
+        }
+    }
+
+
     public class NPCEffectParams
     {
         public uint uid;

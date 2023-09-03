@@ -102,13 +102,12 @@ class spatialAudioManager {
       forward: forward,
     };
 
-    if (this.localPlayProcessors[uid]) {
-      console.log("updating play processor...",
-        this.localPlayProcessors[uid].updatePlayerPositionInfo({
-          position,
-          forward,
-        })
+    console.log("updating play processor...",
+        this.localPlayProcessors[uid]
       );
+
+    if (this.localPlayProcessors[uid]) {
+      
       return this.localPlayProcessors[uid].updatePlayerPositionInfo(
         localPlayerPosition
       );
@@ -135,6 +134,9 @@ class spatialAudioManager {
     if (this.localPlayProcessors[uid]) {
       let rc = this.localPlayProcessors[uid].removeRemotePosition();
       delete this.localPlayProcessors[uid];
+      this.localPlayTracks[uid].stop();
+      this.localPlayTracks[uid].close();
+      delete this.localPlayTracks[uid];
       return rc;
     } else {
       return -1;
