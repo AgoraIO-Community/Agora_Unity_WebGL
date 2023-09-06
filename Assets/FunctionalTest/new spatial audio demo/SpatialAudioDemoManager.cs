@@ -28,7 +28,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public string[] soundFiles;
 
-    public InputField appIdText, tokenText, channelNameText;
+    public InputField appIdText, nicknameText, channelNameText;
 
     public Transform peter;
 
@@ -54,6 +54,10 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public static SpatialAudioDemoManager demo;
 
+    public List<string> names = new List<string>();
+    public string name;
+    public Text nameText;
+
     void Awake()
     {
 
@@ -69,11 +73,15 @@ public class SpatialAudioDemoManager : MonoBehaviour
         demo = this;
         InitEngine();
 
+        Random.InitState((int)System.DateTime.Now.Ticks);
+        int index = Random.Range(0, names.Count);
 
+        nicknameText.text = names[index];
+        
 
         //channel setup.
         appIdText.text = APP_ID;
-        tokenText.text = TOKEN_1;
+        //tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
 
     }
@@ -85,12 +93,17 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public void updateToken()
     {
-        TOKEN_1 = tokenText.text;
+        //TOKEN_1 = tokenText.text;
     }
 
     public void updateChannelName()
     {
         CHANNEL_NAME_1 = channelNameText.text;
+    }
+
+    public void updateNickname()
+    {
+        name = nicknameText.text;
     }
 
     void Update()
@@ -115,6 +128,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
                         mRtcEngine.muteLocalMediaSpatialAudio((uint)(1000 + x), false);
                 }
             }
+            nameText.text = name;
         }
         else
         {
@@ -170,6 +184,8 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     public void JoinChannel()
     {
+        name = nicknameText.text;
+        nameText.text = name;
         string TEST_URL = "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3";
         mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
         for (uint i = 0; i < soundFiles.Length; i++)
