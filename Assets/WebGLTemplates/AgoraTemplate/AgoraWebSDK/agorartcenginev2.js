@@ -359,11 +359,11 @@ function setRemoteUserSpatialAudioAttenuation(uid, attenuation){
 }
 
 function setRemoteUserSpatialAudioBlur(uid, blur){
-  client_manager.setRemoteUserSpatialAudioAttenuation(uid, blur);
+  client_manager.setRemoteUserSpatialAudioBlur(uid, blur);
 }
 
 function setRemoteUserSpatialAudioAirAbsorb(uid, air){
-  client_manager.setRemoteUserSpatialAudioAttenuation(uid, air);
+  client_manager.setRemoteUserSpatialAudioAirAbsorb(uid, air);
 }
 
 function muteLocalMediaSpatialAudio (uid, mute) {
