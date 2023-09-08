@@ -1580,8 +1580,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a94ae4e57cd9a41e5918a45854c2e294, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  infos: []
+  NPCInfos:
+  - {fileID: 1536988618}
+  - {fileID: 1606640657}
+  - {fileID: 1152255185}
+  - {fileID: 1233395101}
+  playerInfo: {fileID: 1901248463}
   npcs: []
+  panel: {fileID: 1492911221}
 --- !u!114 &347608929
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1800,7 +1806,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b47a658557469024e8073e76c8269dce, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  APP_ID: 00e97fd319264c1ea2be69a370bd712e
+  APP_ID: 
   TOKEN_1: 
   CHANNEL_NAME_1: unity3d
   joinButton: {fileID: 379757078}
@@ -1866,6 +1872,7 @@ MonoBehaviour:
   - Jane
   name: 
   nameText: {fileID: 236610734}
+  playerInfo: {fileID: 1901248463}
 --- !u!4 &372500047
 Transform:
   m_ObjectHideFlags: 0
@@ -2131,7 +2138,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &388373125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2523,9 +2530,9 @@ RectTransform:
   m_Father: {fileID: 1492911222}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245.745, y: -24.8095}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 491.49, y: 49.619}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &432881813
@@ -7061,8 +7068,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1152255184}
+  - component: {fileID: 1152255185}
   m_Layer: 5
-  m_Name: NPC #1 (2)
+  m_Name: NPC #3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7085,11 +7093,36 @@ RectTransform:
   m_Father: {fileID: 1492911222}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245.745, y: -168.88824}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 491.49, y: 47.7077}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1152255185
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1152255183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25fb684e1165469db81fcd655a87e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  info:
+    name: Piano
+    attenuation: 0
+    position: {x: 0, y: 0, z: 0}
+    forward: {x: 0, y: 0, z: 0}
+    right: {x: 0, y: 0, z: 0}
+    top: {x: 0, y: 0, z: 0}
+  name: {fileID: 632277652}
+  attenuation: {fileID: 1085041498}
+  position: {fileID: 1180370553}
+  forward: {fileID: 794472132}
+  right: {fileID: 865783698}
+  top: {fileID: 374477938}
 --- !u!1 &1161342784
 GameObject:
   m_ObjectHideFlags: 0
@@ -7550,8 +7583,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1233395100}
+  - component: {fileID: 1233395101}
   m_Layer: 5
-  m_Name: NPC #1 (3)
+  m_Name: NPC #4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7574,11 +7608,36 @@ RectTransform:
   m_Father: {fileID: 1492911222}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245.745, y: -216.59595}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 491.49, y: 47.7077}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1233395101
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1233395099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25fb684e1165469db81fcd655a87e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  info:
+    name: Larry & Bella
+    attenuation: 0
+    position: {x: 0, y: 0, z: 0}
+    forward: {x: 0, y: 0, z: 0}
+    right: {x: 0, y: 0, z: 0}
+    top: {x: 0, y: 0, z: 0}
+  name: {fileID: 190167313}
+  attenuation: {fileID: 614318247}
+  position: {fileID: 698683920}
+  forward: {fileID: 1299017915}
+  right: {fileID: 1064440501}
+  top: {fileID: 971414127}
 --- !u!1 &1242866461
 GameObject:
   m_ObjectHideFlags: 0
@@ -9506,10 +9565,10 @@ RectTransform:
   m_Father: {fileID: 347608927}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 107.753784, y: 138.60333}
-  m_SizeDelta: {x: -215.5075, y: -375.7626}
+  m_AnchorMin: {x: 0.30124334, y: 0.52982545}
+  m_AnchorMax: {x: 1, y: 0.93500006}
+  m_AnchoredPosition: {x: 1.2537842, y: -2.4989014}
+  m_SizeDelta: {x: -2.5075073, y: 2.4418945}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1492911223
 MonoBehaviour:
@@ -10011,9 +10070,9 @@ RectTransform:
   m_Father: {fileID: 1492911222}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245.745, y: -73.47285}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 491.49, y: 47.7077}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1536988618
@@ -10028,6 +10087,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b25fb684e1165469db81fcd655a87e05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  info:
+    name: peter
+    attenuation: 0
+    position: {x: 0, y: 0, z: 0}
+    forward: {x: 0, y: 0, z: 0}
+    right: {x: 0, y: 0, z: 0}
+    top: {x: 0, y: 0, z: 0}
+  name: {fileID: 169532840}
+  attenuation: {fileID: 1129304143}
+  position: {fileID: 817868735}
+  forward: {fileID: 1956138559}
+  right: {fileID: 1804878109}
+  top: {fileID: 1796411935}
 --- !u!1 &1549142256
 GameObject:
   m_ObjectHideFlags: 0
@@ -10326,8 +10398,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1606640656}
+  - component: {fileID: 1606640657}
   m_Layer: 5
-  m_Name: NPC #1 (1)
+  m_Name: NPC #2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10350,11 +10423,36 @@ RectTransform:
   m_Father: {fileID: 1492911222}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245.745, y: -121.18055}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 491.49, y: 47.7077}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1606640657
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1606640655}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25fb684e1165469db81fcd655a87e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  info:
+    name: Nick & Susan
+    attenuation: 0
+    position: {x: 0, y: 0, z: 0}
+    forward: {x: 0, y: 0, z: 0}
+    right: {x: 0, y: 0, z: 0}
+    top: {x: 0, y: 0, z: 0}
+  name: {fileID: 174309457}
+  attenuation: {fileID: 909883081}
+  position: {fileID: 719780022}
+  forward: {fileID: 517611486}
+  right: {fileID: 780291293}
+  top: {fileID: 970236583}
 --- !u!1 &1631663947
 GameObject:
   m_ObjectHideFlags: 0
@@ -12331,8 +12429,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1901248462}
+  - component: {fileID: 1901248463}
   m_Layer: 5
-  m_Name: NPC #1 (4)
+  m_Name: User
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -12355,11 +12454,36 @@ RectTransform:
   m_Father: {fileID: 1492911222}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 245.745, y: -264.30365}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 491.49, y: 47.7077}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1901248463
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1901248461}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b25fb684e1165469db81fcd655a87e05, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  info:
+    name: 
+    attenuation: 0
+    position: {x: 0, y: 0, z: 0}
+    forward: {x: 0, y: 0, z: 0}
+    right: {x: 0, y: 0, z: 0}
+    top: {x: 0, y: 0, z: 0}
+  name: {fileID: 361796489}
+  attenuation: {fileID: 1549142258}
+  position: {fileID: 264948718}
+  forward: {fileID: 681510467}
+  right: {fileID: 1836355428}
+  top: {fileID: 1906597242}
 --- !u!1 &1906597240
 GameObject:
   m_ObjectHideFlags: 0

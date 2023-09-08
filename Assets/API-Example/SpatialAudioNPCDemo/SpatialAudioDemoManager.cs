@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine;
 using agora_gaming_rtc;
 using System.Linq;
 
@@ -57,6 +57,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
     public List<string> names = new List<string>();
     public string name;
     public Text nameText;
+    public NPCInfo playerInfo;
 
     void Awake()
     {
@@ -128,7 +129,22 @@ public class SpatialAudioDemoManager : MonoBehaviour
                         mRtcEngine.muteLocalMediaSpatialAudio((uint)(1000 + x), false);
                 }
             }
+
+            for(int x = 0; x < NPCInfoWindow.instance.NPCInfos.Count; x++)
+            {
+                NPCInfoWindow.instance.updateNPC(NPCEffects[(uint)(1000 + x)], NPCs[x]);
+            }
+
+
+
             nameText.text = name;
+            playerInfo.info.name = name;
+            playerInfo.info.attenuation = .5f;
+            playerInfo.info.position = player.transform.position;
+            playerInfo.info.forward = player.transform.forward;
+            playerInfo.info.right = player.transform.right;
+            playerInfo.info.top = player.transform.up;
+
         }
         else
         {

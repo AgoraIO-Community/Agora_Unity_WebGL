@@ -84,6 +84,7 @@ public class NPCSettings : MonoBehaviour
 
     public void cancelParamWindow()
     {
+        isOn = false;
         panel.gameObject.SetActive(false);
     }
 
