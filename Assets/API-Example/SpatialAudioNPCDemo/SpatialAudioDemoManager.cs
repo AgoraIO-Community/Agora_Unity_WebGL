@@ -7,6 +7,7 @@ using System.Linq;
 public class SpatialAudioDemoManager : MonoBehaviour
 {
     [SerializeField] private string APP_ID = "YOUR_APPID";
+    public AppInfoObject appInfo;
 
     [SerializeField] private string TOKEN_1 = "";
 
@@ -81,7 +82,7 @@ public class SpatialAudioDemoManager : MonoBehaviour
         
 
         //channel setup.
-        appIdText.text = APP_ID;
+        appIdText.text = appInfo.appID;
         //tokenText.text = TOKEN_1;
         channelNameText.text = CHANNEL_NAME_1;
 
@@ -163,14 +164,14 @@ public class SpatialAudioDemoManager : MonoBehaviour
 
     bool CheckAppId()
     {
-        return (APP_ID.Length > 10);
+        return (appInfo.appID.Length > 10);
     }
 
     void InitEngine()
     {
-        mRtcEngine = IRtcEngine.GetEngine(APP_ID);
+        mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-
+        
         spatialAudio = mRtcEngine.GetLocalSpatialAudioEngine();
         spatialAudio.Initialize();
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_AUDIENCE);
@@ -203,7 +204,8 @@ public class SpatialAudioDemoManager : MonoBehaviour
         name = nicknameText.text;
         nameText.text = name;
         string TEST_URL = "./AgoraWebSDK/libs/resources/DemoResources/paul/ToddEmbleyDemo.mp3";
-        mRtcEngine.JoinChannel(TOKEN_1, CHANNEL_NAME_1, "", 0, new ChannelMediaOptions(true, true, true, true));
+        Debug.Log(mRtcEngine);
+        mRtcEngine.JoinChannel(appInfo.token, appInfo.appID, "", 0, new ChannelMediaOptions(true, true, true, true));
         for (uint i = 0; i < soundFiles.Length; i++)
         {
             mRtcEngine.StartLocalMediaSpatialAudio(((uint)1000 + i), soundFiles[i]);
@@ -266,7 +268,8 @@ public class SpatialAudioDemoManager : MonoBehaviour
     {
         for (int x = 0; x < NPCs.Length; x++)
         {
-            mRtcEngine.RemoveRemotePosition((uint)(1000 + x));
+            if (mRtcEngine != null)
+                mRtcEngine.RemoveRemotePosition((uint)(1000 + x));
         }
     }
 

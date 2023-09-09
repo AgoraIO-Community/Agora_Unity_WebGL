@@ -367,7 +367,7 @@ function setRemoteUserSpatialAudioAirAbsorb(uid, air){
 }
 
 function muteLocalMediaSpatialAudio (uid, mute) {
-  client_manager.muteLocalMediaSpatialAudio(uid, mute_val);
+  client_manager.muteLocalMediaSpatialAudio(uid, mute);
 }
 
 async function startScreenCaptureByDisplayId(
