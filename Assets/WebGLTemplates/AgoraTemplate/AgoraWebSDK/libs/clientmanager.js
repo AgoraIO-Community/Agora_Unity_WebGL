@@ -1252,7 +1252,6 @@ setVirtualBackgroundVideo(videoFile){
   }
 
   setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb){
-    console.log(this.spatialAudio);
      this.spatialAudio.updateSpatialAzimuth(uid, azimuth);
      this.spatialAudio.updateSpatialElevation(uid, elevation);
      this.spatialAudio.updateSpatialDistance(uid, distance);
@@ -1260,6 +1259,18 @@ setVirtualBackgroundVideo(videoFile){
      this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
      this.spatialAudio.updateSpatialBlur(uid, blur);
      this.spatialAudio.updateSpatialAirAbsorb(uid, airAbsorb);
+  }
+
+  setRemoteUserSpatialAudioBlur(uid, blur){
+    this.spatialAudio.updateSpatialBlur(uid, blur);
+  }
+
+  setRemoteUserSpatialAudioAirAbsorb(uid, air){
+    this.spatialAudio.updateSpatialAirAbsorb(uid, air);
+  }
+
+  setRemoteUserSpatialAudioAttenuation(uid, attenuation){
+    this.spatialAudio.updateSpatialAttenuation(uid, attenuation);
   }
 
   updatePlayerPositionInfo(uid, position, forward){
@@ -1295,6 +1306,10 @@ setVirtualBackgroundVideo(videoFile){
       return this.spatialAudio.setDistanceUnit(unit);
     }
     return -1;
+  }
+
+  muteLocalMediaSpatialAudio (uid, mute) {
+    return this.spatialAudio.muteLocalMediaSpatialAudio(uid, mute);
   }
   //#endregion --- SPATIAL AUDIO ---
 }

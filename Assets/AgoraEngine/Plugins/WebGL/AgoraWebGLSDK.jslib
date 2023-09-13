@@ -921,6 +921,10 @@ var LibraryAgoraWebGLSDK = {
     file = UTF8ToString(media);
     startLocalMediaSpatialAudio(uid, file);
   },
+  muteLocalMediaSpatialAudio: function (uid, mute) {
+    mute_val = mute == 1 ? true : false;
+    muteLocalMediaSpatialAudio(uid, mute_val);
+  },
   enableSpatialAudio_MC: function (enabled) {
     enableSpatialAudio_MC(enabled);
   },
@@ -1076,12 +1080,30 @@ var LibraryAgoraWebGLSDK = {
     airAbsorb = enable_air_absorb == 0 ? false : true;
     setRemoteUserSpatialAudioParams2(newUID, speaker_azimuth, speaker_elevation, speaker_distance, speaker_orientation, speaker_attenuation, blur, airAbsorb);
   },
+  setRemoteUserSpatialAudioAttenuation: function(uid, attenuation){
+    uid_val = UTF8ToString(uid);
+    newUID = parseInt(uid_val);
+    setRemoteUserSpatialAudioAttenuation(newUID, attenuation);
+  },
+  setRemoteUserSpatialAudioBlur: function(uid, blur){
+    uid_val = UTF8ToString(uid);
+    newUID = parseInt(uid_val);
+    blur_val = blur == 1 ? true : false;
+    setRemoteUserSpatialAudioBlur(newUID, blur_val);
+  },
+  setRemoteUserSpatialAudioAirAbsorb: function(uid, airAbsorb){
+    uid_val = UTF8ToString(uid);
+    newUID = parseInt(uid_val);
+    air_val = airAbsorb == 1 ? true : false;
+    setRemoteUserSpatialAudioAirAbsorb(newUID, air_val);
+  },
   updatePlayerPositionInfo: function(uid, posX, posY, posZ, forwardX, forwardY, forwardZ){
+    strUID = UTF8ToString(uid);
     const localPosition = {
       position: [posX, posY, posZ],
       forward: [forwardX, forwardY, forwardZ]
     };
-    updatePlayerPositionInfo(uid, localPosition.position, localPosition.forward);
+    updatePlayerPositionInfo(strUID, localPosition.position, localPosition.forward);
   },
   setScreenCaptureScenario : function () {
     SendNotImplementedError("setScreenCaptureScenario")

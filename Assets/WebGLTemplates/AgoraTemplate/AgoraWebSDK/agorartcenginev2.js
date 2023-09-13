@@ -354,6 +354,22 @@ function setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orie
   client_manager.setRemoteUserSpatialAudioParams(uid, azimuth, elevation, distance, orientation, attenuation, blur, airAbsorb);
 }
 
+function setRemoteUserSpatialAudioAttenuation(uid, attenuation){
+  client_manager.setRemoteUserSpatialAudioAttenuation(uid, attenuation);
+}
+
+function setRemoteUserSpatialAudioBlur(uid, blur){
+  client_manager.setRemoteUserSpatialAudioBlur(uid, blur);
+}
+
+function setRemoteUserSpatialAudioAirAbsorb(uid, air){
+  client_manager.setRemoteUserSpatialAudioAirAbsorb(uid, air);
+}
+
+function muteLocalMediaSpatialAudio (uid, mute) {
+  client_manager.muteLocalMediaSpatialAudio(uid, mute);
+}
+
 async function startScreenCaptureByDisplayId(
   displayId,
   x,
