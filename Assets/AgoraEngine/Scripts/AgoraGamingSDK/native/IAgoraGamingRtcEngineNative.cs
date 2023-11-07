@@ -1419,13 +1419,8 @@ namespace agora_gaming_rtc
         protected static extern int muteLocalAudioStream_channel(IntPtr channel, bool mute);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableLocalAudioStream_channel(IntPtr channel, bool mute);
-
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalVideoStream_channel(IntPtr channel, bool mute);
 
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableLocalVideoStream_channel(IntPtr channel, bool mute);
 #endif
 
 #if UNITY_WEBGL
@@ -1618,8 +1613,10 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize();
 
+#if  UNITY_WEBGL && !UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize_mc();
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updateRemotePosition(uint uid, float[] position, float[] forward);

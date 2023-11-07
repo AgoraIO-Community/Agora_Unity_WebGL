@@ -1749,7 +1749,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             return IRtcEngineNative.muteLocalVideoStream_channel(_channelId, mute);
 #else
-            return IRtcEngineNative.muteLocalVideoStream_channel(_channelHandler, mute);
+            return 0;
 #endif
 
         }
@@ -1791,7 +1791,7 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             return IRtcEngineNative.enableLocalAudioStream_channel(_channelId, mute);
 #else
-            return IRtcEngineNative.enableLocalAudioStream_channel(_channelHandler, mute);
+            return 0;
 #endif
         }
 
