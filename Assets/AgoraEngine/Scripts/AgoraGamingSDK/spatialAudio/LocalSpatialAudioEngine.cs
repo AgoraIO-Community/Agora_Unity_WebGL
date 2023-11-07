@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using AOT;
 
@@ -80,7 +81,12 @@ namespace agora_gaming_rtc
             if (mEngine == null)
                 return (int)ERROR_CODE.ERROR_NOT_INIT_ENGINE;
 
+#if  UNITY_WEBGL && !UNITY_EDITOR
             return IRtcEngineNative.localSpatialAudio_initialize_mc();
+#else
+            UnityEngine.Debug.LogWarning("Initialize_MC is not available for non WebGL Platforms");
+#endif
+            return 0;
         }
 
         public override int UpdateRemotePosition(uint uid, RemoteVoicePositionInfo info)

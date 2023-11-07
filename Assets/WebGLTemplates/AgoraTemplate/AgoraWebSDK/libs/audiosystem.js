@@ -1,4 +1,5 @@
 // AUdio recording system seperation
+var audio_profile;
 var mediaRecorder;
 var audioChunks = [];
 var dest; /// empty audio dest
