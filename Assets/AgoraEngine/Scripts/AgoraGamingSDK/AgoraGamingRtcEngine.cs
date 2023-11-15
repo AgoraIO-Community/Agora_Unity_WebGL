@@ -3902,7 +3902,11 @@ namespace agora_gaming_rtc
          */
         public int EnableEncryption(bool enabled, EncryptionConfig encryptionConfig)
         {
+#if !UNITY_EDITOR && UNITY_WEBGL
+            return IRtcEngineNative.enableEncryption(enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode, encryptionConfig.encryptionKdfSalt, encryptionConfig.encryptionKdfSalt.Length);
+#else
             return IRtcEngineNative.enableEncryption(enabled, encryptionConfig.encryptionKey, (int)encryptionConfig.encryptionMode, encryptionConfig.encryptionKdfSalt);
+#endif
         }
 
         /** Enables/Disables the super-resolution algorithm for a remote user's video stream.
@@ -5490,11 +5494,11 @@ namespace agora_gaming_rtc
 
         public int RemoveRemotePosition(uint uid)
         {
-            #if UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
                 return IRtcEngineNative.removeRemotePosition(uid);
-            #else
-                return -1;
-            #endif
+#else
+            return -1;
+#endif
         }
 
         public int muteLocalMediaSpatialAudio(uint uid, bool mute)

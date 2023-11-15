@@ -702,6 +702,17 @@ class ClientManager {
     }
   }
 
+  enableEncryption(key, mode, salt) {
+    // Set an encryption mode.
+    const encryptionMode = ENCRYPTION_MODE[mode];
+    // Start channel encryption
+    if (mode <= 6) {
+      salt = undefined;
+    }
+    //console.log("setEncryptionConfig: encrytionMode = " + encryptionMode + " encryptionKey = " + key + " salt:" + salt);
+    this.client.setEncryptionConfig(encryptionMode, key, salt);
+  }
+
   async setExternalAudioSource_WGL(enabled, sampleRate, channels) {
     if (enabled == 1) {
       localTracks.audioTrack.stop();
