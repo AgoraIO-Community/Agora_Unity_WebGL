@@ -508,6 +508,11 @@ async function enableDisableAudio(enabled) {
   }
 }
 
+function enableEncryption(key, mode, salt)
+{
+  client_manager.enableEncryption(key, mode, salt) 
+}
+
 function muteLocalAudioStream(mute) {
   client_manager.muteLocalAudioStream(mute);
 }

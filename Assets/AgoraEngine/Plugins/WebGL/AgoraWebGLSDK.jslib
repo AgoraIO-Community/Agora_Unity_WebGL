@@ -1574,7 +1574,15 @@ var LibraryAgoraWebGLSDK = {
     screenCaptureCaptureMouseCursor
   ) {},
   enableRemoteSuperResolution2: function (channel, userId, enable) {},
-  enableEncryption: function (enabled, encryptionKey, encryptionMode) {},
+  enableEncryption: function (enabled, encryptionKey, encryptionMode, salt, length) {
+      const newArray =new ArrayBuffer(length);
+      const newByteArray = new Uint8Array(newArray);
+      for(var i = 0; i < length; i++) {
+        newByteArray[i]=HEAPU8[salt + i];
+      }   
+      const key = UTF8ToString(encryptionKey);
+      enableEncryption(key, encryptionMode, newByteArray); 
+  },
   unRegisterMediaMetadataObserver: function () {},
   setMultiChannelWant: function (multiChannelWant) {
     setMultiChannelWant_MC(multiChannelWant);

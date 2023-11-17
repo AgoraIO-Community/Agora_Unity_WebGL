@@ -1325,7 +1325,11 @@ namespace agora_gaming_rtc
         protected static extern int enableFaceDetection(bool enable);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        protected static extern int enableEncryption(bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt, int length);
+#else
         protected static extern int enableEncryption(bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableRemoteSuperResolution(uint userId, bool enable);
@@ -1548,7 +1552,7 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableLocalVoicePitchCallback(int interval);
 
-#if  UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio(bool enabled);
 
@@ -1636,7 +1640,7 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize();
 
-#if  UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize_mc();
 #endif
