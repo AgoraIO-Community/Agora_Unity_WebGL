@@ -39,6 +39,8 @@ class AgoraChannel {
     this.userStreamHandle = this.handleStreamMessage.bind(this);
     this.userTokenWillExpireHandle = this.handleTokenPrivilegeWillExpire.bind(this);
     this.userTokenDidExpireHandle = this.handleTokenPrivilegeDidExpire.bind(this);
+    this.statsUpdateInterval = 0;
+    this.clientsVideoStats = {};
   }
 
   setOptions(channelkey, channelName, uid) {
@@ -336,9 +338,22 @@ class AgoraChannel {
       this.options.channel
     );
     event_manager.raiseCustomMsg("Channel Joined With user Account");
+    
+    // Start timer for updating video stats every 2 seconds to catch aspect ratio changes
+    if (this.statsUpdateInterval == 0) {
+      var currentChannel = this;
+      this.statsUpdateInterval = setInterval(function () {
+        if (currentChannel && currentChannel.client && currentChannel.videoSubscribing) {
+          console.log("update video stats for " + currentChannel.channelId);
+          currentChannel.getAllRemoteVideoStatsMC();
+        }
+      }, 2000);
+    }
   }
 
   async leave() {
+    clearInterval(this.statsUpdateInterval);
+    this.statsUpdateInterval = 0;
     _logger("leaving in agorachannel");
 
     if(this.screenShareClient && this.screenShareClient.uid != null){
@@ -985,6 +1000,28 @@ class AgoraChannel {
     }, 2000);
   }
 
+  // Get all RemoteVideoStats for this channel and raise OnClientVideoSizeChanged event for every uid if its video size has changed
+  async getAllRemoteVideoStatsMC() {
+    let Client = this.client;
+    if (Client) {
+      var stats = Client.getRemoteVideoStats();
+      if (stats) {
+        for (let uid in stats) {
+          const width = stats[uid].receiveResolutionWidth;
+          const height = stats[uid].receiveResolutionHeight;
+          var oldStat = this.clientsVideoStats[uid];
+          this.clientsVideoStats[uid] = { width:width, height:height };
+          if (!oldStat ){
+            console.log(uid+" first video stats update: " + width + ":" + height);
+            event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
+          } else if (oldStat.width != width || oldStat.height != height){
+            console.log(uid + " video stats update: " + width + ":" + height);
+            event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
+          }
+        }
+      }
+    }
+  }
 
   async enableVirtualBackground(enabled, backgroundSourceType, color, source, blurDegree, mute, loop){
     if(this.virtualBackgroundProcessor == null && localTracks.videoTrack){
