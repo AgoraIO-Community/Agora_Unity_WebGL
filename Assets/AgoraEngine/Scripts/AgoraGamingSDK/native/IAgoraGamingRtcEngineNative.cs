@@ -1325,7 +1325,11 @@ namespace agora_gaming_rtc
         protected static extern int enableFaceDetection(bool enable);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+#if !UNITY_EDITOR && UNITY_WEBGL
+        protected static extern int enableEncryption(bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt, int length);
+#else
         protected static extern int enableEncryption(bool enabled, string encryptionKey, int encryptionMode, byte[] encryptionKdfSalt);
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableRemoteSuperResolution(uint userId, bool enable);
@@ -1419,13 +1423,8 @@ namespace agora_gaming_rtc
         protected static extern int muteLocalAudioStream_channel(IntPtr channel, bool mute);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableLocalAudioStream_channel(IntPtr channel, bool mute);
-
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int muteLocalVideoStream_channel(IntPtr channel, bool mute);
 
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int enableLocalVideoStream_channel(IntPtr channel, bool mute);
 #endif
 
 #if UNITY_WEBGL
@@ -1553,7 +1552,7 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableLocalVoicePitchCallback(int interval);
 
-#if  UNITY_WEBGL && !UNITY_EDITOR
+#if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int enableSpatialAudio(bool enabled);
 
@@ -1564,13 +1563,30 @@ namespace agora_gaming_rtc
         protected static extern int startLocalMediaSpatialAudio(uint uid, string media);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int updatePlayerPositionInfo(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
-#endif
+        protected static extern int muteLocalMediaSpatialAudio(uint uid, bool mute);
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-#if !UNITY_EDITOR && UNITY_WEBGL
-        protected static extern int setRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+        protected static extern int updatePlayerPositionInfo(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
+
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int updateRemotePosition(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
 #else
+        protected static extern int updatePlayerPositionInfo(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
+        protected static extern int updateRemotePosition(string uid, float posX, float posY, float posZ, float forwardX, float forwardY, float forwardZ);
+#endif
+
+
+#if !UNITY_EDITOR && UNITY_WEBGL
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setRemoteUserSpatialAudioParams(string uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, double attenuation, bool enable_blur, bool enable_air_absorb);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setRemoteUserSpatialAudioAttenuation(string uid, double attenuation);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setRemoteUserSpatialAudioBlur(string uid, bool enable_blur);
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
+        protected static extern int setRemoteUserSpatialAudioAirAbsorb(string uid, bool enable_air_absorb);
+#else
+        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
 #endif
 
@@ -1618,8 +1634,10 @@ namespace agora_gaming_rtc
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize();
 
+#if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int localSpatialAudio_initialize_mc();
+#endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int updateRemotePosition(uint uid, float[] position, float[] forward);

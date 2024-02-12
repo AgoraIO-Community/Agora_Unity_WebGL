@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
-using agora_utilities;
 using System.Linq;
 
 public class SpatialAudioforMultichannel : MonoBehaviour
@@ -12,7 +10,6 @@ public class SpatialAudioforMultichannel : MonoBehaviour
 
     [SerializeField] private string CHANNEL_NAME_1 = "YOUR_CHANNEL_NAME_1";
     private IRtcEngine mRtcEngine = null;
-    private const float Offset = 100;
 
     public Button joinButton, leaveButton;
     public bool joinedChannel = false;
@@ -147,9 +144,9 @@ public class SpatialAudioforMultichannel : MonoBehaviour
     {
         mRtcEngine = IRtcEngine.GetEngine(appInfo.appID);
         mRtcEngine.SetChannelProfile(CHANNEL_PROFILE.CHANNEL_PROFILE_LIVE_BROADCASTING);
-        
+
         mRtcEngine.EnableAudio();
-        
+
         mRtcEngine.SetClientRole(CLIENT_ROLE_TYPE.CLIENT_ROLE_BROADCASTER);
         mRtcEngine.SetMultiChannelWant(true);
 

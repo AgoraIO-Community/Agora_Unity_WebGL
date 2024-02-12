@@ -102,13 +102,12 @@ class spatialAudioManager {
       forward: forward,
     };
 
-    if (this.localPlayProcessors[uid]) {
-      console.log(
-        this.localPlayProcessors[uid].updatePlayerPositionInfo({
-          position,
-          forward,
-        })
+    console.log("updating play processor...",
+        this.localPlayProcessors[uid]
       );
+
+    if (this.localPlayProcessors[uid]) {
+      
       return this.localPlayProcessors[uid].updatePlayerPositionInfo(
         localPlayerPosition
       );
@@ -135,6 +134,9 @@ class spatialAudioManager {
     if (this.localPlayProcessors[uid]) {
       let rc = this.localPlayProcessors[uid].removeRemotePosition();
       delete this.localPlayProcessors[uid];
+      this.localPlayTracks[uid].stop();
+      this.localPlayTracks[uid].close();
+      delete this.localPlayTracks[uid];
       return rc;
     } else {
       return -1;
@@ -189,7 +191,7 @@ class spatialAudioManager {
 
   updateSpatialBlur(uid, checked) {
     this.spatialAudioSettings.blur = checked;
-    console.log("local play processor", this.localPlayProcessors);
+    console.log("updating spatial audio blur");
     if (this.localPlayProcessors[uid]) {
       return this.localPlayProcessors[uid].updateSpatialBlur(checked);
     } else {
@@ -203,6 +205,12 @@ class spatialAudioManager {
       return this.localPlayProcessors[uid].updateSpatialAirAbsorb(checked);
     } else {
       return -1;
+    }
+  }
+
+  muteLocalMediaSpatialAudio (uid, mute) {
+    if(this.localPlayTracks[uid] != undefined){
+      return this.localPlayTracks[uid].setMuted(mute);
     }
   }
 }

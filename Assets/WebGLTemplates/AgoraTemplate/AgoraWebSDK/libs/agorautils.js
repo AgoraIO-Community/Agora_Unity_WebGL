@@ -155,3 +155,33 @@ async function cacheVideoDevices(){
       //console.log("get cameras error!", e);
     });
 }
+
+function hex2ascii(hexx)
+{
+  const hex = hexx.toString();//force conversion
+  let str = '';
+  for (let i = 0; i < hex.length; i += 2)
+    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+  return str;
+}
+function base64ToUint8Array(base64Str)
+{
+  const raw = window.atob(base64Str);
+  const result = new Uint8Array(new ArrayBuffer(raw.length));
+  for (let i = 0; i < raw.length; i += 1)
+  {
+    result[i] = raw.charCodeAt(i);
+  }
+  return result;
+}
+
+const ENCRYPTION_MODE = {
+  1:"aes-128-xts", 
+  2:"aes-128-ecb",
+  3:"aes-256-xts",
+  4:"sm4-128-ecb",
+  5:"aes-128-gcm",
+  6:"aes-256-gcm",
+  7:"aes-128-gcm2",
+  8:"aes-256-gcm2"
+}

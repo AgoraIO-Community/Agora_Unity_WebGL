@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.Networking.Types;
 using agora_gaming_rtc;
 
 
