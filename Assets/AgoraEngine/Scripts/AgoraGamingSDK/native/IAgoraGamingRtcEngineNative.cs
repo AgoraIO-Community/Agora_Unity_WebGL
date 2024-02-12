@@ -1588,12 +1588,6 @@ namespace agora_gaming_rtc
 #else
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]
         protected static extern int setRemoteUserSpatialAudioParams(uint uid, double speaker_azimuth, double speaker_elevation, double speaker_distance, int speaker_orientation, bool enable_blur, bool enable_air_absorb);
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioAttenuation(string uid, double attenuation);
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioBlur(string uid, bool enable_blur);
-        [DllImport(MyLibName, CharSet = CharSet.Ansi)]
-        protected static extern int setRemoteUserSpatialAudioAirAbsorb(string uid, bool enable_air_absorb);
 #endif
 
         [DllImport(MyLibName, CharSet = CharSet.Ansi)]

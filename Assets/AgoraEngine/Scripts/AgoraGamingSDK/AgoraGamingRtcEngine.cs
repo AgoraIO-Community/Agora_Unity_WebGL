@@ -5572,7 +5572,8 @@ namespace agora_gaming_rtc
             Debug.Log("setting attenuation...");
             return IRtcEngineNative.setRemoteUserSpatialAudioAttenuation(uid + "", attenuation);
 #else
-            return IRtcEngineNative.setRemoteUserSpatialAudioAttenuation(uid.ToString(), attenuation);
+            // not implemented 
+            return -1;
 #endif
         }
 
@@ -5581,7 +5582,8 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             return IRtcEngineNative.setRemoteUserSpatialAudioBlur(uid + "", blur);
 #else
-            return IRtcEngineNative.setRemoteUserSpatialAudioBlur(uid.ToString(), blur);
+            // not implemented 
+            return -1;
 #endif
         }
 
@@ -5590,7 +5592,8 @@ namespace agora_gaming_rtc
 #if !UNITY_EDITOR && UNITY_WEBGL
             return IRtcEngineNative.setRemoteUserSpatialAudioAirAbsorb(uid + "", airAbsorb);
 #else
-            return IRtcEngineNative.setRemoteUserSpatialAudioAirAbsorb(uid.ToString(), airAbsorb);
+            // not implemented 
+            return -1;
 #endif
         }
 
