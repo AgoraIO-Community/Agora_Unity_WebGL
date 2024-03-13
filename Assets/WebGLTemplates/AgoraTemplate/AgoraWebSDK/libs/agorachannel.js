@@ -344,7 +344,7 @@ class AgoraChannel {
       var currentChannel = this;
       this.statsUpdateInterval = setInterval(function () {
         if (currentChannel && currentChannel.client && currentChannel.videoSubscribing) {
-          console.log("update video stats for " + currentChannel.channelId);
+          //console.log("update video stats for " + currentChannel.channelId);
           currentChannel.getAllRemoteVideoStatsMC();
         }
       }, 2000);
@@ -1012,10 +1012,10 @@ class AgoraChannel {
           var oldStat = this.clientsVideoStats[uid];
           this.clientsVideoStats[uid] = { width:width, height:height };
           if (!oldStat ){
-            console.log(uid+" first video stats update: " + width + ":" + height);
+            //console.log(uid+" first video stats update: " + width + ":" + height);
             event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
           } else if (oldStat.width != width || oldStat.height != height){
-            console.log(uid + " video stats update: " + width + ":" + height);
+            //console.log(uid + " video stats update: " + width + ":" + height);
             event_manager.raiseOnClientVideoSizeChanged(uid, width, height);
           }
         }
