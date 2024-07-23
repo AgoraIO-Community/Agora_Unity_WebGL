@@ -210,7 +210,11 @@ class spatialAudioManager {
 
   muteLocalMediaSpatialAudio (uid, mute) {
     if(this.localPlayTracks[uid] != undefined){
-      return this.localPlayTracks[uid].setMuted(mute);
+      if (mute==true) {
+          this.localPlayTracks[uid].stop();
+      } else {
+          this.localPlayTracks[uid].play();
+      }
     }
   }
 }

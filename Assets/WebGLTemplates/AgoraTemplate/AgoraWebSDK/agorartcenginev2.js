@@ -466,15 +466,19 @@ async function MuteRemoteVideoStream(uid, mute) {
 
 // Stops/Resumes receiving the audio stream from a specified remote user.
 async function MuteRemoteAudioStream(uid, mute) {
-  Object.keys(remoteUsers).forEach((uid2) => {
-    if (uid2 == uid) {
-      if (mute == true) {
-        unsubscribe(remoteUsers[uid], "audio");
-      } else {
-        subscribe_mv(remoteUsers[uid], "audio");
+  if (client_manager.spatialAudio) {
+    client_manager.muteLocalMediaSpatialAudio(uid, mute);
+  } else {
+    Object.keys(remoteUsers).forEach((uid2) => {
+      if (uid2 == uid) {
+        if (mute == true) {
+          unsubscribe(remoteUsers[uid], "audio");
+        } else {
+          subscribe_mv(remoteUsers[uid], "audio");
+        }
       }
-    }
-  });
+    });
+  }
 }
 
 async function subscribe_mv(user, mediaType) {

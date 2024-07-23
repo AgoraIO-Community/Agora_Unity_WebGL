@@ -33,6 +33,7 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced
         [SerializeField] Button DecreaseBtn;
         [SerializeField] Button IncreaseBtn;
         [SerializeField] Button UserOffBtn;
+        [SerializeField] ToggleStateButton MuteRemoteAudioButton;
         [SerializeField] Text DistanceLabel;
         [SerializeField] Toggle MediaToggle;
         [SerializeField] Slider DistanceSlider;
@@ -111,6 +112,12 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced
             RtcEngine.OnUserJoined += EngineOnUserJoinedHandler;
             RtcEngine.OnUserOffline += EngineOnUserOfflineHandler;
             RtcEngine.OnLeaveChannel += EngineOnLeaveChannelHandler;
+
+            MuteRemoteAudioButton.Setup(initOnOff: true,
+                onStateText: "Unmute Remote", offStateText: "Mute Remote",
+                callOnAction: MuteRemoteAudio,
+                callOffAction: MuteRemoteAudio
+            );
         }
 
         #region --- Agora Event Handlers ---
@@ -318,5 +325,9 @@ namespace Agora_RTC_Plugin.API_Example.Examples.Advanced
             EnableDistanceControl(false);
         }
 
+        void MuteRemoteAudio()
+        {
+            RtcEngine.MuteRemoteAudioStream(RemoteUid, !MuteRemoteAudioButton.OnOffState);
+        }
     }
 }
